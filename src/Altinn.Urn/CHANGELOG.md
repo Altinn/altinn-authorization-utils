@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.2.0...Altinn.Urn-v1.3.0) (2024-03-20)
+
+
+### Features
+
+* fix build? ([064d9ac](https://github.com/Altinn/altinn-authorization-utils/commit/064d9ac278ae1d3440f04060baba77df0fc3e76f))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.1.0...Altinn.Urn-v1.2.0) (2024-03-20)
 
 
