@@ -40,6 +40,10 @@ for await (const file of expandGlob(filesGlob)) {
       repo: "altinn-authorization-utils",
     });
   } finally {
-    fs.close();
+    try {
+      fs.close();
+    } catch {
+      // ignore
+    }
   }
 }
