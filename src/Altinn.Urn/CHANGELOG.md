@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.3...Altinn.Urn-v1.4.4) (2024-03-20)
+
+
+### Bug Fixes
+
+* upload better ([153cd28](https://github.com/Altinn/altinn-authorization-utils/commit/153cd289e48dee6c53bb53863cca18b5c26ddaf9))
+
 ## [1.4.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.2...Altinn.Urn-v1.4.3) (2024-03-20)
 
 
