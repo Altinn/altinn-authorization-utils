@@ -14,7 +14,8 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - id: release
+        uses: google-github-actions/release-please-action@v4
         with:
           # this assumes that you have created a personal access token
           # (PAT) and configured it as a GitHub action secret named
@@ -22,3 +23,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      
+      - name: Log release output
+        env:
+          RELEASE_OUTPUT: ${{ toJSON(steps.release.outputs) }}
+        run: 'echo "Release output: $RELEASE_OUTPUT"'
+
