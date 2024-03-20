@@ -4,7 +4,7 @@
   "release-type": "simple",
   "packages": {
     "src/Altinn.Urn": {
-      "scope": "Altinn.Urn",
+      "component": "Altinn.Urn",
       "extra-files": [
         {
           "type": "xml",
