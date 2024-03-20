@@ -30,7 +30,7 @@ jobs:
         run: 'echo "Release output: $RELEASE_OUTPUT"'
     
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
+      release_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
       full: ${{ toJSON(steps.release.outputs) }}
 
