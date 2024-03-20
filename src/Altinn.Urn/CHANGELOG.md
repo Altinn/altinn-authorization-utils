@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.2...Altinn.Urn-v1.4.3) (2024-03-20)
+
+
+### Bug Fixes
+
+* github expressions ([7448a96](https://github.com/Altinn/altinn-authorization-utils/commit/7448a968109dbed03ac1345c6bde29eee41b4498))
+
 ## [1.4.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.1...Altinn.Urn-v1.4.2) (2024-03-20)
 
 
