@@ -52,6 +52,10 @@ jobs:
           dotnet-version: |
             8.0.x
 
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
       - name: Build
         working-directory: ${{ matrix.path }}
         run: dotnet build -c Release
