@@ -6,9 +6,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <SourceGenerator Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" />
     <ProjectReference Include="..\..\src\Altinn.Urn\Altinn.Urn.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+		<ProjectReference Include="@(SourceGenerator)" 
+			ReferenceOutputAssembly="false" 
+			Private="true"
+			OutputItemType="_SourceGeneratorPath" />
+	</ItemGroup>
+
+  <Target Name="_AddSourceGeneratorReference" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <Analyzer Include="@(_SourceGeneratorPath)" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <Using Include="Xunit" />

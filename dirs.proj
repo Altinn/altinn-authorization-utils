@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+    <TraversalSkipUnsupportedProjects>true</TraversalSkipUnsupportedProjects>
   </PropertyGroup>
 
   <ItemGroup>

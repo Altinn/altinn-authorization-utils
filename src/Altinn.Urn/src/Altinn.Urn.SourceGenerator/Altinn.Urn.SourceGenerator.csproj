@@ -17,5 +17,12 @@
   <ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" PrivateAssets="all" />
   </ItemGroup>
+
+	<Target Name="ShouldSkipProject" Returns="@(ProjectToSkip)">
+		<ItemGroup>
+			<!-- Add the current project to the ProjectToSkip item with a message if DoNotBuildWebApp is true and the current project is WebApplication.csproj -->
+			<ProjectToSkip Include="$(MSBuildProjectFullPath)" />
+		</ItemGroup>
+	</Target>
 	
 </Project>
