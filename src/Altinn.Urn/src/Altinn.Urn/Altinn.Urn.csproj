@@ -8,25 +8,15 @@
 		<SourceGenerator Include="..\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" />
 	</ItemGroup>
 
-	<Target Name="_RestoreSourceGenerators" BeforeTargets="Restore">
-		<MSBuild Projects="@(SourceGenerator)" Targets="Restore" 
-      Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" 
-      BuildInParallel="$(BuildInParallel)" />
-	</Target>
+	<ItemGroup>
+		<ProjectReference Include="@(SourceGenerator)" 
+			ReferenceOutputAssembly="false" 
+			SetTargetFramework="TargetFramework=netstandard2.0"
+			Private="true"
+			OutputItemType="_SourceGeneratorPath" />
+	</ItemGroup>
 
-	<Target Name="_BuildSourceGenerators" BeforeTargets="DispatchToInnerBuilds;BeforeBuild">
-		<MSBuild Projects="@(SourceGenerator)" Targets="Build" 
-      Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" 
-      BuildInParallel="$(BuildInParallel)" />
-	</Target>
-
-	<Target Name="_GetSourceGenerators" DependsOnTargets="Build;_BuildSourceGenerators">
-		<MSBuild Projects="@(SourceGenerator)" Targets="GetTargetPath" 
-      Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" 
-      BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="_SourceGeneratorPath" />
-		</MSBuild>
-		
+	<Target Name="_GetSourceGenerators">
 		<ItemGroup>
 			<NuGetPackInput Include="@(_SourceGeneratorPath)" />
 			<_PackageFiles Include="@(_SourceGeneratorPath)">
