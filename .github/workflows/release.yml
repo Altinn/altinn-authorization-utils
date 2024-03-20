@@ -23,12 +23,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-      
+
       - name: Log release output
         env:
           RELEASE_OUTPUT: ${{ toJSON(steps.release.outputs) }}
         run: 'echo "Release output: $RELEASE_OUTPUT"'
-    
+
     outputs:
       release_created: ${{ steps.release.outputs.releases_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
@@ -39,11 +39,11 @@ jobs:
     if: needs.release-please.outputs.release_created == 'true'
     needs:
       - release-please
-    
+
     strategy:
       matrix:
         path: ${{fromJson(needs.release-please.outputs.paths_released)}}
-    
+
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET
@@ -55,7 +55,7 @@ jobs:
       - name: Build
         working-directory: ${{ matrix.path }}
         run: dotnet build -c Release
-      
+
       - name: Test
         working-directory: ${{ matrix.path }}
         run: dotnet test -c Release --no-build
@@ -72,9 +72,15 @@ jobs:
           if-no-files-found: error
 
       - name: Upload packages to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts/**/*.nupkg
-          tag: ${{ fromJSON(needs.release-please.outputs.full)[format('{0}--tag_name', matrix.path)] }}
-          file_glob: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILES_GLOB: artifacts/**/*.nupkg
+          RELEASE_ID: ${{ fromJSON(needs.release-please.outputs.full)[format('{0}--id', matrix.path)] }}
+        run: deno run -A ./.github/scripts/upload-packages-to-release.mts
+      # - name: Upload packages to release
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: artifacts/**/*.nupkg
+      #     tag: ${{ fromJSON(needs.release-please.outputs.full)[format('{0}--tag_name', matrix.path)] }}
+      #     file_glob: true
