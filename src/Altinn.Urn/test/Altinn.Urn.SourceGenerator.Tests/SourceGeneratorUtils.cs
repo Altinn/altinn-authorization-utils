@@ -35,7 +35,8 @@ public static class SourceGeneratorUtils
     private static readonly Lazy<Task<Compilation>> BaseCompilation = new(async () =>
     {
         var workspace = MSBuildWorkspace.Create();
-        var project = await workspace.OpenProjectAsync(@"..\..\..\Altinn.Urn.SourceGenerator.Tests.csproj");
+        var projectFile = FindUp("Altinn.Urn.SourceGenerator.Tests.csproj");
+        var project = await workspace.OpenProjectAsync(projectFile);
 
         project = project
             .WithProjectReferences([])
@@ -52,6 +53,23 @@ public static class SourceGeneratorUtils
 
         return compilation;
     }, LazyThreadSafetyMode.ExecutionAndPublication);
+
+    private static string FindUp(string fileName)
+    {
+        var dir = Directory.GetCurrentDirectory();
+        while (dir != null)
+        {
+            var file = Path.Combine(dir, fileName);
+            if (File.Exists(file))
+            {
+                return file;
+            }
+
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+
+        throw new FileNotFoundException($"Could not find file '{fileName}'");
+    }
 
     static MetadataReference Reference(string name) =>
         MetadataReference.CreateFromFile(AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(name)).Location);

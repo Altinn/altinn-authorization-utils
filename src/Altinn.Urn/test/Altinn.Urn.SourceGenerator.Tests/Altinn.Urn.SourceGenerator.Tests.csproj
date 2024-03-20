@@ -22,4 +22,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+		<Compile Remove="Snapshots/**/*" />
+	</ItemGroup>
+
 </Project>
