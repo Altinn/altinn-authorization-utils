@@ -1,9 +1,8 @@
 {
   "separate-pull-requests": true,
-  "release-type": "generic",
+  "release-type": "simple",
   "packages": {
     "src/Altinn.Urn": {
-      "release-type": "generic",
       "extra-files": [
         {
           "type": "xml",
