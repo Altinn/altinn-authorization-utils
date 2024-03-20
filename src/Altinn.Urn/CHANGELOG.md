@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.0.0...Altinn.Urn-v1.1.0) (2024-03-20)
+
+
+### Features
+
+* upload nuget packages to github release ([64b1997](https://github.com/Altinn/altinn-authorization-utils/commit/64b19979ef72603ac8e74f2fd55e31ab66f45676))
+
 ## 1.0.0 (2024-03-20)
 
 
