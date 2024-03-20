@@ -29,6 +29,7 @@ for await (const file of expandGlob(filesGlob)) {
 
   console.log(`Uploading ${c.yellow(name)}`);
   const fs = await Deno.open(path, { read: true });
+  const stat = await fs.stat();
 
   try {
     await github.rest.repos.uploadReleaseAsset({
@@ -38,6 +39,9 @@ for await (const file of expandGlob(filesGlob)) {
       release_id: Number.parseInt(releaseId, 10),
       owner: "Altinn",
       repo: "altinn-authorization-utils",
+      headers: {
+        "Content-Length": `${stat.size}`,
+      },
     });
   } finally {
     try {
