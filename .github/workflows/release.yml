@@ -32,7 +32,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
-      full: ${{ steps.release.outputs }}
+      full: ${{ toJSON(steps.release.outputs) }}
 
   pack:
     runs-on: ubuntu-latest
