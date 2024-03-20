@@ -1,1 +1,14 @@
-﻿
+﻿{
+  Diagnostics: [
+    {
+      Id: AURN0013,
+      Title: Urn record has no Urn type-methods,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: : (4,0)-(7,1),
+      MessageFormat: Urn record has no Urn type-methods,
+      Message: Urn record has no Urn type-methods,
+      Category: UrnGenerator
+    }
+  ]
+}
