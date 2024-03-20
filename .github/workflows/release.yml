@@ -52,7 +52,8 @@ jobs:
           dotnet-version: |
             8.0.x
 
-      - uses: denoland/setup-deno@v1
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
 

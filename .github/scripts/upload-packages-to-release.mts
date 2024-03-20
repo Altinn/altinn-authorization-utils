@@ -34,7 +34,7 @@ for await (const file of expandGlob(filesGlob)) {
     await github.rest.repos.uploadReleaseAsset({
       url: release.data.upload_url,
       name,
-      data: fs as any,
+      data: fs.readable as any,
       release_id: Number.parseInt(releaseId, 10),
       owner: "Altinn",
       repo: "altinn-authorization-utils",
