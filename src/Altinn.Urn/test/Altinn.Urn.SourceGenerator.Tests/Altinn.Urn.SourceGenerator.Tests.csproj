@@ -21,7 +21,6 @@
   <ItemGroup>
 		<ProjectReference Include="@(SourceGenerator)" 
 			ReferenceOutputAssembly="false" 
-			SetTargetFramework="TargetFramework=netstandard2.0"
 			Private="true"
 			OutputItemType="_SourceGeneratorPath" />
 	</ItemGroup>
