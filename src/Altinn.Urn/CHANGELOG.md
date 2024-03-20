@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.8](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.7...Altinn.Urn-v1.4.8) (2024-03-20)
+
+
+### Bug Fixes
+
+* stat file ([b11d5fd](https://github.com/Altinn/altinn-authorization-utils/commit/b11d5fd6295a18a503f6084156e880970ae54268))
+
 ## [1.4.7](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.6...Altinn.Urn-v1.4.7) (2024-03-20)
 
 
