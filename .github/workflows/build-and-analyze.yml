@@ -1,4 +1,4 @@
-name: Code test and analysis
+name: Build, Test and Analyze
 on:
   push:
     branches: [ main ]
