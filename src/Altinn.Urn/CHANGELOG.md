@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.4...Altinn.Urn-v1.4.5) (2024-03-20)
+
+
+### Bug Fixes
+
+* install deno on ci ([016bf1c](https://github.com/Altinn/altinn-authorization-utils/commit/016bf1c60e7ce500d469726ccfb215630eb9639c))
+
 ## [1.4.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.3...Altinn.Urn-v1.4.4) (2024-03-20)
 
 
