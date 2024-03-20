@@ -4,12 +4,8 @@
 		<GenerateNuspecDependsOn>_GetSourceGenerators;$(GenerateNuspecDependsOn)</GenerateNuspecDependsOn>
 	</PropertyGroup>
 
-  <ItemGroup>
-		<SourceGenerator Include="..\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" />
-	</ItemGroup>
-
 	<ItemGroup>
-		<ProjectReference Include="@(SourceGenerator)" 
+		<ProjectReference Include="..\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" 
 			ReferenceOutputAssembly="false" 
 			Private="true"
 			OutputItemType="_SourceGeneratorPath" />
