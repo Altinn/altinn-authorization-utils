@@ -28,26 +28,14 @@ for await (const file of expandGlob(filesGlob)) {
   const path = file.path;
 
   console.log(`Uploading ${c.yellow(name)}`);
-  const fs = await Deno.open(path, { read: true });
-  const stat = await fs.stat();
+  const body = await Deno.readFile(path);
 
-  try {
-    await github.rest.repos.uploadReleaseAsset({
-      url: release.data.upload_url,
-      name,
-      data: fs.readable as any,
-      release_id: Number.parseInt(releaseId, 10),
-      owner: "Altinn",
-      repo: "altinn-authorization-utils",
-      headers: {
-        "Content-Length": `${stat.size}`,
-      },
-    });
-  } finally {
-    try {
-      fs.close();
-    } catch {
-      // ignore
-    }
-  }
+  await github.rest.repos.uploadReleaseAsset({
+    url: release.data.upload_url,
+    name,
+    data: body as any,
+    release_id: Number.parseInt(releaseId, 10),
+    owner: "Altinn",
+    repo: "altinn-authorization-utils",
+  });
 }
