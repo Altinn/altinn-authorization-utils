@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<GenerateNuspecDependsOn>_GetSourceGenerators;$(GenerateNuspecDependsOn)</GenerateNuspecDependsOn>
+	</PropertyGroup>
+
+  <ItemGroup>
+		<SourceGenerator Include="..\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" />
+	</ItemGroup>
+
+	<Target Name="_RestoreSourceGenerators" BeforeTargets="Restore">
+		<MSBuild Projects="@(SourceGenerator)" Targets="Restore" 
+      Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" 
+      BuildInParallel="$(BuildInParallel)" />
+	</Target>
+
+	<Target Name="_BuildSourceGenerators" BeforeTargets="DispatchToInnerBuilds;BeforeBuild">
+		<MSBuild Projects="@(SourceGenerator)" Targets="Build" 
+      Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" 
+      BuildInParallel="$(BuildInParallel)" />
+	</Target>
+
+	<Target Name="_GetSourceGenerators" DependsOnTargets="Build;_BuildSourceGenerators">
+		<MSBuild Projects="@(SourceGenerator)" Targets="GetTargetPath" 
+      Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" 
+      BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="_SourceGeneratorPath" />
+		</MSBuild>
+		
+		<ItemGroup>
+			<NuGetPackInput Include="@(_SourceGeneratorPath)" />
+			<_PackageFiles Include="@(_SourceGeneratorPath)">
+				<BuildAction Condition="'%(SourceGenerator.BuildAction)' == ''">SourceGenerator</BuildAction>
+				<PackagePath>analyzers/dotnet/cs</PackagePath>
+			</_PackageFiles>
+		</ItemGroup>
+	</Target>
+
+</Project>
