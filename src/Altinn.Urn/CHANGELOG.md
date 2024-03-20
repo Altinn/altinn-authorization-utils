@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.9](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.8...Altinn.Urn-v1.4.9) (2024-03-20)
+
+
+### Bug Fixes
+
+* read file to memory ([5f4a2ec](https://github.com/Altinn/altinn-authorization-utils/commit/5f4a2ece447abbf584660ccfc13ca85c9432d02e))
+
 ## [1.4.8](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.7...Altinn.Urn-v1.4.8) (2024-03-20)
 
 
