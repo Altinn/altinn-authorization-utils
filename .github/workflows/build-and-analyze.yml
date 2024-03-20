@@ -20,8 +20,8 @@ jobs:
             8.0.x
       - name: Build & Test
         run: |
-           dotnet build --release
-           dotnet test --release --no-build
+           dotnet build -c Release
+           dotnet test -c Release --no-build
 
   # analyze:
   #   if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]' 
