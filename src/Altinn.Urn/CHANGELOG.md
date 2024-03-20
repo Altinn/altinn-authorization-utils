@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.7](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.6...Altinn.Urn-v1.4.7) (2024-03-20)
+
+
+### Bug Fixes
+
+* ignore close error ([039ff2f](https://github.com/Altinn/altinn-authorization-utils/commit/039ff2fb5bb423c42b50b7d6d5a643c2e02eb3a8))
+
 ## [1.4.6](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.5...Altinn.Urn-v1.4.6) (2024-03-20)
 
 
