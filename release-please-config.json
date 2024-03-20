@@ -1,10 +1,10 @@
 {
   "separate-pull-requests": true,
-  "pull-request-title-pattern": "release(${component}): ${version}",
+  "pull-request-title-pattern": "release${scope}: ${version}",
   "release-type": "simple",
   "packages": {
     "src/Altinn.Urn": {
-      "component": "Altinn.Urn",
+      "scope": "Altinn.Urn",
       "extra-files": [
         {
           "type": "xml",
