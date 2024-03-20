@@ -28,4 +28,53 @@ jobs:
         env:
           RELEASE_OUTPUT: ${{ toJSON(steps.release.outputs) }}
         run: 'echo "Release output: $RELEASE_OUTPUT"'
+    
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+      full: ${{ steps.release.outputs }}
 
+  pack:
+    runs-on: ubuntu-latest
+    if: needs.release-please.outputs.release_created == 'true'
+    needs:
+      - release-please
+    
+    strategy:
+      matrix:
+        path: ${{fromJson(needs.release-please.outputs.paths_released)}}
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+
+      - name: Build
+        working-directory: ${{ matrix.path }}
+        run: dotnet build -c Release
+      
+      - name: Test
+        working-directory: ${{ matrix.path }}
+        run: dotnet test -c Release --no-build
+
+      - name: Pack
+        working-directory: ${{ matrix.path }}
+        run: dotnet pack -c Release --no-build
+
+      - name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.path }}
+          path: artifacts/**/*.nupkg
+          if-no-files-found: error
+
+      - name: Upload packages to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/**/*.nupkg
+          tag: needs.release-please.outputs.full['${{ matrix.path }}--tag_name']
+          file_glob: true
