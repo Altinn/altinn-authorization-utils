@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.1...Altinn.Urn-v1.4.2) (2024-03-20)
+
+
+### Bug Fixes
+
+* github artifact name again ([d4da93b](https://github.com/Altinn/altinn-authorization-utils/commit/d4da93b077de7ddb3d9f8aef55d08298ff28df2e))
+
 ## [1.4.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.0...Altinn.Urn-v1.4.1) (2024-03-20)
 
 
