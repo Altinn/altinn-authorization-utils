@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.5.0...Altinn.Urn-v1.5.1) (2024-03-21)
+
+
+### Bug Fixes
+
+* source generator included in nuget package even when using --no-build ([f0e831e](https://github.com/Altinn/altinn-authorization-utils/commit/f0e831ec4bc6eba55f82c01d99dbf03e2f1897af))
+
 ## [1.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.9...Altinn.Urn-v1.5.0) (2024-03-21)
 
 
