@@ -28,12 +28,21 @@ jobs:
       - name: Pack
         run: dotnet pack -c Release --no-build -bl:binlog/pack.binlog
 
-      - name: Create artifact
+      - name: Create binlog artifact
         uses: actions/upload-artifact@v4
         with:
           name: binlog
           path: binlog/*.binlog
           if-no-files-found: error
+          retention-days: 1
+
+      - name: Create packages artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: artifacts/**/*.nupkg
+          if-no-files-found: error
+          retention-days: 1
 
   # analyze:
   #   if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]' 
