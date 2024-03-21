@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.9...Altinn.Urn-v1.5.0) (2024-03-21)
+
+
+### Features
+
+* add RawUrn ([14e4c90](https://github.com/Altinn/altinn-authorization-utils/commit/14e4c906099c507285b365afda6e872689f2fb6c))
+
 ## [1.4.9](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.4.8...Altinn.Urn-v1.4.9) (2024-03-20)
 
 
