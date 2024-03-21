@@ -18,5 +18,5 @@ for (const file of await globby(filesGlob)) {
   const fullPath = path.resolve(file);
 
   console.log(`Publishing ${c.yellow(name)}`);
-  await $`dotnet nuget push "${fullPath}" --api-key "${filesGlob}" --source "github"`
+  await $`dotnet nuget push "${fullPath}" --api-key "${ghToken}" --source "github"`
 }
