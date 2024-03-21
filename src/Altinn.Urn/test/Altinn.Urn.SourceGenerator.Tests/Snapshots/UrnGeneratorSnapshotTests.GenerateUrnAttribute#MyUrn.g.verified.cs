@@ -94,16 +94,15 @@ partial record MyUrn
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
-    private readonly string _urn;
-    private readonly int _valueIndex;
+    private readonly RawUrn _urn;
     private readonly Type _type;
 
     [CompilerGenerated]
-    private MyUrn(string urn, int valueIndex, Type type) => (_urn, _valueIndex, _type) = (urn, valueIndex, type);
+    private MyUrn(string urn, int valueIndex, Type type) => (_urn, _type) = (RawUrn.CreateUnchecked(urn, valueIndex), type);
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public string Urn => _urn;
+    public string Urn => _urn.Urn;
 
     /// <inheritdoc/>
     [CompilerGenerated]
@@ -119,19 +118,19 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public ReadOnlySpan<char> ValueSpan => _urn.AsSpan(_valueIndex);
+    public ReadOnlySpan<char> ValueSpan => _urn.ValueSpan;
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public ReadOnlyMemory<char> ValueMemory => _urn.AsMemory(_valueIndex);
+    public ReadOnlyMemory<char> ValueMemory => _urn.ValueMemory;
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public ReadOnlySpan<char> PrefixSpan => _urn.AsSpan(0, _valueIndex - 1);
+    public ReadOnlySpan<char> PrefixSpan => _urn.PrefixSpan;
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public ReadOnlyMemory<char> PrefixMemory => _urn.AsMemory(0, _valueIndex - 1);
+    public ReadOnlyMemory<char> PrefixMemory => _urn.PrefixMemory;
 
     /// <inheritdoc/>
     [CompilerGenerated]
@@ -139,12 +138,6 @@ partial record MyUrn
     {
         switch (format.AsSpan())
         {
-            case ['P']:
-                return new string(PrefixSpan);
-
-            case ['S']:
-                return new string(ValueSpan);
-
             case ['V', ..var valueFormatSpan]:
                 var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);
                 return _type switch
@@ -157,11 +150,8 @@ partial record MyUrn
                     _ => Unreachable<string>(),
                 };
 
-            case []:
-            case ['R']:
-            case ['G']:
             default:
-                return _urn;
+                return _urn.ToString(format, provider);
         }
     }
 
@@ -171,12 +161,6 @@ partial record MyUrn
     {
         switch (format)
         {
-            case ['P']:
-                return TryAppend(destination, out charsWritten, PrefixSpan);
-
-            case ['S']:
-                return TryAppend(destination, out charsWritten, ValueSpan);
-
             case ['V', ..var valueFormatSpan]:
                 charsWritten = 0;
                 return _type switch
@@ -189,11 +173,8 @@ partial record MyUrn
                     _ => Unreachable<bool>(),
                 };
 
-            case []:
-            case ['R']:
-            case ['G']:
             default:
-                return TryAppend(destination, out charsWritten, _urn.AsSpan());
+                return _urn.TryFormat(destination, out charsWritten, format, provider);
         }
     }
 
@@ -274,10 +255,10 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public override string ToString() => _urn;
+    public override string ToString() => _urn.Urn;
 
     [CompilerGenerated]
-    protected string DebuggerDisplay => _urn;
+    protected string DebuggerDisplay => _urn.Urn;
 
     /// <inheritdoc/>
     [CompilerGenerated]
@@ -549,20 +530,6 @@ partial record MyUrn
     private static T Unreachable<T>() => throw new UnreachableException();
 
     [CompilerGenerated]
-    private static bool TryAppend(Span<char> destination, out int charsWritten, ReadOnlySpan<char> source)
-    {
-    if (source.Length > destination.Length)
-    {
-        charsWritten = 0;
-        return false;
-    }
-
-    source.CopyTo(destination);
-    charsWritten = source.Length;
-    return true;
-    }
-
-    [CompilerGenerated]
     public enum Type
     {
         Test1 = 1,
@@ -596,7 +563,7 @@ partial record MyUrn
         public System.Guid Value => _value;
         /// <inheritdoc/>
         [CompilerGenerated]
-        public override string ToString() => _urn;
+        public override string ToString() => _urn.Urn;
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -653,7 +620,7 @@ partial record MyUrn
         public int Value => _value;
         /// <inheritdoc/>
         [CompilerGenerated]
-        public override string ToString() => _urn;
+        public override string ToString() => _urn.Urn;
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -712,7 +679,7 @@ partial record MyUrn
         public float Value => _value;
         /// <inheritdoc/>
         [CompilerGenerated]
-        public override string ToString() => _urn;
+        public override string ToString() => _urn.Urn;
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -769,7 +736,7 @@ partial record MyUrn
         public long Value => _value;
         /// <inheritdoc/>
         [CompilerGenerated]
-        public override string ToString() => _urn;
+        public override string ToString() => _urn.Urn;
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -826,7 +793,7 @@ partial record MyUrn
         public uint Value => _value;
         /// <inheritdoc/>
         [CompilerGenerated]
-        public override string ToString() => _urn;
+        public override string ToString() => _urn.Urn;
 
         /// <inheritdoc/>
         [CompilerGenerated]

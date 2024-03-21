@@ -52,10 +52,17 @@ jobs:
           dotnet-version: |
             8.0.x
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
+      - uses: actions/setup-node@v4
         with:
-          deno-version: v1.x
+          node-version: 20
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: |
+            - cwd: .github/scripts
+              args: [--frozen-lockfile]
+            - args: [--global, tsx]
 
       - name: Build
         working-directory: ${{ matrix.path }}
@@ -81,11 +88,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILES_GLOB: artifacts/**/*.nupkg
           RELEASE_ID: ${{ fromJSON(needs.release-please.outputs.full)[format('{0}--id', matrix.path)] }}
-        run: deno run -A ./.github/scripts/upload-packages-to-release.mts
-      # - name: Upload packages to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     file: artifacts/**/*.nupkg
-      #     tag: ${{ fromJSON(needs.release-please.outputs.full)[format('{0}--tag_name', matrix.path)] }}
-      #     file_glob: true
+        run: tsx ./.github/scripts/upload-packages-to-release.mts

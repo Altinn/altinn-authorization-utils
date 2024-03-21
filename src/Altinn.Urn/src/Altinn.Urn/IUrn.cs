@@ -10,11 +10,6 @@ public interface IUrn
     , ISpanFormattable
 {
     /// <summary>
-    /// Gets the valid URN prefixes for the type.
-    /// </summary>
-    public static abstract ReadOnlySpan<string> Prefixes { get; }
-
-    /// <summary>
     /// Gets the urn as a string.
     /// </summary>
     /// <remarks>This is the same as calling <see cref="object.ToString()"/>.</remarks>
@@ -101,6 +96,11 @@ public interface IUrn<TSelf>
     , ISpanParsable<TSelf>
     where TSelf : IUrn<TSelf>
 {
+    /// <summary>
+    /// Gets the valid URN prefixes for the type.
+    /// </summary>
+    public static abstract ReadOnlySpan<string> Prefixes { get; }
+
     /// <summary>Parses a string into a value.</summary>
     /// <param name="s">The string to parse.</param>
     /// <returns>The result of parsing <paramref name="s" />.</returns>

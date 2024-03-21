@@ -181,18 +181,17 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("};");
 
         builder.AppendLine();
-        builder.AppendLine("private readonly string _urn;");
-        builder.AppendLine("private readonly int _valueIndex;");
+        builder.AppendLine("private readonly RawUrn _urn;");
         builder.AppendLine("private readonly Type _type;");
 
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"private {record.TypeName}(string urn, int valueIndex, Type type) => (_urn, _valueIndex, _type) = (urn, valueIndex, type);");
+        builder.AppendLine($"private {record.TypeName}(string urn, int valueIndex, Type type) => (_urn, _type) = (RawUrn.CreateUnchecked(urn, valueIndex), type);");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"public string Urn => _urn;");
+        builder.AppendLine($"public string Urn => _urn.Urn;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
@@ -212,22 +211,22 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"public ReadOnlySpan<char> ValueSpan => _urn.AsSpan(_valueIndex);");
+        builder.AppendLine($"public ReadOnlySpan<char> ValueSpan => _urn.ValueSpan;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"public ReadOnlyMemory<char> ValueMemory => _urn.AsMemory(_valueIndex);");
+        builder.AppendLine($"public ReadOnlyMemory<char> ValueMemory => _urn.ValueMemory;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"public ReadOnlySpan<char> PrefixSpan => _urn.AsSpan(0, _valueIndex - 1);");
+        builder.AppendLine($"public ReadOnlySpan<char> PrefixSpan => _urn.PrefixSpan;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"public ReadOnlyMemory<char> PrefixMemory => _urn.AsMemory(0, _valueIndex - 1);");
+        builder.AppendLine($"public ReadOnlyMemory<char> PrefixMemory => _urn.PrefixMemory;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
@@ -236,12 +235,6 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("{");
         builder_lv1.AppendLine("switch (format.AsSpan())");
         builder_lv1.AppendLine("{");
-        builder_lv2.AppendLine("case ['P']:");
-        builder_lv3.AppendLine("return new string(PrefixSpan);");
-        builder_lv2.AppendLine();
-        builder_lv2.AppendLine("case ['S']:");
-        builder_lv3.AppendLine("return new string(ValueSpan);");
-        builder_lv2.AppendLine();
         builder_lv2.AppendLine("case ['V', ..var valueFormatSpan]:");
         builder_lv3.AppendLine("var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);");
         builder_lv3.AppendLine("return _type switch");
@@ -253,11 +246,8 @@ internal ref struct UrnRecordEmitter
         builder_lv4.AppendLine("_ => Unreachable<string>(),");
         builder_lv3.AppendLine("};");
         builder_lv2.AppendLine();
-        builder_lv2.AppendLine("case []:");
-        builder_lv2.AppendLine("case ['R']:");
-        builder_lv2.AppendLine("case ['G']:");
         builder_lv2.AppendLine("default:");
-        builder_lv3.AppendLine("return _urn;");
+        builder_lv3.AppendLine("return _urn.ToString(format, provider);");
         builder_lv1.AppendLine("}");
         builder.AppendLine("}");
 
@@ -268,12 +258,6 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("{");
         builder_lv1.AppendLine("switch (format)");
         builder_lv1.AppendLine("{");
-        builder_lv2.AppendLine("case ['P']:");
-        builder_lv3.AppendLine("return TryAppend(destination, out charsWritten, PrefixSpan);");
-        builder_lv2.AppendLine();
-        builder_lv2.AppendLine("case ['S']:");
-        builder_lv3.AppendLine("return TryAppend(destination, out charsWritten, ValueSpan);");
-        builder_lv2.AppendLine();
         builder_lv2.AppendLine("case ['V', ..var valueFormatSpan]:");
         builder_lv3.AppendLine("charsWritten = 0;");
         builder_lv3.AppendLine("return _type switch");
@@ -292,11 +276,8 @@ internal ref struct UrnRecordEmitter
         builder_lv4.AppendLine("_ => Unreachable<bool>(),");
         builder_lv3.AppendLine("};");
         builder_lv2.AppendLine();
-        builder_lv2.AppendLine("case []:");
-        builder_lv2.AppendLine("case ['R']:");
-        builder_lv2.AppendLine("case ['G']:");
         builder_lv2.AppendLine("default:");
-        builder_lv3.AppendLine("return TryAppend(destination, out charsWritten, _urn.AsSpan());");
+        builder_lv3.AppendLine("return _urn.TryFormat(destination, out charsWritten, format, provider);");
         builder_lv1.AppendLine("}");
         builder.AppendLine("}");
 
@@ -327,11 +308,11 @@ internal ref struct UrnRecordEmitter
 
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine("public override string ToString() => _urn;");
+        builder.AppendLine("public override string ToString() => _urn.Urn;");
 
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine("protected string DebuggerDisplay => _urn;");
+        builder.AppendLine("protected string DebuggerDisplay => _urn.Urn;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
@@ -561,21 +542,6 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("private static T Unreachable<T>() => throw new UnreachableException();");
-
-        builder.AppendLine();
-        builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine("private static bool TryAppend(Span<char> destination, out int charsWritten, ReadOnlySpan<char> source)");
-        builder.AppendLine("{");
-        builder.AppendLine("if (source.Length > destination.Length)");
-        builder.AppendLine("{");
-        builder_lv1.AppendLine("charsWritten = 0;");
-        builder_lv1.AppendLine("return false;");
-        builder.AppendLine("}");
-        builder.AppendLine();
-        builder.AppendLine("source.CopyTo(destination);");
-        builder.AppendLine("charsWritten = source.Length;");
-        builder.AppendLine("return true;");
-        builder.AppendLine("}");
     }
 
     private void EmitTypeEnum(in UrnRecordInfo record, CodeBuilder builder, CancellationToken ct)
@@ -649,7 +615,7 @@ internal ref struct UrnRecordEmitter
 
         builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
-        builder_lv1.AppendLine("public override string ToString() => _urn;");
+        builder_lv1.AppendLine("public override string ToString() => _urn.Urn;");
 
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc/>");
