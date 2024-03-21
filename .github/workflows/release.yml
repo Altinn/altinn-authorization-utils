@@ -41,7 +41,7 @@ jobs:
       - release-please
 
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     strategy:
