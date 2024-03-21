@@ -34,11 +34,15 @@ jobs:
       paths_released: ${{ steps.release.outputs.paths_released }}
       full: ${{ toJSON(steps.release.outputs) }}
 
-  pack:
+  publish:
     runs-on: ubuntu-latest
     if: needs.release-please.outputs.release_created == 'true'
     needs:
       - release-please
+
+    permissions:
+      contents: read
+      packages: write
 
     strategy:
       matrix:
@@ -89,3 +93,11 @@ jobs:
           FILES_GLOB: artifacts/**/*.nupkg
           RELEASE_ID: ${{ fromJSON(needs.release-please.outputs.full)[format('{0}--id', matrix.path)] }}
         run: tsx ./.github/scripts/upload-packages-to-release.mts
+
+      - name: Publish to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILES_GLOB: artifacts/**/*.nupkg
+        run: |
+          dotnet nuget add source --username Altinn --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Altinn/index.json"
+          tsx ./.github/scripts/publish-to-github-packages.mts
