@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
-    <PackageReference Include="Microsoft.Build.Artifacts" Version="6.1.10" PrivateAssets="all" 
+    <PackageReference Include="Microsoft.Build.Artifacts" Version="6.1.30" PrivateAssets="all" 
       IncludeAssets="build; buildtransitive; buildMultiTargeting" />
   </ItemGroup>
 
