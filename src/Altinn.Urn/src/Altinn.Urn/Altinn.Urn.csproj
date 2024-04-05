@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<GenerateNuspecDependsOn>_GetSourceGenerators;$(GenerateNuspecDependsOn)</GenerateNuspecDependsOn>
+		<PackageDescription>Altinn.Urn is a .NET library designed to simplify working with URNs (Uniform Resource Names) in .NET applications.</PackageDescription>
 	</PropertyGroup>
 
 	<ItemGroup>

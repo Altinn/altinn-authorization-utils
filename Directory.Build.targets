@@ -33,6 +33,18 @@
       IncludeAssets="build; buildtransitive; buildMultiTargeting" />
   </ItemGroup>
 
+  <PropertyGroup Condition=" '$(ReadmePath)' == '' ">
+    <ReadmePath>$([MSBuild]::GetPathOfFileAbove('README.md', '$(MSBuildProjectDirectory)'))</ReadmePath>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(IsPackable)' == 'true' And Exists('$(ReadmePath)') ">
+    <None Include="$(ReadmePath)" Pack="true" PackagePath="readme.md" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(IsPackable)' == 'true' And Exists('$(ReadmePath)') ">
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(VersionFilePath)' == '' ">
     <VersionFilePath>$([MSBuild]::GetPathOfFileAbove('Version.props', '$(MSBuildProjectDirectory)'))</VersionFilePath>
   </PropertyGroup>
