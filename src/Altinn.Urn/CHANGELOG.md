@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.0...Altinn.Urn-v1.6.1) (2024-04-05)
+
+
+### Bug Fixes
+
+* add more tests ([ecb1645](https://github.com/Altinn/altinn-authorization-utils/commit/ecb16453af5e6f93a86d7fcdee758ab780d164ad))
+* json converter on type hierarchies ([ef49644](https://github.com/Altinn/altinn-authorization-utils/commit/ef49644bbbf8afe9c0bf61cdb3c6d9541e59f2cc))
+
 ## [1.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.5.3...Altinn.Urn-v1.6.0) (2024-04-05)
 
 
