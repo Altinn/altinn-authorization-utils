@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.2...Altinn.Urn-v1.6.3) (2024-04-05)
+
+
+### Bug Fixes
+
+* nuget deploy ([f715669](https://github.com/Altinn/altinn-authorization-utils/commit/f7156691475443e9b15cc5fe91d118839b1518a6))
+
 ## [1.6.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.1...Altinn.Urn-v1.6.2) (2024-04-05)
 
 
