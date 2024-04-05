@@ -26,10 +26,10 @@ for (const file of await globby(filesGlob)) {
   await $`dotnet nuget push "${fullPath}" --api-key "${ghToken}" --source "github"`
 
   console.log(`Published ${c.green(name)}`);
-  const pkg = await github.rest.packages.getPackageForAuthenticatedUser({
+  const pkg = await retry(() => github.rest.packages.getPackageForAuthenticatedUser({
     package_type: "nuget",
     package_name: path.basename(file, ".nupkg"),
-  });
+  }));
 
   console.log(`Package visibility: ${visibility(pkg.data.visibility)}`);
 }
@@ -40,4 +40,17 @@ function visibility(visibility: "public" | "private") {
   }
 
   return c.red(visibility);
+}
+
+async function retry(fn: () => Promise<any>, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (i === retries - 1) {
+        throw err;
+      }
+      console.error(`Retrying after error: ${c.red(err.message)}`);
+    }
+  }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -44,7 +45,11 @@ public abstract class BaseUrnJsonConverterFactory
         static Func<BaseUrnJsonConverterFactory, JsonConverter> CreateFactory(Type type)
         {
             var method = CreateConverterMethod.MakeGenericMethod(type);
-            return (Func<BaseUrnJsonConverterFactory, JsonConverter>)method.CreateDelegate(typeof(Func<BaseUrnJsonConverterFactory, JsonConverter>));
+            var argument = Expression.Parameter(typeof(BaseUrnJsonConverterFactory), "baseFactory");
+            var call = Expression.Call(argument, method);
+            var result = Expression.Convert(call, typeof(JsonConverter));
+            var lambda = Expression.Lambda<Func<BaseUrnJsonConverterFactory, JsonConverter>>(result, argument);
+            return lambda.Compile();
         }
     }
 }

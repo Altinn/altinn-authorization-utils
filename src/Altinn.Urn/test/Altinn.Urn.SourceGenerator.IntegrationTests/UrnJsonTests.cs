@@ -70,6 +70,81 @@ public partial class UrnJsonTests
         nullableObj.Urn.Should().BeNull();
     }
 
+    [Fact]
+    public void StringConverter_CanParse_Strings()
+    {
+        var json = """{"urn":"urn:test:1234"}""";
+        var obj = JsonSerializer.Deserialize<StringObject>(json, _options);
+
+        Assert.NotNull(obj);
+        obj.Urn.Urn.Should().Be("urn:test:1234");
+    }
+
+    [Fact]
+    public void StringConverter_CanNotParse_Objects()
+    {
+        var json = """{"urn":{"type":"urn:test","value":"1234"}}""";
+        Action act = () => JsonSerializer.Deserialize<StringObject>(json, _options);
+        act.Should().Throw<JsonException>()
+            .Which.Message.Should().Be($"Expected {nameof(TestUrn)} as string, but got {JsonTokenType.StartObject}");
+    }
+
+    [Fact]
+    public void StringConverter_SerializesAs_Strings()
+    {
+        var obj = new StringObject { Urn = TestUrn.Test.Create(4321) };
+        var json = JsonSerializer.Serialize(obj, _options);
+
+        json.Should().Be("""{"urn":"urn:test:4321"}""");
+    }
+
+    [Fact]
+    public void ObjectConverter_CanParse_Objects()
+    {
+        var json = """{"urn":{"type":"urn:test","value":"1234"}}""";
+        var obj = JsonSerializer.Deserialize<ObjectObject>(json, _options);
+
+        Assert.NotNull(obj);
+        obj.Urn.Urn.Should().Be("urn:test:1234");
+    }
+
+    [Fact]
+    public void ObjectConverter_CanNotParse_Strings()
+    {
+        var json = """{"urn":"urn:test:1234"}""";
+        Action act = () => JsonSerializer.Deserialize<ObjectObject>(json, _options);
+        act.Should().Throw<JsonException>()
+            .Which.Message.Should().Be($"Expected {nameof(TestUrn)} as object, but got {JsonTokenType.String}");
+    }
+
+    [Fact]
+    public void ObjectConverter_SerializesAs_Objects()
+    {
+        var obj = new ObjectObject { Urn = TestUrn.Test.Create(4321) };
+        var json = JsonSerializer.Serialize(obj, _options);
+
+        json.Should().Be("""{"urn":{"type":"urn:test","value":"4321"}}""");
+    }
+
+    [Fact]
+    public void MixedObjects()
+    {
+        var json =
+            """
+            {
+                "defaultConverter": "urn:test:1234",
+                "stringConverter": "urn:test:2345",
+                "objectConverter": {"type":"urn:test","value":"3456"}
+            }
+            """;
+        var obj = JsonSerializer.Deserialize<MixedObject>(json, _options);
+
+        Assert.NotNull(obj);
+        obj.DefaultConverter.Urn.Should().Be("urn:test:1234");
+        obj.StringConverter.Urn.Should().Be("urn:test:2345");
+        obj.ObjectConverter.Urn.Should().Be("urn:test:3456");
+    }
+
     public record DefaultObject
     {
         public required TestUrn Urn { get; init; }
@@ -81,6 +156,18 @@ public partial class UrnJsonTests
         public TestUrn? Urn { get; init; }
     }
 
+    public record StringObject
+    {
+        [JsonConverter(typeof(StringUrnJsonConverter))]
+        public required TestUrn Urn { get; init; }
+    }
+
+    public record ObjectObject
+    {
+        [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
+        public required TestUrn Urn { get; init; }
+    }
+
     public record MixedObject
     {
         public required TestUrn DefaultConverter { get; init; }
@@ -90,17 +177,6 @@ public partial class UrnJsonTests
 
         [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
         public required TestUrn ObjectConverter { get; init; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public TestUrn? NullableDefaultConverter { get; init; }
-
-        [JsonConverter(typeof(StringUrnJsonConverter))]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public TestUrn? NullableStringConverter { get; init; }
-
-        [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public TestUrn? NullableObjectConverter { get; init; }
     }
 
     [Urn]
