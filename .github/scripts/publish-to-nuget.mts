@@ -18,7 +18,7 @@ for (const file of await globby(filesGlob)) {
   const fullPath = path.resolve(file);
 
   console.log(`Publishing ${c.yellow(name)}`);
-  await retry(() => $`dotnet nuget push "${fullPath}" --api-key "${apiKey}"`);
+  await retry(() => $`dotnet nuget push "${fullPath}" --api-key "${apiKey}" --source "https://api.nuget.org/v3/index.json"`);
 }
 
 async function retry(fn: () => Promise<any>, retries = 3) {

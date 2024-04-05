@@ -102,7 +102,7 @@ jobs:
           dotnet nuget add source --username Altinn --password $GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Altinn/index.json"
           tsx ./.github/scripts/publish-to-github-packages.mts
 
-      - name: Publish to GitHub Packages
+      - name: Publish to NuGet
         env:
           NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
           FILES_GLOB: artifacts/**/*.nupkg
