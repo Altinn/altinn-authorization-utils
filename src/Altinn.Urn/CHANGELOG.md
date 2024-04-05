@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.1...Altinn.Urn-v1.6.2) (2024-04-05)
+
+
+### Bug Fixes
+
+* deploy ([d90cb99](https://github.com/Altinn/altinn-authorization-utils/commit/d90cb99f2fae90fd68bfa397790c847607760fe7))
+
 ## [1.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.0...Altinn.Urn-v1.6.1) (2024-04-05)
 
 
