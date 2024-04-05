@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.4...Altinn.Urn-v1.6.5) (2024-04-05)
+
+
+### Bug Fixes
+
+* add more doc comments ([a977734](https://github.com/Altinn/altinn-authorization-utils/commit/a97773479b810112faa5a2e7ad2a12e1359c4544))
+
 ## [1.6.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.3...Altinn.Urn-v1.6.4) (2024-04-05)
 
 
