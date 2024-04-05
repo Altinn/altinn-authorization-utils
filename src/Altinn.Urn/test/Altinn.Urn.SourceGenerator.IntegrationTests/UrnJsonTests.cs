@@ -145,6 +145,26 @@ public partial class UrnJsonTests
         obj.ObjectConverter.Urn.Should().Be("urn:test:3456");
     }
 
+    [Fact]
+    public void Lists()
+    {
+        var json = """{"urns":[{"type":"urn:test","value":"1234"},{"type":"urn:test","value":"2345"}]}""";
+        var obj = JsonSerializer.Deserialize<ObjectList>(json, _options);
+
+        Assert.NotNull(obj);
+        obj.Urns.Should().HaveCount(2);
+        obj.Urns[0].Urn.Should().Be("urn:test:1234");
+        obj.Urns[1].Urn.Should().Be("urn:test:2345");
+
+        var serialized = JsonSerializer.Serialize(obj, _options);
+        serialized.Should().Be(json);
+
+        json = """{"urns":["urn:test:1234"]}""";
+        var act = () => JsonSerializer.Deserialize<ObjectList>(json, _options);
+        act.Should().Throw<JsonException>()
+            .Which.Message.Should().Be($"Expected {nameof(TestUrn)} as object, but got {JsonTokenType.String}");
+    }
+
     public record DefaultObject
     {
         public required TestUrn Urn { get; init; }
@@ -177,6 +197,12 @@ public partial class UrnJsonTests
 
         [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
         public required TestUrn ObjectConverter { get; init; }
+    }
+
+    public record ObjectList
+    {
+        [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
+        public required List<TestUrn> Urns { get; init; }
     }
 
     [Urn]

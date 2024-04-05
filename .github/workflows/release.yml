@@ -99,5 +99,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILES_GLOB: artifacts/**/*.nupkg
         run: |
-          dotnet nuget add source --username Altinn --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Altinn/index.json"
+          dotnet nuget add source --username Altinn --password $GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Altinn/index.json"
           tsx ./.github/scripts/publish-to-github-packages.mts
+
+      - name: Publish to GitHub Packages
+        env:
+          NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+          FILES_GLOB: artifacts/**/*.nupkg
+        run: |
+          tsx ./.github/scripts/publish-to-nuget.mts
