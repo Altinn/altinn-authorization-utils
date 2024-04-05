@@ -18,5 +18,18 @@ for (const file of await globby(filesGlob)) {
   const fullPath = path.resolve(file);
 
   console.log(`Publishing ${c.yellow(name)}`);
-  await $`dotnet nuget push "${fullPath}" --api-key "${apiKey}"`
+  await retry(() => $`dotnet nuget push "${fullPath}" --api-key "${apiKey}"`);
+}
+
+async function retry(fn: () => Promise<any>, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (i === retries - 1) {
+        throw err;
+      }
+      console.error(`Retrying after error: ${c.red(err.message)}`);
+    }
+  }
 }
