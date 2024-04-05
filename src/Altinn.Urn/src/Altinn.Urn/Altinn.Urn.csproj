@@ -5,10 +5,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" 
-			ReferenceOutputAssembly="false" 
-			Private="true"
-			ReferenceType="SourceGenerator" />
+		<ProjectReference Include="..\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" ReferenceOutputAssembly="false" Private="true" ReferenceType="SourceGenerator" />
 	</ItemGroup>
 
 	<Target Name="_GetSourceGenerators" DependsOnTargets="_GetTargetFrameworksOutput">
@@ -16,10 +13,7 @@
 			<_SourceGeneratorReference Include="@(ProjectReference)" Condition=" '%(ProjectReference.ReferenceType)' == 'SourceGenerator' " />
 		</ItemGroup>
 
-		<MSBuild 
-			Projects="@(_SourceGeneratorReference)"
-			Targets="GetTargetPath"
-			Properties="TargetFramework=netstandard2.0; BuildProjectReferences=false">
+		<MSBuild Projects="@(_SourceGeneratorReference)" Targets="GetTargetPath" Properties="TargetFramework=netstandard2.0; BuildProjectReferences=false">
 			<Output ItemName="_SourceGeneratorPath" TaskParameter="TargetOutputs" />
 		</MSBuild>
 

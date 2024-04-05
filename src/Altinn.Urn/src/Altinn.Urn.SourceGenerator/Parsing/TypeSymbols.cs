@@ -99,7 +99,7 @@ internal readonly struct TypeSymbols
 
         public static readonly string JsonConverterAttribute = "System.Text.Json.Serialization.JsonConverterAttribute";
 
-        public static readonly string UrnJsonConverterOfT = "Altinn.Urn.UrnJsonConverter`1";
+        public static readonly string UrnJsonConverterOfT = "Altinn.Urn.Json.UrnJsonConverter`1";
 
         public static readonly string SpanFormattableInterface = "System.ISpanFormattable";
 

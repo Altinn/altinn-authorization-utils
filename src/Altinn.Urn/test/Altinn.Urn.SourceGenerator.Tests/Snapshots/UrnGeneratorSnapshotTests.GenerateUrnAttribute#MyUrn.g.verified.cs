@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 namespace MyNamespace;
 
 [DebuggerDisplay("{DebuggerDisplay}")]
-[System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.UrnJsonConverter<MyNamespace.MyUrn>))]
+[System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnJsonConverter<MyNamespace.MyUrn>))]
 partial record MyUrn
     : IParsable<MyUrn>
     , ISpanParsable<MyUrn>

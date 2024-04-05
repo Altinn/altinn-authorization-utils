@@ -14,7 +14,7 @@ namespace MyNamespace;
 partial class PersonUrnTests
 {
     [DebuggerDisplay("{DebuggerDisplay}")]
-    [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.UrnJsonConverter<MyNamespace.PersonUrnTests.PersonUrn>))]
+    [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnJsonConverter<MyNamespace.PersonUrnTests.PersonUrn>))]
     partial record PersonUrn
         : IParsable<PersonUrn>
         , ISpanParsable<PersonUrn>

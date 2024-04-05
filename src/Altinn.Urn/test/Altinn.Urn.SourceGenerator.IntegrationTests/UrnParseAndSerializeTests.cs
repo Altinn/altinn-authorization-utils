@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 
-public partial class PersonUrnTests
+public partial class UrnParseAndSerializeTests
 {
     [Theory]
     [InlineData("urn:altinn:person:identifier-no:12345678901", PersonUrn.Type.IdentifierNo, "urn:altinn:person:identifier-no", "12345678901")]
