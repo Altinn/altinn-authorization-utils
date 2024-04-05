@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.5.3...Altinn.Urn-v1.6.0) (2024-04-05)
+
+
+### Features
+
+* add more json options and tests ([e0eefd1](https://github.com/Altinn/altinn-authorization-utils/commit/e0eefd14cbfa199ce861b48b8e55260a65fa50b8))
+
 ## [1.5.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.5.2...Altinn.Urn-v1.5.3) (2024-03-21)
 
 
