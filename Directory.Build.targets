@@ -37,12 +37,24 @@
     <ReadmePath>$([MSBuild]::GetPathOfFileAbove('README.md', '$(MSBuildProjectDirectory)'))</ReadmePath>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(ChangelogPath)' == '' ">
+    <ChangelogPath>$([MSBuild]::GetPathOfFileAbove('CHANGELOG.md', '$(MSBuildProjectDirectory)'))</ChangelogPath>
+  </PropertyGroup>
+
   <ItemGroup Condition=" '$(IsPackable)' == 'true' And Exists('$(ReadmePath)') ">
     <None Include="$(ReadmePath)" Pack="true" PackagePath="readme.md" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(IsPackable)' == 'true' And Exists('$(ReadmePath)') ">
+  <ItemGroup Condition=" '$(IsPackable)' == 'true' And Exists('$(ChangelogPath)') ">
+    <None Include="$(ChangelogPath)" Pack="true" PackagePath="changelog.md" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" Exists('$(ReadmePath)') ">
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" Exists('$(ChangelogPath)') ">
+    <PackageReleaseNotes>$(IsPackable)  $([System.IO.File]::ReadAllText("$(ChangelogPath)"))</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VersionFilePath)' == '' ">
