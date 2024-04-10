@@ -6,19 +6,19 @@ namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 public partial class UrnParseAndSerializeTests
 {
     [Theory]
-    [InlineData("urn:altinn:person:identifier-no:12345678901", PersonUrn.Type.IdentifierNo, "urn:altinn:person:identifier-no", "12345678901")]
-    [InlineData("urn:altinn:party:id:123456", PersonUrn.Type.PartyId, "urn:altinn:party:id", "123456")]
-    [InlineData("urn:altinn:party:uuid:12345678-1234-1234-1234-123456789012", PersonUrn.Type.PartyUuid, "urn:altinn:party:uuid", "12345678-1234-1234-1234-123456789012")]
-    public void GeneralUrnTests(string urn, PersonUrn.Type type, string prefixString, string valueString)
+    [InlineData("urn:altinn:person:identifier-no:12345678901", PersonUrn.Type.IdentifierNo, "altinn:person:identifier-no", "12345678901")]
+    [InlineData("urn:altinn:party:id:123456", PersonUrn.Type.PartyId, "altinn:party:id", "123456")]
+    [InlineData("urn:altinn:party:uuid:12345678-1234-1234-1234-123456789012", PersonUrn.Type.PartyUuid, "altinn:party:uuid", "12345678-1234-1234-1234-123456789012")]
+    public void GeneralUrnTests(string urn, PersonUrn.Type type, string keyString, string valueString)
     {
         Assert.True(PersonUrn.TryParse(urn, out var personUrn));
         personUrn.Urn.Should().Be(urn);
         personUrn.UrnType.Should().Be(type);
 
-        new string(personUrn.PrefixSpan).Should().Be(prefixString);
+        new string(personUrn.KeySpan).Should().Be(keyString);
         new string(personUrn.ValueSpan).Should().Be(valueString);
 
-        var formatted = $"{personUrn:P}:{personUrn:S}";
+        var formatted = $"urn:{personUrn:P}:{personUrn:S}";
         formatted.Should().Be(urn);
 
         formatted = $"{personUrn}";
@@ -33,29 +33,29 @@ public partial class UrnParseAndSerializeTests
         value.Value.Should().Be("foo:bar");
     }
 
-    [Urn]
+    [KeyValueUrn]
     public abstract partial record PersonUrn
     {
-        [UrnType("altinn:person:identifier-no")]
+        [UrnKey("altinn:person:identifier-no")]
         public partial bool IsIdentifierNo(out PersonIdentifier personId);
 
-        [UrnType("altinn:organization:org-no")]
+        [UrnKey("altinn:organization:org-no")]
         public partial bool IsOrganizationNo(out OrgNo orgNo);
 
-        [UrnType("altinn:party:id")]
+        [UrnKey("altinn:party:id")]
         public partial bool IsPartyId(out int partyId);
 
-        [UrnType("altinn:party:uuid")]
+        [UrnKey("altinn:party:uuid")]
         public partial bool IsPartyUuid(out Guid partyUuid);
 
-        [UrnType("altinn:person:d-number")]
+        [UrnKey("altinn:person:d-number")]
         public partial bool IsDNumber(out int dNumber);
     }
 
-    [Urn]
+    [KeyValueUrn]
     public abstract partial record AnyUrn
     {
-        [UrnType("any")]
+        [UrnKey("any")]
         public partial bool IsAny(out AnyValue value);
     }
 

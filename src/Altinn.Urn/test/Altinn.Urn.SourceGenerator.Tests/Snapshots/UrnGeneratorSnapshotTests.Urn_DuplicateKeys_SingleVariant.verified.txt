@@ -1,0 +1,14 @@
+﻿{
+  Diagnostics: [
+    {
+      Id: AURN0007,
+      Title: Urn type-method prefix is duplicate,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: : (8,1)-(8,42),
+      MessageFormat: Urn type-method prefix is duplicate,
+      Message: Urn type-method prefix is duplicate,
+      Category: UrnGenerator
+    }
+  ]
+}

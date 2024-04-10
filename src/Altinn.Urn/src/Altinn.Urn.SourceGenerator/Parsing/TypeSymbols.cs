@@ -5,15 +5,21 @@ namespace Altinn.Urn.SourceGenerator.Parsing;
 
 internal readonly struct TypeSymbols
 {
-    public required INamedTypeSymbol UrnAttribute { get; init; }
+    public required INamedTypeSymbol KeyValueUrnAttribute { get; init; }
 
-    public required INamedTypeSymbol UrnTypeAttribute { get; init; }
+    public required INamedTypeSymbol UrnKeyAttribute { get; init; }
 
-    public required INamedTypeSymbol IUrn { get; init; }
+    public required INamedTypeSymbol IKeyValueUrn { get; init; }
 
-    public required INamedTypeSymbol IUrnOfT { get; init; }
+    public required INamedTypeSymbol IKeyValueUrnOfT { get; init; }
 
-    public required INamedTypeSymbol IUrnOfTAndVariant { get; init; }
+    public required INamedTypeSymbol IKeyValueUrnOfTAndVariant { get; init; }
+
+    public required INamedTypeSymbol IKeyValueUrnVariant { get; init; }
+
+    public required INamedTypeSymbol IVisitableKeyValueUrn { get; init; }
+
+    public required INamedTypeSymbol IKeyValueVisitor { get; init; }
 
     public required INamedTypeSymbol JsonConverterAttribute { get; init; }
 
@@ -45,11 +51,14 @@ internal readonly struct TypeSymbols
             return false;
         }
 
-        if (compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnAttribute, cancellationToken, out var urnAttribute)
-            && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnTypeAttribute, cancellationToken, out var urnTypeAttribute)
+        if (compilation.TryGetBestTypeByMetadataName(MetadataNames.KeyValueUrnAttribute, cancellationToken, out var urnAttribute)
+            && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnKeyAttribute, cancellationToken, out var urnTypeAttribute)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnInterface, cancellationToken, out var iUrn)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnInterfaceOfT, cancellationToken, out var iUrnOfT)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnInterfaceOfTAndVariant, cancellationToken, out var iUrnOfTAndVariant)
+            && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnVariantInterface, cancellationToken, out var iUrnVariant)
+            && compilation.TryGetBestTypeByMetadataName(MetadataNames.VisitableUrnInterface, cancellationToken, out var iVisitableUrn)
+            && compilation.TryGetBestTypeByMetadataName(MetadataNames.KeyValueVisitorInterface, cancellationToken, out var iKeyValueVisitor)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.JsonConverterAttribute, cancellationToken, out var jsonConverterAttribute)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnJsonConverterOfT, cancellationToken, out var urnJsonConverterOfT)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.FormatProviderInterface, cancellationToken, out var iFormatProvider)
@@ -61,11 +70,14 @@ internal readonly struct TypeSymbols
 
             symbols = new TypeSymbols
             {
-                UrnAttribute = urnAttribute,
-                UrnTypeAttribute = urnTypeAttribute,
-                IUrn = iUrn,
-                IUrnOfT = iUrnOfT,
-                IUrnOfTAndVariant = iUrnOfTAndVariant,
+                KeyValueUrnAttribute = urnAttribute,
+                UrnKeyAttribute = urnTypeAttribute,
+                IKeyValueUrn = iUrn,
+                IKeyValueUrnOfT = iUrnOfT,
+                IKeyValueUrnOfTAndVariant = iUrnOfTAndVariant,
+                IKeyValueUrnVariant = iUrnVariant,
+                IVisitableKeyValueUrn = iVisitableUrn,
+                IKeyValueVisitor = iKeyValueVisitor,
                 JsonConverterAttribute = jsonConverterAttribute,
                 UrnJsonConverterOfT = urnJsonConverterOfT,
                 IFormatProvider = iFormatProvider,
@@ -87,15 +99,21 @@ internal readonly struct TypeSymbols
 
     public static class MetadataNames
     {
-        public static readonly string UrnAttribute = "Altinn.Urn.UrnAttribute";
+        public static readonly string KeyValueUrnAttribute = "Altinn.Urn.KeyValueUrnAttribute";
 
-        public static readonly string UrnTypeAttribute = "Altinn.Urn.UrnTypeAttribute";
+        public static readonly string UrnKeyAttribute = "Altinn.Urn.UrnKeyAttribute";
 
-        public static readonly string UrnInterface = "Altinn.Urn.IUrn";
+        public static readonly string UrnInterface = "Altinn.Urn.IKeyValueUrn";
 
-        public static readonly string UrnInterfaceOfT = "Altinn.Urn.IUrn`1";
+        public static readonly string UrnInterfaceOfT = "Altinn.Urn.IKeyValueUrn`1";
 
-        public static readonly string UrnInterfaceOfTAndVariant = "Altinn.Urn.IUrn`2";
+        public static readonly string UrnInterfaceOfTAndVariant = "Altinn.Urn.IKeyValueUrn`2";
+
+        public static readonly string UrnVariantInterface = "Altinn.Urn.IKeyValueUrnVariant`4";
+
+        public static readonly string VisitableUrnInterface = "Altinn.Urn.Visit.IVisitableKeyValueUrn";
+
+        public static readonly string KeyValueVisitorInterface = "Altinn.Urn.Visit.IKeyValueUrnVisitor";
 
         public static readonly string JsonConverterAttribute = "System.Text.Json.Serialization.JsonConverterAttribute";
 

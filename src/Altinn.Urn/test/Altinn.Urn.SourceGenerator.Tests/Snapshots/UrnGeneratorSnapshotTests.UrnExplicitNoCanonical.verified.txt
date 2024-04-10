@@ -5,7 +5,7 @@
       Title: Urn type-method prefix is missing canonical,
       Severity: Error,
       WarningLevel: 0,
-      Location: : (14,4)-(17,51),
+      Location: : (7,4)-(8,43),
       MessageFormat: Urn type-method prefix is missing canonical. This is required because it supports multiple urn prefixes or has explicitly set Canonical to false on all cases.,
       Message: Urn type-method prefix is missing canonical. This is required because it supports multiple urn prefixes or has explicitly set Canonical to false on all cases.,
       Category: UrnGenerator

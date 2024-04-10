@@ -147,4 +147,12 @@ public static class DiagnosticDescriptors
         category: "UrnGenerator",
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);
+
+    public static DiagnosticDescriptor UrnTypeMethodPrefixEndsWithColon { get; } = new(
+        id: "AURN0019",
+        title: "Urn type-method prefix ends with ':'",
+        messageFormat: "Urn type-method prefix ends with ':'",
+        category: "UrnGenerator",
+        DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
 }

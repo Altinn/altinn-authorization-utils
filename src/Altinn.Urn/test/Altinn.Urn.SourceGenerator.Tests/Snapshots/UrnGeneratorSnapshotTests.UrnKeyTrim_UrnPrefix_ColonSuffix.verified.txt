@@ -1,0 +1,34 @@
+﻿{
+  Diagnostics: [
+    {
+      Id: AURN0008,
+      Title: Urn type-method prefix has whitespace,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: : (7,5)-(7,41),
+      MessageFormat: Urn type-method prefix has whitespace,
+      Message: Urn type-method prefix has whitespace,
+      Category: UrnGenerator
+    },
+    {
+      Id: AURN0006,
+      Title: Urn type-method prefix starts with 'urn',
+      Severity: Error,
+      WarningLevel: 0,
+      Location: : (7,5)-(7,41),
+      MessageFormat: Urn type-method prefix starts with 'urn',
+      Message: Urn type-method prefix starts with 'urn',
+      Category: UrnGenerator
+    },
+    {
+      Id: AURN0019,
+      Title: Urn type-method prefix ends with ':',
+      Severity: Error,
+      WarningLevel: 0,
+      Location: : (7,5)-(7,41),
+      MessageFormat: Urn type-method prefix ends with ':',
+      Message: Urn type-method prefix ends with ':',
+      Category: UrnGenerator
+    }
+  ]
+}

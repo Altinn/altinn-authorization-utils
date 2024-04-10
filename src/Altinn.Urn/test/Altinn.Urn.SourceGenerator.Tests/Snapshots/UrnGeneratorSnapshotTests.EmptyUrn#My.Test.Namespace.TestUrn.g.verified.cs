@@ -1,7 +1,8 @@
-﻿//HintName: MyUrn.g.cs
+﻿//HintName: My.Test.Namespace.TestUrn.g.cs
 #nullable enable
 
 using Altinn.Urn;
+using Altinn.Urn.Visit;
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel;
@@ -9,16 +10,17 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace MyNamespace;
+namespace My.Test.Namespace;
 
 [DebuggerDisplay("{DebuggerDisplay}")]
-[System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnJsonConverter<MyNamespace.MyUrn>))]
-partial record MyUrn
-    : IParsable<MyUrn>
-    , ISpanParsable<MyUrn>
+[System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnJsonConverter<My.Test.Namespace.TestUrn>))]
+partial record TestUrn
+    : IParsable<TestUrn>
+    , ISpanParsable<TestUrn>
     , IFormattable
     , ISpanFormattable
-    , IUrn<MyUrn, MyUrn.Type>
+    , IKeyValueUrn<TestUrn, TestUrn.Type>
+    , IVisitableKeyValueUrn
 {
     private static readonly ImmutableArray<Type> _variants = [
     ];
@@ -37,6 +39,13 @@ partial record MyUrn
     /// <inheritdoc/>
     [CompilerGenerated]
     public static ReadOnlySpan<string> PrefixesFor(Type type)
+        => type switch {
+            _ => throw new ArgumentOutOfRangeException(nameof(type)),
+        };
+
+    /// <inheritdoc/>
+    [CompilerGenerated]
+    public static string CanonicalPrefixFor(Type type)
         => type switch {
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
@@ -62,11 +71,11 @@ partial record MyUrn
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
-    private readonly RawUrn _urn;
+    private readonly KeyValueUrn _urn;
     private readonly Type _type;
 
     [CompilerGenerated]
-    private MyUrn(string urn, int valueIndex, Type type) => (_urn, _type) = (RawUrn.CreateUnchecked(urn, valueIndex), type);
+    private TestUrn(string urn, int valueIndex, Type type) => (_urn, _type) = (KeyValueUrn.CreateUnchecked(urn, valueIndex), type);
 
     /// <inheritdoc/>
     [CompilerGenerated]
@@ -91,6 +100,14 @@ partial record MyUrn
     /// <inheritdoc/>
     [CompilerGenerated]
     public ReadOnlyMemory<char> ValueMemory => _urn.ValueMemory;
+
+    /// <inheritdoc/>
+    [CompilerGenerated]
+    public ReadOnlySpan<char> KeySpan => _urn.KeySpan;
+
+    /// <inheritdoc/>
+    [CompilerGenerated]
+    public ReadOnlyMemory<char> KeyMemory => _urn.KeyMemory;
 
     /// <inheritdoc/>
     [CompilerGenerated]
@@ -136,6 +153,13 @@ partial record MyUrn
         }
     }
 
+    [CompilerGenerated]
+    protected abstract void Accept(IKeyValueUrnVisitor visitor);
+
+    /// <inheritdoc/>
+    [CompilerGenerated]
+    void IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor visitor) => Accept(visitor);
+
     /// <inheritdoc/>
     [CompilerGenerated]
     public override string ToString() => _urn.Urn;
@@ -145,14 +169,28 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public virtual bool Equals(MyUrn? other) => other is not null && _type == other._type && _urn == other._urn;
+    public virtual bool Equals(TestUrn? other) => other is not null && _type == other._type && _urn == other._urn;
 
     /// <inheritdoc/>
     [CompilerGenerated]
     public override int GetHashCode() => _urn.GetHashCode();
 
+    /// <inheritdoc/>
     [CompilerGenerated]
-    private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out MyUrn result)
+    public static bool TryGetVariant(ReadOnlySpan<char> prefix, [MaybeNullWhen(returnValue: false)] out Type variant)
+    {
+        ReadOnlySpan<char> s = prefix;
+        variant = default;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    [CompilerGenerated]
+    public static bool TryGetVariant(string prefix, [MaybeNullWhen(returnValue: false)] out Type variant)
+        => TryGetVariant(prefix.AsSpan(), out variant);
+
+    [CompilerGenerated]
+    private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out TestUrn result)
     {
         result = default;
         return false;
@@ -160,21 +198,21 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out MyUrn result)
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out TestUrn result)
         => TryParse(s, provider, original: null, out result);
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out MyUrn result)
+    public static bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out TestUrn result)
         => TryParse(s, provider: null, original: null, out result);
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static MyUrn Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+    public static TestUrn Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
     {
-        if (!TryParse(s, provider, original: null, out MyUrn? result))
+        if (!TryParse(s, provider, original: null, out TestUrn? result))
         {
-            throw new FormatException("Could not parse MyUrn");
+            throw new FormatException("Could not parse TestUrn");
         }
 
         return result;
@@ -182,11 +220,11 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static MyUrn Parse(ReadOnlySpan<char> s)
+    public static TestUrn Parse(ReadOnlySpan<char> s)
     {
-        if (!TryParse(s, provider: null, original: null, out MyUrn? result))
+        if (!TryParse(s, provider: null, original: null, out TestUrn? result))
         {
-            throw new FormatException("Could not parse MyUrn");
+            throw new FormatException("Could not parse TestUrn");
         }
 
         return result;
@@ -194,23 +232,23 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out MyUrn result)
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out TestUrn result)
         => TryParse(s.AsSpan(), provider, original: s, out result);
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out MyUrn result)
+    public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out TestUrn result)
         => TryParse(s.AsSpan(), provider: null, original: s, out result);
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static MyUrn Parse(string? s, IFormatProvider? provider)
+    public static TestUrn Parse(string? s, IFormatProvider? provider)
     {
         ArgumentNullException.ThrowIfNull(s);
 
-        if (!TryParse(s.AsSpan(), provider, original: s, out MyUrn? result))
+        if (!TryParse(s.AsSpan(), provider, original: s, out TestUrn? result))
         {
-            throw new FormatException("Could not parse MyUrn");
+            throw new FormatException("Could not parse TestUrn");
         }
 
         return result;
@@ -218,13 +256,13 @@ partial record MyUrn
 
     /// <inheritdoc/>
     [CompilerGenerated]
-    public static MyUrn Parse(string? s)
+    public static TestUrn Parse(string? s)
     {
         ArgumentNullException.ThrowIfNull(s);
 
-        if (!TryParse(s.AsSpan(), provider: null, original: s, out MyUrn? result))
+        if (!TryParse(s.AsSpan(), provider: null, original: s, out TestUrn? result))
         {
-            throw new FormatException("Could not parse MyUrn");
+            throw new FormatException("Could not parse TestUrn");
         }
 
         return result;

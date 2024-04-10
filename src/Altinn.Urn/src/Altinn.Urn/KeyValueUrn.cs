@@ -4,28 +4,56 @@ using System.Diagnostics.CodeAnalysis;
 namespace Altinn.Urn;
 
 /// <summary>
-/// A raw, untyped URN.
+/// A raw, untyped URN with a prefix and a value part.
 /// </summary>
 /// <remarks>
 /// This type does not provide any parsing or validation of the URN.
-/// To construct a <see cref="RawUrn"/>, you need to know where the prefix ends and the value starts.
+/// To construct a <see cref="KeyValueUrn"/>, you need to know where the prefix ends and the value starts.
 /// </remarks>
 [DebuggerDisplay("{Urn}")]
-public readonly struct RawUrn
-    : IUrn
-    , IEquatable<RawUrn>
+public readonly struct KeyValueUrn
+    : IKeyValueUrn
+    , IEquatable<KeyValueUrn>
 {
-    public static RawUrn Create(IUrn urn)
-        => new(urn.Urn, urn.PrefixSpan.Length + 1);
+    /// <summary>
+    /// Creates a new instance of the <see cref="KeyValueUrn"/> type.
+    /// </summary>
+    /// <param name="urn">The original <see cref="IKeyValueUrn"/>.</param>
+    /// <returns>A new <see cref="KeyValueUrn"/>.</returns>
+    public static KeyValueUrn Create(IKeyValueUrn urn)
+        => new(urn.Urn, urn.KeySpan.Length + 1);
 
-    public static RawUrn CreateUnchecked(string urn, int valueIndex)
+    /// <summary>
+    /// Creates a new instance of the <see cref="KeyValueUrn"/> type without checking any of the invariants.
+    /// </summary>
+    /// <param name="urn">The urn value.</param>
+    /// <param name="valueIndex">The index at which the value starts.</param>
+    /// <returns>A new <see cref="KeyValueUrn"/>.</returns>
+    public static KeyValueUrn CreateUnchecked(string urn, int valueIndex)
         => new(urn, valueIndex);
 
-    public static RawUrn Create(string urn, int valueIndex)
+    /// <summary>
+    /// Creates a new instance of the <see cref="KeyValueUrn"/> type.
+    /// </summary>
+    /// <param name="urn">The urn value.</param>
+    /// <param name="valueIndex">The index at which the value starts.</param>
+    /// <returns>A new <see cref="KeyValueUrn"/>.</returns>
+    public static KeyValueUrn Create(string urn, int valueIndex)
     {
         ArgumentNullException.ThrowIfNull(urn);
         ArgumentOutOfRangeException.ThrowIfNegative(valueIndex);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(valueIndex, urn.Length);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(valueIndex, 4);
+        if (!urn.AsSpan().StartsWith("urn:"))
+        {
+            throw new ArgumentException("Urn must start with 'urn:'.", nameof(urn));
+        }
+
+        var sep = urn[valueIndex - 1];
+        if (sep != ':')
+        {
+            throw new ArgumentException("Urn value must be preceded by a ':' separator.", nameof(urn));
+        }
 
         return new(urn, valueIndex);
     }
@@ -33,7 +61,7 @@ public readonly struct RawUrn
     private readonly string _urn;
     private readonly int _valueIndex;
 
-    private RawUrn(string urn, int valueIndex)
+    private KeyValueUrn(string urn, int valueIndex)
     {
         _urn = urn;
         _valueIndex = valueIndex;
@@ -51,11 +79,17 @@ public readonly struct RawUrn
     public ReadOnlySpan<char> PrefixSpan => _urn.AsSpan(0, _valueIndex - 1);
 
     /// <inheritdoc/>
+    public ReadOnlyMemory<char> PrefixMemory => _urn.AsMemory(0, _valueIndex - 1);
+
+    /// <inheritdoc/>
+    public ReadOnlySpan<char> KeySpan => _urn.AsSpan(4, _valueIndex - 5);
+
+    /// <inheritdoc/>
     public ReadOnlySpan<char> ValueSpan => _urn.AsSpan(_valueIndex);
 
     /// <inheritdoc/>
     [DebuggerHidden]
-    public ReadOnlyMemory<char> PrefixMemory => _urn.AsMemory(0, _valueIndex - 1);
+    public ReadOnlyMemory<char> KeyMemory => _urn.AsMemory(4, _valueIndex - 5);
 
     /// <inheritdoc/>
     [DebuggerHidden]
@@ -68,7 +102,7 @@ public readonly struct RawUrn
     public ReadOnlySpan<char> AsSpan() => _urn.AsSpan();
 
     /// <inheritdoc/>
-    public bool Equals(RawUrn other)
+    public bool Equals(KeyValueUrn other)
     {
         return _urn == other._urn
             && _valueIndex == other._valueIndex;
@@ -79,7 +113,7 @@ public readonly struct RawUrn
     {
         return format.AsSpan() switch
         {
-            ['P'] => new string(PrefixSpan),
+            ['P'] => new string(KeySpan),
             ['S'] or ['V', ..] => new string(ValueSpan),
             _ => _urn,
         };
@@ -90,7 +124,7 @@ public readonly struct RawUrn
     {
         var source = format switch
         {
-            ['P'] => PrefixSpan,
+            ['P'] => KeySpan,
             ['S'] or ['V', ..] => ValueSpan,
             _ => _urn.AsSpan(),
         };
@@ -111,15 +145,15 @@ public readonly struct RawUrn
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is RawUrn urn && Equals(urn);
+        => obj is KeyValueUrn urn && Equals(urn);
 
     /// <inheritdoc/>
     public override int GetHashCode()
         => HashCode.Combine(_urn, _valueIndex);
 
-    public static bool operator ==(RawUrn left, RawUrn right)
+    public static bool operator ==(KeyValueUrn left, KeyValueUrn right)
         => left.Equals(right);
 
-    public static bool operator !=(RawUrn left, RawUrn right)
+    public static bool operator !=(KeyValueUrn left, KeyValueUrn right)
         => !left.Equals(right);
 }

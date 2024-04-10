@@ -1,7 +1,8 @@
-﻿//HintName: PersonUrn.g.cs
+﻿//HintName: MyNamespace.PersonUrnTests.PersonUrn.g.cs
 #nullable enable
 
 using Altinn.Urn;
+using Altinn.Urn.Visit;
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel;
@@ -20,7 +21,8 @@ partial class PersonUrnTests
         , ISpanParsable<PersonUrn>
         , IFormattable
         , ISpanFormattable
-        , IUrn<PersonUrn, PersonUrn.Type>
+        , IKeyValueUrn<PersonUrn, PersonUrn.Type>
+        , IVisitableKeyValueUrn
     {
         private static readonly ImmutableArray<Type> _variants = [
             Type.PartyId,
@@ -51,6 +53,15 @@ partial class PersonUrnTests
 
         /// <inheritdoc/>
         [CompilerGenerated]
+        public static string CanonicalPrefixFor(Type type)
+            => type switch {
+                Type.PartyId => PartyId.CanonicalPrefix,
+                Type.PartyUuid => PartyUuid.CanonicalPrefix,
+                _ => throw new ArgumentOutOfRangeException(nameof(type)),
+            };
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
         public static System.Type ValueTypeFor(Type type)
             => type switch {
                 Type.PartyId => typeof(int),
@@ -76,11 +87,11 @@ partial class PersonUrnTests
                 _ => throw new ArgumentOutOfRangeException(nameof(type)),
             };
 
-        private readonly RawUrn _urn;
+        private readonly KeyValueUrn _urn;
         private readonly Type _type;
 
         [CompilerGenerated]
-        private PersonUrn(string urn, int valueIndex, Type type) => (_urn, _type) = (RawUrn.CreateUnchecked(urn, valueIndex), type);
+        private PersonUrn(string urn, int valueIndex, Type type) => (_urn, _type) = (KeyValueUrn.CreateUnchecked(urn, valueIndex), type);
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -105,6 +116,14 @@ partial class PersonUrnTests
         /// <inheritdoc/>
         [CompilerGenerated]
         public ReadOnlyMemory<char> ValueMemory => _urn.ValueMemory;
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public ReadOnlySpan<char> KeySpan => _urn.KeySpan;
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public ReadOnlyMemory<char> KeyMemory => _urn.KeyMemory;
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -153,6 +172,13 @@ partial class PersonUrnTests
                     return _urn.TryFormat(destination, out charsWritten, format, provider);
             }
         }
+
+        [CompilerGenerated]
+        protected abstract void Accept(IKeyValueUrnVisitor visitor);
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        void IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor visitor) => Accept(visitor);
 
         #pragma warning disable CS8826
         [CompilerGenerated]
@@ -222,6 +248,55 @@ partial class PersonUrnTests
         [CompilerGenerated]
         private static bool TryFormatPartyUuid(System.Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
             => (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static bool TryGetVariant(ReadOnlySpan<char> prefix, [MaybeNullWhen(returnValue: false)] out Type variant)
+        {
+            ReadOnlySpan<char> s = prefix;
+            if (s.StartsWith("urn:altinn:party:"))
+            {
+                var s_0 = s.Slice(17);
+                if (s_0.StartsWith("id"))
+                {
+                    var s_0_0 = s_0.Slice(2);
+
+                    if (s_0_0.Length == 0)
+                    {
+                        variant = Type.PartyId;
+                        return true;
+                    }
+
+                    variant = default;
+                    return false;
+                }
+
+                if (s_0.StartsWith("uuid"))
+                {
+                    var s_0_1 = s_0.Slice(4);
+
+                    if (s_0_1.Length == 0)
+                    {
+                        variant = Type.PartyUuid;
+                        return true;
+                    }
+
+                    variant = default;
+                    return false;
+                }
+
+                variant = default;
+                return false;
+            }
+
+            variant = default;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static bool TryGetVariant(string prefix, [MaybeNullWhen(returnValue: false)] out Type variant)
+            => TryGetVariant(prefix.AsSpan(), out variant);
 
         [CompilerGenerated]
         private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out PersonUrn result)
@@ -349,8 +424,13 @@ partial class PersonUrnTests
 
         [CompilerGenerated]
         [DebuggerDisplay("{DebuggerDisplay}")]
-        public sealed partial record PartyId : PersonUrn
+        public sealed partial record PartyId
+            : PersonUrn
+            , IKeyValueUrnVariant<PartyId, PersonUrn, Type, int>
         {
+            [CompilerGenerated]
+            public const string CanonicalPrefix = "urn:altinn:party:id";
+
             private static readonly new ImmutableArray<string> _validPrefixes = [
                 "urn:altinn:party:id",
             ];
@@ -387,6 +467,10 @@ partial class PersonUrnTests
                 => new($"""urn:altinn:party:id:{new _FormatHelper(value)}""", 20, value);
 
             [CompilerGenerated]
+            protected override void Accept(IKeyValueUrnVisitor visitor)
+                => visitor.Visit<PersonUrn, Type, int>(this, _type, _value);
+
+            [CompilerGenerated]
             [EditorBrowsable(EditorBrowsableState.Never)]
             private readonly struct _FormatHelper
                 : IFormattable
@@ -406,8 +490,13 @@ partial class PersonUrnTests
 
         [CompilerGenerated]
         [DebuggerDisplay("{DebuggerDisplay}")]
-        public sealed partial record PartyUuid : PersonUrn
+        public sealed partial record PartyUuid
+            : PersonUrn
+            , IKeyValueUrnVariant<PartyUuid, PersonUrn, Type, System.Guid>
         {
+            [CompilerGenerated]
+            public const string CanonicalPrefix = "urn:altinn:party:uuid";
+
             private static readonly new ImmutableArray<string> _validPrefixes = [
                 "urn:altinn:party:uuid",
             ];
@@ -442,6 +531,10 @@ partial class PersonUrnTests
             [CompilerGenerated]
             public static PartyUuid Create(System.Guid value)
                 => new($"""urn:altinn:party:uuid:{new _FormatHelper(value)}""", 22, value);
+
+            [CompilerGenerated]
+            protected override void Accept(IKeyValueUrnVisitor visitor)
+                => visitor.Visit<PersonUrn, Type, System.Guid>(this, _type, _value);
 
             [CompilerGenerated]
             [EditorBrowsable(EditorBrowsableState.Never)]

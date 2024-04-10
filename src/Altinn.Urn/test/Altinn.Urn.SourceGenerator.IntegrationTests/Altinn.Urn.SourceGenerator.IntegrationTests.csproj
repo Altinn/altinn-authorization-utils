@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" 
-      ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     <ProjectReference Include="..\..\src\Altinn.Urn\Altinn.Urn.csproj" />
   </ItemGroup>
 

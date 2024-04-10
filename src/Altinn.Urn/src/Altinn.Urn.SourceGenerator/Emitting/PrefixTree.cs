@@ -30,7 +30,7 @@ internal class PrefixTree<T>
         current.Value = value;
     }
 
-    public IPrefixNode<T> Root => Flatten(string.Empty, _root);
+    public IPrefixNode<T> Flatten() => Flatten(string.Empty, _root);
 
     private static FlattenedNode Flatten(string prefix, Node node)
     {

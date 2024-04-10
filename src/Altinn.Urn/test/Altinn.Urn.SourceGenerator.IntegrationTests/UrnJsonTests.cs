@@ -77,7 +77,7 @@ public partial class UrnJsonTests
         var obj = JsonSerializer.Deserialize<StringObject>(json, _options);
 
         Assert.NotNull(obj);
-        obj.Urn.Urn.Should().Be("urn:test:1234");
+        obj.Urn.Value!.Urn.Should().Be("urn:test:1234");
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public partial class UrnJsonTests
         var obj = JsonSerializer.Deserialize<ObjectObject>(json, _options);
 
         Assert.NotNull(obj);
-        obj.Urn.Urn.Should().Be("urn:test:1234");
+        obj.Urn.Value!.Urn.Should().Be("urn:test:1234");
     }
 
     [Fact]
@@ -141,8 +141,8 @@ public partial class UrnJsonTests
 
         Assert.NotNull(obj);
         obj.DefaultConverter.Urn.Should().Be("urn:test:1234");
-        obj.StringConverter.Urn.Should().Be("urn:test:2345");
-        obj.ObjectConverter.Urn.Should().Be("urn:test:3456");
+        obj.StringConverter.Value!.Urn.Should().Be("urn:test:2345");
+        obj.ObjectConverter.Value!.Urn.Should().Be("urn:test:3456");
     }
 
     [Fact]
@@ -153,8 +153,8 @@ public partial class UrnJsonTests
 
         Assert.NotNull(obj);
         obj.Urns.Should().HaveCount(2);
-        obj.Urns[0].Urn.Should().Be("urn:test:1234");
-        obj.Urns[1].Urn.Should().Be("urn:test:2345");
+        obj.Urns[0].Value!.Urn.Should().Be("urn:test:1234");
+        obj.Urns[1].Value!.Urn.Should().Be("urn:test:2345");
 
         var serialized = JsonSerializer.Serialize(obj, _options);
         serialized.Should().Be(json);
@@ -178,37 +178,32 @@ public partial class UrnJsonTests
 
     public record StringObject
     {
-        [JsonConverter(typeof(StringUrnJsonConverter))]
-        public required TestUrn Urn { get; init; }
+        public required UrnJsonString<TestUrn> Urn { get; init; }
     }
 
     public record ObjectObject
     {
-        [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
-        public required TestUrn Urn { get; init; }
+        public required UrnJsonTypeValue<TestUrn> Urn { get; init; }
     }
 
     public record MixedObject
     {
         public required TestUrn DefaultConverter { get; init; }
 
-        [JsonConverter(typeof(StringUrnJsonConverter))]
-        public required TestUrn StringConverter { get; init; }
+        public required UrnJsonString<TestUrn> StringConverter { get; init; }
 
-        [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
-        public required TestUrn ObjectConverter { get; init; }
+        public required UrnJsonTypeValue<TestUrn> ObjectConverter { get; init; }
     }
 
     public record ObjectList
     {
-        [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
-        public required List<TestUrn> Urns { get; init; }
+        public required List<UrnJsonTypeValue<TestUrn>> Urns { get; init; }
     }
 
-    [Urn]
+    [KeyValueUrn]
     public abstract partial record TestUrn
     {
-        [UrnType("test")]
+        [UrnKey("test")]
         public partial bool IsTest(out int value);
     }
 }

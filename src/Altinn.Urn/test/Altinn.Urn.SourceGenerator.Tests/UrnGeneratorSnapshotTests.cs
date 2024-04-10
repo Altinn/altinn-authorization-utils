@@ -1,58 +1,228 @@
-﻿namespace Altinn.Urn.SourceGenerator.Tests;
+﻿using Microsoft.CodeAnalysis;
+
+namespace Altinn.Urn.SourceGenerator.Tests;
 
 public class UrnGeneratorSnapshotTests
 {
+    private static Task TestKeyValueUrn(string body, DiagnosticDescriptor? expectedError = null)
+    {
+        DiagnosticDescriptor[] errors = expectedError is null ? [] : [expectedError];
+        return TestKeyValueUrn(body, errors);
+    }
+
+    private static async Task TestKeyValueUrn(string body, DiagnosticDescriptor[] expectedErrors)
+    {
+        var source = $$"""
+            using Altinn.Urn;
+            
+            namespace My.Test.Namespace;
+            
+            [KeyValueUrn]
+            public abstract partial record TestUrn 
+            {
+                {{body}}
+            }
+            """;
+
+        await SourceGeneratorUtils.VerifySourceGeneratorOutput(source, expectedErrors);
+    }
+
     [Fact]
     public async Task EmptyUrn()
     {
         // The source code to test
-        var source = """
-            using Altinn.Urn;
-            
-            namespace MyNamespace;
+        var source = "";
 
-            [Urn]
-            public abstract partial record MyUrn 
-            {
-            }
-            """;
-
-        await SourceGeneratorUtils.VerifySourceGeneratorOutput(source);
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnRecordHasNoUrnTypeMethods);
     }
 
     [Fact]
-    public async Task GenerateUrnAttribute()
+    public async Task UrnKeyPrefix()
     {
         // The source code to test
         var source = """
-            using Altinn.Urn;
-            using System;
-            
-            namespace MyNamespace;
-
-            [Urn]
-            public abstract partial record MyUrn 
-            {
-                [UrnType("altinn:test1")]
-                public partial bool IsTest1(out Guid type);
-
-                [UrnType("altinn:test2")]
-                public partial bool IsTest2(out int type);
-
-                [UrnType("altinn:test2:sub")]
-                [UrnType("altinn:test2:sub1")]
-                [UrnType("altinn:test2:sub2")]
-                public partial bool IsTest2Sub(out float type);
-
-                [UrnType("notaltinn")]
-                public partial bool IsTest3(out long type);
-
-                [UrnType("nroot")]
-                public partial bool IsTest4(out uint type);
-            }
+            [UrnKey("urn:altinn:test1")]
+            public partial bool IsTest1(out Guid type);
             """;
 
-        await SourceGeneratorUtils.VerifySourceGeneratorOutput(source);
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixStartsWithUrn);
+    }
+
+    [Fact]
+    public async Task UrnKeyEmpty()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("")]
+            public partial bool IsTest1(out Guid type);
+
+            [UrnKey("altinn:test1")]
+            public partial bool IsTest2(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsEmpty);
+    }
+
+    [Fact]
+    public async Task UrnKeyWhitespace()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("  ")]
+            public partial bool IsTest1(out Guid type);
+
+            [UrnKey("altinn:test1")]
+            public partial bool IsTest2(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsEmpty);
+    }
+
+    [Fact]
+    public async Task UrnKeyTrim()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey(" altinn:test1 ")]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixHasWhitespace);
+    }
+
+    [Fact]
+    public async Task UrnKeyColonSuffix()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1:")]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixEndsWithColon);
+    }
+
+    [Fact]
+    public async Task UrnKeyTrim_UrnPrefix_ColonSuffix()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("  urn:altinn:test1:     \t")]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(
+            source, 
+            [
+                DiagnosticDescriptors.UrnTypeMethodPrefixHasWhitespace, 
+                DiagnosticDescriptors.UrnTypeMethodPrefixStartsWithUrn, 
+                DiagnosticDescriptors.UrnTypeMethodPrefixEndsWithColon,
+            ]);
+    }
+
+    [Fact]
+    public async Task UrnExplicitNoCanonical()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1", Canonical = false)]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsMissingCanonical);
+    }
+
+    [Fact]
+    public async Task UrnMultipleKeys_NoCanonical()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1")]
+            [UrnKey("altinn:test2")]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsMissingCanonical);
+    }
+
+    [Fact]
+    public async Task UrnMultipleKeys_ExplicitNoCanonical()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1", Canonical = false)]
+            [UrnKey("altinn:test2", Canonical = false)]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsMissingCanonical);
+    }
+
+    [Fact]
+    public async Task UrnMultipleKeys()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1")]
+            [UrnKey("altinn:test2", Canonical = true)]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source);
+    }
+
+    [Fact]
+    public async Task UrnMultipleKeys_ExplicitCanonicalFalse()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1", Canonical = false)]
+            [UrnKey("altinn:test2", Canonical = true)]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source);
+    }
+
+    [Fact]
+    public async Task UrnMultipleKeys_MultipleCanonical()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1", Canonical = true)]
+            [UrnKey("altinn:test2", Canonical = true)]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixHasMultipleCanonical);
+    }
+
+    [Fact]
+    public async Task Urn_DuplicateKeys_SingleVariant()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1", Canonical = true)]
+            [UrnKey("altinn:test1", Canonical = false)]
+            public partial bool IsTest1(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsDuplicate);
+    }
+
+    [Fact]
+    public async Task Urn_DuplicateKeys_DifferentVariant()
+    {
+        // The source code to test
+        var source = """
+            [UrnKey("altinn:test1")]
+            public partial bool IsTest1(out Guid type);
+
+            [UrnKey("altinn:test1")]
+            public partial bool IsTest2(out Guid type);
+            """;
+
+        await TestKeyValueUrn(source, DiagnosticDescriptors.UrnTypeMethodPrefixIsDuplicate);
     }
 
     [Fact]
@@ -67,18 +237,18 @@ public class UrnGeneratorSnapshotTests
 
             public partial class PersonUrnTests
             {
-                [Urn]
+                [KeyValueUrn]
                 public abstract partial record PersonUrn
                 {
-                    [UrnType("altinn:party:id")]
+                    [UrnKey("altinn:party:id")]
                     public partial bool IsPartyId(out int partyId);
 
-                    [UrnType("altinn:party:uuid")]
+                    [UrnKey("altinn:party:uuid")]
                     public partial bool IsPartyUuid(out Guid partyUuid);
                 }
             }
             """;
 
-        await SourceGeneratorUtils.VerifySourceGeneratorOutput(source);
+        await SourceGeneratorUtils.VerifySourceGeneratorOutput(source, []);
     }
 }

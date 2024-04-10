@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+		<PropertyGroup>
+				<IsPackable>false</IsPackable>
+				<IsTestProject>true</IsTestProject>
+		</PropertyGroup>
+
+		<ItemGroup>
+				<ProjectReference Include="..\..\src\Altinn.Urn\Altinn.Urn.csproj" />
+		</ItemGroup>
+
+		<ItemGroup>
+				<Using Include="Xunit" />
+		</ItemGroup>
+
+</Project>

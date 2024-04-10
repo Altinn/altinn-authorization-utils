@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Urn", "src\Altinn.Ur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Urn.SourceGenerator", "src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj", "{A7303D05-513A-49EC-BA4A-39157FD124C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Urn.SourceGenerator.Tests", "test\Altinn.Urn.SourceGenerator.Tests\Altinn.Urn.SourceGenerator.Tests.csproj", "{5B61E6D4-CCE4-4CE0-8B79-892DAB813C18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Urn.SourceGenerator.Tests", "test\Altinn.Urn.SourceGenerator.Tests\Altinn.Urn.SourceGenerator.Tests.csproj", "{5B61E6D4-CCE4-4CE0-8B79-892DAB813C18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Urn.SourceGenerator.IntegrationTests", "test\Altinn.Urn.SourceGenerator.IntegrationTests\Altinn.Urn.SourceGenerator.IntegrationTests.csproj", "{B67A6260-B8BA-403F-B1D6-480D35CE776E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Urn.SourceGenerator.IntegrationTests", "test\Altinn.Urn.SourceGenerator.IntegrationTests\Altinn.Urn.SourceGenerator.IntegrationTests.csproj", "{B67A6260-B8BA-403F-B1D6-480D35CE776E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Urn.Tests", "test\Altinn.Urn.Tests\Altinn.Urn.Tests.csproj", "{48C4245C-73EE-4990-B79E-105A5333BC71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{B67A6260-B8BA-403F-B1D6-480D35CE776E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B67A6260-B8BA-403F-B1D6-480D35CE776E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B67A6260-B8BA-403F-B1D6-480D35CE776E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C4245C-73EE-4990-B79E-105A5333BC71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C4245C-73EE-4990-B79E-105A5333BC71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C4245C-73EE-4990-B79E-105A5333BC71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C4245C-73EE-4990-B79E-105A5333BC71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{A7303D05-513A-49EC-BA4A-39157FD124C4} = {3CD4AD2F-33EF-450C-B656-38B49517BEF4}
 		{5B61E6D4-CCE4-4CE0-8B79-892DAB813C18} = {B8F5384A-AEF9-4562-8F7D-3ACFD6CD84D2}
 		{B67A6260-B8BA-403F-B1D6-480D35CE776E} = {B8F5384A-AEF9-4562-8F7D-3ACFD6CD84D2}
+		{48C4245C-73EE-4990-B79E-105A5333BC71} = {B8F5384A-AEF9-4562-8F7D-3ACFD6CD84D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1271D7C3-B7C3-4DA3-85B9-B461F0EDF889}

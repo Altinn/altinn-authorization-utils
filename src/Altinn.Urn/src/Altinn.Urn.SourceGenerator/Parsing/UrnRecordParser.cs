@@ -149,7 +149,7 @@ internal ref struct UrnRecordParser
             foreach (var attribute in attributeList.Attributes)
             {
                 var attributeCtorSymbol = _semanticModel.GetSymbolInfo(attribute, ct).Symbol as IMethodSymbol;
-                if (attributeCtorSymbol is null || !attributeCtorSymbol.ContainingType.Equals(_symbols.UrnTypeAttribute, SymbolEqualityComparer.Default))
+                if (attributeCtorSymbol is null || !attributeCtorSymbol.ContainingType.Equals(_symbols.UrnKeyAttribute, SymbolEqualityComparer.Default))
                 {
                     // badly formed attribute definition, or not the right attribute
                     continue;
@@ -179,7 +179,7 @@ internal ref struct UrnRecordParser
         }
 
         var multipleCanonical = false;
-        var canonicalIndex = -1;
+        int? canonicalIndex = null;
         using var typePrefixes = EquitableArray.CreateBuilder<string>();
         using var canonicalAttributeLocations = EquitableArray.CreateBuilder<LocationInfo>();
 
@@ -188,7 +188,7 @@ internal ref struct UrnRecordParser
         {
             var attributeData = boundAttributes[i];
 
-            if (!SymbolEqualityComparer.Default.Equals(attributeData.AttributeClass, _symbols.UrnTypeAttribute))
+            if (!SymbolEqualityComparer.Default.Equals(attributeData.AttributeClass, _symbols.UrnKeyAttribute))
             {
                 continue;
             }
@@ -225,16 +225,23 @@ internal ref struct UrnRecordParser
                 continue;
             }
 
+            var trimmed = prefix.Trim();
+            if (trimmed.Length != prefix.Length)
+            {
+                AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixHasWhitespace, LocationInfo.CreateFrom(attributeData.ApplicationSyntaxReference, ct)));
+                prefix = trimmed;
+            }
+
             if (prefix.StartsWith("urn:"))
             {
                 AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixStartsWithUrn, LocationInfo.CreateFrom(attributeData.ApplicationSyntaxReference, ct)));
-                continue;
+                prefix = prefix[4..];
             }
 
-            if (prefix.Trim().Length != prefix.Length)
+            if (prefix.EndsWith(":"))
             {
-                AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixHasWhitespace, LocationInfo.CreateFrom(attributeData.ApplicationSyntaxReference, ct)));
-                continue;
+                AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixEndsWithColon, LocationInfo.CreateFrom(attributeData.ApplicationSyntaxReference, ct)));
+                prefix = prefix.TrimEnd(':');
             }
 
             if (!_seenPrefixes.Add(prefix))
@@ -248,7 +255,7 @@ internal ref struct UrnRecordParser
             var canonicalArgument = attributeData.NamedArguments.FirstOrDefault(static namedArg => namedArg.Key == "Canonical");
             if (canonicalArgument.Key is null)
             {
-                // canonical not specified
+                // canonical not specified - don't do anything with it
                 continue;
             }
 
@@ -258,18 +265,19 @@ internal ref struct UrnRecordParser
                 continue;
             }
 
-            if (canonicalArgument.Value.Value is not bool canonical)
+            if (canonicalArgument.Value.Value is not bool isCurrentKeyCanonical)
             {
                 // error handled by the compiler
                 continue;
             }
 
-            if (!canonical && canonicalIndex == -1)
+            if (!isCurrentKeyCanonical && canonicalIndex is null)
             {
-                canonicalIndex = -2;
+                // explicitly set to false, but no canonical key set yet
+                canonicalIndex = -1;
             }
 
-            if (canonical)
+            if (isCurrentKeyCanonical)
             {
                 multipleCanonical |= canonicalIndex >= 0;
                 var location = LocationInfo.CreateFrom(attributeData.ApplicationSyntaxReference, ct);
@@ -280,21 +288,25 @@ internal ref struct UrnRecordParser
                 }
             }
 
-            if (canonical && canonicalIndex < 0)
+            if (isCurrentKeyCanonical && canonicalIndex is null or < 0)
             {
                 canonicalIndex = i;
-                //duplicateCanonical = true;
-                //AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixIsDuplicateCanonical, method));
             }
         }
 
+        if (typePrefixes.Length == 0)
+        {
+            // no valid prefixes found
+            return;
+        }
+
         // if there is only a single prefix, and no canonical property set, then it is the canonical prefix
-        if (canonicalIndex == -1 && typePrefixes.Length == 1)
+        if (canonicalIndex is null && typePrefixes.Length == 1)
         {
             canonicalIndex = 0;
         }
 
-        if (canonicalIndex < 0)
+        if (canonicalIndex is null or < 0)
         {
             AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixIsMissingCanonical, method));
         }
@@ -304,17 +316,11 @@ internal ref struct UrnRecordParser
             AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodPrefixHasMultipleCanonical, method, canonicalAttributeLocations.ToArray()));
         }
 
-        if (canonicalIndex < 0)
+        if (canonicalIndex is null or < 0)
         {
             // we emit diagnostic errors in this case, so the compile will fail,
             // but we still want to generate code for the prefixes that are valid
             canonicalIndex = 0;
-        }
-
-        if (typePrefixes.Length == 0)
-        {
-            // no valid prefixes found
-            return;
         }
 
         // This represents a valid-ish urn type method. This should be somewhat lax in what it accepts,
@@ -406,7 +412,7 @@ internal ref struct UrnRecordParser
             FormatMode = formatMode,
             Name = prefixName!,
             Prefixes = typePrefixes.ToArray(),
-            CanonicalPrefixIndex = canonicalIndex,
+            CanonicalPrefixIndex = canonicalIndex.Value,
             ValueType = type.ToDisplayString(),
             ValueTypeIsValueType = type.IsValueType,
         };

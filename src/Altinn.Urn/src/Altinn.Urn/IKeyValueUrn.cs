@@ -1,11 +1,14 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Altinn.Urn.Json;
+using Altinn.Urn.Visit;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace Altinn.Urn;
 
 /// <summary>
 /// Marker interface for URNs.
 /// </summary>
-public interface IUrn 
+public interface IKeyValueUrn 
     : IFormattable
     , ISpanFormattable
 {
@@ -36,6 +39,21 @@ public interface IUrn
     ///   </example>
     /// </remarks>
     public ReadOnlySpan<char> PrefixSpan { get; }
+
+    /// <summary>
+    /// Gets the URN key as a span of characters.
+    /// </summary>
+    /// <remarks>
+    /// This does not include the trailing colon.
+    ///   <example>
+    ///   For example:
+    ///   <code>
+    ///     var urn = MyUrn.Parse("urn:example:foo");
+    ///     urn.KeySpan; // "example"
+    ///   </code>
+    ///   </example>
+    /// </remarks>
+    public ReadOnlySpan<char> KeySpan { get; }
 
     /// <summary>
     /// Gets the URN value as a span of characters.
@@ -75,6 +93,21 @@ public interface IUrn
     public ReadOnlyMemory<char> PrefixMemory { get; }
 
     /// <summary>
+    /// Gets the URN key as a memory of characters.
+    /// </summary>
+    /// <remarks>
+    /// This does not include the trailing colon.
+    ///   <example>
+    ///   For example:
+    ///   <code>
+    ///     var urn = MyUrn.Parse("urn:example:foo");
+    ///     urn.KeyMemory; // "example"
+    ///   </code>
+    ///   </example>
+    /// </remarks>
+    public ReadOnlyMemory<char> KeyMemory { get; }
+
+    /// <summary>
     /// Gets the URN value as a memory of characters.
     /// </summary>
     /// <remarks>
@@ -90,11 +123,11 @@ public interface IUrn
     public ReadOnlyMemory<char> ValueMemory { get; }
 }
 
-public interface IUrn<TSelf>
-    : IUrn
+public interface IKeyValueUrn<TSelf>
+    : IKeyValueUrn
     , IParsable<TSelf>
     , ISpanParsable<TSelf>
-    where TSelf : IUrn<TSelf>
+    where TSelf : IKeyValueUrn<TSelf>
 {
     /// <summary>
     /// Gets the valid URN prefixes for the type.
@@ -129,9 +162,9 @@ public interface IUrn<TSelf>
     static abstract bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out TSelf result);
 }
 
-public interface IUrn<TSelf, TVariants>
-    : IUrn<TSelf>
-    where TSelf : IUrn<TSelf, TVariants>
+public interface IKeyValueUrn<TSelf, TVariants>
+    : IKeyValueUrn<TSelf>
+    where TSelf : IKeyValueUrn<TSelf, TVariants>
     where TVariants : struct, Enum
 {
     /// <summary>
@@ -154,6 +187,13 @@ public interface IUrn<TSelf, TVariants>
     public static abstract ReadOnlySpan<string> PrefixesFor(TVariants variant);
 
     /// <summary>
+    /// Gets the canonical prefix for a given variant.
+    /// </summary>
+    /// <param name="variant">The variant.</param>
+    /// <returns>The canonical prefix for the given variant.</returns>
+    public static abstract string CanonicalPrefixFor(TVariants variant);
+
+    /// <summary>
     /// Gets the variant type for a given variant.
     /// </summary>
     /// <param name="variant">The variant.</param>
@@ -168,7 +208,43 @@ public interface IUrn<TSelf, TVariants>
     public static abstract Type ValueTypeFor(TVariants variant);
 
     /// <summary>
+    /// Tries to get a variant from a prefix.
+    /// </summary>
+    /// <param name="prefix">The prefix.</param>
+    /// <param name="variant">The resulting variant.</param>
+    /// <returns><see langword="true"/> if a variant with the given prefix was found, otherwise <see langword="false"/>.</returns>
+    public static abstract bool TryGetVariant(ReadOnlySpan<char> prefix, [MaybeNullWhen(returnValue: false)] out TVariants variant);
+
+    /// <summary>
+    /// Tries to get a variant from a prefix.
+    /// </summary>
+    /// <param name="prefix">The prefix.</param>
+    /// <param name="variant">The resulting variant.</param>
+    /// <returns><see langword="true"/> if a variant with the given prefix was found, otherwise <see langword="false"/>.</returns>
+    public static abstract bool TryGetVariant(string prefix, [MaybeNullWhen(returnValue: false)] out TVariants variant);
+
+    /// <summary>
     /// Gets the URN type.
     /// </summary>
     public TVariants UrnType { get; }
+}
+
+public interface IKeyValueUrnVariant<TSelf, TUrn, TVariants, TValue>
+    : IKeyValueUrn<TUrn, TVariants>
+    , IVisitableKeyValueUrn
+    where TUrn : IKeyValueUrn<TUrn, TVariants>
+    where TVariants : struct, Enum
+    where TSelf : TUrn, IKeyValueUrnVariant<TSelf, TUrn, TVariants, TValue>
+{
+    /// <summary>
+    /// Gets the value of the URN.
+    /// </summary>
+    public TValue Value { get; }
+
+    /// <summary>
+    /// Creates a new URN with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>A new URN with the given value.</returns>
+    public static abstract TSelf Create(TValue value);
 }

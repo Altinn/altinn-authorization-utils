@@ -2,6 +2,7 @@
 using Altinn.Urn.SourceGenerator.Parsing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Text;
 
 namespace Altinn.Urn.SourceGenerator;
 
@@ -9,10 +10,13 @@ namespace Altinn.Urn.SourceGenerator;
 public class UrnGenerator
     : IIncrementalGenerator
 {
+    [ThreadStatic]
+    private static StringBuilder? _fileNameBuilder;
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var records = context.SyntaxProvider.ForAttributeWithMetadataName(
-            TypeSymbols.MetadataNames.UrnAttribute,
+            TypeSymbols.MetadataNames.KeyValueUrnAttribute,
             predicate: static (ctx, _) => ctx is RecordDeclarationSyntax,
             transform: static (ctx, ct) => UrnRecordParser.Parse(ctx, ct))
             .Where(static v => !v.IsDefault);
@@ -52,8 +56,22 @@ public class UrnGenerator
                 return;
             }
 
+            var fileNameBuilder = _fileNameBuilder ??= new StringBuilder();
+            fileNameBuilder.Clear();
+
+            fileNameBuilder.Append(input.RecordInfo.Namespace);
+            fileNameBuilder.Append('.');
+            foreach (var outerType in input.RecordInfo.ContainingTypes)
+            {
+                fileNameBuilder.Append(outerType.Name);
+                fileNameBuilder.Append('.');
+            }
+
+            fileNameBuilder.Append(input.RecordInfo.TypeName);
+            fileNameBuilder.Append(".g.cs");
+
             var result = UrnRecordEmitter.Emit(input.RecordInfo, input.JsonConverterAttribute, input.JsonConverterConcreteType, ctx.CancellationToken);
-            ctx.AddSource(input.RecordInfo.TypeName + ".g.cs", result);
+            ctx.AddSource(fileNameBuilder.ToString(), result);
         });
     }
 }

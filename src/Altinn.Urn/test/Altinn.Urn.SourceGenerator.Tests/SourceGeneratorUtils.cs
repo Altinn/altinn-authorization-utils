@@ -4,12 +4,13 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
+using FluentAssertions;
 
 namespace Altinn.Urn.SourceGenerator.Tests;
 
 public static class SourceGeneratorUtils
 {
-    public static async Task VerifySourceGeneratorOutput(string source, string fileName = "Test.cs")
+    public static async Task VerifySourceGeneratorOutput(string source, DiagnosticDescriptor[] expectedDiagnostics, string fileName = "Test.cs")
     {
         ModuleInitializer.Init();
 
@@ -30,6 +31,23 @@ public static class SourceGeneratorUtils
 
         // Use verify to snapshot the generated code
         await Verifier.Verify(driver);
+
+        var result = driver.GetRunResult();
+        
+        if (expectedDiagnostics.Length == 0)
+        {
+            result.Diagnostics.Should().BeEmpty();
+            return;
+        }
+
+        var remaining = new HashSet<DiagnosticDescriptor>(expectedDiagnostics);
+        foreach (var diagnostic in result.Diagnostics)
+        {
+            expectedDiagnostics.Should().Contain(diagnostic.Descriptor);
+            remaining.Remove(diagnostic.Descriptor);
+        }
+
+        remaining.Should().BeEmpty("All expected exceptions should be present");
     }
 
     private static readonly Lazy<Task<Compilation>> BaseCompilation = new(async () =>
@@ -41,7 +59,7 @@ public static class SourceGeneratorUtils
         project = project
             .WithProjectReferences([])
             .WithAnalyzerReferences([]);
-        project = project.AddMetadataReference(Reference<UrnAttribute>());
+        project = project.AddMetadataReference(Reference<KeyValueUrnAttribute>());
 
         var compilation = await project.GetCompilationAsync();
         if (compilation == null)

@@ -1,46 +1,57 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Json;
 
 /// <summary>
-/// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IUrn{T}"/>.
+/// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
 /// 
 /// It supports reading URNs as strings, and writing URNs as strings.
 /// </summary>
-public sealed class StringUrnJsonConverter
-    : BaseUrnJsonConverterFactory
+internal sealed class StringUrnJsonConverter
+    : BaseUrnJsonWrapperConverterFactory
 {
-    protected override BaseUrnJsonConverter<T> CreateConverter<T>()
-        => new StringUrnJsonConverter<T>();
+    protected override JsonConverter<TWrapper> CreateConverter<TWrapper, TUrn>()
+        => new StringUrnJsonConverter<TWrapper, TUrn>();
 }
 
 /// <summary>
-/// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IUrn{T}"/>.
+/// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
 /// 
 /// It supports reading URNs as strings, and writing URNs as strings.
 /// </summary>
-/// <typeparam name="T">The URN type.</typeparam>
-public sealed class StringUrnJsonConverter<T>
-    : BaseUrnJsonConverter<T>
-    where T : IUrn<T>
+/// <typeparam name="TUrn">The URN type.</typeparam>
+internal sealed class StringUrnJsonConverter<TWrapper, TUrn>
+    : JsonConverter<TWrapper>
+    where TWrapper : IUrnJsonWrapper<TWrapper, TUrn>
+    where TUrn : IKeyValueUrn<TUrn>
 {
-    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    private static readonly string Name = typeof(TUrn).Name;
+    private static readonly string InvalidUrn = $"Invalid {Name}";
+
+    public override TWrapper? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType is JsonTokenType.Null)
         {
-            return default;
+            return default(TUrn);
         }
 
         if (reader.TokenType is JsonTokenType.String || reader.TokenType == JsonTokenType.PropertyName)
         {
-            return ReadUrnString(ref reader);
+            return UrnJsonConverter.ReadUrnString<TUrn>(ref reader, Name, InvalidUrn);
         }
 
         throw new JsonException($"Expected {Name} as string, but got {reader.TokenType}");
     }
 
-    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, TWrapper value, JsonSerializerOptions options)
     {
-        WriteUrnString(writer, value);
+        if (!value.HasValue)
+        {
+            writer.WriteNullValue();
+            return;
+        }
+
+        UrnJsonConverter.WriteUrnString(writer, value.Value);
     }
 }

@@ -32,6 +32,7 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("#nullable enable");
         builder.AppendLine();
         builder.AppendLine("using Altinn.Urn;");
+        builder.AppendLine("using Altinn.Urn.Visit;");
         builder.AppendLine("using System;");
         builder.AppendLine("using System.Collections.Immutable;");
         builder.AppendLine("using System.ComponentModel;");
@@ -74,7 +75,8 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine($"    , ISpanParsable<{record.TypeName}>");
         builder.AppendLine($"    , IFormattable");
         builder.AppendLine($"    , ISpanFormattable");
-        builder.AppendLine($"    , IUrn<{record.TypeName}, {record.TypeName}.Type>");
+        builder.AppendLine($"    , IKeyValueUrn<{record.TypeName}, {record.TypeName}.Type>");
+        builder.AppendLine($"    , IVisitableKeyValueUrn");
         builder.AppendLine("{");
 
         var indented = builder.Indent();
@@ -147,6 +149,18 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine($"public static string CanonicalPrefixFor(Type type)");
+        builder_lv1.AppendLine("=> type switch {");
+        foreach (var member in members)
+        {
+            builder_lv2.AppendLine($"Type.{member.Name} => {member.Name}.CanonicalPrefix,");
+        }
+        builder_lv2.AppendLine("_ => throw new ArgumentOutOfRangeException(nameof(type)),");
+        builder_lv1.AppendLine("};");
+
+        builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc/>");
+        builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine($"public static System.Type ValueTypeFor(Type type)");
         builder_lv1.AppendLine("=> type switch {");
         foreach (var member in members)
@@ -181,12 +195,12 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("};");
 
         builder.AppendLine();
-        builder.AppendLine("private readonly RawUrn _urn;");
+        builder.AppendLine("private readonly KeyValueUrn _urn;");
         builder.AppendLine("private readonly Type _type;");
 
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
-        builder.AppendLine($"private {record.TypeName}(string urn, int valueIndex, Type type) => (_urn, _type) = (RawUrn.CreateUnchecked(urn, valueIndex), type);");
+        builder.AppendLine($"private {record.TypeName}(string urn, int valueIndex, Type type) => (_urn, _type) = (KeyValueUrn.CreateUnchecked(urn, valueIndex), type);");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
@@ -217,6 +231,16 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("/// <inheritdoc/>");
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine($"public ReadOnlyMemory<char> ValueMemory => _urn.ValueMemory;");
+
+        builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc/>");
+        builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine($"public ReadOnlySpan<char> KeySpan => _urn.KeySpan;");
+
+        builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc/>");
+        builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine($"public ReadOnlyMemory<char> KeyMemory => _urn.KeyMemory;");
 
         builder.AppendLine();
         builder.AppendLine("/// <inheritdoc/>");
@@ -280,6 +304,15 @@ internal ref struct UrnRecordEmitter
         builder_lv3.AppendLine("return _urn.TryFormat(destination, out charsWritten, format, provider);");
         builder_lv1.AppendLine("}");
         builder.AppendLine("}");
+
+        builder.AppendLine();
+        builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine("protected abstract void Accept(IKeyValueUrnVisitor visitor);");
+
+        builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc/>");
+        builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine("void IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor visitor) => Accept(visitor);");
 
         foreach (var member in members)
         {
@@ -384,14 +417,32 @@ internal ref struct UrnRecordEmitter
             }
         }
 
+        var flattened = prefixTree.Flatten();
+
         var builder_lv1 = builder.Indent();
         var builder_lv2 = builder_lv1.Indent();
+
+        builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc/>");
+        builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine("public static bool TryGetVariant(ReadOnlySpan<char> prefix, [MaybeNullWhen(returnValue: false)] out Type variant)");
+        builder.AppendLine("{");
+        builder_lv1.AppendLine("ReadOnlySpan<char> s = prefix;");
+        EmitPrefixChecks(builder_lv1, flattened, "s", "variant", parse: false);
+        ct.ThrowIfCancellationRequested();
+        builder.AppendLine("}");
+
+        builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc/>");
+        builder.AppendLine("[CompilerGenerated]");
+        builder.AppendLine("public static bool TryGetVariant(string prefix, [MaybeNullWhen(returnValue: false)] out Type variant)");
+        builder_lv1.AppendLine("=> TryGetVariant(prefix.AsSpan(), out variant);");
 
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine($"private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out {typeName} result)");
         builder.AppendLine("{");
-        EmitPrefixChecks(builder.Indent(), prefixTree.Root, "s");
+        EmitPrefixChecks(builder_lv1, flattened, "s", "result", parse: true);
         ct.ThrowIfCancellationRequested();
         builder.AppendLine("}");
 
@@ -475,7 +526,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("return result;");
         builder.AppendLine("}");
 
-        static void EmitPrefixChecks(CodeBuilder builder, IPrefixNode<UrnPrefixInfo> node, string spanName)
+        static void EmitPrefixChecks(CodeBuilder builder, IPrefixNode<UrnPrefixInfo> node, string spanName, string outVar, bool parse)
         {
             var builder_lv1 = builder.Indent();
 
@@ -497,7 +548,7 @@ internal ref struct UrnRecordEmitter
                 builder.AppendLine("{");
                 builder_lv1.AppendLine($"var {sliceName} = {spanName}.Slice({child.Prefix.Length});");
 
-                EmitPrefixChecks(builder_lv1, child, sliceName);
+                EmitPrefixChecks(builder_lv1, child, sliceName, outVar, parse);
                 builder.AppendLine("}");
             }
 
@@ -516,11 +567,22 @@ internal ref struct UrnRecordEmitter
                 var outType = value.ValueTypeIsValueType ? value.ValueType : $"{value.ValueType}?";
 
                 builder.AppendLine();
-                builder.AppendLine($"if ({spanName}.Length > 1 && {spanName}[0] == ':' && TryParse{value.Name}({spanName}.Slice(1), provider, out {outType} {spanName}_value))");
-                builder.AppendLine("{");
-                builder_lv1.AppendLine($"result = {value.Name}.FromParsed(original ?? new string(s), {node.PathLength + 1}, {spanName}_value);");
-                builder_lv1.AppendLine("return true;");
-                builder.AppendLine("}");
+                if (parse)
+                {
+                    builder.AppendLine($"if ({spanName}.Length > 1 && {spanName}[0] == ':' && TryParse{value.Name}({spanName}.Slice(1), provider, out {outType} {spanName}_value))");
+                    builder.AppendLine("{");
+                    builder_lv1.AppendLine($"{outVar} = {value.Name}.FromParsed(original ?? new string(s), {node.PathLength + 1}, {spanName}_value);");
+                    builder_lv1.AppendLine("return true;");
+                    builder.AppendLine("}");
+                }
+                else
+                {
+                    builder.AppendLine($"if ({spanName}.Length == 0)");
+                    builder.AppendLine("{");
+                    builder_lv1.AppendLine($"{outVar} = Type.{value.Name};");
+                    builder_lv1.AppendLine("return true;");
+                    builder.AppendLine("}");
+                }
             }
 
             if (!firstLine)
@@ -528,7 +590,7 @@ internal ref struct UrnRecordEmitter
                 builder.AppendLine();
             }
 
-            builder.AppendLine("result = default;");
+            builder.AppendLine($"{outVar} = default;");
             builder.AppendLine("return false;");
         }
     }
@@ -581,9 +643,15 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("""[DebuggerDisplay("{DebuggerDisplay}")]""");
-        builder.AppendLine($"public sealed partial record {member.Name} : {record.TypeName}");
+        builder.AppendLine($"public sealed partial record {member.Name}");
+        builder_lv1.AppendLine($": {record.TypeName}");
+        builder_lv1.AppendLine($", IKeyValueUrnVariant<{member.Name}, {record.TypeName}, Type, {member.ValueType}>");
         builder.AppendLine("{");
 
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public const string CanonicalPrefix = \"{canonicalPrefix}\";");
+
+        builder_lv1.AppendLine();
         builder_lv1.AppendLine("private static readonly new ImmutableArray<string> _validPrefixes = [");
 
         foreach (var prefix in member.Prefixes)
@@ -632,6 +700,11 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine($"public static {member.Name} Create({member.ValueType} value)");
         builder_lv2.AppendLine($$""""=> new($"""{{canonicalPrefix}}:{new _FormatHelper(value)}""", {{canonicalPrefix.Length + 1}}, value);"""");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine("protected override void Accept(IKeyValueUrnVisitor visitor)");
+        builder_lv2.AppendLine($"=> visitor.Visit<{record.TypeName}, Type, {member.ValueType}>(this, _type, _value);");
 
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("[CompilerGenerated]");

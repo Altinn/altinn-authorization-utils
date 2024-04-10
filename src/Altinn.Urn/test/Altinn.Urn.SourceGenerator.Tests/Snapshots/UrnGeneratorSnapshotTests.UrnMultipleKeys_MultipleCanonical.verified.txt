@@ -1,0 +1,14 @@
+﻿{
+  Diagnostics: [
+    {
+      Id: AURN0017,
+      Title: Urn type-method prefix has multiple canonical prefixes,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: : (7,4)-(9,43),
+      MessageFormat: Urn type-method prefix has multiple canonical prefixes,
+      Message: Urn type-method prefix has multiple canonical prefixes,
+      Category: UrnGenerator
+    }
+  ]
+}
