@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.5...Altinn.Urn-v2.0.0) (2024-04-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* New attribute names are `KeyValueUrn` on the record and `UrnKey` on the variants.
+* `IUrn`, `RawUrn` and multiple other related types has been renamed.
+* Urn keys that ends with colon are now disallowed, similar to them starting with "urn:". The colon suffix is added by the source generator.
+* The previously public JsonConverters has been removed/made private, and instead to customize the serialization of an urn one should use the new wrapper types. Currently supported wrapper types are `UrnJsonString` and `UrnJsonTypeValue`.
+
+### Features
+
+* add new reflection capabilities on urns with new interfaces ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+* add support for canonical keys ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+* add urn wrappers for customizing serialization ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+* redesign API ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+
+
+### Bug Fixes
+
+* reject urn keys that ends with colon ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+
+
+### Code Refactoring
+
+* rename attributes used by source generator ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+* rename Urn to KeyValueUrn ([be02bf5](https://github.com/Altinn/altinn-authorization-utils/commit/be02bf5255c8b1a477d541e6c60c870067c7b835))
+
 ## [1.6.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.4...Altinn.Urn-v1.6.5) (2024-04-05)
 
 
