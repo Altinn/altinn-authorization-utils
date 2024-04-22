@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+		<PropertyGroup>
+				<RootNamespace>Altinn.Swashbuckle</RootNamespace>
+		</PropertyGroup>
+
+		<ItemGroup>
+		  <ProjectReference Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
+		  <ProjectReference Include="..\Altinn.Swashbuckle\Altinn.Swashbuckle.csproj" />
+		</ItemGroup>
+
+</Project>

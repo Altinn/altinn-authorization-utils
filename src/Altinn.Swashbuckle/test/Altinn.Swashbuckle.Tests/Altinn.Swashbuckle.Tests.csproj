@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+		<PropertyGroup>
+				<IsPackable>false</IsPackable>
+				<IsTestProject>true</IsTestProject>
+		</PropertyGroup>
+
+		<ItemGroup>
+				<ProjectReference Include="..\..\src\Altinn.Swashbuckle\Altinn.Swashbuckle.csproj" />
+		</ItemGroup>
+
+		<ItemGroup>
+				<Using Include="Xunit" />
+		</ItemGroup>
+
+</Project>

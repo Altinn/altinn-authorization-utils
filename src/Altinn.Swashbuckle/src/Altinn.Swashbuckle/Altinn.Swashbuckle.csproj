@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+		<PropertyGroup>
+		</PropertyGroup>
+
+		<ItemGroup>
+		  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+		  <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
+		</ItemGroup>
+
+		<ItemGroup>
+		  <ProjectReference Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
+		</ItemGroup>
+
+</Project>
