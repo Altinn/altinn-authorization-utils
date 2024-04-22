@@ -424,12 +424,17 @@ partial class PersonUrnTests
 
         [CompilerGenerated]
         [DebuggerDisplay("{DebuggerDisplay}")]
+        [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<MyNamespace.PersonUrnTests.PersonUrn, MyNamespace.PersonUrnTests.PersonUrn.Type>))]
         public sealed partial record PartyId
             : PersonUrn
             , IKeyValueUrnVariant<PartyId, PersonUrn, Type, int>
         {
             [CompilerGenerated]
             public const string CanonicalPrefix = "urn:altinn:party:id";
+
+            /// <inheritdoc/>
+            [CompilerGenerated]
+            public static Type Variant => Type.PartyId;
 
             private static readonly new ImmutableArray<string> _validPrefixes = [
                 "urn:altinn:party:id",
@@ -490,12 +495,17 @@ partial class PersonUrnTests
 
         [CompilerGenerated]
         [DebuggerDisplay("{DebuggerDisplay}")]
+        [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<MyNamespace.PersonUrnTests.PersonUrn, MyNamespace.PersonUrnTests.PersonUrn.Type>))]
         public sealed partial record PartyUuid
             : PersonUrn
             , IKeyValueUrnVariant<PartyUuid, PersonUrn, Type, System.Guid>
         {
             [CompilerGenerated]
             public const string CanonicalPrefix = "urn:altinn:party:uuid";
+
+            /// <inheritdoc/>
+            [CompilerGenerated]
+            public static Type Variant => Type.PartyUuid;
 
             private static readonly new ImmutableArray<string> _validPrefixes = [
                 "urn:altinn:party:uuid",

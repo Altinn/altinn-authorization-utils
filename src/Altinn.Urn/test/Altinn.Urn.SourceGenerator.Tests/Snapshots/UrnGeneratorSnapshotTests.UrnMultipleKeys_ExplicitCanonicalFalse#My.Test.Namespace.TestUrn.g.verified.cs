@@ -382,12 +382,17 @@ partial record TestUrn
 
     [CompilerGenerated]
     [DebuggerDisplay("{DebuggerDisplay}")]
+    [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
     public sealed partial record Test1
         : TestUrn
         , IKeyValueUrnVariant<Test1, TestUrn, Type, Guid>
     {
         [CompilerGenerated]
         public const string CanonicalPrefix = "urn:altinn:test2";
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static Type Variant => Type.Test1;
 
         private static readonly new ImmutableArray<string> _validPrefixes = [
             "urn:altinn:test1",
