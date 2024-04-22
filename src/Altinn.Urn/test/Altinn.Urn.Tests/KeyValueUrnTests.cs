@@ -1,5 +1,3 @@
-using FluentAssertions;
-
 namespace Altinn.Urn.Tests;
 
 public class KeyValueUrnTests
