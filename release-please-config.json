@@ -1,5 +1,4 @@
 {
-  "last-release-sha": "1baac5299d071942e0af3882a69b97c88a6d7ae4",
   "separate-pull-requests": true,
   "pull-request-title-pattern": "release${scope}:${component} ${version}",
   "release-type": "simple",
