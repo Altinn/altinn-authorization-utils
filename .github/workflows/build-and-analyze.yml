@@ -19,6 +19,18 @@ jobs:
           dotnet-version: |
             8.0.x
 
+      # Not used here - but used in the release job
+      # If this breaks, make sure to update both here
+      # and in the release job - otherwise next release
+      # will fail
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: |
+            - cwd: .github/scripts
+              args: [--frozen-lockfile]
+            - args: [--global, tsx]
+
       - name: Build
         run: dotnet build -c Release -bl:binlog/build.binlog
       
