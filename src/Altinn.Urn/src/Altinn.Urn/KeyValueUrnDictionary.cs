@@ -9,15 +9,15 @@ namespace Altinn.Urn;
 [DebuggerDisplay("Count = {Count}")]
 [DebuggerTypeProxy(typeof(UrnDictionaryDebugView<,>))]
 [JsonConverter(typeof(DictionaryUrnJsonConverter))]
-public class KeyValueUrnDictionary<TUrn, TVariant>
-    : IDictionary<TVariant, TUrn>
-    , IReadOnlyDictionary<TVariant, TUrn>
+public class KeyValueUrnDictionary<TUrn, TVariants>
+    : IDictionary<TVariants, TUrn>
+    , IReadOnlyDictionary<TVariants, TUrn>
     , ICollection<TUrn>
     , IReadOnlyCollection<TUrn>
-    where TUrn : IKeyValueUrn<TUrn, TVariant>
-    where TVariant : struct, Enum
+    where TUrn : IKeyValueUrn<TUrn, TVariants>
+    where TVariants : struct, Enum
 {
-    private readonly Dictionary<TVariant, TUrn> _dictionary = new();
+    private readonly Dictionary<TVariants, TUrn> _dictionary = new();
 
     /// <inheritdoc/>
     public int Count => _dictionary.Count;
@@ -26,11 +26,11 @@ public class KeyValueUrnDictionary<TUrn, TVariant>
     public bool IsReadOnly => false;
 
     /// <inheritdoc/>
-    public TUrn this[TVariant key]
+    public TUrn this[TVariants key]
         => _dictionary[key];
 
     /// <inheritdoc/>
-    TUrn IDictionary<TVariant, TUrn>.this[TVariant key]
+    TUrn IDictionary<TVariants, TUrn>.this[TVariants key]
     {
         get => _dictionary[key];
         set
@@ -45,11 +45,11 @@ public class KeyValueUrnDictionary<TUrn, TVariant>
     }
 
     /// <inheritdoc/>
-    public bool ContainsKey(TVariant key)
+    public bool ContainsKey(TVariants key)
         => _dictionary.ContainsKey(key);
 
     /// <inheritdoc/>
-    public bool TryGetValue(TVariant key, [MaybeNullWhen(false)] out TUrn value)
+    public bool TryGetValue(TVariants key, [MaybeNullWhen(false)] out TUrn value)
         => _dictionary.TryGetValue(key, out value);
 
     /// <summary>
@@ -87,11 +87,11 @@ public class KeyValueUrnDictionary<TUrn, TVariant>
     }
 
     /// <inheritdoc/>
-    void IDictionary<TVariant, TUrn>.Add(TVariant key, TUrn value)
+    void IDictionary<TVariants, TUrn>.Add(TVariants key, TUrn value)
         => _dictionary.Add(key, value);
 
     /// <inheritdoc/>
-    void ICollection<KeyValuePair<TVariant, TUrn>>.Add(KeyValuePair<TVariant, TUrn> item)
+    void ICollection<KeyValuePair<TVariants, TUrn>>.Add(KeyValuePair<TVariants, TUrn> item)
         => _dictionary.Add(item.Key, item.Value);
 
     /// <inheritdoc/>
@@ -99,28 +99,28 @@ public class KeyValueUrnDictionary<TUrn, TVariant>
         => _dictionary.Clear();
 
     /// <inheritdoc/>
-    bool ICollection<KeyValuePair<TVariant, TUrn>>.Contains(KeyValuePair<TVariant, TUrn> item)
-        => ((ICollection<KeyValuePair<TVariant, TUrn>>)_dictionary).Contains(item);
+    bool ICollection<KeyValuePair<TVariants, TUrn>>.Contains(KeyValuePair<TVariants, TUrn> item)
+        => ((ICollection<KeyValuePair<TVariants, TUrn>>)_dictionary).Contains(item);
 
     /// <inheritdoc/>
     bool ICollection<TUrn>.Contains(TUrn item)
-        => ((ICollection<KeyValuePair<TVariant, TUrn>>)_dictionary).Contains(KeyValuePair.Create(item.UrnType, item));
+        => ((ICollection<KeyValuePair<TVariants, TUrn>>)_dictionary).Contains(KeyValuePair.Create(item.UrnType, item));
 
     /// <inheritdoc/>
-    bool ICollection<KeyValuePair<TVariant, TUrn>>.Remove(KeyValuePair<TVariant, TUrn> item)
-        => ((ICollection<KeyValuePair<TVariant, TUrn>>)_dictionary).Remove(item);
+    bool ICollection<KeyValuePair<TVariants, TUrn>>.Remove(KeyValuePair<TVariants, TUrn> item)
+        => ((ICollection<KeyValuePair<TVariants, TUrn>>)_dictionary).Remove(item);
 
     /// <inheritdoc/>
     bool ICollection<TUrn>.Remove(TUrn item)
-        => ((ICollection<KeyValuePair<TVariant, TUrn>>)_dictionary).Remove(KeyValuePair.Create(item.UrnType, item));
+        => ((ICollection<KeyValuePair<TVariants, TUrn>>)_dictionary).Remove(KeyValuePair.Create(item.UrnType, item));
 
     /// <inheritdoc/>
-    public bool Remove(TVariant key)
+    public bool Remove(TVariants key)
         => _dictionary.Remove(key);
 
     /// <inheritdoc/>
-    void ICollection<KeyValuePair<TVariant, TUrn>>.CopyTo(KeyValuePair<TVariant, TUrn>[] array, int arrayIndex)
-        => ((ICollection<KeyValuePair<TVariant, TUrn>>)_dictionary).CopyTo(array, arrayIndex);
+    void ICollection<KeyValuePair<TVariants, TUrn>>.CopyTo(KeyValuePair<TVariants, TUrn>[] array, int arrayIndex)
+        => ((ICollection<KeyValuePair<TVariants, TUrn>>)_dictionary).CopyTo(array, arrayIndex);
 
     /// <inheritdoc/>
     void ICollection<TUrn>.CopyTo(TUrn[] array, int arrayIndex)
@@ -131,7 +131,7 @@ public class KeyValueUrnDictionary<TUrn, TVariant>
         => _dictionary.Values.GetEnumerator();
 
     /// <inheritdoc/>
-    IEnumerator<KeyValuePair<TVariant, TUrn>> IEnumerable<KeyValuePair<TVariant, TUrn>>.GetEnumerator()
+    IEnumerator<KeyValuePair<TVariants, TUrn>> IEnumerable<KeyValuePair<TVariants, TUrn>>.GetEnumerator()
         => _dictionary.GetEnumerator();
 
     /// <inheritdoc/>
@@ -139,40 +139,40 @@ public class KeyValueUrnDictionary<TUrn, TVariant>
         => GetEnumerator();
 
     /// <inheritdoc/>
-    public Dictionary<TVariant, TUrn>.ValueCollection.Enumerator GetEnumerator()
+    public Dictionary<TVariants, TUrn>.ValueCollection.Enumerator GetEnumerator()
         => _dictionary.Values.GetEnumerator();
 
     /// <inheritdoc/>
-    public Dictionary<TVariant, TUrn>.ValueCollection Values => _dictionary.Values;
+    public Dictionary<TVariants, TUrn>.ValueCollection Values => _dictionary.Values;
 
     /// <inheritdoc/>
-    ICollection<TVariant> IDictionary<TVariant, TUrn>.Keys => _dictionary.Keys;
+    ICollection<TVariants> IDictionary<TVariants, TUrn>.Keys => _dictionary.Keys;
 
     /// <inheritdoc/>
-    IEnumerable<TVariant> IReadOnlyDictionary<TVariant, TUrn>.Keys => _dictionary.Keys;
+    IEnumerable<TVariants> IReadOnlyDictionary<TVariants, TUrn>.Keys => _dictionary.Keys;
 
     /// <inheritdoc/>
-    public Dictionary<TVariant, TUrn>.KeyCollection Keys => _dictionary.Keys;
+    public Dictionary<TVariants, TUrn>.KeyCollection Keys => _dictionary.Keys;
 
     /// <inheritdoc/>
-    ICollection<TUrn> IDictionary<TVariant, TUrn>.Values => _dictionary.Values;
+    ICollection<TUrn> IDictionary<TVariants, TUrn>.Values => _dictionary.Values;
 
     /// <inheritdoc/>
-    IEnumerable<TUrn> IReadOnlyDictionary<TVariant, TUrn>.Values => _dictionary.Values;
+    IEnumerable<TUrn> IReadOnlyDictionary<TVariants, TUrn>.Values => _dictionary.Values;
 }
 
 /// <summary>
 /// Defines a debug view for a <see cref="KeyValueUrnDictionary{TUrn, TVariant}"/> by a debugger.
 /// </summary>
 /// <typeparam name="TUrn">The urn type.</typeparam>
-/// <typeparam name="TVariant">The urn variant enum type.</typeparam>
-internal sealed class UrnDictionaryDebugView<TUrn, TVariant>
-    where TUrn : IKeyValueUrn<TUrn, TVariant>
-    where TVariant : struct, Enum
+/// <typeparam name="TVariants">The urn variant enum type.</typeparam>
+internal sealed class UrnDictionaryDebugView<TUrn, TVariants>
+    where TUrn : IKeyValueUrn<TUrn, TVariants>
+    where TVariants : struct, Enum
 {
-    private readonly KeyValueUrnDictionary<TUrn, TVariant> _dict;
+    private readonly KeyValueUrnDictionary<TUrn, TVariants> _dict;
 
-    public UrnDictionaryDebugView(KeyValueUrnDictionary<TUrn, TVariant> dictionary)
+    public UrnDictionaryDebugView(KeyValueUrnDictionary<TUrn, TVariants> dictionary)
     {
         ArgumentNullException.ThrowIfNull(dictionary);
 
@@ -180,16 +180,16 @@ internal sealed class UrnDictionaryDebugView<TUrn, TVariant>
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-    public DebugViewUrnDictionaryItem<TUrn, TVariant>[] Items
+    public DebugViewUrnDictionaryItem<TUrn, TVariants>[] Items
     {
         get
         {
-            var keyValuePairs = new KeyValuePair<TVariant, TUrn>[_dict.Count];
-            ((IDictionary<TVariant, TUrn>)_dict).CopyTo(keyValuePairs, 0);
-            var items = new DebugViewUrnDictionaryItem<TUrn, TVariant>[keyValuePairs.Length];
+            var keyValuePairs = new KeyValuePair<TVariants, TUrn>[_dict.Count];
+            ((IDictionary<TVariants, TUrn>)_dict).CopyTo(keyValuePairs, 0);
+            var items = new DebugViewUrnDictionaryItem<TUrn, TVariants>[keyValuePairs.Length];
             for (int i = 0; i < items.Length; i++)
             {
-                items[i] = new DebugViewUrnDictionaryItem<TUrn, TVariant>(keyValuePairs[i]);
+                items[i] = new DebugViewUrnDictionaryItem<TUrn, TVariants>(keyValuePairs[i]);
             }
             return items;
         }
@@ -200,20 +200,20 @@ internal sealed class UrnDictionaryDebugView<TUrn, TVariant>
 /// Defines a key/value pair for displaying an item of a <see cref="KeyValueUrnDictionary{TUrn, TVariant}"/> by a debugger.
 /// </summary>
 /// <typeparam name="TUrn">The urn type.</typeparam>
-/// <typeparam name="TVariant">The urn variant enum type.</typeparam>
+/// <typeparam name="TVariants">The urn variant enum type.</typeparam>
 [DebuggerDisplay("{Value}", Name = "[{Key}]")]
-internal readonly struct DebugViewUrnDictionaryItem<TUrn, TVariant>
-    where TUrn : IKeyValueUrn<TUrn, TVariant>
-    where TVariant : struct, Enum
+internal readonly struct DebugViewUrnDictionaryItem<TUrn, TVariants>
+    where TUrn : IKeyValueUrn<TUrn, TVariants>
+    where TVariants : struct, Enum
 {
-    public DebugViewUrnDictionaryItem(KeyValuePair<TVariant, TUrn> keyValue)
+    public DebugViewUrnDictionaryItem(KeyValuePair<TVariants, TUrn> keyValue)
     {
         Key = keyValue.Key;
         Value = keyValue.Value;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
-    public TVariant Key { get; }
+    public TVariants Key { get; }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
     public TUrn Value { get; }

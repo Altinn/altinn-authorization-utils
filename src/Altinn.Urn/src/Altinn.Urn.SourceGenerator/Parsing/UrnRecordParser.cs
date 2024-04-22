@@ -62,6 +62,8 @@ internal ref struct UrnRecordParser
         var typeName = _typeSymbol.Name;
         var jsonConverterAttribute = _symbols.JsonConverterAttribute.ToDisplayString();
         var jsonConverterConcreteType = _symbols.UrnJsonConverterOfT.Construct(_typeSymbol).ToDisplayString();
+        var jsonVariantConverterConcreteType = _symbols.UrnVariantJsonConverter.Construct(_typeSymbol, _typeSymbol).ToDisplayString();
+        jsonVariantConverterConcreteType = $"{jsonVariantConverterConcreteType[..^1]}.Type>";
         var members = _members.ToArray();
 
         return new UrnRecordParserResult
@@ -69,6 +71,7 @@ internal ref struct UrnRecordParser
             Diagnostics = diagnostics,
             JsonConverterAttribute = jsonConverterAttribute,
             JsonConverterConcreteType = jsonConverterConcreteType,
+            JsonVariantConverterConcreteType = jsonVariantConverterConcreteType,
             RecordInfo = new UrnRecordInfo
             {
                 Keyword = keyword,

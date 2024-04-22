@@ -25,6 +25,8 @@ internal readonly struct TypeSymbols
 
     public required INamedTypeSymbol UrnJsonConverterOfT { get; init; }
 
+    public required INamedTypeSymbol UrnVariantJsonConverter { get; init; }
+
     public required INamedTypeSymbol IFormatProvider { get; init; }
 
     public required INamedTypeSymbol ISpanFormattable { get; init; }
@@ -61,6 +63,7 @@ internal readonly struct TypeSymbols
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.KeyValueVisitorInterface, cancellationToken, out var iKeyValueVisitor)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.JsonConverterAttribute, cancellationToken, out var jsonConverterAttribute)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnJsonConverterOfT, cancellationToken, out var urnJsonConverterOfT)
+            && compilation.TryGetBestTypeByMetadataName(MetadataNames.UrnVariantJsonConverter, cancellationToken, out var urnVariantJsonConverter)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.FormatProviderInterface, cancellationToken, out var iFormatProvider)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.Span, cancellationToken, out var span)
             && compilation.TryGetBestTypeByMetadataName(MetadataNames.ReadOnlySpan, cancellationToken, out var readOnlySpan)
@@ -80,6 +83,7 @@ internal readonly struct TypeSymbols
                 IKeyValueVisitor = iKeyValueVisitor,
                 JsonConverterAttribute = jsonConverterAttribute,
                 UrnJsonConverterOfT = urnJsonConverterOfT,
+                UrnVariantJsonConverter = urnVariantJsonConverter,
                 IFormatProvider = iFormatProvider,
                 ISpanFormattable = iSpanFormattable,
                 Span = span,
@@ -118,6 +122,8 @@ internal readonly struct TypeSymbols
         public static readonly string JsonConverterAttribute = "System.Text.Json.Serialization.JsonConverterAttribute";
 
         public static readonly string UrnJsonConverterOfT = "Altinn.Urn.Json.UrnJsonConverter`1";
+
+        public static readonly string UrnVariantJsonConverter = "Altinn.Urn.Json.UrnVariantJsonConverterFactory`2";
 
         public static readonly string SpanFormattableInterface = "System.ISpanFormattable";
 

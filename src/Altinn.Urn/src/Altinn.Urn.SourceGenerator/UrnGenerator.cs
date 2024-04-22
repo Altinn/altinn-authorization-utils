@@ -70,7 +70,12 @@ public class UrnGenerator
             fileNameBuilder.Append(input.RecordInfo.TypeName);
             fileNameBuilder.Append(".g.cs");
 
-            var result = UrnRecordEmitter.Emit(input.RecordInfo, input.JsonConverterAttribute, input.JsonConverterConcreteType, ctx.CancellationToken);
+            var result = UrnRecordEmitter.Emit(
+                input.RecordInfo, 
+                input.JsonConverterAttribute, 
+                input.JsonConverterConcreteType, 
+                input.JsonVariantConverterConcreteType,
+                ctx.CancellationToken);
             ctx.AddSource(fileNameBuilder.ToString(), result);
         });
     }

@@ -26,6 +26,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(IsTestProject)' != 'true' ">
+		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">

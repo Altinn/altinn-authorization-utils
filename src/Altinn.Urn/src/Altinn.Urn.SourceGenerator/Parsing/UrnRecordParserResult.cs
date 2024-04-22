@@ -11,14 +11,18 @@ internal readonly record struct UrnRecordParserResult
 
     public string? JsonConverterConcreteType { get; init; }
 
+    public string? JsonVariantConverterConcreteType { get; init; }
+
     public UrnRecordInfo RecordInfo { get; init; }
 
     public bool IsDefault => Diagnostics.IsDefault;
 
     [MemberNotNullWhen(true, nameof(JsonConverterAttribute))]
     [MemberNotNullWhen(true, nameof(JsonConverterConcreteType))]
+    [MemberNotNullWhen(true, nameof(JsonVariantConverterConcreteType))]
     public bool HasRecordInfo 
         => !IsDefault
         && JsonConverterAttribute is not null
-        && JsonConverterConcreteType is not null;
+        && JsonConverterConcreteType is not null
+        && JsonVariantConverterConcreteType is not null;
 }

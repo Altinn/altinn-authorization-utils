@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 

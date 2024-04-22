@@ -5,7 +5,7 @@
 /// </summary>
 public interface IKeyValueUrnVisitor
 {
-    public void Visit<TUrn, TVariant, TValue>(TUrn urn, TVariant variant, TValue value) 
-        where TUrn : IKeyValueUrn<TUrn, TVariant>
-        where TVariant : struct, Enum;
+    public void Visit<TUrn, TVariants, TValue>(TUrn urn, TVariants variant, TValue value) 
+        where TUrn : IKeyValueUrn<TUrn, TVariants>
+        where TVariants : struct, Enum;
 }

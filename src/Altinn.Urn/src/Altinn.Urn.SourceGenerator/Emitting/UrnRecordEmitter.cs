@@ -4,10 +4,15 @@ namespace Altinn.Urn.SourceGenerator.Emitting;
 
 internal ref struct UrnRecordEmitter 
 {
-    public static string Emit(in UrnRecordInfo record, string jsonConverterAttribute, string jsonConverterConcreteType, CancellationToken cancellationToken)
+    public static string Emit(
+        in UrnRecordInfo record, 
+        string jsonConverterAttribute, 
+        string jsonConverterConcreteType, 
+        string jsonVariantConverterConcreteType, 
+        CancellationToken cancellationToken)
     {
         using var builder = CodeStringBuilder.Rent();
-        var emitter = new UrnRecordEmitter(builder, jsonConverterAttribute, jsonConverterConcreteType);
+        var emitter = new UrnRecordEmitter(builder, jsonConverterAttribute, jsonConverterConcreteType, jsonVariantConverterConcreteType);
         emitter.Emit(in record, cancellationToken);
         
         return builder.ToString();
@@ -16,12 +21,18 @@ internal ref struct UrnRecordEmitter
     private readonly CodeStringBuilder _builder;
     private readonly string _jsonConverterAttribute;
     private readonly string _jsonConverterConcreteType;
+    private readonly string _jsonVariantConverterConcreteType;
 
-    private UrnRecordEmitter(CodeStringBuilder builder, string jsonConverterAttribute, string jsonConverterConcreteType)
+    private UrnRecordEmitter(
+        CodeStringBuilder builder, 
+        string jsonConverterAttribute, 
+        string jsonConverterConcreteType,
+        string jsonVariantConverterConcreteType)
     {
         _builder = builder;
         _jsonConverterAttribute = jsonConverterAttribute;
         _jsonConverterConcreteType = jsonConverterConcreteType;
+        _jsonVariantConverterConcreteType = jsonVariantConverterConcreteType;
     }
 
     private void Emit(in UrnRecordInfo record, CancellationToken ct)
@@ -643,6 +654,7 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("""[DebuggerDisplay("{DebuggerDisplay}")]""");
+        builder.AppendLine($"[{_jsonConverterAttribute}(typeof({_jsonVariantConverterConcreteType}))]");
         builder.AppendLine($"public sealed partial record {member.Name}");
         builder_lv1.AppendLine($": {record.TypeName}");
         builder_lv1.AppendLine($", IKeyValueUrnVariant<{member.Name}, {record.TypeName}, Type, {member.ValueType}>");
@@ -650,6 +662,11 @@ internal ref struct UrnRecordEmitter
 
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine($"public const string CanonicalPrefix = \"{canonicalPrefix}\";");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static Type Variant => Type.{member.Name};");
 
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("private static readonly new ImmutableArray<string> _validPrefixes = [");

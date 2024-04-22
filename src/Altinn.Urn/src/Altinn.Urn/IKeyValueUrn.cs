@@ -1,7 +1,5 @@
-﻿using Altinn.Urn.Json;
-using Altinn.Urn.Visit;
+﻿using Altinn.Urn.Visit;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 
 namespace Altinn.Urn;
 
@@ -229,9 +227,18 @@ public interface IKeyValueUrn<TSelf, TVariants>
     public TVariants UrnType { get; }
 }
 
-public interface IKeyValueUrnVariant<TSelf, TUrn, TVariants, TValue>
+public interface IKeyValueUrnVariant<TUrn, TVariants>
     : IKeyValueUrn<TUrn, TVariants>
     , IVisitableKeyValueUrn
+    where TUrn : IKeyValueUrn<TUrn, TVariants>
+    where TVariants : struct, Enum
+{
+    public static abstract TVariants Variant { get; }
+}
+
+public interface IKeyValueUrnVariant<TSelf, TUrn, TVariants, TValue>
+    : IKeyValueUrnVariant<TUrn, TVariants>
+    , IKeyValueUrn<TUrn, TVariants>
     where TUrn : IKeyValueUrn<TUrn, TVariants>
     where TVariants : struct, Enum
     where TSelf : TUrn, IKeyValueUrnVariant<TSelf, TUrn, TVariants, TValue>

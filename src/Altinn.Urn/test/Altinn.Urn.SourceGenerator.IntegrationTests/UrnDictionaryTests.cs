@@ -1,5 +1,4 @@
 ﻿using Altinn.Urn.SourceGenerator.IntegrationTests.Utils;
-using FluentAssertions;
 using System.Text.Json;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;

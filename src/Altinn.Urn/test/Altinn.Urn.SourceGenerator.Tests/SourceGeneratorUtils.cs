@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
-using FluentAssertions;
 
 namespace Altinn.Urn.SourceGenerator.Tests;
 

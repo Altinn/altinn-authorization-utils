@@ -18,22 +18,7 @@ public sealed class UrnJsonConverter<T>
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType is JsonTokenType.Null)
-        {
-            return default;
-        }
-
-        if (reader.TokenType is JsonTokenType.String || reader.TokenType == JsonTokenType.PropertyName)
-        {
-            return UrnJsonConverter.ReadUrnString<T>(ref reader, Name, InvalidUrn);
-        }
-
-        if (reader.TokenType is JsonTokenType.StartObject)
-        {
-            return UrnJsonConverter.ReadTypeValueObject<T>(ref reader, Name, InvalidUrn);
-        }
-
-        throw new JsonException($"Expected {Name} as string or object, but got {reader.TokenType}");
+        return UrnJsonConverter.ReadUrn<T>(ref reader, Name, InvalidUrn);
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -46,6 +31,27 @@ internal static class UrnJsonConverter
 {
     private static readonly JsonEncodedText TypePropertyName = JsonEncodedText.Encode("type");
     private static readonly JsonEncodedText ValuePropertyName = JsonEncodedText.Encode("value");
+
+    public static T? ReadUrn<T>(ref Utf8JsonReader reader, string name, string invalidUrn)
+        where T : IKeyValueUrn<T>
+    {
+        if (reader.TokenType is JsonTokenType.Null)
+        {
+            return default;
+        }
+
+        if (reader.TokenType is JsonTokenType.String || reader.TokenType == JsonTokenType.PropertyName)
+        {
+            return ReadUrnString<T>(ref reader, name, invalidUrn);
+        }
+
+        if (reader.TokenType is JsonTokenType.StartObject)
+        {
+            return ReadTypeValueObject<T>(ref reader, name, invalidUrn);
+        }
+
+        throw new JsonException($"Expected {name} as string or object, but got {reader.TokenType}");
+    }
 
     public static T ReadUrnString<T>(ref Utf8JsonReader reader, string name, string invalidUrn)
         where T : IKeyValueUrn<T>
