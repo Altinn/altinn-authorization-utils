@@ -5,7 +5,7 @@
   "keywords": [],
   "author": "",
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "@octokit/action": "^6.0.7",
     "@types/node": "^20.11.30",
     "chalk": "^5.3.0",
