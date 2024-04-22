@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.0.0...Altinn.Urn-v2.1.0) (2024-04-22)
+
+
+### Features
+
+* more urn reflection capabilities ([6f27361](https://github.com/Altinn/altinn-authorization-utils/commit/6f273617c34f862d4992dd7836c01161ede3f0ad))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v1.6.5...Altinn.Urn-v2.0.0) (2024-04-10)
 
 
