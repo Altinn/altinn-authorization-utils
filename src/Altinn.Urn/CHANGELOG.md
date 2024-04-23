@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.1.1...Altinn.Urn-v2.2.0) (2024-04-23)
+
+
+### Features
+
+* add Altinn.Urn.Swashbuckle ([edeb6ee](https://github.com/Altinn/altinn-authorization-utils/commit/edeb6ee6f853203d3cfe0786ba44b80f29c2cc98))
+
 ## [2.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.1.0...Altinn.Urn-v2.1.1) (2024-04-22)
 
 
