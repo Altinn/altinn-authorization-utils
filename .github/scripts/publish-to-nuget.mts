@@ -21,6 +21,6 @@ for (const file of await globby(filesGlob)) {
   await retry(
     5,
     () =>
-      $`dotnet nuget push "${fullPath}" --api-key "${apiKey}" --source "https://api.nuget.org/v3/index.json"`
+      $`dotnet nuget push --skip-duplicate "${fullPath}" --api-key "${apiKey}" --source "https://api.nuget.org/v3/index.json"`
   );
 }

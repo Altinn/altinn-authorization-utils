@@ -26,7 +26,7 @@ for (const file of await globby(filesGlob)) {
   await retry(
     5,
     () =>
-      $`dotnet nuget push "${fullPath}" --api-key "${ghToken}" --source "github"`
+      $`dotnet nuget push --skip-duplicate "${fullPath}" --api-key "${ghToken}" --source "github"`
   );
 
   console.log(`Published ${c.green(name)}`);
