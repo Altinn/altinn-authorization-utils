@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsSampleProject>true</IsSampleProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj"
+      ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\..\src\Altinn.Urn.Swashbuckle\Altinn.Urn.Swashbuckle.csproj" />
+    <ProjectReference Include="..\..\src\Altinn.Urn\Altinn.Urn.csproj" />
+  </ItemGroup>
+
+</Project>
