@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all"/>
-    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
@@ -28,14 +28,15 @@
     </PackageReference>
 
     <Using Include="FluentAssertions" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(IsTestProject)' != 'true' ">
-		<InternalsVisibleTo Include="$(AssemblyName).Tests" />
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
-    <PackageReference Include="Microsoft.Build.Artifacts" Version="6.1.30" PrivateAssets="all" 
+    <PackageReference Include="Microsoft.Build.Artifacts" Version="6.1.30" PrivateAssets="all"
       IncludeAssets="build; buildtransitive; buildMultiTargeting" />
   </ItemGroup>
 
@@ -60,7 +61,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" Exists('$(ChangelogPath)') ">
-    <PackageReleaseNotes>$(IsPackable)  $([System.IO.File]::ReadAllText("$(ChangelogPath)"))</PackageReleaseNotes>
+    <PackageReleaseNotes>$(IsPackable) $([System.IO.File]::ReadAllText("$(ChangelogPath)"))</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(VersionFilePath)' == '' ">
@@ -70,7 +71,8 @@
   <Import Project="$(VersionFilePath)" Condition="Exists('$(VersionFilePath)')" />
 
   <Target Name="_CheckVersion">
-    <Error Condition="!Exists('$(VersionFilePath)')" Text="Version file not found at '$(VersionFilePath)'" />
+    <Error Condition="!Exists('$(VersionFilePath)')"
+      Text="Version file not found at '$(VersionFilePath)'" />
     <Error Condition="'$(Version)' == ''" Text="Version not defined in '$(VersionFilePath)'" />
   </Target>
 
