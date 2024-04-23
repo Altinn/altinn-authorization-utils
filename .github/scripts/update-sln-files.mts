@@ -5,13 +5,13 @@ import path from "node:path";
 
 const c = new Chalk({ level: 3 });
 
-const allSlnFile = path.resolve('src/Altinn.Authorization.Utils.sln');
-const slnFiles = await globby('src/*/*.sln', { absolute: true });
+const allSlnFile = path.resolve("src/Altinn.Authorization.Utils.sln");
+const slnFiles = await globby("src/*/*.sln", { absolute: true });
 slnFiles.unshift(allSlnFile);
 
 for (const file of slnFiles) {
   await within(async () => {
-    echo('');
+    echo("");
     echo(`#############################################`);
     echo(`Updating ${c.yellow(file)}`);
     const dir = path.dirname(file);

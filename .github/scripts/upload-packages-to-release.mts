@@ -3,6 +3,7 @@ import { globby } from "globby";
 import { Octokit } from "@octokit/action";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { retry } from "zx";
 
 const c = new Chalk({ level: 3 });
 
@@ -39,7 +40,7 @@ for (const file of await globby(filesGlob)) {
     handle = await fs.open(fullPath, "r");
     const stat = await handle.stat();
 
-    await retry(() =>
+    await retry(5, () =>
       github.rest.repos.uploadReleaseAsset({
         ...releaseInfo,
         url: release.data.upload_url,
@@ -58,19 +59,6 @@ for (const file of await globby(filesGlob)) {
   } finally {
     if (handle) {
       await handle.close();
-    }
-  }
-}
-
-async function retry(fn: () => Promise<any>, retries = 3) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      return await fn();
-    } catch (err) {
-      if (i === retries - 1) {
-        throw err;
-      }
-      console.error(`Retrying after error: ${c.red(err.message)}`);
     }
   }
 }
