@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.2.1...Altinn.Urn-v2.2.2) (2024-04-25)
+
+
+### Bug Fixes
+
+* correctly detect manual tryparse methods for urn variants ([b88096e](https://github.com/Altinn/altinn-authorization-utils/commit/b88096e95544ca49eb0cce11a187d18975e429e8))
+
 ## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.2.0...Altinn.Urn-v2.2.1) (2024-04-23)
 
 
