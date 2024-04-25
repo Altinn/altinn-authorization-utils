@@ -5,7 +5,7 @@
       Title: Urn type-method prefix has whitespace,
       Severity: Error,
       WarningLevel: 0,
-      Location: : (7,5)-(7,41),
+      Location: : (8,5)-(8,41),
       MessageFormat: Urn type-method prefix has whitespace,
       Message: Urn type-method prefix has whitespace,
       Category: UrnGenerator
@@ -15,7 +15,7 @@
       Title: Urn type-method prefix starts with 'urn',
       Severity: Error,
       WarningLevel: 0,
-      Location: : (7,5)-(7,41),
+      Location: : (8,5)-(8,41),
       MessageFormat: Urn type-method prefix starts with 'urn',
       Message: Urn type-method prefix starts with 'urn',
       Category: UrnGenerator
@@ -25,7 +25,7 @@
       Title: Urn type-method prefix ends with ':',
       Severity: Error,
       WarningLevel: 0,
-      Location: : (7,5)-(7,41),
+      Location: : (8,5)-(8,41),
       MessageFormat: Urn type-method prefix ends with ':',
       Message: Urn type-method prefix ends with ':',
       Category: UrnGenerator

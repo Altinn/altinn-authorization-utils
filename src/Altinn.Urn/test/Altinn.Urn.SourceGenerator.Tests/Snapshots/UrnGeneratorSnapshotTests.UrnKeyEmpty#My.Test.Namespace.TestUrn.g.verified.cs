@@ -58,7 +58,7 @@ partial record TestUrn
     [CompilerGenerated]
     public static System.Type ValueTypeFor(Type type)
         => type switch {
-            Type.Test2 => typeof(Guid),
+            Type.Test2 => typeof(System.Guid),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
             };
 
@@ -153,7 +153,7 @@ partial record TestUrn
                 charsWritten = 0;
                 return _type switch
                 {
-                    Type.Test2 => false,
+                    Type.Test2 => TryFormatTest2(((Test2)this).Value, destination, out charsWritten, valueFormatSpan, provider),
                     _ => Unreachable<bool>(),
                 };
 
@@ -171,7 +171,7 @@ partial record TestUrn
 
     #pragma warning disable CS8826
     [CompilerGenerated]
-    public partial bool IsTest2([MaybeNullWhen(false)] out Guid value)
+    public partial bool IsTest2([MaybeNullWhen(false)] out System.Guid value)
     #pragma warning restore CS8826
     {
         if (_type == Type.Test2)
@@ -200,12 +200,16 @@ partial record TestUrn
     public override int GetHashCode() => _urn.GetHashCode();
 
     [CompilerGenerated]
-    private static bool TryParseTest2(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out Guid value)
-        => Guid.TryParse(segment, provider, out value);
+    private static bool TryParseTest2(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out System.Guid value)
+        => System.Guid.TryParse(segment, provider, out value);
 
     [CompilerGenerated]
-    private static string FormatTest2(Guid value, string? format, IFormatProvider? provider)
+    private static string FormatTest2(System.Guid value, string? format, IFormatProvider? provider)
         => (value as IFormattable).ToString(format, provider);
+
+    [CompilerGenerated]
+    private static bool TryFormatTest2(System.Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);
 
     /// <inheritdoc/>
     [CompilerGenerated]
@@ -242,7 +246,7 @@ partial record TestUrn
         {
             var s_0 = s.Slice(16);
 
-            if (s_0.Length > 1 && s_0[0] == ':' && TryParseTest2(s_0.Slice(1), provider, out Guid? s_0_value))
+            if (s_0.Length > 1 && s_0[0] == ':' && TryParseTest2(s_0.Slice(1), provider, out System.Guid s_0_value))
             {
                 result = Test2.FromParsed(original ?? new string(s), 17, s_0_value);
                 return true;
@@ -342,7 +346,7 @@ partial record TestUrn
     [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
     public sealed partial record Test2
         : TestUrn
-        , IKeyValueUrnVariant<Test2, TestUrn, Type, Guid>
+        , IKeyValueUrnVariant<Test2, TestUrn, Type, System.Guid>
     {
         [CompilerGenerated]
         public const string CanonicalPrefix = "urn:altinn:test1";
@@ -358,17 +362,17 @@ partial record TestUrn
         [CompilerGenerated]
         public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
 
-        private readonly Guid _value;
+        private readonly System.Guid _value;
 
         [CompilerGenerated]
-        private Test2(string urn, int valueIndex, Guid value) : base(urn, valueIndex, Type.Test2) => (_value) = (value);
+        private Test2(string urn, int valueIndex, System.Guid value) : base(urn, valueIndex, Type.Test2) => (_value) = (value);
 
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static Test2 FromParsed(string urn, int valueIndex, Guid value) => new(urn, valueIndex, value);
+        internal static Test2 FromParsed(string urn, int valueIndex, System.Guid value) => new(urn, valueIndex, value);
 
         [CompilerGenerated]
-        public Guid Value => _value;
+        public System.Guid Value => _value;
         /// <inheritdoc/>
         [CompilerGenerated]
         public override string ToString() => _urn.Urn;
@@ -383,21 +387,25 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static Test2 Create(Guid value)
+        public static Test2 Create(System.Guid value)
             => new($"""urn:altinn:test1:{new _FormatHelper(value)}""", 17, value);
 
         [CompilerGenerated]
         protected override void Accept(IKeyValueUrnVisitor visitor)
-            => visitor.Visit<TestUrn, Type, Guid>(this, _type, _value);
+            => visitor.Visit<TestUrn, Type, System.Guid>(this, _type, _value);
 
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
         private readonly struct _FormatHelper
             : IFormattable
+            , ISpanFormattable
         {
-            private readonly Guid _value;
+            private readonly System.Guid _value;
 
-            public _FormatHelper(Guid value) => _value = value;
+            public _FormatHelper(System.Guid value) => _value = value;
+
+            public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                => TryFormatTest2(_value, destination, out charsWritten, format, provider);
 
             public string ToString(string? format, IFormatProvider? provider)
                 => FormatTest2(_value, format, provider);

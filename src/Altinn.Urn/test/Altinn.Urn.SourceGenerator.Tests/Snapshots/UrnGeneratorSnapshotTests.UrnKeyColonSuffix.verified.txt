@@ -5,7 +5,7 @@
       Title: Urn type-method prefix ends with ':',
       Severity: Error,
       WarningLevel: 0,
-      Location: : (7,5)-(7,28),
+      Location: : (8,5)-(8,28),
       MessageFormat: Urn type-method prefix ends with ':',
       Message: Urn type-method prefix ends with ':',
       Category: UrnGenerator

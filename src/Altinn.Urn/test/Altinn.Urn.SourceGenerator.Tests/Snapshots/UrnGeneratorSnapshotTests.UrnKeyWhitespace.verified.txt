@@ -5,7 +5,7 @@
       Title: Urn type-method prefix is empty,
       Severity: Error,
       WarningLevel: 0,
-      Location: : (7,5)-(7,17),
+      Location: : (8,5)-(8,17),
       MessageFormat: Urn type-method prefix is empty,
       Message: Urn type-method prefix is empty,
       Category: UrnGenerator
