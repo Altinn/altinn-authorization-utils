@@ -447,7 +447,7 @@ internal ref struct UrnRecordParser
             var param2 = methodSymbol.Parameters[1];
             var param3 = methodSymbol.Parameters[2];
 
-            if (param1.Type.SpecialType != SpecialType.System_String)
+            if (!param1.Type.Equals(_symbols.ReadOnlySpanOfChar, SymbolEqualityComparer.Default))
             {
                 continue;
             }
