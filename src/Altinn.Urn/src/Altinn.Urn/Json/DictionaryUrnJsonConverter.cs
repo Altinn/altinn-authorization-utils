@@ -1,5 +1,6 @@
 ﻿using Altinn.Urn.Visit;
 using System.Buffers;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -44,7 +45,7 @@ internal sealed class DictionaryUrnJsonConverter<TUrn, TVariants>
     where TUrn : IKeyValueUrn<TUrn, TVariants>, IVisitableKeyValueUrn
     where TVariants : struct, Enum
 {
-    private static Dictionary<TVariants, JsonConverter<TUrn>> _variantConverters
+    private static Dictionary<TVariants, VariantValueJsonConverter> _variantConverters
         = CreateVariantConverters();
 
     static DictionaryUrnJsonConverter()
@@ -101,23 +102,26 @@ internal sealed class DictionaryUrnJsonConverter<TUrn, TVariants>
                     throw new JsonException($"Unknown variant '{propertyName}' for URN {typeof(TUrn).Name}");
                 }
 
+                ref var seenCanonical = ref canonical[(int)(object)variant];
+                var isCanonical = string.Equals(propertyName, TUrn.CanonicalPrefixFor(variant), StringComparison.Ordinal);
+
+                // Skip non-canonical values if we have already seen a canonical value
+                if (!isCanonical && seenCanonical)
+                {
+                    reader.Skip();
+                    continue;
+                }
+
                 var converter = _variantConverters[variant];
                 var urn = converter.Read(ref reader, typeof(TUrn), options)
                     ?? throw new JsonException($"Failed to read URN for variant {variant}");
 
-                ref var seenCanonical = ref canonical[(int)(object)variant];
-                var isCanonical = urn.PrefixSpan.SequenceEqual(TUrn.CanonicalPrefixFor(variant));
-
-                // If both are canonical or none are canonical, later values wins
                 if (isCanonical)
                 {
                     seenCanonical = true;
-                    dict.Add(urn, overwrite: true);
                 }
-                else if (!seenCanonical)
-                {
-                    dict.Add(urn, overwrite: true);
-                }
+
+                dict.Add(urn, overwrite: true);
             }
         }
         finally
@@ -139,16 +143,19 @@ internal sealed class DictionaryUrnJsonConverter<TUrn, TVariants>
         writer.WriteStartObject();
         foreach (var urn in value)
         {
-            var converter = _variantConverters[urn.UrnType];
-            writer.WritePropertyName(urn.PrefixSpan);
-            converter.Write(writer, urn, options);
+            var valueConverter = _variantConverters[urn.UrnType];
+            foreach (var prefix in valueConverter.Prefixes)
+            {
+                writer.WritePropertyName(prefix);
+                valueConverter.Write(writer, urn, options);
+            }
         }
         writer.WriteEndObject();
     }
 
-    private static Dictionary<TVariants, JsonConverter<TUrn>> CreateVariantConverters()
+    private static Dictionary<TVariants, VariantValueJsonConverter> CreateVariantConverters()
     {
-        var dict = new Dictionary<TVariants, JsonConverter<TUrn>>();
+        var dict = new Dictionary<TVariants, VariantValueJsonConverter>();
         foreach (var variant in TUrn.Variants)
         {
             var type = TUrn.VariantTypeFor(variant);
@@ -166,7 +173,7 @@ internal sealed class DictionaryUrnJsonConverter<TUrn, TVariants>
             Debug.Assert(variantsEnumType == typeof(TVariants));
 
             var converterType = typeof(VariantValueJsonConverter<,>).MakeGenericType(urnType, variantsEnumType, variantType, valueType);
-            var converter = (JsonConverter<TUrn>?)Activator.CreateInstance(converterType)
+            var converter = (VariantValueJsonConverter?)Activator.CreateInstance(converterType)
                 ?? throw new InvalidOperationException($"Failed to create converter for {type}");
 
             dict.Add(variant, converter);
@@ -175,10 +182,37 @@ internal sealed class DictionaryUrnJsonConverter<TUrn, TVariants>
         return dict;
     }
 
-    internal sealed class VariantValueJsonConverter<TVariant, TValue>
+    internal abstract class VariantValueJsonConverter
         : JsonConverter<TUrn>
+    {
+        public ImmutableArray<JsonEncodedText> Prefixes { get; }
+
+        protected VariantValueJsonConverter(ImmutableArray<JsonEncodedText> prefixes)
+        {
+            Prefixes = prefixes;
+        }
+
+        protected static ImmutableArray<JsonEncodedText> EncodePrefixes(ReadOnlySpan<string> prefixes)
+        {
+            var builder = ImmutableArray.CreateBuilder<JsonEncodedText>(prefixes.Length);
+            foreach (var prefix in prefixes)
+            {
+                builder.Add(JsonEncodedText.Encode(prefix));
+            }
+
+            return builder.MoveToImmutable();
+        }
+    }
+
+    internal sealed class VariantValueJsonConverter<TVariant, TValue>
+        : VariantValueJsonConverter
         where TVariant : TUrn, IKeyValueUrnVariant<TVariant, TUrn, TVariants, TValue>
     {
+        public VariantValueJsonConverter()
+            : base(EncodePrefixes(TVariant.Prefixes))
+        {
+        }
+
         public override TUrn? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var value = JsonSerializer.Deserialize<TValue>(ref reader, options);

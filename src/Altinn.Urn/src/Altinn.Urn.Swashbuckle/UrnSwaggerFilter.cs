@@ -198,10 +198,18 @@ internal class UrnSwaggerFilter
 
             foreach (var v in variants)
             {
-                schema.Properties.Add(TUrn.CanonicalPrefixFor(v), new OpenApiSchema
+                var canonicalPrefix = TUrn.CanonicalPrefixFor(v);
+                foreach (var prefix in TUrn.PrefixesFor(v))
                 {
-                    Type = "string",
-                });
+                    var valueSchema = context.SchemaGenerator.GenerateSchema(TUrn.ValueTypeFor(v), context.SchemaRepository);
+                    var isCanonical = string.Equals(prefix, canonicalPrefix, StringComparison.Ordinal);
+                    if (!isCanonical)
+                    {
+                        valueSchema.Deprecated = true;
+                    }
+
+                    schema.Properties.Add(prefix, valueSchema);
+                }
             }
         }
 

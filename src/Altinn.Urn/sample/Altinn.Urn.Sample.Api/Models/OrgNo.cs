@@ -1,9 +1,14 @@
 ﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Filters;
+using Altinn.Urn.Sample.Api.Json;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Models;
 
+[SwaggerString(Pattern = @"^\d{9}$")]
+[JsonConverter(typeof(StringParsableJsonConverter))]
 public record OrgNo
     : IParsable<OrgNo>
     , ISpanParsable<OrgNo>

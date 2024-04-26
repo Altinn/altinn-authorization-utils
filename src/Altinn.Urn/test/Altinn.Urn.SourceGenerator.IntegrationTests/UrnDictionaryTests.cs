@@ -166,6 +166,7 @@ public partial class UrnDictionaryTests
             """
             {
                 "urn:altinn:organization:identifier": 123456789,
+                "urn:altinn:organization:org-no": 123456789,
                 "urn:altinn:party:identifier": 42,
                 "urn:altinn:organization:role": 29
             }
@@ -202,7 +203,8 @@ public partial class UrnDictionaryTests
     [KeyValueUrn]
     public abstract partial record TestUrn
     {
-        [UrnKey("altinn:organization:identifier")]
+        [UrnKey("altinn:organization:identifier", Canonical = true)]
+        [UrnKey("altinn:organization:org-no")]
         public partial bool IsOrganization(out int value);
 
         [UrnKey("altinn:organization:role")]
