@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v1.0.0...Altinn.Swashbuckle-v1.1.0) (2024-04-26)
+
+
+### Features
+
+* add SwaggerStringAttribute ([624f435](https://github.com/Altinn/altinn-authorization-utils/commit/624f435cf0711ced5b3f5db0a470fc63cf6be553))
+
 ## 1.0.0 (2024-04-23)
 
 
