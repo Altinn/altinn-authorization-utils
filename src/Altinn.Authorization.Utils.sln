@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -46,6 +46,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4FC59E30-49CB-419D-B009-9B9E60FDB6B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults", "Altinn.Authorization.ServiceDefaults\src\Altinn.Authorization.ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj", "{21830AB9-1C12-4F5D-BAB0-B65083A26B69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql", "Altinn.Authorization.ServiceDefaults\src\Altinn.Authorization.ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj", "{80C6EEB0-7FA3-412B-996C-51226D8B620D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,10 @@ Global
 		{21830AB9-1C12-4F5D-BAB0-B65083A26B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21830AB9-1C12-4F5D-BAB0-B65083A26B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21830AB9-1C12-4F5D-BAB0-B65083A26B69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{D3DEC557-4814-41FD-B74A-E5DCABCB724C} = {ECCFCA0D-D84D-429E-9393-8F1CFB226609}
 		{4FC59E30-49CB-419D-B009-9B9E60FDB6B1} = {ECCFCA0D-D84D-429E-9393-8F1CFB226609}
 		{21830AB9-1C12-4F5D-BAB0-B65083A26B69} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
+		{80C6EEB0-7FA3-412B-996C-51226D8B620D} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A2B25D1-5A10-4899-A920-AB7F206BE9D4}

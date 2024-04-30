@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+		<Using Include="Npgsql" />
+	</ItemGroup>
+		
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.1" />
+    <PackageReference Include="Npgsql" Version="8.0.2" />
+    <PackageReference Include="Npgsql.OpenTelemetry" Version="8.0.2" />
+  </ItemGroup>
+		
+  <ItemGroup>
+    <ProjectReference Include="..\Altinn.Authorization.ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
