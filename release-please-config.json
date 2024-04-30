@@ -22,6 +22,16 @@
           "xpath": "//Project/PropertyGroup/Version"
         }
       ]
+    },
+    "src/Altinn.Authorization.ServiceDefaults": {
+      "component": "Altinn.Authorization.ServiceDefaults",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
     }
   }
 }
