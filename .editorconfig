@@ -16,7 +16,7 @@ dotnet_diagnostic.VSTHRD200.severity = none
 dotnet_diagnostic.SA1001.severity = none
 
 # Verify settings
-[*.{received,verified}.{txt,xml,json,cs}]
+[*.{received,verified}.{txt,json,cs}]
 charset = "utf-8-bom"
 end_of_line = lf
 indent_size = unset
