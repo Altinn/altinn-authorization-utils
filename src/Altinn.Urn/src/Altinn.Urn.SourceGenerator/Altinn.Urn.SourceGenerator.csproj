@@ -1,21 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+	<PropertyGroup>
 		<!-- 👇 Source generators must target netstandard 2.0 -->
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<!-- 👇 We don't want to reference the source generator dll directly in consuming projects -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<!-- 👇 Since we target netstandard2.0 we need to manually set the lang version to get newer language features -->
+		<!-- 👇 Since we target netstandard2.0 we need to manually set the lang version to get newer
+		language features -->
 		<LangVersion>12</LangVersion>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-		<!-- 👇 We don't want the source generator to be packable by itself, instead it's included in the Altinn.Urn package -->
+		<!-- 👇 We don't want the source generator to be packable by itself, instead it's included in
+		the Altinn.Urn package -->
 		<IsPackable>false</IsPackable>
-  </PropertyGroup>
+	</PropertyGroup>
 
-  <ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2" PrivateAssets="all" />
-  </ItemGroup>
-	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0"
+			PrivateAssets="all" />
+	</ItemGroup>
+
 </Project>
