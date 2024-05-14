@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.3.0...Altinn.Urn-v2.3.1) (2024-05-14)
+
+
+### Bug Fixes
+
+* downgrade Microsoft.CodeAnalysis ([354f2b2](https://github.com/Altinn/altinn-authorization-utils/commit/354f2b268430a1c35dde5834d2de3968c53dfb8c))
+
 ## [2.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.2.2...Altinn.Urn-v2.3.0) (2024-04-26)
 
 
