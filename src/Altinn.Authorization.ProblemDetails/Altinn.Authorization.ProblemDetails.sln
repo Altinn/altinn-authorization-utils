@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E495A322-353E-44BE-ADEE-4DB514621BBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Tests", "test\ProblemDetails.Tests\Altinn.Authorization.ProblemDetails.Tests.csproj", "{C1E314C3-2010-47B4-818B-719F1D1A2540}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{25B3E858-1E75-4314-8F6A-99B1E2170709}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails", "src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj", "{190CF604-A972-4003-8E67-38169F3D57CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1E314C3-2010-47B4-818B-719F1D1A2540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1E314C3-2010-47B4-818B-719F1D1A2540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1E314C3-2010-47B4-818B-719F1D1A2540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1E314C3-2010-47B4-818B-719F1D1A2540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{190CF604-A972-4003-8E67-38169F3D57CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{190CF604-A972-4003-8E67-38169F3D57CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{190CF604-A972-4003-8E67-38169F3D57CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{190CF604-A972-4003-8E67-38169F3D57CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C1E314C3-2010-47B4-818B-719F1D1A2540} = {E495A322-353E-44BE-ADEE-4DB514621BBF}
+		{190CF604-A972-4003-8E67-38169F3D57CB} = {25B3E858-1E75-4314-8F6A-99B1E2170709}
+	EndGlobalSection
+EndGlobal

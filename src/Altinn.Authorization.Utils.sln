@@ -49,6 +49,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql", "Altinn.Authorization.ServiceDefaults\src\Altinn.Authorization.ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj", "{80C6EEB0-7FA3-412B-996C-51226D8B620D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn.Authorization.ProblemDetails", "Altinn.Authorization.ProblemDetails", "{CB0B88B9-AF74-43C9-A838-0C24D0CEED9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CD8224F-8BB4-4F4B-B34E-48D459DE72D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails", "Altinn.Authorization.ProblemDetails\src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj", "{D228F81C-3A04-48CF-83DC-034BC6D690DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0007D53E-A03D-4074-A022-AB52AE079449}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Tests", "Altinn.Authorization.ProblemDetails\test\ProblemDetails.Tests\Altinn.Authorization.ProblemDetails.Tests.csproj", "{92AA4DBA-CA3B-4519-A73D-27758B9BF826}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +117,14 @@ Global
 		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80C6EEB0-7FA3-412B-996C-51226D8B620D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D228F81C-3A04-48CF-83DC-034BC6D690DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D228F81C-3A04-48CF-83DC-034BC6D690DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D228F81C-3A04-48CF-83DC-034BC6D690DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D228F81C-3A04-48CF-83DC-034BC6D690DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,6 +150,10 @@ Global
 		{4FC59E30-49CB-419D-B009-9B9E60FDB6B1} = {ECCFCA0D-D84D-429E-9393-8F1CFB226609}
 		{21830AB9-1C12-4F5D-BAB0-B65083A26B69} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
 		{80C6EEB0-7FA3-412B-996C-51226D8B620D} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
+		{6CD8224F-8BB4-4F4B-B34E-48D459DE72D1} = {CB0B88B9-AF74-43C9-A838-0C24D0CEED9A}
+		{D228F81C-3A04-48CF-83DC-034BC6D690DE} = {6CD8224F-8BB4-4F4B-B34E-48D459DE72D1}
+		{0007D53E-A03D-4074-A022-AB52AE079449} = {CB0B88B9-AF74-43C9-A838-0C24D0CEED9A}
+		{92AA4DBA-CA3B-4519-A73D-27758B9BF826} = {0007D53E-A03D-4074-A022-AB52AE079449}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A2B25D1-5A10-4899-A920-AB7F206BE9D4}
