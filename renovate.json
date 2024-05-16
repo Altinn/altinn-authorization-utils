@@ -2,5 +2,10 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>Altinn/renovate-config"
-  ]
+  ],
+  "packageRules": [{
+    "matchPackagePrefixes": ["Microsoft.CodeAnalysis"],
+    "matchDatasources": ["nuget"],
+    "allowedVersions": "<4.9.0"
+  }]
 }
