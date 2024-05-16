@@ -5,7 +5,8 @@
   ],
   "packageRules": [{
     "matchPackagePrefixes": ["Microsoft.CodeAnalysis"],
-    "matchDatasources": ["nuget"],
-    "allowedVersions": "<4.9.0"
+    "groupName": "Microsoft.CodeAnalysis",
+    "groupSlug": "microsoft-codeanalysis",
+    "prBodyNotes": [":warning: Updating Microsoft.CodeAnalysis packages requires new compiler version. This typically requires people to update VS. :warning:"]
   }]
 }
