@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <RootNamespace>Altinn.Swashbuckle</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<RootNamespace>Altinn.Swashbuckle</RootNamespace>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Altinn.Swashbuckle" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.2" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+		<PackageReference Include="CommunityToolkit.Diagnostics" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+		<PackageReference Include="Microsoft.Extensions.Options" />
 	</ItemGroup>
 
 </Project>
