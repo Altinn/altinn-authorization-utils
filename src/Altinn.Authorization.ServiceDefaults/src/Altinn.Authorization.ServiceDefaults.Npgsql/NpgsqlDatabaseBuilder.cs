@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Npgsql.Internal;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
@@ -53,10 +52,6 @@ internal class NpgsqlDatabaseBuilder
         string? pgName = null,
         INpgsqlNameTranslator? nameTranslator = null)
         => Configure(builder => builder.MapComposite(clrType, pgName, nameTranslator));
-
-    /// <inheritdoc/>
-    public INpgsqlDatabaseBuilder AddTypeInfoResolverFactory(PgTypeInfoResolverFactory factory)
-        => Configure(builder => builder.AddTypeInfoResolverFactory(factory));
 
     /// <inheritdoc/>
     public INpgsqlDatabaseBuilder ConfigureJsonOptions(JsonSerializerOptions serializerOptions)

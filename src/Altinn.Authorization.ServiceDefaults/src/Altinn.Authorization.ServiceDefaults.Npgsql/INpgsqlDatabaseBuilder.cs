@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Npgsql.Internal;
 using Npgsql.TypeMapping;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -48,9 +47,6 @@ public interface INpgsqlDatabaseBuilder
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)] Type clrType,
         string? pgName = null,
         INpgsqlNameTranslator? nameTranslator = null);
-
-    /// <inheritdoc cref="INpgsqlTypeMapper.AddTypeInfoResolverFactory(PgTypeInfoResolverFactory)"/>
-    public INpgsqlDatabaseBuilder AddTypeInfoResolverFactory(PgTypeInfoResolverFactory factory);
 
     /// <inheritdoc cref="INpgsqlTypeMapper.ConfigureJsonOptions(JsonSerializerOptions)"/>
     public INpgsqlDatabaseBuilder ConfigureJsonOptions(JsonSerializerOptions serializerOptions);
