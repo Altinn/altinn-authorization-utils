@@ -1,5 +1,9 @@
 ﻿namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// An interface for providing example data for self.
+/// </summary>
+/// <typeparam name="TSelf">The self type.</typeparam>
 public interface IExampleDataProvider<TSelf>
     where TSelf : IExampleDataProvider<TSelf>
 {

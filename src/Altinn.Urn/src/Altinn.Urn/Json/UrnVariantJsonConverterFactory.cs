@@ -5,18 +5,24 @@ using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Json;
 
+/// <summary>
+/// A <see cref="JsonConverterFactory"/> for converting <see cref="IKeyValueUrn{TUrn, TVariants}"/> and its variants to and from JSON.
+/// </summary>
+/// <typeparam name="TUrn">The URN type.</typeparam>
+/// <typeparam name="TVariants">The URN variants enum type.</typeparam>
 public sealed class UrnVariantJsonConverterFactory<TUrn, TVariants>
     : JsonConverterFactory
     where TUrn : IKeyValueUrn<TUrn, TVariants>
     where TVariants : struct, Enum
 {
-    //private static readonly UrnJsonConverter<TUrn> _baseConverter = new();
     private static readonly Dictionary<Type, JsonConverter> _converters
         = CreateConverters();
 
+    /// <inheritdoc/>
     public override bool CanConvert(Type typeToConvert)
         => _converters.ContainsKey(typeToConvert);
 
+    /// <inheritdoc/>
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         if (_converters.TryGetValue(typeToConvert, out var converter))

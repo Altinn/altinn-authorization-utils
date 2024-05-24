@@ -5,6 +5,14 @@
     <CoreBuildDependsOn>$(CoreBuildDependsOn);_CheckVersion</CoreBuildDependsOn>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(IsTestProject)' == 'true' Or '$(IsPackable)' == 'false' ">
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(IsTestProject)' == 'true' Or '$(IsPackable)' == 'false' ">
+    <DocFileItem Remove="@(DocFileItem)" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>

@@ -2,6 +2,9 @@
 
 namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// Provides example data for a type.
+/// </summary>
 public abstract class ExampleDataProvider
 {
     /// <summary>
@@ -15,10 +18,15 @@ public abstract class ExampleDataProvider
     /// Gets an example of the type.
     /// </summary>
     /// <param name="typeToProvide">The type to get an example of.</param>
+    /// <param name="options">The options to use when getting the example.</param>
     /// <returns>The example data.</returns>
     public abstract IEnumerable? GetExamples(Type typeToProvide, ExampleDataOptions options);
 }
 
+/// <summary>
+/// Provides example data for a type.
+/// </summary>
+/// <typeparam name="T">The type this provider can provide examples for.</typeparam>
 public abstract class ExampleDataProvider<T>
     : ExampleDataProvider
 {

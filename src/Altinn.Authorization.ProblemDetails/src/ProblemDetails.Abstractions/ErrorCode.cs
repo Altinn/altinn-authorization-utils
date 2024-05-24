@@ -7,6 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ProblemDetails;
 
+/// <summary>
+/// An unique error code that identifies a specific error.
+/// </summary>
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 [JsonConverter(typeof(ErrorCodeJsonConverter))]
 public readonly struct ErrorCode

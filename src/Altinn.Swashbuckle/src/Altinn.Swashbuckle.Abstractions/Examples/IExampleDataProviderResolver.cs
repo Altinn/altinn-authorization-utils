@@ -1,5 +1,8 @@
 ﻿namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// A resolver for getting example-data providers.
+/// </summary>
 public interface IExampleDataProviderResolver
 {
     /// <summary>

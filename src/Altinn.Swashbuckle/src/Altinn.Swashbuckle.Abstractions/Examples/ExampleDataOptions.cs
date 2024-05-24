@@ -2,12 +2,17 @@
 using CommunityToolkit.Diagnostics;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Text.Json.Serialization.Metadata;
 
 namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// Options for getting example data.
+/// </summary>
 public sealed class ExampleDataOptions
 {
+    /// <summary>
+    /// Gets the default options for getting example data.
+    /// </summary>
     public static ExampleDataOptions DefaultOptions { get; } = CreateDefaultOptions();
 
     private IExampleDataProviderResolver? _providerResolver;

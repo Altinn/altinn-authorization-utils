@@ -5,5 +5,9 @@
 /// </summary>
 public interface IVisitableKeyValueUrn
 {
+    /// <summary>
+    /// Accepts a visitor.
+    /// </summary>
+    /// <param name="visitor">A <see cref="IKeyValueUrnVisitor"/>.</param>
     public void Accept(IKeyValueUrnVisitor visitor);
 }

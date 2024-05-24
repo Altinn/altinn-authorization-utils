@@ -14,6 +14,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.Hosting;
 
+/// <summary>
+/// Extension methods for adding default services to an Altinn service.
+/// </summary>
 public static class AltinnServiceDefaultsExtensions
 {
     /// <summary>

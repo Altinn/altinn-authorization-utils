@@ -3,6 +3,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Microsoft.Extensions.Hosting;
 
+/// <summary>
+/// Extension methods for adding health checks to the <see cref="IHostApplicationBuilder"/>.
+/// </summary>
 public static class AltinnHealthChecksExtensions
 {
     /// <summary>

@@ -6,6 +6,11 @@ using System.Text.Json.Serialization;
 
 namespace Altinn.Urn;
 
+/// <summary>
+/// A dictionary of <typeparamref name="TUrn"/> keyed by <typeparamref name="TVariants"/>.
+/// </summary>
+/// <typeparam name="TUrn">The URN type.</typeparam>
+/// <typeparam name="TVariants">The URN variants enum type.</typeparam>
 [DebuggerDisplay("Count = {Count}")]
 [DebuggerTypeProxy(typeof(UrnDictionaryDebugView<,>))]
 [JsonConverter(typeof(DictionaryUrnJsonConverter))]
@@ -73,16 +78,17 @@ public class KeyValueUrnDictionary<TUrn, TVariants>
         => _dictionary.Add(value.UrnType, value);
 
     /// <inheritdoc cref="ICollection{T}.Add(T)"/>
+    /// <param name="item">The URN to add to the dictionary.</param>
     /// <param name="overwrite">If <see langword="true"/>, allows overwriting an existing value.</param>
-    public void Add(TUrn value, bool overwrite)
+    public void Add(TUrn item, bool overwrite)
     {
         if (overwrite)
         {
-            _dictionary[value.UrnType] = value;
+            _dictionary[item.UrnType] = item;
         }
         else
         {
-            _dictionary.Add(value.UrnType, value);
+            _dictionary.Add(item.UrnType, item);
         }
     }
 

@@ -4,8 +4,16 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for adding <see cref="ExampleDataOptions"/> to the <see cref="IServiceCollection"/>.
+/// </summary>
 public static class ExampleDataProviderDependencyInjectionExtensions
 {
+    /// <summary>
+    /// Add <see cref="ExampleDataOptions"/> to the <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <returns><paramref name="services"/>.</returns>
     public static OptionsBuilder<ExampleDataOptions> AddExampleDataOptions(this IServiceCollection services)
     {
         var builder = services.AddOptions<ExampleDataOptions>();
@@ -14,6 +22,12 @@ public static class ExampleDataProviderDependencyInjectionExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Add a named <see cref="ExampleDataOptions"/> to the <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="name">The options name.</param>
+    /// <returns><paramref name="services"/>.</returns>
     public static OptionsBuilder<ExampleDataOptions> AddExampleDataOptions(this IServiceCollection services, string name)
     {
         var builder = services.AddOptions<ExampleDataOptions>(name);

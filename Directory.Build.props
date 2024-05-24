@@ -4,10 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <BaseArtifactsPath Condition=" '$(BaseArtifactsPath)' == '' ">$(MSBuildThisFileDirectory)artifacts\</BaseArtifactsPath>
+    <BaseArtifactsPath Condition=" '$(BaseArtifactsPath)' == '' ">
+      $(MSBuildThisFileDirectory)artifacts\</BaseArtifactsPath>
     <CopyArtifactsAfterTargets>Pack</CopyArtifactsAfterTargets>
     <DefaultArtifactsFileMatch>*nupkg</DefaultArtifactsFileMatch>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
 </Project>

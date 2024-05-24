@@ -20,6 +20,7 @@ internal sealed class StringUrnJsonConverter
 /// 
 /// It supports reading URNs as strings, and writing URNs as strings.
 /// </summary>
+/// <typeparam name="TWrapper">A utility wrapper type.</typeparam>
 /// <typeparam name="TUrn">The URN type.</typeparam>
 internal sealed class StringUrnJsonConverter<TWrapper, TUrn>
     : JsonConverter<TWrapper>

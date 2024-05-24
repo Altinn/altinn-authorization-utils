@@ -4,6 +4,9 @@ using System.Diagnostics;
 
 namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// Provides example data providers for a type.
+/// </summary>
 public abstract class ExampleDataProviderFactory
     : ExampleDataProvider
 {
@@ -11,6 +14,7 @@ public abstract class ExampleDataProviderFactory
     /// Creates a provider for the type.
     /// </summary>
     /// <param name="typeToProvide">The type to provide examples for.</param>
+    /// <param name="options">The options to use.</param>
     /// <returns>An <see cref="ExampleDataProvider"/>.</returns>
     protected internal abstract ExampleDataProvider? CreateProvider(Type typeToProvide, ExampleDataOptions options);
 

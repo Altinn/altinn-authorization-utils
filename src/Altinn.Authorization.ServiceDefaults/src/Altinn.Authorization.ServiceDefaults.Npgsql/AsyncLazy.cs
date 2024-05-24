@@ -22,7 +22,7 @@ internal class AsyncLazy<T>
     /// <remark>
     /// The canceled task will be restarted automatically even if the lazy container is not resettable.
     /// </remark>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <param name="cancellationToken">The token that can be used to cancel the operation.</param>
     /// <returns>Lazy representation of the value.</returns>
     public Task<T> WithCancellation(CancellationToken cancellationToken)
         => Volatile.Read(ref _task) is { IsCanceled: false } t ? t.WaitAsync(cancellationToken) : GetOrStartAsync(cancellationToken);

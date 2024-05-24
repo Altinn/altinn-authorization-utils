@@ -108,10 +108,19 @@ public static class NpgsqlDatabaseCreatorServiceCollectionExtensions
         });
     }
 
+    /// <summary>
+    /// Settings for creating a database.
+    /// </summary>
     public sealed class CreateDatabaseSettings
     {
+        /// <summary>
+        /// Gets or sets the database name.
+        /// </summary>
         public string? DatabaseName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the database owner (optional).
+        /// </summary>
         public string? DatabaseOwner { get; set; }
 
         internal NpgsqlCreateDatabase.Settings IntoSettings()
@@ -122,10 +131,19 @@ public static class NpgsqlDatabaseCreatorServiceCollectionExtensions
         }
     }
 
+    /// <summary>
+    /// Settings for creating a role.
+    /// </summary>
     public sealed class CreateRoleSettings
     {
+        /// <summary>
+        /// Gets or sets the role name.
+        /// </summary>
         public string? Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets the role password (optional).
+        /// </summary>
         public string? Password { get; set; }
 
         internal NpgsqlCreateRole.Settings IntoSettings()

@@ -16,11 +16,13 @@ public sealed class UrnJsonConverter<T>
     private static readonly string Name = typeof(T).Name;
     private static readonly string InvalidUrn = $"Invalid {Name}";
 
+    /// <inheritdoc/>
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         return UrnJsonConverter.ReadUrn<T>(ref reader, Name, InvalidUrn);
     }
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
         UrnJsonConverter.WriteUrnString(writer, value);

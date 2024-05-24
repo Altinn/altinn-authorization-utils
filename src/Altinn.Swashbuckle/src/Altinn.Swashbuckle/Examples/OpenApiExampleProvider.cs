@@ -7,11 +7,17 @@ using System.Text.Json;
 
 namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// A provider for OpenAPI examples.
+/// </summary>
 public sealed class OpenApiExampleProvider
 {
     private readonly IOptionsMonitor<ExampleDataOptions> _exampleDataOptions;
     private readonly IOptionsMonitor<JsonOptions> _jsonOptions;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenApiExampleProvider"/> class.
+    /// </summary>
     public OpenApiExampleProvider(
         IOptionsMonitor<ExampleDataOptions> exampleDataOptions,
         IOptionsMonitor<JsonOptions> jsonOptions)
@@ -20,9 +26,19 @@ public sealed class OpenApiExampleProvider
         _jsonOptions = jsonOptions;
     }
 
+    /// <summary>
+    /// Gets an example for the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to get an example for.</typeparam>
+    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
     public IEnumerable<IOpenApiAny>? GetExample<T>()
         => GetExample(typeof(T));
 
+    /// <summary>
+    /// Gets an example for the specified type.
+    /// </summary>
+    /// <param name="type">The type to get an example for.</param>
+    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
     public IEnumerable<IOpenApiAny>? GetExample(Type type)
     {
         var exampleDataOptions = _exampleDataOptions.CurrentValue ?? ExampleDataOptions.DefaultOptions;

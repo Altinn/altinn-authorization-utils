@@ -20,6 +20,7 @@ internal sealed class TypeValueObjectUrnJsonConverter
 /// 
 /// It supports reading URNs as objects with a type and value property, and writing URNs as objects with a type and value property.
 /// </summary>
+/// <typeparam name="TWrapper">A utility wrapper type.</typeparam>
 /// <typeparam name="TUrn">The URN type.</typeparam>
 internal sealed class TypeValueObjectUrnJsonConverter<TWrapper, TUrn>
     : JsonConverter<TWrapper>

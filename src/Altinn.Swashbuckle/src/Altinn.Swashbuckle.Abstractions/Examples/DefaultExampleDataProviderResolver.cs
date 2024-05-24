@@ -4,6 +4,9 @@ using System.Diagnostics;
 
 namespace Altinn.Swashbuckle.Examples;
 
+/// <summary>
+/// Default implementation of <see cref="IExampleDataProviderResolver"/>.
+/// </summary>
 public class DefaultExampleDataProviderResolver
     : IExampleDataProviderResolver
 {
@@ -24,6 +27,7 @@ public class DefaultExampleDataProviderResolver
         new IExampleDataProviderProvider(),
     ];
 
+    /// <inheritdoc/>
     public ExampleDataProvider? GetProvider(Type type, ExampleDataOptions options)
     {
         if (options.ProvidersInternal is { } list)

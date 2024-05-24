@@ -5,8 +5,16 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for adding URN support to Swashbuckle.
+/// </summary>
 public static class UrnSwashbuckleDependencyInjectionExtensions
 {
+    /// <summary>
+    /// Adds URN support to Swashbuckle.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
     public static IServiceCollection AddUrnSwaggerSupport(this IServiceCollection services)
     {
         services.AddSingleton<UrnExampleDataProviderResolver>();

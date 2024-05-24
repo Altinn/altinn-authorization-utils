@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace Altinn.Urn;
 
@@ -14,6 +15,7 @@ namespace Altinn.Urn;
 public readonly struct KeyValueUrn
     : IKeyValueUrn
     , IEquatable<KeyValueUrn>
+    , IEqualityOperators<KeyValueUrn, KeyValueUrn, bool>
 {
     /// <summary>
     /// Creates a new instance of the <see cref="KeyValueUrn"/> type.
@@ -151,9 +153,11 @@ public readonly struct KeyValueUrn
     public override int GetHashCode()
         => HashCode.Combine(_urn, _valueIndex);
 
+    /// <inheritdoc/>
     public static bool operator ==(KeyValueUrn left, KeyValueUrn right)
         => left.Equals(right);
 
+    /// <inheritdoc/>
     public static bool operator !=(KeyValueUrn left, KeyValueUrn right)
         => !left.Equals(right);
 }

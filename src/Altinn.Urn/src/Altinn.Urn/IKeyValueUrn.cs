@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Altinn.Urn;
 
 /// <summary>
-/// Marker interface for URNs.
+/// An URN consisting of a key and a value.
 /// </summary>
 public interface IKeyValueUrn 
     : IFormattable
@@ -121,6 +121,10 @@ public interface IKeyValueUrn
     public ReadOnlyMemory<char> ValueMemory { get; }
 }
 
+/// <summary>
+/// An URN consisting of a key and a value.
+/// </summary>
+/// <typeparam name="TSelf">The type of the URN.</typeparam>
 public interface IKeyValueUrn<TSelf>
     : IKeyValueUrn
     , IParsable<TSelf>
@@ -160,6 +164,11 @@ public interface IKeyValueUrn<TSelf>
     static abstract bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out TSelf result);
 }
 
+/// <summary>
+/// An URN consisting of a key and a value.
+/// </summary>
+/// <typeparam name="TSelf">The type of the URN.</typeparam>
+/// <typeparam name="TVariants">The type of the enum representing the different variants this URN type supports.</typeparam>
 public interface IKeyValueUrn<TSelf, TVariants>
     : IKeyValueUrn<TSelf>
     where TSelf : IKeyValueUrn<TSelf, TVariants>
@@ -227,15 +236,30 @@ public interface IKeyValueUrn<TSelf, TVariants>
     public TVariants UrnType { get; }
 }
 
+/// <summary>
+/// An URN variant consisting of a key and a value.
+/// </summary>
+/// <typeparam name="TUrn">The type of the URN.</typeparam>
+/// <typeparam name="TVariants">The type of the enum representing the different variants this URN type supports.</typeparam>
 public interface IKeyValueUrnVariant<TUrn, TVariants>
     : IKeyValueUrn<TUrn, TVariants>
     , IVisitableKeyValueUrn
     where TUrn : IKeyValueUrn<TUrn, TVariants>
     where TVariants : struct, Enum
 {
+    /// <summary>
+    /// Gets the variant of the URN.
+    /// </summary>
     public static abstract TVariants Variant { get; }
 }
 
+/// <summary>
+/// An URN variant consisting of a key and a value.
+/// </summary>
+/// <typeparam name="TSelf">The variant type.</typeparam>
+/// <typeparam name="TUrn">The type of the URN.</typeparam>
+/// <typeparam name="TVariants">The type of the enum representing the different variants this URN type supports.</typeparam>
+/// <typeparam name="TValue">The value type.</typeparam>
 public interface IKeyValueUrnVariant<TSelf, TUrn, TVariants, TValue>
     : IKeyValueUrnVariant<TUrn, TVariants>
     , IKeyValueUrn<TUrn, TVariants>
