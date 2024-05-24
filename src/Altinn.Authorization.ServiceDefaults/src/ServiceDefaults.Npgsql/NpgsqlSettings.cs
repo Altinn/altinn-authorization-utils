@@ -95,7 +95,12 @@ public sealed class NpgsqlCreateDatabaseSettings
     /// <summary>
     /// Gets or sets the connection string of the PostgreSQL database-server to connect to for creating the database.
     /// </summary>
-    public string? ConnectionString { get; set; }
+    public string? ClusterConnectionString { get; set; }
+
+    /// <summary>
+    /// Gets or sets the connection string of the PostgreSQL database to connect to for initializing the database post creation.
+    /// </summary>
+    public string? DatabaseConnectionString { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the database to create.
@@ -111,6 +116,27 @@ public sealed class NpgsqlCreateDatabaseSettings
     /// Gets or sets the settings for creating roles in the database.
     /// </summary>
     public IDictionary<string, NpgsqlCreateRoleSettings> Roles { get; set; } = new Dictionary<string, NpgsqlCreateRoleSettings>();
+
+    /// <summary>
+    /// Gets or sets the settings for creating schemas in the database.
+    /// </summary>
+    public IDictionary<string, NpgsqlCreateSchemaSettings> Schemas { get; set; } = new Dictionary<string, NpgsqlCreateSchemaSettings>();
+}
+
+/// <summary>
+/// Provides the client configuration settings for creating a schema in a PostgreSQL database using Npgsql.
+/// </summary>
+public sealed class NpgsqlCreateSchemaSettings
+{
+    /// <summary>
+    /// Gets or sets the name of the schema to create.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the owner of the schema to create.
+    /// </summary>
+    public string? Owner { get; set; }
 }
 
 /// <summary>
@@ -127,4 +153,75 @@ public sealed class NpgsqlCreateRoleSettings
     /// Gets or sets the password of the role to create.
     /// </summary>
     public string? Password { get; set; }
+
+    /// <summary>
+    /// Gets or sets the settings for granting permissions to the role.
+    /// </summary>
+    public NpgsqlRoleGrantSettings Grants { get; set; } = new();
 }
+
+/// <summary>
+/// Provides the client configuration settings for granting permissions in a PostgreSQL database using Npgsql.
+/// </summary>
+public sealed class NpgsqlRoleGrantSettings
+{
+    /// <summary>
+    /// Gets or sets the kind of permissions to grant on the database.
+    /// </summary>
+    public NpgsqlDatabaseGrantSettings Database { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets roles that the role is granted.
+    /// </summary>
+    public IDictionary<string, bool> Roles { get; set; } = new Dictionary<string, bool>();
+}
+
+/// <summary>
+/// Provides the client configuration settings for granting permissions in a PostgreSQL database using Npgsql.
+/// </summary>
+public sealed class NpgsqlDatabaseGrantSettings
+{
+    /// <summary>
+    /// Gets or sets the kind of privileges to grant on the database.
+    /// </summary>
+    public NpgsqlDatabasePrivileges Privileges { get; set; }
+
+    /// <summary>
+    /// Gets or sets a boolean value that indicates whether the permissions should be granted with the grant option.
+    /// </summary>
+    public bool WithGrantOption { get; set; }
+}
+
+///// <summary>
+///// Provides the client configuration settings for granting permissions in a PostgreSQL schema using Npgsql.
+///// </summary>
+//public sealed class NpgsqlSchemaGrantSettings
+//{
+//    /// <summary>
+//    /// Gets or sets the kind of permissions to grant on the schema.
+//    /// </summary>
+//    public NpgsqlSchemaGrants Schema { get; set; }
+//}
+
+[Flags]
+public enum NpgsqlDatabasePrivileges : byte
+{
+    None = 0,
+
+    Create = 1 << 0,
+    Connect = 1 << 1,
+    Temporary = 1 << 2,
+
+    All = Create | Connect | Temporary,
+}
+
+//[Flags]
+//public enum NpgsqlSchemaGrants : byte
+//{
+//    None = 0,
+
+//    Create = 1 << 0,
+//    Usage = 1 << 1,
+
+//    All = Create | Usage,
+//}

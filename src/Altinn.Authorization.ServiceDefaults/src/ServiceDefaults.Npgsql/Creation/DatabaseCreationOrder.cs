@@ -22,13 +22,25 @@ public readonly record struct DatabaseCreationOrder
     /// The "create roles" step - must run before database is created because a database
     /// can be owned by one of the created roles.
     /// </summary>
-    public static readonly DatabaseCreationOrder CreateRoles = new(-10); // before databases
+    public static readonly DatabaseCreationOrder CreateRoles = new(-20); // before databases
 
     /// <summary>
-    /// The "create grants" step - must run after database is created because it can
-    /// grant permissions on the newly created database.
+    /// The "configure roles" step - must run before database is created because a database
+    /// can be owned by one of the configured roles.
     /// </summary>
-    public static readonly DatabaseCreationOrder CreateGrants = new(10); // after databases
+    public static readonly DatabaseCreationOrder ConfigureRoles = new(-10); // before databases
+
+    /// <summary>
+    /// The "create schemas" step - must run after database is created because it can
+    /// create schemas in the newly created database.
+    /// </summary>
+    public static readonly DatabaseCreationOrder CreateSchemas = new(10); // after databases
+
+    /// <summary>
+    /// The "create grants" step - must run after database and schemas is created because it can
+    /// grant permissions on the newly created database/schemas.
+    /// </summary>
+    public static readonly DatabaseCreationOrder CreateGrants = new(20); // after schemas
 
     private readonly int _value;
 

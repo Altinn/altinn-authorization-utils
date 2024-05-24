@@ -10,12 +10,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -88,27 +83,32 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         NpgsqlSettings settings = new();
         builder.Configuration.GetSection(configurationSectionName).Bind(settings);
 
-        if (builder.Configuration.GetConnectionString($"{connectionName}_db") is string connectionString)
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db") is string connDb)
         {
-            settings.ConnectionString = connectionString;
-            settings.Migrate.ConnectionString = connectionString;
-            settings.Seed.ConnectionString = connectionString;
+            settings.ConnectionString = connDb;
+            settings.Migrate.ConnectionString = connDb;
+            settings.Seed.ConnectionString = connDb;
         }
 
-        if (builder.Configuration.GetConnectionString($"{connectionName}_db_migrator") is string migratorConnectionString)
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db_migrate") is string connDbMigrate)
         {
-            settings.Migrate.ConnectionString = migratorConnectionString;
-            settings.Seed.ConnectionString = migratorConnectionString;
+            settings.Migrate.ConnectionString = connDbMigrate;
+            settings.Seed.ConnectionString = connDbMigrate;
         }
 
-        if (builder.Configuration.GetConnectionString($"{connectionName}_db_seed") is string seedConnectionString)
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db_seed") is string connDbSeed)
         {
-            settings.Seed.ConnectionString = seedConnectionString;
+            settings.Seed.ConnectionString = connDbSeed;
         }
 
-        if (builder.Configuration.GetConnectionString($"{connectionName}_db_server") is string serverConnectionString)
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db_cluster") is string connDbCluster)
         {
-            settings.Create.ConnectionString = serverConnectionString;
+            settings.Create.ClusterConnectionString = connDbCluster;
+        }
+
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db_init") is string connDbCreator)
+        {
+            settings.Create.DatabaseConnectionString = connDbCreator;
         }
 
         configureSettings?.Invoke(settings);
@@ -164,43 +164,115 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
 
         if (builder.Environment.IsDevelopment() && settings.Create.Enabled)
         {
-            builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(connectionName, options =>
-            {
-                options.CreateDatabase = true;
-                options.CreateDatabaseConnectionString = settings.Create.ConnectionString;
-            });
+            var dbName = settings.Create.DatabaseName;
+            var clusterConnectionString = settings.Create.ClusterConnectionString;
+            var initConnectionString = settings.Create.DatabaseConnectionString;
 
-            if (string.IsNullOrEmpty(settings.Create.DatabaseName))
+            if (string.IsNullOrEmpty(dbName))
             {
                 ThrowHelper.ThrowArgumentException("DatabaseName must be provided when Create.Enabled is true.");
             }
 
+            string? dbOwner = null, dbPassword = null;
+            if (!string.IsNullOrEmpty(settings.Create.DatabaseOwner))
+            {
+                if (!settings.Create.Roles.TryGetValue(settings.Create.DatabaseOwner, out var ownerRole))
+                {
+                    ThrowHelper.ThrowArgumentException($"DatabaseOwner '{settings.Create.DatabaseOwner}' is not defined in Roles.");
+                }
+
+                dbOwner = ownerRole.Name;
+                dbPassword = ownerRole.Password;
+            }
+
+            if (string.IsNullOrEmpty(initConnectionString))
+            {
+                var connBuilder = new NpgsqlConnectionStringBuilder(clusterConnectionString);
+                connBuilder.Database = dbName;
+
+                if (dbOwner is not null)
+                {
+                    if (dbPassword is null)
+                    {
+                        ThrowHelper.ThrowArgumentException($"Password must be provided for the database owner '{dbOwner}' when {nameof(settings.Create)}.{nameof(settings.Create.DatabaseConnectionString)} is not set.");
+                    }
+
+                    connBuilder.Username = dbOwner;
+                    connBuilder.Password = dbPassword;
+                }
+            }
+
+            builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(options =>
+            {
+                options.CreateDatabase = true;
+                options.CreateDatabaseClusterConnectionString = clusterConnectionString;
+                options.CreateDatabaseInitConnectionString = initConnectionString;
+            });
+
+            foreach (var (key, schema) in settings.Create.Schemas)
+            {
+                if (string.IsNullOrWhiteSpace(schema.Name))
+                {
+                    ThrowHelper.ThrowArgumentException($"Schema name must be provided when Create.Enabled is true. Schema: {key}");
+                }
+
+                string? schemaOwner = null;
+                if (!string.IsNullOrWhiteSpace(schema.Owner))
+                {
+                    if (!settings.Create.Roles.TryGetValue(schema.Owner, out var role))
+                    {
+                        ThrowHelper.ThrowArgumentException($"Schema owner '{schema.Owner}' is not defined in Roles. Schema: {key}");
+                    }
+
+                    schemaOwner = role.Name;
+                }
+
+                dbBuilder.CreateSchema(schema.Name, schemaOwner);
+            }
+
             foreach (var (key, role) in settings.Create.Roles)
             {
-                if (string.IsNullOrEmpty(role.Name))
+                if (string.IsNullOrWhiteSpace(role.Name))
                 {
                     ThrowHelper.ThrowArgumentException($"Role name must be provided when Create.Enabled is true. Role: {key}");
                 }
 
                 dbBuilder.CreateRole(role.Name, role.Password);
+                dbBuilder.GrantDatabasePrivileges(databaseName: dbName, roleName: role.Name, role.Grants.Database.Privileges, role.Grants.Database.WithGrantOption);
+
+                foreach (var (grantedRole, shouldGrant) in role.Grants.Roles)
+                {
+                    if (!shouldGrant)
+                    {
+                        continue;
+                    }
+
+                    if (!settings.Create.Roles.TryGetValue(grantedRole, out var grantedRoleSettings))
+                    {
+                        ThrowHelper.ThrowArgumentException($"Role '{grantedRole}' is not defined in Roles. Role: {key}");
+                    }
+
+                    dbBuilder.GrantRoleToRole(role.Name, grantedRoleSettings.Name!);
+                }
             }
 
-            dbBuilder.CreateDatabase(settings.Create.DatabaseName!, settings.Create.DatabaseOwner);
+            dbBuilder.CreateDatabase(dbName, dbOwner);
         }
 
         if (settings.Migrate.Enabled)
         {
-            builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(connectionName, options =>
+            var migrateConnectionString = settings.Migrate.ConnectionString;
+            builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(options =>
             {
                 options.MigrateDatabase = true;
-                options.MigrationConnectionString = settings.Migrate.ConnectionString;
+                options.MigrationConnectionString = migrateConnectionString;
             });
 
             //var connectionStringBuilder = new NpgsqlConnectionStringBuilder(settings.Migrate.ConnectionString);
             var migratorRole = new NpgsqlConnectionStringBuilder(settings.Migrate.ConnectionString).Username!;
             var appRole = new NpgsqlConnectionStringBuilder(settings.ConnectionString).Username!;
 
-            builder.Services.Configure<NpgsqlDatabaseMigrationOptions>(connectionName, options =>
+            builder.Services.Configure<NpgsqlDatabaseMigrationOptions>(options =>
             {
                 options.AppRole = appRole;
                 options.MigratorRole = migratorRole;
@@ -209,10 +281,11 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
 
         if (builder.Environment.IsDevelopment() && settings.Seed.Enabled)
         {
-            builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(connectionName, options =>
+            var seedConnectionString = settings.Seed.ConnectionString;
+            builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(options =>
             {
                 options.SeedDatabase = true;
-                options.SeedConnectionString = settings.Seed.ConnectionString;
+                options.SeedConnectionString = seedConnectionString;
             });
         }
 
