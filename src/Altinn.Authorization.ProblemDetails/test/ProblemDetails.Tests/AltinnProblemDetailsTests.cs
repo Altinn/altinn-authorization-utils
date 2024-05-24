@@ -15,8 +15,9 @@ public class AltinnProblemDetailsTests
         TestRoundTrip(TestErrors.InternalServerError);
         TestRoundTrip(TestErrors.NotImplemented);
 
-        static void TestRoundTrip(AltinnProblemDetails problemDetails)
+        static void TestRoundTrip(ProblemDescriptor descriptor)
         {
+            var problemDetails = descriptor.ToProblemDetails();
             var json = JsonSerializer.Serialize(problemDetails, _options);
             var deserialized = JsonSerializer.Deserialize<AltinnProblemDetails>(json, _options);
 
@@ -30,10 +31,10 @@ public class AltinnProblemDetailsTests
     [Fact]
     public void SetsStatusCode()
     {
-        TestErrors.BadRequest.Status.Should().Be((int)HttpStatusCode.BadRequest);
-        TestErrors.NotFound.Status.Should().Be((int)HttpStatusCode.NotFound);
-        TestErrors.InternalServerError.Status.Should().Be((int)HttpStatusCode.InternalServerError);
-        TestErrors.NotImplemented.Status.Should().Be((int)HttpStatusCode.NotImplemented);
+        TestErrors.BadRequest.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        TestErrors.NotFound.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        TestErrors.InternalServerError.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        TestErrors.NotImplemented.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
     }
 
     [Fact]
@@ -44,22 +45,22 @@ public class AltinnProblemDetailsTests
         TestErrors.InternalServerError.Detail.Should().Be("Internal server error");
         TestErrors.NotImplemented.Detail.Should().Be("Not implemented");
     }
-}
 
-internal static class TestErrors
-{
-    private static readonly AltinnProblemDetailsFactory _factory
-        = AltinnProblemDetailsFactory.New("TEST");
+    internal static class TestErrors
+    {
+        private static readonly ProblemDescriptorFactory _factory
+            = ProblemDescriptorFactory.New("TEST");
 
-    public static AltinnProblemDetails BadRequest
-        => _factory.Create(1, HttpStatusCode.BadRequest, "Bad request");
+        public static ProblemDescriptor BadRequest { get; }
+            = _factory.Create(1, HttpStatusCode.BadRequest, "Bad request");
 
-    public static AltinnProblemDetails NotFound
-        => _factory.Create(2, HttpStatusCode.NotFound, "Not found");
+        public static ProblemDescriptor NotFound { get; }
+            = _factory.Create(2, HttpStatusCode.NotFound, "Not found");
 
-    public static AltinnProblemDetails InternalServerError
-        => _factory.Create(3, HttpStatusCode.InternalServerError, "Internal server error");
+        public static ProblemDescriptor InternalServerError { get; }
+            = _factory.Create(3, HttpStatusCode.InternalServerError, "Internal server error");
 
-    public static AltinnProblemDetails NotImplemented
-        => _factory.Create(4, HttpStatusCode.NotImplemented, "Not implemented");
+        public static ProblemDescriptor NotImplemented { get; }
+            = _factory.Create(4, HttpStatusCode.NotImplemented, "Not implemented");
+    }
 }

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -53,11 +53,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn.Authorization.Proble
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CD8224F-8BB4-4F4B-B34E-48D459DE72D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails", "Altinn.Authorization.ProblemDetails\src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj", "{D228F81C-3A04-48CF-83DC-034BC6D690DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ProblemDetails", "Altinn.Authorization.ProblemDetails\src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj", "{D228F81C-3A04-48CF-83DC-034BC6D690DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0007D53E-A03D-4074-A022-AB52AE079449}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Tests", "Altinn.Authorization.ProblemDetails\test\ProblemDetails.Tests\Altinn.Authorization.ProblemDetails.Tests.csproj", "{92AA4DBA-CA3B-4519-A73D-27758B9BF826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ProblemDetails.Tests", "Altinn.Authorization.ProblemDetails\test\ProblemDetails.Tests\Altinn.Authorization.ProblemDetails.Tests.csproj", "{92AA4DBA-CA3B-4519-A73D-27758B9BF826}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Abstractions", "Altinn.Authorization.ProblemDetails\src\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj", "{21A518E7-F11D-48C3-A758-0EC43593F744}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,10 @@ Global
 		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92AA4DBA-CA3B-4519-A73D-27758B9BF826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21A518E7-F11D-48C3-A758-0EC43593F744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21A518E7-F11D-48C3-A758-0EC43593F744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21A518E7-F11D-48C3-A758-0EC43593F744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21A518E7-F11D-48C3-A758-0EC43593F744}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{D228F81C-3A04-48CF-83DC-034BC6D690DE} = {6CD8224F-8BB4-4F4B-B34E-48D459DE72D1}
 		{0007D53E-A03D-4074-A022-AB52AE079449} = {CB0B88B9-AF74-43C9-A838-0C24D0CEED9A}
 		{92AA4DBA-CA3B-4519-A73D-27758B9BF826} = {0007D53E-A03D-4074-A022-AB52AE079449}
+		{21A518E7-F11D-48C3-A758-0EC43593F744} = {6CD8224F-8BB4-4F4B-B34E-48D459DE72D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A2B25D1-5A10-4899-A920-AB7F206BE9D4}

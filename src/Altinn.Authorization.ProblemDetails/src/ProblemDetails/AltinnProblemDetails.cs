@@ -1,29 +1,28 @@
-﻿using System.Net;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// A <see cref="Microsoft.AspNetCore.Mvc.ProblemDetails"/> with an <see cref="ErrorCode"/>.
 /// </summary>
-public sealed class AltinnProblemDetails
+public class AltinnProblemDetails
     : Microsoft.AspNetCore.Mvc.ProblemDetails
+    , IJsonOnDeserializing
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AltinnProblemDetails"/> class.
     /// </summary>
-    /// <param name="errorCode">The error code.</param>
-    /// <param name="status">The <see cref="HttpStatusCode"/>.</param>
-    /// <param name="detail">Error details (message).</param>
-    public AltinnProblemDetails(ErrorCode errorCode, HttpStatusCode status, string detail)
+    /// <param name="descriptor">The problem descriptor.</param>
+    internal AltinnProblemDetails(ProblemDescriptor descriptor)
     {
-        ErrorCode = errorCode;
-        Status = (int)status;
-        Detail = detail;
+        ErrorCode = descriptor.ErrorCode;
+        Status = (int)descriptor.StatusCode;
+        Detail = descriptor.Detail;
     }
 
     [JsonConstructor]
     private AltinnProblemDetails()
+        : base()
     {
     }
 
@@ -32,5 +31,15 @@ public sealed class AltinnProblemDetails
     /// </summary>
     [JsonPropertyName("code")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonPropertyOrder(0)]
     public ErrorCode ErrorCode { get; set; }
+
+    /// <inheritdoc/>
+    void IJsonOnDeserializing.OnDeserializing()
+    {
+        // reset values set by subclasses that hard-code a ProblemDescriptor
+        ErrorCode = default;
+        Status = default;
+        Detail = default;
+    }
 }

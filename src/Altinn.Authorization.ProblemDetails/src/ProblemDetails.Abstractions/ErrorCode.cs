@@ -20,7 +20,7 @@ public readonly struct ErrorCode
     internal const int MIN_LENGTH = ErrorCodeDomain.MIN_LENGTH + 1 + NUM_LENGTH;
     internal const int MAX_LENGTH = ErrorCodeDomain.MAX_LENGTH + 1 + NUM_LENGTH;
     private static readonly SearchValues<char> VALID_CHARS
-        = SearchValues.Create("-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        = SearchValues.Create("-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
     private readonly string? _value;
 

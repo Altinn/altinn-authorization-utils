@@ -8,4 +8,8 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,29 +2,14 @@
 
 namespace Altinn.Authorization.ProblemDetails.Tests;
 
-public class AltinnProblemDetailsFactoryTests
+public class ProblemDescriptorTests
 {
-    [Fact]
-    public void Create_ReturnsCorrectAltinnProblemDetails()
-    {
-        // Arrange
-        var factory = AltinnProblemDetailsFactory.New("TEST");
-
-        // Act
-        var result = factory.Create(1, HttpStatusCode.BadRequest, "Test error");
-
-        // Assert
-        result.Should().NotBeNull();
-        result.ErrorCode.ToString().Should().Be("TEST-00001");
-        result.Status.Should().Be((int)HttpStatusCode.BadRequest);
-        result.Detail.Should().Be("Test error");
-    }
-
     [Fact]
     public void Create_WithExtensionsDictionary_ReturnsAltinnProblemDetailsWithExtensions()
     {
         // Arrange
-        var factory = AltinnProblemDetailsFactory.New("TEST");
+        var factory = ProblemDescriptorFactory.New("TEST");
+        var descriptor = factory.Create(1, HttpStatusCode.BadRequest, "Test error");
         var extensions = new Dictionary<string, object?>
         {
             { "Key1", "Value1" },
@@ -32,7 +17,7 @@ public class AltinnProblemDetailsFactoryTests
         };
 
         // Act
-        var result = factory.Create(1, HttpStatusCode.BadRequest, "Test error", extensions);
+        var result = descriptor.ToProblemDetails(extensions);
 
         // Assert
         result.Should().NotBeNull();
@@ -49,10 +34,11 @@ public class AltinnProblemDetailsFactoryTests
     public void Create_WithExtensionsCollectionExpression_ReturnsAltinnProblemDetailsWithExtensions()
     {
         // Arrange
-        var factory = AltinnProblemDetailsFactory.New("TEST");
+        var factory = ProblemDescriptorFactory.New("TEST");
+        var descriptor = factory.Create(1, HttpStatusCode.BadRequest, "Test error");
 
         // Act
-        var result = factory.Create(1, HttpStatusCode.BadRequest, "Test error", [
+        var result = descriptor.ToProblemDetails([
             new("Key1", "Value1"),
             new("Key2", 123),
         ]);
@@ -66,13 +52,5 @@ public class AltinnProblemDetailsFactoryTests
             .WhoseValue.Should().Be("Value1");
         result.Extensions.Should().ContainKey("Key2")
             .WhoseValue.Should().Be(123);
-    }
-
-    [Fact]
-    public void New_WithInvalidDomainName_ThrowsArgumentException()
-    {
-        // Arrange & Act & Assert
-        Action act = () => AltinnProblemDetailsFactory.New("TESTDOMAIN");
-        act.Should().ThrowExactly<ArgumentException>();
     }
 }

@@ -20,42 +20,83 @@ dotnet add package Altinn.Authorization.ProblemDetails
 
 ## Usage
 
-### Example
+### ProblemDetails
+
+This library allows for defining custom errors that contain error codes usable by clients to determine what went wrong. This is done by creating custom `ProblemDescriptor`s, which can trivially be converted into `ProblemDetail`s by calling `ToProblemDetails()` on them.
+
+#### ProblemDetails Example
 
 Here's a basic example demonstrating how to use the `Altinn.Authorization.ProblemDetails` library:
 
 ```csharp
 internal static class MyAppErrors
 {
-    private static readonly AltinnProblemDetailsFactory _factory
-        = AltinnProblemDetailsFactory.New("APP");
+    private static readonly ProblemDescriptorFactory _factory
+        = ProblemDescriptorFactory.New("APP");
 
-    public static AltinnProblemDetails InvalidUser
-        => _factory.Create(1, HttpStatusCode.BadRequest, "Provided user is not valid");
+    public static ProblemDescriptor BadRequest { get; }
+        = _factory.Create(0, HttpStatusCode.BadRequest, "Bad request");
 
-    public static AltinnProblemDetails OrganizationNotFound
-        => _factory.Create(2, HttpStatusCode.NotFound, "The specified organization was not found");
+    public static ProblemDescriptor NotFound { get; }
+        = _factory.Create(1, HttpStatusCode.NotFound, "Not found");
 
-    public static AltinnProblemDetails InternalServerError
-        => _factory.Create(3, HttpStatusCode.InternalServerError, "Internal server error");
+    public static ProblemDescriptor InternalServerError { get; }
+        = _factory.Create(2, HttpStatusCode.InternalServerError, "Internal server error");
 
-    public static AltinnProblemDetails NotImplemented
-        => _factory.Create(4, HttpStatusCode.NotImplemented, "Not implemented");
+    public static ProblemDescriptor NotImplemented { get; }
+        = _factory.Create(3, HttpStatusCode.NotImplemented, "Not implemented");
 }
 ```
 
-### Explanation
+#### Explanation
 
-- `AltinnProblemDetailsFactory`: This class provides a factory method `New()` to create a new instance of `AltinnProblemDetailsFactory`.
+- `ProblemDescriptorFactory`: This class provides a factory method `New()` to create a new instance of `ProblemDescriptorFactory`.
 
-- `Create()`: This method is used to create a new `ProblemDetails` object with a custom error code, HTTP status code, and error message.
+- `Create()`: This method is used to create a new `ProblemDescriptor` object with a custom error code, HTTP status code, and error message. These can then be turned into `ProblemDetails` objects by calling `ToProblemDetails()`.
+
+### Validation Errors
+
+A predefined `AltinnValidationProblemDetails` is provided for the case where you have one or more validation errors that should be returned to the client. This variant of `ProblemDetails` takes a list of validation errors, which can be created in a similar fasion to `ProblemDescriptor`s.
+
+#### ValidationErrors Example
+
+Here's a basic example demonstrating how to create custom validation errors:
+
+```csharp
+internal static class MyAppValidationDescriptors
+{
+    private static readonly ValidationErrorDescriptorFactory _factory
+        = ValidationErrorDescriptorFactory.New("APP");
+
+    public static ValidationErrorDescriptor FieldRequired { get; }
+        = _factory.Create(0, "Field is required.");
+
+    public static ValidationErrorDescriptor FieldOutOfRange { get; }
+        = _factory.Create(1, "Field is out of range.");
+
+    public static ValidationErrorDescriptor PasswordsMustMatch { get; }
+        = _factory.Create(2, "Passwords must match.");
+}
+```
+
+And how to use them:
+
+```csharp
+var details = new AltinnValidationProblemDetails([
+    MyAppValidationDescriptors.FieldRequired.ToValidationError("/field1"),
+    MyAppValidationDescriptors.FieldRequired.ToValidationError("/field2"),
+    MyAppValidationDescriptors.PasswordsMustMatch.ToValidationError(["/password", "/confirmPassword"]),
+]);
+```
+
+A set of common validation errors are also provided through the `StdValidationErrors` class.
 
 ### Customization
 
-You can customize the prefix used for error codes by passing a custom prefix to the `New()` method of `AltinnProblemDetailsFactory`.
+You can customize the prefix used for error codes by passing a custom prefix to the `New()` method of `ProblemDescriptorFactory`. All application-domains should have their own prefix.
 
 ```csharp
-AltinnProblemDetailsFactory.New("PFX");
+ProblemDescriptorFactory.New("PFX");
 ```
 
 The prefix is required to be only uppercase ASCII letters of either 2, 3, or 4 characters in length.
