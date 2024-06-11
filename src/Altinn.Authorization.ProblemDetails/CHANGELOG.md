@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v1.1.1...Altinn.Authorization.ProblemDetails-v2.0.0) (2024-06-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* Multiple overloads for ProblemDetails and related types have been removed to avoid ambiguity. ValidationErrors has also been renamed to ValidationErrorBuilder and moved from abstractions to the ProblemDetails package.
+
+### Bug Fixes
+
+* Resolve ambigous method overloads ([4620f64](https://github.com/Altinn/altinn-authorization-utils/commit/4620f64555252fddca3c165269de33166eb35c9b))
+
 ## [1.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v1.1.0...Altinn.Authorization.ProblemDetails-v1.1.1) (2024-06-11)
 
 
