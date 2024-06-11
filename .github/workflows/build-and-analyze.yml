@@ -1,15 +1,15 @@
 name: Build, Test and Analyze
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   check-slns:
     name: Check sln files
-    if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]' 
+    if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,13 +33,13 @@ jobs:
 
       - name: Update all sln files
         run: tsx ./.github/scripts/update-sln-files.mts
-      
+
       - name: Assert that no sln files have changed
         run: git diff --exit-code
 
   build-and-test:
     name: Build and Test
-    if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]' 
+    if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,12 +63,20 @@ jobs:
 
       - name: Build
         run: dotnet build -c Release -bl:binlog/build.binlog
-      
+
       - name: Test
         run: dotnet test -c Release --no-build -bl:binlog/test.binlog
 
       - name: Pack
         run: dotnet pack -c Release --no-build -bl:binlog/pack.binlog
+
+      - name: List artifacts
+        run: |
+          echo "binlog"
+          tree binlog
+
+          echo "artifacts"
+          tree artifacts
 
       - name: Create binlog artifact
         uses: actions/upload-artifact@v4
@@ -87,7 +95,7 @@ jobs:
           retention-days: 1
 
   # analyze:
-  #   if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]' 
+  #   if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
   #   name: Analyze
   #   runs-on: ubuntu-latest
   #   steps:
@@ -96,7 +104,7 @@ jobs:
   #       with:
   #         dotnet-version: |
   #           8.0.x
-            
+
   #     - name: Set up JDK 17
   #       uses: actions/setup-java@v4
   #       with:
