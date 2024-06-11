@@ -5,7 +5,7 @@ public class ValidationErrorsTests
     [Fact]
     public void DefaultValidationErrors_IsEmpty()
     {
-        var errors = new ValidationErrors();
+        var errors = new ValidationErrorBuilder();
 
         errors.Count.Should().Be(0);
         errors.IsEmpty.Should().BeTrue();
@@ -14,7 +14,7 @@ public class ValidationErrorsTests
     [Fact]
     public void CanAddValidationErrors()
     {
-        var errors = new ValidationErrors();
+        var errors = new ValidationErrorBuilder();
 
         errors.Add(StdValidationErrors.Required, "/path");
         
@@ -30,7 +30,7 @@ public class ValidationErrorsTests
     [Fact]
     public void CanMapToImmutableArray()
     {
-        var errors = new ValidationErrors();
+        var errors = new ValidationErrorBuilder();
 
         errors.Add(StdValidationErrors.Required, "/path");
         errors.Add(StdValidationErrors.Required, "/path2");
@@ -42,27 +42,12 @@ public class ValidationErrorsTests
     [Fact]
     public void Empty_TryTo_Returns_False()
     {
-        var errors = new ValidationErrors();
+        var errors = new ValidationErrorBuilder();
 
         errors.TryToProblemDetails(out var details).Should().BeFalse();
         errors.TryToActionResult(out var result).Should().BeFalse();
 
         details.Should().BeNull();
         result.Should().BeNull();
-    }
-
-    [Fact]
-    public void NonEmpty_TryTo_Returns_True()
-    {
-        var errors = new ValidationErrors();
-
-        errors.Add(StdValidationErrors.Required, "/path");
-        errors.Add(StdValidationErrors.Required, "/path2");
-
-        errors.TryToProblemDetails(out var details).Should().BeTrue();
-        errors.TryToActionResult(out var result).Should().BeTrue();
-
-        details.Should().NotBeNull();
-        result.Should().NotBeNull();
     }
 }

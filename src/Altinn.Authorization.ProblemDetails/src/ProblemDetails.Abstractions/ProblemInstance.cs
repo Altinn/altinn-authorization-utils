@@ -33,15 +33,6 @@ public sealed class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, ReadOnlySpan<KeyValuePair<string, string>> extensions) 
-        => new ProblemInstance(descriptor, [..extensions]);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
-    /// </summary>
-    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    /// <param name="extensions">The extensions.</param>
-    /// <returns>A <see cref="ProblemInstance"/>.</returns>
     public static ProblemInstance Create(ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions) 
         => new ProblemInstance(descriptor, [..extensions]);
 
