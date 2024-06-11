@@ -112,7 +112,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor)
@@ -121,7 +121,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="path"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="path">The path.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, string path)
@@ -130,7 +130,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths)
@@ -139,7 +139,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths)
@@ -148,7 +148,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
@@ -157,7 +157,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, ImmutableArray<KeyValuePair<string, string>> extensions)
@@ -166,7 +166,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, ReadOnlySpan<KeyValuePair<string, string>> extensions)
@@ -175,7 +175,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     public static void Add(this ref ValidationErrors errors, ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
@@ -184,7 +184,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
@@ -194,7 +194,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
@@ -204,7 +204,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
@@ -214,7 +214,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -224,7 +224,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -234,7 +234,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -244,7 +244,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -254,7 +254,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -264,7 +264,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -274,7 +274,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -284,7 +284,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
@@ -294,7 +294,7 @@ public static class ProblemExtensions
     /// <summary>
     /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
     /// </summary>
-    /// <param name="errors">The error collection.<param>
+    /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
