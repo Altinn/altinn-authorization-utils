@@ -20,6 +20,25 @@ public class AltinnProblemDetails
         Detail = descriptor.Detail;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AltinnProblemDetails"/> class.
+    /// </summary>
+    /// <param name="instance">The problem instance.</param>
+    internal AltinnProblemDetails(ProblemInstance instance)
+    {
+        ErrorCode = instance.ErrorCode;
+        Status = (int)instance.StatusCode;
+        Detail = instance.Detail;
+
+        if (!instance.Extensions.IsDefaultOrEmpty)
+        {
+            foreach (var (key, value) in instance.Extensions)
+            {
+                Extensions[key] = value;
+            }
+        }
+    }
+
     [JsonConstructor]
     private AltinnProblemDetails()
         : base()
