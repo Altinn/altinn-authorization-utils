@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v1.1.0...Altinn.Swashbuckle-v1.1.1) (2024-06-12)
+
+
+### Bug Fixes
+
+* create documentation files ([171dd71](https://github.com/Altinn/altinn-authorization-utils/commit/171dd7120ab70c8c5629224e6e7a2380ad827306))
+
 ## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v1.0.0...Altinn.Swashbuckle-v1.1.0) (2024-04-26)
 
 
