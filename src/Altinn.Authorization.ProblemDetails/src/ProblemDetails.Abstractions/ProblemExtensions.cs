@@ -4,7 +4,7 @@ namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// Extension methods for <see cref="ProblemDescriptor"/>, <see cref="ProblemInstance"/>, <see cref="ValidationErrorDescriptor"/>, 
-/// <see cref="ValidationErrorInstance"/>, and <see cref="ValidationErrorBuilder"/>.
+/// and <see cref="ValidationErrorInstance"/>.
 /// </summary>
 public static class ProblemExtensions
 {
