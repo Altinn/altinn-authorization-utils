@@ -21,4 +21,16 @@ public static class StdProblemDescriptors
     /// </remarks>
     internal static ProblemDescriptor ValidationError { get; }
         = _factory.Create(0, HttpStatusCode.BadRequest, "One or more validation errors occurred.");
+
+    /// <summary>
+    /// Standard problem descriptors' error codes.
+    /// </summary>
+    public static class ErrorCodes
+    {
+        /// <summary>
+        /// Gets the error code for a validation error.
+        /// </summary>
+        public static ErrorCode ValidationError 
+            => StdProblemDescriptors.ValidationError.ErrorCode;
+    }
 }

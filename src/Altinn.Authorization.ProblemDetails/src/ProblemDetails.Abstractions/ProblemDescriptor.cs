@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 
 namespace Altinn.Authorization.ProblemDetails;
@@ -6,6 +7,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// <summary>
 /// An immutable descriptor for a problem.
 /// </summary>
+[DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
 public sealed class ProblemDescriptor
 {
     /// <summary>

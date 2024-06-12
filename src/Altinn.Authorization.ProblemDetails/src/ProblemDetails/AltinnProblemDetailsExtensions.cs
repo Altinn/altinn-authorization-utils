@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -17,6 +18,16 @@ public static class AltinnProblemDetailsExtensions
     /// <returns>The created <see cref="ActionResult"/>.</returns>
     public static ActionResult ToActionResult(this Microsoft.AspNetCore.Mvc.ProblemDetails problemDetails)
         => new ProblemDetailsActionResult(problemDetails);
+    #endregion
+
+    #region ProblemInstance.ToProblemDetails
+    /// <summary>
+    /// Creates a new <see cref="AltinnProblemDetails"/> from a <see cref="ProblemInstance"/>.
+    /// </summary>
+    /// <param name="instance">The <see cref="ProblemInstance"/>.</param>
+    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    public static AltinnProblemDetails ToProblemDetails(this ProblemInstance instance)
+        => new AltinnProblemDetails(instance);
     #endregion
 
     #region ProblemDescriptor.ToProblemDetails
@@ -63,6 +74,16 @@ public static class AltinnProblemDetailsExtensions
     }
     #endregion
 
+    #region ProblemInstance.ToActionResult
+    /// <summary>
+    /// Creates a new <see cref="ActionResult"/> that returns a <see cref="ProblemInstance"/> to the client.
+    /// </summary>
+    /// <param name="instance">The instance.</param>
+    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    public static ActionResult ToActionResult(this ProblemInstance instance)
+        => instance.ToProblemDetails().ToActionResult();
+    #endregion
+
     #region ProblemDescriptor.ToActionResult
     /// <summary>
     /// Creates a new <see cref="ActionResult"/> that returns a <see cref="Microsoft.AspNetCore.Mvc.ProblemDetails"/> to the client.
@@ -91,9 +112,19 @@ public static class AltinnProblemDetailsExtensions
         => descriptor.ToProblemDetails(extensions).ToActionResult();
     #endregion
 
+    #region ValidationErrorInstance.ToValidationError
+    /// <summary>
+    /// Creates a new <see cref="AltinnValidationError"/> from this instance.
+    /// </summary>
+    /// <param name="instance">The instance.</param>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
+    public static AltinnValidationError ToValidationError(this ValidationErrorInstance instance)
+        => new AltinnValidationError(instance);
+    #endregion
+
     #region ValidationErrorDescriptor.ToValidationError
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
@@ -109,7 +140,7 @@ public static class AltinnProblemDetailsExtensions
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, string path)
         => new AltinnValidationError(descriptor)
         {
-            Paths = path,
+            Paths = [path],
         };
 
     /// <summary>
@@ -121,7 +152,7 @@ public static class AltinnProblemDetailsExtensions
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths)
         => new AltinnValidationError(descriptor)
         {
-            Paths = new StringValues([..paths]),
+            Paths = [.. paths],
         };
 
     /// <summary>
@@ -133,15 +164,15 @@ public static class AltinnProblemDetailsExtensions
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
         => new AltinnValidationError(descriptor)
         {
-            Paths = new StringValues([.. paths]),
+            Paths = [.. paths],
         };
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor);
@@ -154,11 +185,11 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor);
@@ -171,17 +202,17 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="path">The path that is erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, string path, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor)
         {
-            Paths = path,
+            Paths = [path],
         };
 
         foreach (var (key, value) in extensions)
@@ -193,17 +224,17 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="path">The path that is erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, string path, IEnumerable<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor)
         {
-            Paths = path,
+            Paths = [path],
         }; 
         
         foreach (var (key, value) in extensions)
@@ -215,17 +246,17 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor)
         {
-            Paths = new StringValues([.. paths]),
+            Paths = [.. paths],
         };
 
         foreach (var (key, value) in extensions)
@@ -237,17 +268,17 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths, IEnumerable<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor)
         {
-            Paths = new StringValues([.. paths]),
+            Paths = [.. paths],
         };
 
         foreach (var (key, value) in extensions)
@@ -259,17 +290,17 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor)
         {
-            Paths = new StringValues([.. paths]),
+            Paths = [.. paths],
         };
 
         foreach (var (key, value) in extensions)
@@ -281,17 +312,17 @@ public static class AltinnProblemDetailsExtensions
     }
 
     /// <summary>
-    /// Creates a new <see cref="AltinnProblemDetails"/> from this descriptor with additional properties.
+    /// Creates a new <see cref="AltinnValidationError"/> from this descriptor with additional properties.
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
-    /// <returns>A <see cref="AltinnProblemDetails"/>.</returns>
+    /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IEnumerable<KeyValuePair<string, object?>> extensions)
     {
         var ret = new AltinnValidationError(descriptor)
         {
-            Paths = new StringValues([.. paths]),
+            Paths = [.. paths],
         };
 
         foreach (var (key, value) in extensions)
@@ -301,5 +332,168 @@ public static class AltinnProblemDetailsExtensions
 
         return ret;
     }
+    #endregion
+
+    #region ValidationErrorBuilder.TryToProblemDetails
+    /// <summary>
+    /// Tries to convert the validation errors to a <see cref="AltinnValidationProblemDetails"/>.
+    /// </summary>
+    /// <param name="errors">This <see cref="ValidationErrorBuilder"/> instance.</param>
+    /// <param name="result">The resulting <see cref="AltinnValidationProblemDetails"/>, or <see langword="null"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="AltinnValidationProblemDetails"/> was created,
+    /// otherwise <see langword="false"/>.
+    /// </returns>
+    public static bool TryToProblemDetails(this ref ValidationErrorBuilder errors, [NotNullWhen(true)] out AltinnValidationProblemDetails? result)
+    {
+        if (errors.IsEmpty)
+        {
+            result = null;
+            return false;
+        }
+
+        var immutableList = errors.MapToImmutable(static v => v.ToValidationError());
+        result = new AltinnValidationProblemDetails(immutableList);
+        return true;
+    }
+    #endregion
+
+    #region ValidationErrorBuilder.TryToActionResult
+    /// <summary>
+    /// Tries to convert the validation errors to a <see cref="ActionResult"/>.
+    /// </summary>
+    /// <param name="errors">This <see cref="ValidationErrorBuilder"/> instance.</param>
+    /// <param name="result">The resulting <see cref="ActionResult"/>, or <see langword="null"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="ActionResult"/> was created,
+    /// otherwise <see langword="false"/>.
+    /// </returns>
+    public static bool TryToActionResult(this ref ValidationErrorBuilder errors, [NotNullWhen(true)] out ActionResult? result)
+    {
+        if (errors.TryToProblemDetails(out var details))
+        {
+            result = details.ToActionResult();
+            return true;
+        }
+
+        result = null;
+        return false;
+    }
+    #endregion
+
+    #region ValidationErrorBuilder.Add
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor)
+        => errors.Add(descriptor.Create());
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="path"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="path">The path.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path)
+        => errors.Add(descriptor.Create(path));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths)
+        => errors.Add(descriptor.Create(paths));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
+        => errors.Add(descriptor.Create(paths));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<KeyValuePair<string, string>> extensions)
+        => errors.Add(descriptor.Create(extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
+        => errors.Add(descriptor.Create(extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, ImmutableArray<KeyValuePair<string, string>> extensions)
+        => errors.Add(descriptor.Create(path, extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions)
+        => errors.Add(descriptor.Create(path, extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ImmutableArray<KeyValuePair<string, string>> extensions)
+        => errors.Add(descriptor.Create(paths, extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions)
+        => errors.Add(descriptor.Create(paths, extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ImmutableArray<KeyValuePair<string, string>> extensions)
+        => errors.Add(descriptor.Create(paths, extensions));
+
+    /// <summary>
+    /// Adds a validation error with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="errors">The error collection.</param>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions)
+        => errors.Add(descriptor.Create(paths, extensions));
     #endregion
 }
