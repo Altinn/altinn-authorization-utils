@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.3.1...Altinn.Urn-v2.3.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* create documentation files ([171dd71](https://github.com/Altinn/altinn-authorization-utils/commit/171dd7120ab70c8c5629224e6e7a2380ad827306))
+
 ## [2.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.3.0...Altinn.Urn-v2.3.1) (2024-05-14)
 
 
