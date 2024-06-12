@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+﻿using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ProblemDetails;
@@ -16,6 +16,25 @@ public sealed class AltinnValidationError
     {
         ErrorCode = descriptor.ErrorCode;
         Detail = descriptor.Detail;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AltinnValidationError"/> class.
+    /// </summary>
+    /// <param name="instance">The validation error instance.</param>
+    internal AltinnValidationError(ValidationErrorInstance instance)
+    {
+        ErrorCode = instance.ErrorCode;
+        Detail = instance.Detail;
+        Paths = instance.Paths;
+
+        if (!instance.Extensions.IsDefaultOrEmpty)
+        {
+            foreach (var (key, value) in instance.Extensions)
+            {
+                Extensions[key] = value;
+            }
+        }
     }
 
     [JsonConstructor]
@@ -48,8 +67,7 @@ public sealed class AltinnValidationError
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [JsonPropertyOrder(-1)]
     [JsonPropertyName("paths")]
-    [JsonConverter(typeof(JsonStringValuesConverter))]
-    public StringValues Paths { get; set; }
+    public ImmutableArray<string> Paths { get; set; }
 
     /// <summary>
     /// Gets the <see cref="IDictionary{TKey, TValue}"/> for extension members.
