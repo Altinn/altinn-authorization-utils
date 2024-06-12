@@ -6,11 +6,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Testcontainers.PostgreSql" Version="3.8.0" />
+		<PackageReference Include="Testcontainers.PostgreSql" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\ServiceDefaults.Npgsql.Yuniql\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.csproj" />
+		<ProjectReference
+			Include="..\..\src\ServiceDefaults.Npgsql.Yuniql\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.csproj" />
 	</ItemGroup>
 
 </Project>
