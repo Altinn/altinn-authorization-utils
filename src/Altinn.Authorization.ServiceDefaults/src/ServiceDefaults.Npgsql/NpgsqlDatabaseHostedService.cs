@@ -94,19 +94,38 @@ internal partial class NpgsqlDatabaseHostedService
             return;
         }
 
-        var dbServerConnectionString = options.CreateDatabaseConnectionString;
+        var dbServerConnectionString = options.CreateDatabaseClusterConnectionString;
         if (string.IsNullOrEmpty(dbServerConnectionString))
         {
             Log.NoLocalDatabaseServerConnectionStringFound(_logger);
             return;
         }
 
-        await using var connectionProvider = new TempSharedNonPooledNpgsqlConnectionProvider(dbServerConnectionString);
-        foreach (var creator in _databaseCreators)
+        var dbInitConnectionString = options.CreateDatabaseInitConnectionString;
+        if (string.IsNullOrEmpty(dbInitConnectionString))
         {
-            await using var scope = _serviceScopeFactory.CreateAsyncScope();
-            cancellationToken.ThrowIfCancellationRequested();
-            await creator.InitializeDatabaseAsync(connectionProvider, scope.ServiceProvider, cancellationToken);
+            Log.NoLocalDatabaseInitConnectionStringFound(_logger);
+            return;
+        }
+
+        {
+            await using var connectionProvider = new TempSharedNonPooledNpgsqlConnectionProvider(dbServerConnectionString);
+            foreach (var creator in _databaseCreators.Where(c => c.Order <= DatabaseCreationOrder.CreateDatabases))
+            {
+                await using var scope = _serviceScopeFactory.CreateAsyncScope();
+                cancellationToken.ThrowIfCancellationRequested();
+                await creator.InitializeDatabaseAsync(connectionProvider, scope.ServiceProvider, cancellationToken);
+            }
+        }
+
+        {
+            await using var connectionProvider = new TempSharedNonPooledNpgsqlConnectionProvider(dbInitConnectionString);
+            foreach (var creator in _databaseCreators.Where(c => c.Order > DatabaseCreationOrder.CreateDatabases))
+            {
+                await using var scope = _serviceScopeFactory.CreateAsyncScope();
+                cancellationToken.ThrowIfCancellationRequested();
+                await creator.InitializeDatabaseAsync(connectionProvider, scope.ServiceProvider, cancellationToken);
+            }
         }
     }
 
@@ -176,7 +195,11 @@ internal partial class NpgsqlDatabaseHostedService
 
         public bool SeedDatabase { get; set; }
 
-        public string? CreateDatabaseConnectionString { get; set; }
+        // connection string used for creating the database
+        public string? CreateDatabaseClusterConnectionString { get; set; }
+
+        // connection string used after the database is created to set up schemas and permissions
+        public string? CreateDatabaseInitConnectionString { get; set; }
 
         public string? MigrationConnectionString { get; set; }
 
@@ -185,10 +208,10 @@ internal partial class NpgsqlDatabaseHostedService
 
     private static partial class Log
     {
-        [LoggerMessage(1, LogLevel.Information, "No local database server connection string found. Skipping database creation.")]
+        [LoggerMessage(1, LogLevel.Warning, "No local database server connection string found. Skipping database creation.")]
         public static partial void NoLocalDatabaseServerConnectionStringFound(ILogger logger);
 
-        [LoggerMessage(2, LogLevel.Information, "No database creators found. Skipping database creation.")]
+        [LoggerMessage(2, LogLevel.Warning, "No database creators found. Skipping database creation.")]
         public static partial void NoDatabaseCreators(ILogger logger);
 
         [LoggerMessage(3, LogLevel.Information, "No migrators found. Skipping database migration.")]
@@ -197,7 +220,7 @@ internal partial class NpgsqlDatabaseHostedService
         [LoggerMessage(4, LogLevel.Information, "No seeders found. Skipping database seeding.")]
         public static partial void NoSeeders(ILogger logger);
 
-        [LoggerMessage(5, LogLevel.Information, "No database seed connection string found. Skipping database seeding.")]
+        [LoggerMessage(5, LogLevel.Warning, "No database seed connection string found. Skipping database seeding.")]
         public static partial void NoLocalDatabaseSeedConnectionStringFound(ILogger logger);
 
         [LoggerMessage(6, LogLevel.Debug, "Skipping database creation as the environment is not development.")]
@@ -229,5 +252,8 @@ internal partial class NpgsqlDatabaseHostedService
 
         [LoggerMessage(15, LogLevel.Information, "Starting database service.")]
         public static partial void StartingDatabaseService(ILogger logger);
+
+        [LoggerMessage(16, LogLevel.Warning, "No database init connection string found. Skipping database creation.")]
+        public static partial void NoLocalDatabaseInitConnectionStringFound(ILogger logger);
     }
 }

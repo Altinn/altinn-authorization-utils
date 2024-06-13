@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
 
-internal partial class NpgsqlCreateDatabase
+[DebuggerDisplay("CREATE DATABASE {_options.DatabaseName}")]
+internal sealed partial class NpgsqlCreateDatabase
     : INpgsqlDatabaseCreator
 {
     private readonly Settings _options;

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<Using Include="Npgsql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Npgsql" />
+		<PackageReference Include="Yuniql.Core" />
+		<PackageReference Include="Yuniql.PostgreSql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference
+			Include="..\ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj" />
+		<ProjectReference Include="..\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\Altinn.Authorization.ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

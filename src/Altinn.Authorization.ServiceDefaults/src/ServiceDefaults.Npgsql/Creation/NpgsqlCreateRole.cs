@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
 
-internal partial class NpgsqlCreateRole
+[DebuggerDisplay("CREATE ROLE {_options.Name}")]
+internal sealed partial class NpgsqlCreateRole
     : INpgsqlDatabaseCreator
 {
     private readonly Settings _options;

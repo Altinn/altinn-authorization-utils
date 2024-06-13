@@ -5,9 +5,15 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A84ED44-A848-46D0-8E2C-14262DC2183D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults", "src\Altinn.Authorization.ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj", "{15976B81-CDD3-49D3-817D-B9FC6A5164B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults", "src\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj", "{15976B81-CDD3-49D3-817D-B9FC6A5164B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql", "src\Altinn.Authorization.ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj", "{6C66974E-A93B-49A1-BC9F-30BFAA6B42E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql", "src\ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj", "{6C66974E-A93B-49A1-BC9F-30BFAA6B42E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql", "src\ServiceDefaults.Npgsql.Yuniql\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.csproj", "{05F768B5-8A76-40AF-B3CE-10C03079C054}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5FA0B47B-5DBE-4B17-A0F6-2D18A4B8E56E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests", "test\ServiceDefaults.Npgsql.Yuniql.Tests\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests.csproj", "{BBA82424-5DE2-4835-AA0C-808C0C1AD236}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +32,19 @@ Global
 		{6C66974E-A93B-49A1-BC9F-30BFAA6B42E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C66974E-A93B-49A1-BC9F-30BFAA6B42E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C66974E-A93B-49A1-BC9F-30BFAA6B42E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05F768B5-8A76-40AF-B3CE-10C03079C054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05F768B5-8A76-40AF-B3CE-10C03079C054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05F768B5-8A76-40AF-B3CE-10C03079C054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05F768B5-8A76-40AF-B3CE-10C03079C054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBA82424-5DE2-4835-AA0C-808C0C1AD236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA82424-5DE2-4835-AA0C-808C0C1AD236}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA82424-5DE2-4835-AA0C-808C0C1AD236}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA82424-5DE2-4835-AA0C-808C0C1AD236}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{15976B81-CDD3-49D3-817D-B9FC6A5164B6} = {3A84ED44-A848-46D0-8E2C-14262DC2183D}
 		{6C66974E-A93B-49A1-BC9F-30BFAA6B42E8} = {3A84ED44-A848-46D0-8E2C-14262DC2183D}
+		{05F768B5-8A76-40AF-B3CE-10C03079C054} = {3A84ED44-A848-46D0-8E2C-14262DC2183D}
+		{BBA82424-5DE2-4835-AA0C-808C0C1AD236} = {5FA0B47B-5DBE-4B17-A0F6-2D18A4B8E56E}
 	EndGlobalSection
 EndGlobal
