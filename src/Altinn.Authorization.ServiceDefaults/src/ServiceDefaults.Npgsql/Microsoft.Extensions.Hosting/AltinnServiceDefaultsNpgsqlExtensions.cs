@@ -240,19 +240,49 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
                 dbBuilder.CreateRole(role.Name, role.Password);
                 dbBuilder.GrantDatabasePrivileges(databaseName: dbName, roleName: role.Name, role.Grants.Database.Privileges, role.Grants.Database.WithGrantOption);
 
-                foreach (var (grantedRole, shouldGrant) in role.Grants.Roles)
+                foreach (var (schemaId, schemaGrant) in role.Grants.Schemas)
                 {
-                    if (!shouldGrant)
+                    if (!settings.Create.Schemas.TryGetValue(schemaId, out var schema))
                     {
-                        continue;
+                        ThrowHelper.ThrowArgumentException($"Schema '{schemaId}' is not defined in Schemas. Role: {key}");
                     }
 
+                    dbBuilder.GrantSchemaPrivileges(schema.Name!, role.Name, schemaGrant.Privileges, schemaGrant.WithGrantOption);
+                }
+
+                foreach (var (grantedRole, roleGrant) in role.Grants.Roles)
+                {
                     if (!settings.Create.Roles.TryGetValue(grantedRole, out var grantedRoleSettings))
                     {
                         ThrowHelper.ThrowArgumentException($"Role '{grantedRole}' is not defined in Roles. Role: {key}");
                     }
 
-                    dbBuilder.GrantRoleToRole(role.Name, grantedRoleSettings.Name!);
+                    if (roleGrant.Usage)
+                    {
+                        dbBuilder.GrantRoleToRole(role.Name, grantedRoleSettings.Name!);
+                    }
+
+                    foreach (var (schemaId, schemaGrant) in roleGrant.Schemas)
+                    {
+                        if (!settings.Create.Schemas.TryGetValue(schemaId, out var schema))
+                        {
+                            ThrowHelper.ThrowArgumentException($"Schema '{schemaId}' is not defined in Schemas. Role: {key}, GrantedTo: {grantedRole}");
+                        }
+
+                        dbBuilder.GrantDefaultTablePrivilegesInSchema(
+                            creatorRoleName: grantedRoleSettings.Name!,
+                            roleName: role.Name,
+                            schemaName: schema.Name!,
+                            schemaGrant.Tables.Privileges,
+                            schemaGrant.Tables.WithGrantOption);
+
+                        dbBuilder.GrantDefaultSequencePrivilegesInSchema(
+                            creatorRoleName: grantedRoleSettings.Name!,
+                            roleName: role.Name,
+                            schemaName: schema.Name!,
+                            schemaGrant.Sequences.Privileges,
+                            schemaGrant.Sequences.WithGrantOption);
+                    }
                 }
             }
 

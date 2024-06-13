@@ -166,14 +166,51 @@ public sealed class NpgsqlCreateRoleSettings
 public sealed class NpgsqlRoleGrantSettings
 {
     /// <summary>
-    /// Gets or sets the kind of permissions to grant on the database.
+    /// Gets or sets the kind of privileges to grant on the database.
     /// </summary>
     public NpgsqlDatabaseGrantSettings Database { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets the schemas to grant permissions to.
+    /// </summary>
+    public IDictionary<string, NpgsqlSchemaGrantSettings> Schemas { get; set; } = new Dictionary<string, NpgsqlSchemaGrantSettings>();
+
+    /// <summary>
     /// Gets or sets roles that the role is granted.
     /// </summary>
-    public IDictionary<string, bool> Roles { get; set; } = new Dictionary<string, bool>();
+    public IDictionary<string, NpgsqlRoleGrantRoleSettings> Roles { get; set; } = new Dictionary<string, NpgsqlRoleGrantRoleSettings>();
+}
+
+/// <summary>
+/// Provides the client configuration settings for granting permissions from a role to another in a PostgreSQL database using Npgsql.
+/// </summary>
+public sealed class NpgsqlRoleGrantRoleSettings
+{
+    /// <summary>
+    /// Gets or sets a boolean value that indicates whether the role is granted role usage.
+    /// </summary>
+    public bool Usage { get; set; }
+
+    /// <summary>
+    /// Gets or sets schemas that the role is granted default permissions on.
+    /// </summary>
+    public IDictionary<string, NpgsqlRoleGrantSchemaSettings> Schemas { get; set; } = new Dictionary<string, NpgsqlRoleGrantSchemaSettings>();
+}
+
+/// <summary>
+/// Provides the client configuration settings for granting default privileges in a PostgreSQL schema using Npgsql.
+/// </summary>
+public sealed class NpgsqlRoleGrantSchemaSettings
+{
+    /// <summary>
+    /// Gets or sets the kind of privileges to grant on the tables in the schema.
+    /// </summary>
+    public NpgsqlTableGrantSettings Tables { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the kind of privileges to grant on the sequences in the schema.
+    /// </summary>
+    public NpgsqlSequenceGrantSettings Sequences { get; set; } = new();
 }
 
 /// <summary>
@@ -187,41 +224,192 @@ public sealed class NpgsqlDatabaseGrantSettings
     public NpgsqlDatabasePrivileges Privileges { get; set; }
 
     /// <summary>
-    /// Gets or sets a boolean value that indicates whether the permissions should be granted with the grant option.
+    /// Gets or sets a boolean value that indicates whether the privileges should be granted with the grant option.
     /// </summary>
     public bool WithGrantOption { get; set; }
 }
 
-///// <summary>
-///// Provides the client configuration settings for granting permissions in a PostgreSQL schema using Npgsql.
-///// </summary>
-//public sealed class NpgsqlSchemaGrantSettings
-//{
-//    /// <summary>
-//    /// Gets or sets the kind of permissions to grant on the schema.
-//    /// </summary>
-//    public NpgsqlSchemaGrants Schema { get; set; }
-//}
+/// <summary>
+/// Provides the client configuration settings for granting permissions in a PostgreSQL schema using Npgsql.
+/// </summary>
+public sealed class NpgsqlSchemaGrantSettings
+{
+    /// <summary>
+    /// Gets or sets the kind of privileges to grant on the schema.
+    /// </summary>
+    public NpgsqlSchemaPrivileges Privileges { get; set; }
 
+    /// <summary>
+    /// Gets or sets a boolean value that indicates whether the privileges should be granted with the grant option.
+    /// </summary>
+    public bool WithGrantOption { get; set; }
+}
+
+/// <summary>
+/// Provides the client configuration settings for granting permissions in a PostgreSQL table using Npgsql.
+/// </summary>
+public sealed class NpgsqlTableGrantSettings
+{
+    /// <summary>
+    /// Gets or sets the kind of privileges to grant on the table.
+    /// </summary>
+    public NpgsqlTablePrivileges Privileges { get; set; }
+
+    /// <summary>
+    /// Gets or sets a boolean value that indicates whether the privileges should be granted with the grant option.
+    /// </summary>
+    public bool WithGrantOption { get; set; }
+}
+
+/// <summary>
+/// Provides the client configuration settings for granting permissions in a PostgreSQL sequence using Npgsql.
+/// </summary>
+public sealed class NpgsqlSequenceGrantSettings
+{
+    /// <summary>
+    /// Gets or sets the kind of privileges to grant on the sequence.
+    /// </summary>
+    public NpgsqlSequencePrivileges Privileges { get; set; }
+
+    /// <summary>
+    /// Gets or sets a boolean value that indicates whether the privileges should be granted with the grant option.
+    /// </summary>
+    public bool WithGrantOption { get; set; }
+}
+
+/// <summary>
+/// PgSQL database privileges.
+/// </summary>
 [Flags]
 public enum NpgsqlDatabasePrivileges : byte
 {
+    /// <summary>
+    /// No privileges.
+    /// </summary>
     None = 0,
 
+    /// <summary>
+    /// <c>CREATE</c> privileges.
+    /// </summary>
     Create = 1 << 0,
+    /// <summary>
+    /// <c>CONNECT</c> privileges.
+    /// </summary>
     Connect = 1 << 1,
+    /// <summary>
+    /// <c>TEMPORARY</c> privileges.
+    /// </summary>
     Temporary = 1 << 2,
 
+    /// <summary>
+    /// All database privileges.
+    /// </summary>
     All = Create | Connect | Temporary,
 }
 
-//[Flags]
-//public enum NpgsqlSchemaGrants : byte
-//{
-//    None = 0,
+/// <summary>
+/// PgSQL schema privileges.
+/// </summary>
+[Flags]
+public enum NpgsqlSchemaPrivileges : byte
+{
+    /// <summary>
+    /// No privileges.
+    /// </summary>
+    None = 0,
 
-//    Create = 1 << 0,
-//    Usage = 1 << 1,
+    /// <summary>
+    /// <c>CREATE</c> privileges.
+    /// </summary>
+    Create = 1 << 0,
+    /// <summary>
+    /// <c>USAGE</c> privileges.
+    /// </summary>
+    Usage = 1 << 1,
 
-//    All = Create | Usage,
-//}
+    /// <summary>
+    /// All schema privileges.
+    /// </summary>
+    All = Create | Usage,
+}
+
+/// <summary>
+/// PgSQL table privileges.
+/// </summary>
+[Flags]
+public enum NpgsqlTablePrivileges : byte
+{
+    /// <summary>
+    /// No privileges.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// <c>SELECT</c> privileges.
+    /// </summary>
+    Select = 1 << 0,
+    /// <summary>
+    /// <c>INSERT</c> privileges.
+    /// </summary>
+    Insert = 1 << 1,
+    /// <summary>
+    /// <c>UPDATE</c> privileges.
+    /// </summary>
+    Update = 1 << 2,
+    /// <summary>
+    /// <c>DELETE</c> privileges.
+    /// </summary>
+    Delete = 1 << 3,
+    /// <summary>
+    /// <c>TRUNCATE</c> privileges.
+    /// </summary>
+    Truncate = 1 << 4,
+    /// <summary>
+    /// <c>REFERENCES</c> privileges.
+    /// </summary>
+    References = 1 << 5,
+    /// <summary>
+    /// <c>TRIGGER</c> privileges.
+    /// </summary>
+    Trigger = 1 << 6,
+
+    /// <summary>
+    /// <c>SELECT</c>, <c>INSERT</c>, <c>UPDATE</c>, and <c>DELETE</c> privileges.
+    /// </summary>
+    Usage = Select | Insert | Update | Delete,
+
+    /// <summary>
+    /// All table privileges.
+    /// </summary>
+    All = Select | Insert | Update | Delete | Truncate | References | Trigger,
+}
+
+/// <summary>
+/// PgSQL sequence privileges.
+/// </summary>
+[Flags]
+public enum NpgsqlSequencePrivileges : byte
+{
+    /// <summary>
+    /// No privileges.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// <c>USAGE</c> privileges.
+    /// </summary>
+    Usage = 1 << 0,
+    /// <summary>
+    /// <c>SELECT</c> privileges.
+    /// </summary>
+    Select = 1 << 1,
+    /// <summary>
+    /// <c>UPDATE</c> privileges.
+    /// </summary>
+    Update = 1 << 2,
+
+    /// <summary>
+    /// All sequence privileges.
+    /// </summary>
+    All = Usage | Select | Update,
+}

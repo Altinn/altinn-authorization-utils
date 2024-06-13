@@ -42,6 +42,12 @@ public readonly record struct DatabaseCreationOrder
     /// </summary>
     public static readonly DatabaseCreationOrder CreateGrants = new(20); // after schemas
 
+    /// <summary>
+    /// The "alter default privileges" step - must run after grants because it can
+    /// require grants to be in place.
+    /// </summary>
+    public static readonly DatabaseCreationOrder AlterDefaultPrivileges = new(30); // after grants
+
     private readonly int _value;
 
     private DatabaseCreationOrder(int value)
