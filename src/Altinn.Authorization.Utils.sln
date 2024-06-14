@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql", "Altinn.Authorization.ServiceDefaults\src\ServiceDefaults.Npgsql.Yuniql\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.csproj", "{70B57B5C-5846-457B-BEE6-3D625F0A0A21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests", "Altinn.Authorization.ServiceDefaults\test\ServiceDefaults.Npgsql.Yuniql.Tests\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests.csproj", "{D0D62170-CC63-4835-9420-ADF634F73F67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Tests", "Altinn.Authorization.ServiceDefaults\test\ServiceDefaults.Npgsql.Tests\Altinn.Authorization.ServiceDefaults.Npgsql.Tests.csproj", "{D0D62170-CC63-4835-9420-ADF634F73F67}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn.Authorization.ProblemDetails", "Altinn.Authorization.ProblemDetails", "{CB0B88B9-AF74-43C9-A838-0C24D0CEED9A}"
 EndProject

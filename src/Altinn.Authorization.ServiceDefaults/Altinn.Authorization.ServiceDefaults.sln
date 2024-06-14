@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5FA0B47B-5DBE-4B17-A0F6-2D18A4B8E56E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests", "test\ServiceDefaults.Npgsql.Yuniql.Tests\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests.csproj", "{BBA82424-5DE2-4835-AA0C-808C0C1AD236}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Tests", "test\ServiceDefaults.Npgsql.Tests\Altinn.Authorization.ServiceDefaults.Npgsql.Tests.csproj", "{BBA82424-5DE2-4835-AA0C-808C0C1AD236}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

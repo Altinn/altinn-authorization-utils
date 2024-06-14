@@ -11,6 +11,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults.Npgsql.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference
 			Include="..\ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj" />
 		<ProjectReference Include="..\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
