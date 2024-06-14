@@ -48,17 +48,14 @@ public static class AltinnServiceDefaultsExtensions
         builder.ConfigureOpenTelemetry();
         builder.AddDefaultHealthChecks();
 
-        // TODO: enable when aspire is GA
-        //builder.Services.AddServiceDiscovery();
-
+        builder.Services.AddServiceDiscovery();
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
             // Turn on resilience by default
             http.AddStandardResilienceHandler();
 
-            // TODO: enable when aspire is GA
-            //// Turn on service discovery by default
-            //http.UseServiceDiscovery();
+            // Turn on service discovery by default
+            http.AddServiceDiscovery();
         });
 
         return builder;
