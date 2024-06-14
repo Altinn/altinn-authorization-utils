@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v1.0.0...Altinn.Authorization.ServiceDefaults-v1.1.0) (2024-06-14)
+
+
+### Features
+
+* add ServiceDiscovery ([e1473bb](https://github.com/Altinn/altinn-authorization-utils/commit/e1473bb3a8648b26ae8731214d78ab626c81249b))
+
 ## 1.0.0 (2024-06-14)
 
 
