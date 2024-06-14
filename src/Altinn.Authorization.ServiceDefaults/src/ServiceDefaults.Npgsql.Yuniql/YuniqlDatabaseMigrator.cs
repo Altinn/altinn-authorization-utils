@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
@@ -43,12 +44,14 @@ internal partial class YuniqlDatabaseMigrator
     {
         var options = _options.CurrentValue;
 
+        using var workspace = ResolveWorkspace(options);
+
         // Yuniql uses a lot of static state, so we need to ensure only a single migration service is running at a time
         lock (_lock)
         {
             // setup config
             var config = Configuration.Instance;
-            config.Workspace = options.Workspace;
+            config.Workspace = workspace.Path;
             config.IsDebug = false;
             config.Platform = SUPPORTED_DATABASES.POSTGRESQL;
             config.ConnectionString = connectionString;
@@ -96,6 +99,102 @@ internal partial class YuniqlDatabaseMigrator
             Log.RunningYuniqlMigrations(_logger);
             migratorService.Run();
             Log.YuniqlMigrationsComplete(_logger);
+        }
+    }
+
+    private Workspace ResolveWorkspace(YuniqlDatabaseMigratorOptions options)
+    {
+        if (options.WorkspaceFileProvider is null)
+        {
+            return new Workspace(options.Workspace!, isTemp: false);
+        }
+
+        var provider = options.WorkspaceFileProvider;
+        var relPath = options.Workspace ?? "";
+        var fileInfo = provider.GetFileInfo(relPath);
+        if (!fileInfo.Exists || !fileInfo.IsDirectory)
+        {
+            throw new DirectoryNotFoundException("Workspace path does not exist or is not a directory");
+        }
+
+        if (fileInfo.PhysicalPath is not null)
+        {
+            return new Workspace(fileInfo.PhysicalPath, isTemp: false);
+        }
+
+        var tempDir = CreateTempDir();
+        try
+        {
+            WriteContents(provider, relPath, tempDir);
+            var ret = new Workspace(tempDir.FullName, isTemp: true);
+            tempDir = null;
+            return ret;
+        }
+        finally
+        {
+            tempDir?.Delete(recursive: true);
+        }
+    }
+
+    private static void WriteContents(IFileProvider provider, string path, DirectoryInfo target)
+    {
+        var contents = provider.GetDirectoryContents(path);
+        if (!contents.Exists)
+        {
+            return;
+        }
+
+        foreach (var entry in contents)
+        {
+            if (entry.IsDirectory)
+            {
+                var subPath = Path.Combine(path, entry.Name);
+                var subTarget = target.CreateSubdirectory(entry.Name);
+                WriteContents(provider, subPath, subTarget);
+            }
+            else
+            {
+                var file = new FileInfo(Path.Combine(target.FullName, entry.Name));
+                using var readStream = entry.CreateReadStream();
+                using var writeStream = file.Create();
+                readStream.CopyTo(writeStream);
+            }
+        }
+    }
+
+    private static DirectoryInfo CreateTempDir()
+    {
+        while (true)
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            if (Path.Exists(dir))
+            {
+                continue;
+            }
+
+            return Directory.CreateDirectory(dir);
+        }
+    }
+
+    private class Workspace
+        : IDisposable
+    {
+        private bool _isTemp;
+
+        public string Path { get; }
+
+        public Workspace(string path, bool isTemp)
+        {
+            Path = path;
+            _isTemp = isTemp;
+        }
+
+        public void Dispose()
+        {
+            if (_isTemp)
+            {
+                Directory.Delete(Path, recursive: true);
+            }
         }
     }
 

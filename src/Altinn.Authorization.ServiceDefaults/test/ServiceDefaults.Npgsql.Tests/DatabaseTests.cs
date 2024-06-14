@@ -119,10 +119,11 @@ public class DatabaseTests
         const string APP_USER = "app_user";
         const string APP_PASSWORD = "app_password";
 
-        await using var tempDir = TempDirectory.Create();
+        var fs = new InMemoryFileProvider();
+        //await using var tempDir = TempDirectory.Create();
         var testCount = Interlocked.Increment(ref _counter);
 
-        var wwwDir = tempDir.DirectoryInfo.CreateSubdirectory("www");
+        var wwwDir = fs.Root.CreateSubdirectory("www");
         var dbDir = wwwDir.CreateSubdirectory("db");
 
         dbDir.CreateSubdirectory("_init");
@@ -135,9 +136,7 @@ public class DatabaseTests
         foreach (var script in scripts)
         {
             var versionDir = dbDir.CreateSubdirectory($"v{version++}.00");
-            await File.WriteAllTextAsync(
-                Path.Combine(versionDir.FullName, "00-script.sql"),
-                script);
+            versionDir.CreateFile("00-script.sql", script);
         }
 
         var builder = new NpgsqlConnectionStringBuilder(_fixture.ConnectionString);
@@ -247,7 +246,7 @@ public class DatabaseTests
             ApplicationName = "test",
             EnvironmentName = "Development",
             DisableDefaults = true,
-            ContentRootPath = wwwDir.FullName,
+            //ContentRootPath = wwwDir.FullName,
             Configuration = configuration,
         });
 
@@ -257,7 +256,8 @@ public class DatabaseTests
             .AddAltinnPostgresDataSource(configureDataSourceBuilder: configure)
             .AddYuniqlMigrations(opts =>
             {
-                opts.Workspace = dbDir.FullName;
+                opts.Workspace = dbDir.Path;
+                opts.WorkspaceFileProvider = fs;
                 opts.MigrationsTable.Schema = "yuniql";
                 opts.MigrationsTable.Name = "migrations";
             });

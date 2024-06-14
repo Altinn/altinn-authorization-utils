@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.FileProviders;
+using System.ComponentModel.DataAnnotations;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 
@@ -20,6 +21,11 @@ public sealed class YuniqlDatabaseMigratorOptions
     public string? Workspace { get; set; }
 
     /// <summary>
+    /// The file provider to use for the workspace. If not set, the physical file system will be used.
+    /// </summary>
+    public IFileProvider? WorkspaceFileProvider { get; set; }
+
+    /// <summary>
     /// Gets or sets the version table options.
     /// </summary>
     public VersionTableOptions MigrationsTable { get; set; } = new();
@@ -36,9 +42,9 @@ public sealed class YuniqlDatabaseMigratorOptions
             yield return new ValidationResult("Environment name is required", [nameof(Environment)]);
         }
 
-        if (string.IsNullOrEmpty(Workspace))
+        if (WorkspaceFileProvider is null && string.IsNullOrEmpty(Workspace))
         {
-            yield return new ValidationResult("Workspace path is required", [nameof(Workspace)]);
+            yield return new ValidationResult("Workspace path or file provider is required", [nameof(Workspace), nameof(WorkspaceFileProvider)]);
         }
 
         if (!Directory.Exists(Workspace))
@@ -57,6 +63,9 @@ public sealed class YuniqlDatabaseMigratorOptions
     }
 }
 
+/// <summary>
+/// Options for the version table.
+/// </summary>
 public sealed class VersionTableOptions
 {
     /// <summary>
