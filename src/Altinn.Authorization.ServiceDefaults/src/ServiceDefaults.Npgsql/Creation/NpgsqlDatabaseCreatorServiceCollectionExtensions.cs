@@ -204,7 +204,8 @@ public static class NpgsqlDatabaseCreatorServiceCollectionExtensions
     /// Configures the initialization service to grant a role to another role.
     /// </summary>
     /// <param name="builder">The <see cref="INpgsqlDatabaseBuilder"/>.</param>
-    /// <param name="roleName"></param>
+    /// <param name="roleName">The role to grant on.</param>
+    /// <param name="grantedRole">The role to grant.</param>
     /// <returns><paramref name="builder"/>.</returns>
     public static INpgsqlDatabaseBuilder GrantRoleToRole(this INpgsqlDatabaseBuilder builder, string roleName, string grantedRole)
     {

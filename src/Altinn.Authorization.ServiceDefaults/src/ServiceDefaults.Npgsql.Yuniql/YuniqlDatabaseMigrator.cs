@@ -112,12 +112,14 @@ internal partial class YuniqlDatabaseMigrator
         var provider = options.WorkspaceFileProvider;
         var relPath = options.Workspace ?? "";
         var fileInfo = provider.GetFileInfo(relPath);
-        if (!fileInfo.Exists || !fileInfo.IsDirectory)
+        if ((!fileInfo.Exists || !fileInfo.IsDirectory)
+            // Some file-providers does not return file-info for directories
+            && !provider.GetDirectoryContents(relPath).Exists)
         {
             throw new DirectoryNotFoundException("Workspace path does not exist or is not a directory");
         }
 
-        if (fileInfo.PhysicalPath is not null)
+        if (fileInfo.Exists && fileInfo.PhysicalPath is not null)
         {
             return new Workspace(fileInfo.PhysicalPath, isTemp: false);
         }
@@ -126,6 +128,7 @@ internal partial class YuniqlDatabaseMigrator
         try
         {
             WriteContents(provider, relPath, tempDir);
+            EnsureYuniqlDirs(tempDir);
             var ret = new Workspace(tempDir.FullName, isTemp: true);
             tempDir = null;
             return ret;
@@ -160,6 +163,15 @@ internal partial class YuniqlDatabaseMigrator
                 readStream.CopyTo(writeStream);
             }
         }
+    }
+
+    private static void EnsureYuniqlDirs(DirectoryInfo target)
+    {
+        target.CreateSubdirectory("_init");
+        target.CreateSubdirectory("_pre");
+        target.CreateSubdirectory("_post");
+        target.CreateSubdirectory("_draft");
+        target.CreateSubdirectory("_erase");
     }
 
     private static DirectoryInfo CreateTempDir()

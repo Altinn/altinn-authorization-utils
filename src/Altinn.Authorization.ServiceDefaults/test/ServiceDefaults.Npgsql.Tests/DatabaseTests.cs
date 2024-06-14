@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using System.Data;
@@ -106,8 +107,37 @@ public class DatabaseTests
         result.Should().Be(2);
     }
 
-    private async Task<AppContext> RunMigrations(
+    [Fact]
+    public async Task TestWithEmbeddedFileProvider()
+    {
+        var fs = new ManifestEmbeddedFileProvider(typeof(DatabaseTests).Assembly, "TestMigrations/Test1");
+        await using var ctx = await RunMigrations(fs);
+
+        var result = await ctx.ExecuteScalar<long>(/*strpsql*/"SELECT app.test_function(1)");
+
+        result.Should().Be(2);
+    }
+
+    private Task<AppContext> RunMigrations(
         IEnumerable<string> scripts,
+        Action<NpgsqlDataSourceBuilder>? configure = null)
+    {
+        var fs = new InMemoryFileProvider();
+        var testCount = Interlocked.Increment(ref _counter);
+
+        var dir = fs.Root;
+        var version = 0;
+        foreach (var script in scripts)
+        {
+            var versionDir = dir.CreateSubdirectory($"v{version++}.00");
+            versionDir.CreateFile("00-script.sql", script);
+        }
+
+        return RunMigrations(fs, configure);
+    }
+
+    private async Task<AppContext> RunMigrations(
+        IFileProvider fs,
         Action<NpgsqlDataSourceBuilder>? configure = null)
     {
         const string OWNER_USER = "owner_user";
@@ -119,25 +149,7 @@ public class DatabaseTests
         const string APP_USER = "app_user";
         const string APP_PASSWORD = "app_password";
 
-        var fs = new InMemoryFileProvider();
-        //await using var tempDir = TempDirectory.Create();
         var testCount = Interlocked.Increment(ref _counter);
-
-        var wwwDir = fs.Root.CreateSubdirectory("www");
-        var dbDir = wwwDir.CreateSubdirectory("db");
-
-        dbDir.CreateSubdirectory("_init");
-        dbDir.CreateSubdirectory("_pre");
-        dbDir.CreateSubdirectory("_post");
-        dbDir.CreateSubdirectory("_draft");
-        dbDir.CreateSubdirectory("_erase");
-
-        var version = 0;
-        foreach (var script in scripts)
-        {
-            var versionDir = dbDir.CreateSubdirectory($"v{version++}.00");
-            versionDir.CreateFile("00-script.sql", script);
-        }
 
         var builder = new NpgsqlConnectionStringBuilder(_fixture.ConnectionString);
         var clusterConnectionString = builder.ConnectionString;
@@ -256,8 +268,8 @@ public class DatabaseTests
             .AddAltinnPostgresDataSource(configureDataSourceBuilder: configure)
             .AddYuniqlMigrations(opts =>
             {
-                opts.Workspace = dbDir.Path;
                 opts.WorkspaceFileProvider = fs;
+                opts.Workspace = "/";
                 opts.MigrationsTable.Schema = "yuniql";
                 opts.MigrationsTable.Name = "migrations";
             });
