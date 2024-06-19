@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ServiceDefaults;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
+using Altinn.Authorization.ServiceDefaults.Options;
 using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -44,6 +46,17 @@ public static class AltinnServiceDefaultsExtensions
         serviceDescription = new AltinnServiceDescriptor(name, isLocalDevelopment);
         builder.Services.AddSingleton(serviceDescription);
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
+        builder.Services.Configure<AltinnClusterInfo>(builder.Configuration.GetSection("Altinn:ClusterInfo"));
+        builder.Services.AddSingleton<IConfigureOptions<AltinnClusterInfo>, ConfigureAltinnClusterInfo>();
+        builder.Services.AddOptions<ForwardedHeadersOptions>()
+            .Configure((ForwardedHeadersOptions options, IOptionsMonitor<AltinnClusterInfo> clusterInfoOptions) =>
+            {
+                var clusterInfo = clusterInfoOptions.CurrentValue;
+                if (clusterInfo.ClusterNetwork is { } clusterNetwork)
+                {
+                    options.KnownNetworks.Add(new AspNetCore.HttpOverrides.IPNetwork(clusterNetwork.BaseAddress, clusterNetwork.PrefixLength));
+                }
+            });
 
         builder.ConfigureOpenTelemetry();
         builder.AddDefaultHealthChecks();
