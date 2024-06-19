@@ -22,7 +22,8 @@ internal sealed partial class NpgsqlGrantDefaultSequencePrivileges
 
     public DatabaseCreationOrder Order => DatabaseCreationOrder.AlterDefaultPrivileges;
 
-    public async Task InitializeDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider services, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task InitializeDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider scopedServices, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(_options.RoleName))
         {

@@ -21,7 +21,8 @@ internal sealed partial class NpgsqlCreateRole
 
     public DatabaseCreationOrder Order => DatabaseCreationOrder.CreateRoles;
 
-    public async Task InitializeDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider services, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task InitializeDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider scopedServices, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(_options.Name))
         {

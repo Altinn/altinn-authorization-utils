@@ -55,7 +55,7 @@ public static class YuniqlDatabaseMigratorExtensions
         Action<YuniqlDatabaseMigratorOptions> configure)
         => AddYuniqlMigrations(builder, (_, opts) => configure(opts));
 
-    private class ConfigureYuniqlEnvironmentFromHostEnvironment
+    private sealed class ConfigureYuniqlEnvironmentFromHostEnvironment
         : IConfigureNamedOptions<YuniqlDatabaseMigratorOptions>
     {
         private readonly IHostEnvironment _hostEnvironment;
@@ -77,7 +77,7 @@ public static class YuniqlDatabaseMigratorExtensions
         }
     }
 
-    private class ConfigureYuniqlTokensFromDatabaseMigrationOptions
+    private sealed class ConfigureYuniqlTokensFromDatabaseMigrationOptions
         : IConfigureNamedOptions<YuniqlDatabaseMigratorOptions>
     {
         private readonly IOptionsMonitor<NpgsqlDatabaseMigrationOptions> _inner;
@@ -115,7 +115,7 @@ public static class YuniqlDatabaseMigratorExtensions
         }
     }
 
-    private class Marker
+    private sealed class Marker
     {
     }
 }

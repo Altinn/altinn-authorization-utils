@@ -21,7 +21,8 @@ internal sealed partial class NpgsqlCreateSchema
 
     public DatabaseCreationOrder Order => DatabaseCreationOrder.CreateSchemas;
 
-    public async Task InitializeDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider services, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task InitializeDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider scopedServices, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(_options.Name))
         {

@@ -188,10 +188,10 @@ internal partial class YuniqlDatabaseMigrator
         }
     }
 
-    private class Workspace
+    private sealed class Workspace
         : IDisposable
     {
-        private bool _isTemp;
+        private readonly bool _isTemp;
 
         public string Path { get; }
 

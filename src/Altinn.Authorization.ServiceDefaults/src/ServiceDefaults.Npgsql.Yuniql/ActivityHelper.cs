@@ -80,7 +80,7 @@ internal static class ActivityHelper
     /// </summary>
     internal sealed class StateInner
     {
-        private TagList _tags = new();
+        private readonly TagList _tags = new();
 
         /// <summary>
         /// Gets the array of tags.
