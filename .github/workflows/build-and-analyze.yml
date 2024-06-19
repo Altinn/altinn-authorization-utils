@@ -94,59 +94,59 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  # analyze:
-  #   if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
-  #   name: Analyze
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-  #       with:
-  #         dotnet-version: |
-  #           8.0.x
+  analyze:
+    if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
 
-  #     - name: Set up JDK 17
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         distribution: 'microsoft'
-  #         java-version: 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "microsoft"
+          java-version: 17
 
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-  #     - name: Cache SonarCloud packages
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: ~\sonar\cache
-  #         key: ${{ runner.os }}-sonar
-  #         restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-  #     - name: Cache SonarCloud scanner
-  #       id: cache-sonar-scanner
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: .\.sonar\scanner
-  #         key: ${{ runner.os }}-sonar-scanner
-  #         restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
 
-  #     - name: Install SonarCloud scanner
-  #       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-  #       shell: bash
-  #       run: |
-  #         mkdir -p ./.sonar/scanner
-  #         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ./.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
-  #     - name: Analyze
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #       shell: bash
-  #       run: |
-  #         dotnet tool install --global dotnet-coverage
-  #         ./.sonar/scanner/dotnet-sonarscanner begin /k:"Altinn_altinn-resource-registry" /o:"altinn" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/coverage.xml"
+      - name: Analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: bash
+        run: |
+          dotnet tool install --global dotnet-coverage
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"Altinn_altinn-authorization-utils" /o:"altinn" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/coverage.xml"
 
-  #         dotnet build --no-incremental
-  #         dotnet coverage collect 'dotnet test --no-build --results-directory TestResults/' -f xml -o 'TestResults/coverage.xml'
+          dotnet build --no-incremental
+          dotnet coverage collect 'dotnet test --no-build --results-directory TestResults/' -f xml -o 'TestResults/coverage.xml'
 
-  #         ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
