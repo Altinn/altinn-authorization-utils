@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\src\Altinn.Urn\Altinn.Urn.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
 </Project>
