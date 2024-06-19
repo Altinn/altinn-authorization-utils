@@ -213,7 +213,7 @@ internal class UrnSwaggerFilter
             }
         }
 
-        private void ApplyBaseUrnFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
+        private static void ApplyBaseUrnFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
         {
             // reset defaults
             schema.Properties.Clear();
@@ -242,7 +242,7 @@ internal class UrnSwaggerFilter
         }
 
 
-        private void ApplyVariantUrnFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, TVariants variant, OpenApiExampleProvider exampleProvider)
+        private static void ApplyVariantUrnFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, TVariants variant, OpenApiExampleProvider exampleProvider)
         {
             // reset defaults
             schema.Properties.Clear();
@@ -261,11 +261,10 @@ internal class UrnSwaggerFilter
             schema.Pattern = pattern;
         }
 
-        [ThreadStatic]
-        private static RegexBuilder? _regexBuilder;
+        
         private static string GetPattern(ReadOnlySpan<string> prefixes)
         {
-            var builder = _regexBuilder ??= new(prefixes[0].Length * 10);
+            var builder = RegexBuilder.ThreadStaticInstance;
             builder.Clear();
 
             builder.AppendRaw("^urn:");

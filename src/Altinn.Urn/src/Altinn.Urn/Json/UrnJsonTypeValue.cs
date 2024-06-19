@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Json;
@@ -10,6 +11,7 @@ namespace Altinn.Urn.Json;
 [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
 public readonly struct UrnJsonTypeValue<T>
     : IUrnJsonWrapper<UrnJsonTypeValue<T>, T>
+    , IEqualityOperators<UrnJsonTypeValue<T>, UrnJsonTypeValue<T>, bool>
     where T : IKeyValueUrn<T>
 {
     /// <summary>
@@ -62,4 +64,12 @@ public readonly struct UrnJsonTypeValue<T>
     /// <param name="value"></param>
     public static implicit operator UrnJsonTypeValue<T>(T? value)
         => new(value);
+
+    /// <inheritdoc/>
+    public static bool operator ==(UrnJsonTypeValue<T> left, UrnJsonTypeValue<T> right) 
+        => left.Equals(right);
+
+    /// <inheritdoc/>
+    public static bool operator !=(UrnJsonTypeValue<T> left, UrnJsonTypeValue<T> right) 
+        => !(left == right);
 }

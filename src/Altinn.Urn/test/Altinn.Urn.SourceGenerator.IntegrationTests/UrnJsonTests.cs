@@ -85,7 +85,7 @@ public partial class UrnJsonTests
         var json = """{"urn":{"type":"urn:test","value":"1234"}}""";
         Action act = () => JsonSerializer.Deserialize<StringObject>(json, _options);
         act.Should().Throw<JsonException>()
-            .Which.Message.Should().Be($"Expected {nameof(TestUrn)} as string, but got {JsonTokenType.StartObject}");
+            .WithMessage($"Expected {nameof(TestUrn)} as string, but got {JsonTokenType.StartObject}");
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public partial class UrnJsonTests
         var json = """{"urn":"urn:test:1234"}""";
         Action act = () => JsonSerializer.Deserialize<ObjectObject>(json, _options);
         act.Should().Throw<JsonException>()
-            .Which.Message.Should().Be($"Expected {nameof(TestUrn)} as object, but got {JsonTokenType.String}");
+            .WithMessage($"Expected {nameof(TestUrn)} as object, but got {JsonTokenType.String}");
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public partial class UrnJsonTests
         json = """{"urns":["urn:test:1234"]}""";
         var act = () => JsonSerializer.Deserialize<ObjectList>(json, _options);
         act.Should().Throw<JsonException>()
-            .Which.Message.Should().Be($"Expected {nameof(TestUrn)} as object, but got {JsonTokenType.String}");
+            .WithMessage($"Expected {nameof(TestUrn)} as object, but got {JsonTokenType.String}");
     }
 
     public record DefaultObject

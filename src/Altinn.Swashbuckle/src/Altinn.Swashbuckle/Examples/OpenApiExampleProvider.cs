@@ -48,7 +48,7 @@ public sealed class OpenApiExampleProvider
         return GetExample(type, exampleDataOptions, jsonOptions);
     }
 
-    private IEnumerable<IOpenApiAny>? GetExample(Type type, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<IOpenApiAny>? GetExample(Type type, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
     {
         var examples = ExampleData.GetExamples(type, exampleDataOptions);
         if (examples is null)

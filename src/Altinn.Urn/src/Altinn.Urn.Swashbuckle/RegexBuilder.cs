@@ -5,6 +5,12 @@ namespace Altinn.Urn.Swashbuckle;
 
 internal class RegexBuilder
 {
+    private static readonly ThreadLocal<RegexBuilder> _threadStaticInstance
+        = new(() => new RegexBuilder(256));
+
+    public static RegexBuilder ThreadStaticInstance 
+        => _threadStaticInstance.Value!;
+
     private static readonly SearchValues<char> _metachars =
             SearchValues.Create("\t\n\f\r #$()*+.?[\\^{|");
 
@@ -13,7 +19,7 @@ internal class RegexBuilder
 
     private readonly StringBuilder _builder;
 
-    public RegexBuilder(int capacity)
+    private RegexBuilder(int capacity)
     {
         _builder = new(capacity);
     }

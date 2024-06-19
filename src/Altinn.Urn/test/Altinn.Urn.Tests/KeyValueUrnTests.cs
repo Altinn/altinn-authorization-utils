@@ -35,7 +35,7 @@ public class KeyValueUrnTests
     {
         Action act = () => KeyValueUrn.Create("example:123", 5);
         act.Should().Throw<ArgumentException>()
-            .Which.Message.Should().StartWith("Urn must start with 'urn:'.");
+            .WithMessage("Urn must start with 'urn:'.*");
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class KeyValueUrnTests
     {
         Action act = () => KeyValueUrn.Create("urn:example123", 7);
         act.Should().Throw<ArgumentException>()
-            .Which.Message.Should().StartWith("Urn value must be preceded by a ':' separator.");
+            .WithMessage("Urn value must be preceded by a ':' separator.*");
     }
 
     [Theory]

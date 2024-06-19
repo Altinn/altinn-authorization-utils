@@ -28,13 +28,13 @@ internal class CIDRValueFormatter
         }
     }
 
-    private void Format(IPNetwork network, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
+    private static void Format(IPNetwork network, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
     {
         var cidr = $"{network.BaseAddress}/{network.PrefixLength}";
         Format(cidr, network.BaseAddress, network, formattedGraph, context, formatChild);
     }
 
-    private void Format(Microsoft.AspNetCore.HttpOverrides.IPNetwork network, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
+    private static void Format(Microsoft.AspNetCore.HttpOverrides.IPNetwork network, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
     {
         var cidr = $"{network.Prefix}/{network.PrefixLength}";
         var ipNetwork = IPNetworkUtils.From(network);
