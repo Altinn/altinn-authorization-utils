@@ -40,9 +40,9 @@ internal readonly ref partial struct CodeBuilder
         /// <typeparam name="T">The type of the value to write.</typeparam>
         public void AppendFormatted<T>(T value)
         {
-            if (value is IFormattable)
+            if (value is IFormattable formattable)
             {
-                AppendLiteral(((IFormattable)value).ToString(format: null, formatProvider: null));
+                AppendLiteral(formattable.ToString(format: null, formatProvider: null));
             }
             else if (value is not null)
             {
@@ -56,10 +56,10 @@ internal readonly ref partial struct CodeBuilder
         /// <typeparam name="T">The type of the value to write.</typeparam>
         public void AppendFormatted<T>(T value, string? format)
         {
-            if (value is IFormattable)
+            if (value is IFormattable formattable)
             {
                 // constrained call avoiding boxing for value types
-                AppendLiteral(((IFormattable)value).ToString(format, formatProvider: null));
+                AppendLiteral(formattable.ToString(format, formatProvider: null));
             }
             else if (value is not null)
             {

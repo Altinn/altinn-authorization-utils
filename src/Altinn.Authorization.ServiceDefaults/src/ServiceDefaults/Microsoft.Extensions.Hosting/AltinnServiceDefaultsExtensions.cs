@@ -30,7 +30,7 @@ public static class AltinnServiceDefaultsExtensions
     public static IHostApplicationBuilder AddAltinnServiceDefaults(this IHostApplicationBuilder builder, string name)
     {
         Guard.IsNotNull(builder);
-        Guard.IsNotNullOrEmpty(name, nameof(name));
+        Guard.IsNotNullOrEmpty(name);
 
         if (builder.Services.TryFindAltinnServiceDescription(out var serviceDescription))
         {

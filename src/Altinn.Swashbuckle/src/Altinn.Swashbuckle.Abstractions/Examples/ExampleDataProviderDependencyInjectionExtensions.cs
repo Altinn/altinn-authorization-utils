@@ -36,7 +36,7 @@ public static class ExampleDataProviderDependencyInjectionExtensions
         return builder;
     }
 
-    private class ExampleDataOptionsFactory : OptionsFactory<ExampleDataOptions>
+    private sealed class ExampleDataOptionsFactory : OptionsFactory<ExampleDataOptions>
     {
         public ExampleDataOptionsFactory(
             IEnumerable<IConfigureOptions<ExampleDataOptions>> setups, 

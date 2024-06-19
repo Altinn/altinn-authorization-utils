@@ -56,7 +56,7 @@ internal class PrefixTree<T>
         return new FlattenedNode(prefix, node.PathLength, node.Value, children);
     }
 
-    private class Node
+    private sealed class Node
     {
         public Optional<T> Value { get; set; }
 
@@ -65,7 +65,7 @@ internal class PrefixTree<T>
         public SortedDictionary<char, Node> Children { get; } = [];
     }
 
-    private class FlattenedNode
+    private sealed class FlattenedNode
         : IPrefixNode<T>
     {
         private readonly string _prefix;

@@ -99,7 +99,7 @@ internal sealed class UrnExampleDataProviderResolver
         return new VariantUrnExampleDataProvider<TVariant, TUrn, TVariants, TValue>(valueProvider);
     }
 
-    private class VariantUrnExampleDataProvider<TVariant, TUrn, TVariants, TValue>
+    private sealed class VariantUrnExampleDataProvider<TVariant, TUrn, TVariants, TValue>
         : ExampleDataProvider<TVariant>
         where TUrn : IKeyValueUrn<TUrn, TVariants>
         where TVariants : struct, Enum
@@ -116,7 +116,7 @@ internal sealed class UrnExampleDataProviderResolver
             => _valueProvider.GetExamples(options)?.Select(TVariant.Create);
     }
 
-    private class BaseUrnExampleDataProvider<TUrn, TVariants>
+    private sealed class BaseUrnExampleDataProvider<TUrn, TVariants>
         : ExampleDataProvider<TUrn>
         where TUrn : IKeyValueUrn<TUrn, TVariants>
         where TVariants : struct, Enum

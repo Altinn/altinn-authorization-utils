@@ -1,6 +1,6 @@
 ﻿namespace Altinn.Swashbuckle.Examples.Providers;
 
-internal sealed class IExampleDataProviderProvider
+internal sealed class ExampleDataProviderProvider
     : ExampleDataProviderFactory
 {
     /// <inheritdoc/>

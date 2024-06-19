@@ -24,7 +24,7 @@ public class DefaultExampleDataProviderResolver
     private static ImmutableArray<ExampleDataProviderFactory> _builtinFactories = [
         new NumberExampleDataProvider(),
         new NullableExampleDataProvider(),
-        new IExampleDataProviderProvider(),
+        new ExampleDataProviderProvider(),
     ];
 
     /// <inheritdoc/>

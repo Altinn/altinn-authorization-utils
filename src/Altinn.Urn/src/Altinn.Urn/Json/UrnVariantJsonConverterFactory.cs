@@ -51,7 +51,7 @@ public sealed class UrnVariantJsonConverterFactory<TUrn, TVariants>
         return dict;
     }
 
-    private class VariantConverter<TVariant, TValue>
+    private sealed class VariantConverter<TVariant, TValue>
         : JsonConverter<TVariant>
         where TVariant : TUrn, IKeyValueUrnVariant<TVariant, TUrn, TVariants, TValue>
     {

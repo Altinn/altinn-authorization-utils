@@ -33,7 +33,6 @@ public readonly struct ErrorCode
         Guard.IsLessThan(code, 100_000);
 
         var domainName = domain.Name.AsSpan();
-        var strLength = domainName.Length + 1 + NUM_LENGTH;
         
         Span<char> span = stackalloc char[MAX_LENGTH];
         domainName.CopyTo(span);

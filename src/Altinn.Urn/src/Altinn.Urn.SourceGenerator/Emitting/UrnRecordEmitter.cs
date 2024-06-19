@@ -610,8 +610,6 @@ internal ref struct UrnRecordEmitter
     {
         ct.ThrowIfCancellationRequested();
 
-        var builder_lv1 = builder.Indent();
-
         builder.AppendLine();
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("private static T Unreachable<T>() => throw new UnreachableException();");
