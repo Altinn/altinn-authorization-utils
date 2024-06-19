@@ -10,7 +10,7 @@ internal static class EquitableArray
 internal readonly struct EquitableArray<T>
     : IEquatable<EquitableArray<T>>
 {
-    public static EquitableArray<T> Empty = new(Array.Empty<T>());
+    public static readonly EquitableArray<T> Empty = new(Array.Empty<T>());
 
     private readonly T[] _array;
 

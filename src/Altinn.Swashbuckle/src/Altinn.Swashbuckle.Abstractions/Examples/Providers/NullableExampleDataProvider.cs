@@ -22,7 +22,7 @@ internal sealed class NullableExampleDataProvider
         return (ExampleDataProvider)Activator.CreateInstance(typeof(Provider<>).MakeGenericType(underlyingType), [underlyingProvider])!;
     }
 
-    private class Provider<T>
+    private sealed class Provider<T>
         : ExampleDataProvider<T?>
         where T : struct
     {

@@ -20,7 +20,7 @@ internal sealed class NumberExampleDataProvider
         return (ExampleDataProvider)Activator.CreateInstance(typeof(Provider<>).MakeGenericType(typeToProvide))!;
     }
 
-    private class Provider<T>
+    private sealed class Provider<T>
         : ExampleDataProvider<T>
         where T : INumberBase<T>
     {

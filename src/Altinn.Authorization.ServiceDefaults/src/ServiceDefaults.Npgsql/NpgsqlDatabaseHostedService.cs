@@ -13,7 +13,6 @@ internal partial class NpgsqlDatabaseHostedService
     : IHostedService
     , IHostedLifecycleService
 {
-    private readonly AltinnServiceDescriptor _serviceDescriptor;
     private readonly IHostEnvironment _environment;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IOptionsMonitor<Options> _options;
@@ -23,7 +22,6 @@ internal partial class NpgsqlDatabaseHostedService
     private readonly ILogger<NpgsqlDatabaseHostedService> _logger;
 
     public NpgsqlDatabaseHostedService(
-        AltinnServiceDescriptor serviceDescription,
         IHostEnvironment environment,
         IOptionsMonitor<Options> options,
         IServiceScopeFactory serviceScopeFactory,
@@ -32,7 +30,6 @@ internal partial class NpgsqlDatabaseHostedService
         IEnumerable<INpgsqlDatabaseSeeder> databaseSeeders,
         ILogger<NpgsqlDatabaseHostedService> logger)
     {
-        _serviceDescriptor = serviceDescription;
         _environment = environment;
         _serviceScopeFactory = serviceScopeFactory;
         _options = options;

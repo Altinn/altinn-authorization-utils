@@ -73,7 +73,13 @@ public class KeyValueUrnDictionary<TUrn, TVariants>
         return true;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Adds a new <typeparamref name="TUrn"/> to the dictionary.
+    /// </summary>
+    /// <param name="value">The <typeparamref name="TUrn"/> to add.</param>
+    /// <exception cref="ArgumentException">
+    /// An <typeparamref name="TUrn"/> with the same <typeparamref name="TVariants"/> already exists in the <see cref="KeyValueUrnDictionary{TUrn, TVariants}"/>.
+    /// </exception>
     public void Add(TUrn value)
         => _dictionary.Add(value.UrnType, value);
 

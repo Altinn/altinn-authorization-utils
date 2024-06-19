@@ -91,7 +91,10 @@ internal readonly ref partial struct CodeBuilder
     /// <summary>Appends the specified interpolated string to this instance.</summary>
     /// <param name="handler">The interpolated string to append.</param>
     /// <returns>A reference to this instance after the append operation has completed.</returns>
-    public void Append([InterpolatedStringHandlerArgument("")] ref AppendInterpolatedStringHandler handler) { }
+    public void Append([InterpolatedStringHandlerArgument("")] ref AppendInterpolatedStringHandler handler) 
+    {
+        // Handled by the handler
+    }
 
     /// <summary>Appends the specified interpolated string followed by the default line terminator to the end of the current StringBuilder object.</summary>
     /// <param name="handler">The interpolated string to append.</param>
