@@ -124,7 +124,12 @@ internal partial class YuniqlDatabaseMigrator
             return new Workspace(fileInfo.PhysicalPath, isTemp: false);
         }
 
+        using var activity = YuniqlActivityProvider.StartActivity(ActivityKind.Internal, "create temp workspace", [
+            new("yuniql.environment", options.Environment),
+        ]);
         var tempDir = CreateTempDir();
+        Log.CreateTemporaryWorkspaceDirectory(_logger, tempDir.FullName);
+
         try
         {
             WriteContents(provider, relPath, tempDir);
@@ -217,5 +222,8 @@ internal partial class YuniqlDatabaseMigrator
 
         [LoggerMessage(2, LogLevel.Information, "Yuniql migrations complete.")]
         public static partial void YuniqlMigrationsComplete(ILogger logger);
+
+        [LoggerMessage(3, LogLevel.Information, "Created temporary workspace directory '{TempDir}'.")]
+        public static partial void CreateTemporaryWorkspaceDirectory(ILogger logger, string tempDir);
     }
 }

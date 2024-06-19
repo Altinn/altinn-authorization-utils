@@ -58,7 +58,7 @@ public class ServiceDefaultsTests
         await act.Should().ThrowAsync<FormatException>();
     }
 
-    private async Task<AppContext> CreateApp(ImmutableArray<KeyValuePair<string, string>> config)
+    private static async Task<AppContext> CreateApp(ImmutableArray<KeyValuePair<string, string>> config)
     {
         var configuration = new ConfigurationManager();
         configuration.AddInMemoryCollection(config);

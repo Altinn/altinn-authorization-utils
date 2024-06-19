@@ -14,7 +14,7 @@ internal abstract class ConfigurationList<TItem>
 {
     protected readonly List<TItem> _list;
 
-    public ConfigurationList(IEnumerable<TItem>? source = null)
+    protected ConfigurationList(IEnumerable<TItem>? source = null)
     {
         _list = source is null ? new List<TItem>() : new List<TItem>(source);
     }

@@ -30,7 +30,7 @@ public class ActivityHelperTests
             var index = i;
             var thread = new Thread(() =>
             {
-                threadMap[index] = new ThreadInfo(Thread.CurrentThread.ManagedThreadId);
+                threadMap[index] = new ThreadInfo(Environment.CurrentManagedThreadId);
                 Span<KeyValuePair<string, object?>> tags = [
                     new("thread.id", Environment.CurrentManagedThreadId),
                     new("test.iteration", index),

@@ -2,7 +2,7 @@
 
 namespace Altinn.Urn.SourceGenerator.Emitting;
 
-internal class CodeStringBuilder
+internal sealed class CodeStringBuilder
     : IDisposable
 {
     public static CodeStringBuilder Rent()

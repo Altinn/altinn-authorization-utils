@@ -13,12 +13,12 @@ public sealed class StringParsableJsonConverter
 
     private static bool IsGenericConstructedTypeOf(Type iface, Type genericDef)
     {
-        if (!genericDef.IsConstructedGenericType)
+        if (!iface.IsConstructedGenericType)
         {
             return false;
         }
 
-        var def = genericDef.GetGenericTypeDefinition();
+        var def = iface.GetGenericTypeDefinition();
         return def == genericDef;
     }
 

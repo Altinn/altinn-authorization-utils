@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace Altinn.Swashbuckle.Examples;
@@ -58,7 +59,7 @@ public sealed class OpenApiExampleProvider
         return ConvertExamples(examples, type, jsonSerializerOptions);
     }
 
-    private IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type type, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type type, JsonSerializerOptions jsonSerializerOptions)
     {
         foreach (var example in examples)
         {
@@ -102,6 +103,7 @@ public sealed class OpenApiExampleProvider
         return ThrowHelper.ThrowArgumentException<IOpenApiAny>(nameof(element), "Could not get value from number element");
     }
 
+    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Concrete type is an implementation detail")]
     private static IOpenApiAny CreateFromArray(JsonElement element)
     {
         var array = new OpenApiArray();
@@ -113,6 +115,7 @@ public sealed class OpenApiExampleProvider
         return array;
     }
 
+    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Concrete type is an implementation detail")]
     private static IOpenApiAny CreateFromObject(JsonElement element)
     {
         var obj = new OpenApiObject();

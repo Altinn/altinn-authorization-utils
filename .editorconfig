@@ -14,3 +14,6 @@ dotnet_diagnostic.VSTHRD200.severity = none
 
 # SA1001: Commas should be spaced correctly
 dotnet_diagnostic.SA1001.severity = none
+
+# FAA0002: Replace Xunit assertion with Fluent Assertions equivalent
+dotnet_diagnostic.FAA0002.severity = none

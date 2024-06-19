@@ -41,7 +41,7 @@ internal class CIDRValueFormatter
         Format(cidr, network.Prefix, ipNetwork, formattedGraph, context, formatChild);
     }
 
-    private void Format(string cidr, IPAddress address, IPNetwork network, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
+    private static void Format(string cidr, IPAddress address, IPNetwork network, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
     {
         formattedGraph.AddFragment(cidr);
 

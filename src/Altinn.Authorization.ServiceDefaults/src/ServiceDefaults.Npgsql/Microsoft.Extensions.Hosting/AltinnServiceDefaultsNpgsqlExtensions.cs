@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -65,6 +66,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         Action<NpgsqlDataSourceBuilder>? configureDataSourceBuilder = null)
         => AddAltinnPostgresDataSource(builder, DefaultConfigSectionName(connectionName), configureSettings, connectionName, configureDataSourceBuilder: configureDataSourceBuilder);
 
+    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "This is an overload for public methods that return the interface")]
     private static INpgsqlDatabaseBuilder AddAltinnPostgresDataSource(
         IHostApplicationBuilder builder,
         string configurationSectionName,
@@ -298,7 +300,6 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
                 options.MigrationConnectionString = migrateConnectionString;
             });
 
-            //var connectionStringBuilder = new NpgsqlConnectionStringBuilder(settings.Migrate.ConnectionString);
             var migratorRole = new NpgsqlConnectionStringBuilder(settings.Migrate.ConnectionString).Username!;
             var appRole = new NpgsqlConnectionStringBuilder(settings.ConnectionString).Username!;
 
@@ -429,7 +430,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         }
     }
 
-    private class NpgsqlDatabaseHostedServiceMarker
+    private sealed class NpgsqlDatabaseHostedServiceMarker
     {
     }
 }
