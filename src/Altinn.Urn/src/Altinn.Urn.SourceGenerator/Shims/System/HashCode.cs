@@ -42,6 +42,7 @@ https://raw.githubusercontent.com/Cyan4973/xxHash/5c174cfa4e45a42f94082dc0d4539b
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -52,6 +53,7 @@ namespace System;
 // xxHash32 is used for the hash code.
 // https://github.com/Cyan4973/xxHash
 
+[ExcludeFromCodeCoverage]
 public struct HashCode
 {
     private static readonly uint s_seed = GenerateGlobalSeed();

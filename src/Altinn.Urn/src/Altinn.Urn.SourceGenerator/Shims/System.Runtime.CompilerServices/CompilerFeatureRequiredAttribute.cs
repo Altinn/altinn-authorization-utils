@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Runtime.CompilerServices;
 
@@ -7,6 +8,7 @@ namespace System.Runtime.CompilerServices;
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
+[ExcludeFromCodeCoverage]
 internal class CompilerFeatureRequiredAttribute : Attribute
 {
     public CompilerFeatureRequiredAttribute(string featureName)

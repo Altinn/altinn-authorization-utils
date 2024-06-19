@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Runtime.CompilerServices;
 
@@ -8,6 +9,7 @@ namespace System.Runtime.CompilerServices;
 /// This dummy class is required to compile records when targeting .NET Standard
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
+[ExcludeFromCodeCoverage]
 internal static class IsExternalInit
 {
 }

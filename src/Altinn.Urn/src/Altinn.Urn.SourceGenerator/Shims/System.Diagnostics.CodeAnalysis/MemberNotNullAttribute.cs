@@ -1,5 +1,6 @@
 ﻿namespace System.Diagnostics.CodeAnalysis;
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
+[ExcludeFromCodeCoverage]
 public sealed class MemberNotNullAttribute : Attribute
 {
     /// <summary>Initializes the attribute with a field or property member.</summary>

@@ -2,6 +2,7 @@
 
 /// <summary>Specifies that the output will be non-null if the named parameter is non-null.</summary>
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, AllowMultiple = true, Inherited = false)]
+[ExcludeFromCodeCoverage]
 public sealed class NotNullIfNotNullAttribute : Attribute
 {
     /// <summary>Initializes the attribute with the associated parameter name.</summary>
