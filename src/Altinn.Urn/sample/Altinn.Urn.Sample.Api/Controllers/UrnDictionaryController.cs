@@ -5,6 +5,7 @@ namespace Altinn.Urn.Sample.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ExcludeFromDescription]
 public class UrnDictionaryController : ControllerBase
 {
     [HttpPost("urn-body")]

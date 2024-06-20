@@ -6,7 +6,8 @@ namespace Altinn.Urn.Sample.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UrnTypeValueController : ControllerBase 
+[ExcludeFromDescription]
+public class UrnTypeValueController : ControllerBase
 {
     [HttpPost("urn-body")]
     public ActionResult<Nil> UrnBody([FromBody] UrnJsonTypeValue<PersonUrn> urn)

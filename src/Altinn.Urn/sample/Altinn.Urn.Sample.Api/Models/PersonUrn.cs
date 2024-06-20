@@ -1,6 +1,7 @@
 ﻿namespace Altinn.Urn.Sample.Api.Models;
 
 [KeyValueUrn]
+[ExcludeFromDescription]
 public abstract partial record PersonUrn
 {
     [UrnKey("altinn:person:identifier-no")]

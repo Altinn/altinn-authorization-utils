@@ -1,11 +1,11 @@
 using Altinn.Urn.Sample.Api.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ExcludeFromDescription]
 public class BaseUrnController : ControllerBase
 {
     [HttpPost("urn-body")]

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Json;
 
+[ExcludeFromDescription]
 public sealed class StringParsableJsonConverter
     : JsonConverterFactory
 {

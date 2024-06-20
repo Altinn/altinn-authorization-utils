@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Models;
 
+[ExcludeFromDescription]
 [SwaggerString(Pattern = @"^\d{9}$")]
 [JsonConverter(typeof(StringParsableJsonConverter))]
 public record OrgNo

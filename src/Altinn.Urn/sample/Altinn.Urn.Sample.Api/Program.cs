@@ -39,3 +39,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
+
+[ExcludeFromDescription]
+public partial class Program
+{
+}
