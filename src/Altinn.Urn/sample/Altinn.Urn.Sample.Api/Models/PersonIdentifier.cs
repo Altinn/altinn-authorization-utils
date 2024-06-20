@@ -78,6 +78,7 @@ public record PersonIdentifier
     }
 }
 
+[ExcludeFromCodeCoverage]
 internal class PersonIdentifierExampleDataProvider
     : ExampleDataProvider<PersonIdentifier>
 {
