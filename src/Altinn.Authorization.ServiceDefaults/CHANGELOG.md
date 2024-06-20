@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v1.1.0...Altinn.Authorization.ServiceDefaults-v1.2.0) (2024-06-20)
+
+
+### Features
+
+* add AltinnClusterInfo support ([323ec92](https://github.com/Altinn/altinn-authorization-utils/commit/323ec926753290790e094f34103312e43b5635bb))
+
 ## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v1.0.0...Altinn.Authorization.ServiceDefaults-v1.1.0) (2024-06-14)
 
 
