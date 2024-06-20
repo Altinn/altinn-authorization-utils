@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Models;
 
-[ExcludeFromDescription]
+[ExcludeFromCodeCoverage]
 [SwaggerString(Pattern = @"^\d{11}$")]
 [JsonConverter(typeof(StringParsableJsonConverter))]
 public record PersonIdentifier

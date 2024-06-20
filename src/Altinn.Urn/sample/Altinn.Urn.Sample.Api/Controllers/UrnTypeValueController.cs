@@ -1,12 +1,13 @@
 ﻿using Altinn.Urn.Json;
 using Altinn.Urn.Sample.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.Sample.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[ExcludeFromDescription]
+[ExcludeFromCodeCoverage]
 public class UrnTypeValueController : ControllerBase
 {
     [HttpPost("urn-body")]

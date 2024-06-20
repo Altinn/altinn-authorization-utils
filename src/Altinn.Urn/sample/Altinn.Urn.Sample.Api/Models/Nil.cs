@@ -1,6 +1,8 @@
-﻿namespace Altinn.Urn.Sample.Api.Models;
+﻿using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromDescription]
+namespace Altinn.Urn.Sample.Api.Models;
+
+[ExcludeFromCodeCoverage]
 public class Nil
 {
     public static Nil Instance { get; } = new Nil();

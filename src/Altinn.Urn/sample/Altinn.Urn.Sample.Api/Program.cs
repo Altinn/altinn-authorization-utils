@@ -1,4 +1,5 @@
 using Altinn.Urn.Sample.Api.Models;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +41,7 @@ app.MapControllers();
 
 await app.RunAsync();
 
-[ExcludeFromDescription]
+[ExcludeFromCodeCoverage]
 public partial class Program
 {
 }

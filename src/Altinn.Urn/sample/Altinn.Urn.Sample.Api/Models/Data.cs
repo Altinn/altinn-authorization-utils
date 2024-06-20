@@ -1,7 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Models;
 
-[ExcludeFromDescription]
+[ExcludeFromCodeCoverage]
 public record Data<T>(
     [property: JsonPropertyName("data"), JsonRequired] T Value);

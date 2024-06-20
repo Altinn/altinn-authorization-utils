@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Sample.Api.Json;
 
-[ExcludeFromDescription]
+[ExcludeFromCodeCoverage]
 public sealed class StringParsableJsonConverter
     : JsonConverterFactory
 {
