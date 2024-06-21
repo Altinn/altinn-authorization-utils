@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -129,7 +130,7 @@ internal class CreateJwkCommand
     private async Task<int> ExecuteAsync()
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
-        var keySuffix = FormattableString.Invariant($"{today:o}");
+        var keySuffix = string.Create(CultureInfo.InvariantCulture, $"{today:o}");
 
         if (_test)
         {
@@ -146,8 +147,8 @@ internal class CreateJwkCommand
 
     private async Task UpdateKeySet(string suffix, string environment)
     {
-        var keySetId = FormattableString.Invariant($"{_name}-{environment}");
-        var keyId = FormattableString.Invariant($"{keySetId}.{suffix}");
+        var keySetId = string.Create(CultureInfo.InvariantCulture, $"{_name}-{environment}");
+        var keyId = string.Create(CultureInfo.InvariantCulture, $"{keySetId}.{suffix}");
 
         Console.WriteLine($"Generating key {keyId} for key-set {keySetId}");
         var (privateKey, publicKey) = GenerateKeyPair(keyId);
