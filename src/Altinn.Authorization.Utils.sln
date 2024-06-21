@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -64,13 +65,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.Proble
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ProblemDetails.Abstractions", "Altinn.Authorization.ProblemDetails\src\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj", "{21A518E7-F11D-48C3-A758-0EC43593F744}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Tests", "Altinn.Authorization.ServiceDefaults\test\ServiceDefaults.Tests\Altinn.Authorization.ServiceDefaults.Tests.csproj", "{9796A747-31D2-4366-A8C1-910AF722030B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Authorization.ServiceDefaults.Tests", "Altinn.Authorization.ServiceDefaults\test\ServiceDefaults.Tests\Altinn.Authorization.ServiceDefaults.Tests.csproj", "{9796A747-31D2-4366-A8C1-910AF722030B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn.JwkGenerator", "Altinn.JwkGenerator", "{EC90677D-5F37-4A68-97A5-0FD840FCAD97}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A356DDAF-DD7B-4CCC-A069-C0EB37E40AEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwkGenerator", "Altinn.JwkGenerator\src\JwkGenerator\JwkGenerator.csproj", "{2D4570CD-39CF-45BE-9CCB-0327D97DD638}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.JwkGenerator", "Altinn.JwkGenerator\src\Altinn.JwkGenerator\Altinn.JwkGenerator.csproj", "{2D4570CD-39CF-45BE-9CCB-0327D97DD638}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
