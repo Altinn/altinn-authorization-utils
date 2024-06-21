@@ -23,8 +23,8 @@ internal static class JWKExtensions
     public static string ToJwkString(this JWKUse use)
         => use switch
         {
-            JWKUse.Sig => JsonWebKeyUseNames.Sig,
-            JWKUse.Enc => JsonWebKeyUseNames.Enc,
+            JWKUse.sig => JsonWebKeyUseNames.Sig,
+            JWKUse.enc => JsonWebKeyUseNames.Enc,
             _ => ThrowHelper.ThrowArgumentException<string>(nameof(use), "Unknown JWK Use"),
         };
 

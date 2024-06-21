@@ -27,8 +27,8 @@ Options:
   -p, --prod                                                    Generate PROD keys. Defaults to true unless --test is specified.
   -s, --size <size>                                             Key size in bits.
   -a, --alg, --algorithm <ES256|ES384|ES512|RS256|RS384|RS512>  The algorithm to use for the key. [default: RS256]
-  -u, --use <Enc|Sig>                                           Use for the JWK. [default: Sig]
-  -o, --out <out>                                               Output directory for the generated JWKs. [default: $PATH]
+  -u, --use <enc|sig>                                           Use for the JWK. [default: sig]
+  -o, --out <DIR>                                               Output directory for the generated JWKs. [default: $PATH]
   -?, -h, --help                                                Show help and usage information
 ```
 

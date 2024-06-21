@@ -8,10 +8,10 @@ public enum JWKUse
     /// <summary>
     /// Key is used for signing.
     /// </summary>
-    Sig,
+    sig,
 
     /// <summary>
     /// Key is used for encryption.
     /// </summary>
-    Enc,
+    enc,
 }

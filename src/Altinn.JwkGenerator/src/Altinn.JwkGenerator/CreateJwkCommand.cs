@@ -12,7 +12,10 @@ internal class CreateJwkCommand
     internal static readonly Option<DirectoryInfo> _outPathOption = new Option<DirectoryInfo>(
             aliases: ["--out", "-o"],
             description: "Output directory for the generated JWKs.",
-            getDefaultValue: () => new DirectoryInfo(Environment.CurrentDirectory));
+            getDefaultValue: () => new DirectoryInfo(Environment.CurrentDirectory))
+    {
+        ArgumentHelpName = "DIR",
+    };
 
     public static Command Command => CreateCommand();
 
@@ -40,7 +43,7 @@ internal class CreateJwkCommand
         var useOption = new Option<JWKUse>(
             aliases: ["--use", "-u"],
             description: "Use for the JWK.",
-            getDefaultValue: () => JWKUse.Sig);
+            getDefaultValue: () => JWKUse.sig);
 
         var cmd = new Command("create", "Creates a new JWK")
         {
