@@ -1,68 +1,63 @@
 # Altinn.JwkGenerator Console App
 
-The `Altinn.JwkGenerator` console application provides a convenient way to generate Json Web Keys. 
+The `Altinn.JwkGenerator` console application provides a convenient way to generate Json Web Keys.
 
 ## Installation
 
-Clone repo and build solution using IDE or CLI.
+Install using `dotnet tool install -g altinn-jwkgen`.
 
 ## Usage
 
-Use your favorite terminal and execute the `JwkGenerator.exe` from build output.
+Use your favorite terminal and execute the `altinn-jwkgen`.
 
-Here's an example of the `Altinn.JwkGenerator` console application's built in help page:
+Here's an example of the `altinn-jwkgen` console application's built in help page:
 
 ```
 Description:
-  Console app for creating Json Web Keys
+  Creates a new JWK
 
 Usage:
-  JwkGenerator [command] [options]
+  altinn-jwkgen create <name> [options]
+
+Arguments:
+  <name>  Name of the integration to generate JWKs for.
 
 Options:
-  --keyName <keyName>        Name for the JWK. Used in the kid in the format: "{keyName}-{date}". [default: MyJwk-DEV]
-  --keySize <keySize>        Key size in bits. [default: 2048]
-  --alg <alg>                Algorithm to use. [default: RS256]
-  --use <use>                Use for the JWK. [default: sig]
-  --filePath <filePath>      Filepath for where the JWK files should be stored. [default: c:\jwks]
-  --keySetName <keySetName>  Optional name for a keyset to include the key in. Setting a keyset name will collate all keys
-                             with the same keyset name in a subfolder of the file output folder (see --filePath). All public
-                             and private keys will also be added to separate collections stored in the base of the keyset
-                             folder. Useful for when creating a new key for rotation, on an existing Maskinporten client. []
-  --version                  Show version information
-  -?, -h, --help             Show help and usage information
-
-Commands:
-  create  Creates a new JWK.
+  -d, -t, --dev, --test                                         Generate TEST keys. Defaults to true unless --prod is specified.
+  -p, --prod                                                    Generate PROD keys. Defaults to true unless --test is specified.
+  -s, --size <size>                                             Key size in bits.
+  -a, --alg, --algorithm <ES256|ES384|ES512|RS256|RS384|RS512>  The algorithm to use for the key. [default: RS256]
+  -u, --use <Enc|Sig>                                           Use for the JWK. [default: Sig]
+  -o, --out <out>                                               Output directory for the generated JWKs. [default: $PATH]
+  -?, -h, --help                                                Show help and usage information
 ```
 
 ### Create command
 
 To create a JWK using the default values simply execute the app with the `create` command:
 
-```powershell
-.\JwkGenerator.exe create
+```pwsh
+.\altinn-jwkgen create br
 ```
 
 Output:
-```powershell
-Creating JWK with
-kid: MyJwk-DEV-2024-06-21, keySize: 2048, alg: RS256, use: sig, filePath: c:\jwks
-Success! Files written to c:\jwks\MyJwk-DEV-2024-06-21
+
+```
+Generating key br-TEST.2024-06-21 for key-set br-TEST
+Generating key br-PROD.2024-06-21 for key-set br-PROD
 ```
 
 Any of the `options` can be used to override defaults when executing the`create` command:
 
 ```powershell
-.\JwkGenerator.exe create --keyName MyJwk-PROD --keySize 4096 --alg RS512 --use sig --filePath c:\myJwks --keySetName MyJwk-PROD
+.\altinn-jwkgen create br --size 4096 --alg RS512 --use sig --out ./keys
 ```
 
 Output:
+
 ```powershell
-Creating JWK with
-kid: MyJwk-PROD-2024-06-21, keySize: 4096, alg: RS512, use: sig, filePath: c:\myJwks
-Creating new KeySet: MyJwk-PROD
-Success! Files written to c:\myJwks\MyJwk-PROD\MyJwk-PROD-2024-06-21
+Generating key br-TEST.2024-06-21 for key-set br-TEST
+Generating key br-PROD.2024-06-21 for key-set br-PROD
 ```
 
 ## Contributing
