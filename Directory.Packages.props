@@ -16,6 +16,7 @@
     <PackageVersion Include="Microsoft.Build.Locator" Version="1.7.8" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.8.0" />
+	<PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="6.35.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.6" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
@@ -34,6 +35,8 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="6.6.2" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.2" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	<PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+	<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="3.9.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="Verify.Xunit" Version="25.0.3" />
