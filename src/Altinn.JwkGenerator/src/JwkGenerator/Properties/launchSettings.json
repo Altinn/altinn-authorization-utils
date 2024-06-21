@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "create br": {
+      "commandName": "Project",
+      "commandLineArgs": "create br",
+      "workingDirectory": "obj",
+      "hotReloadEnabled": false
+    }
+  }
+}
