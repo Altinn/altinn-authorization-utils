@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JwkGenerator", "src\JwkGenerator\JwkGenerator.csproj", "{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9DBDF80B-6354-488C-A6E3-B83B31ED7DC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwkGenerator", "src\JwkGenerator\JwkGenerator.csproj", "{28E77F52-648B-444E-9464-6558CF823F0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28E77F52-648B-444E-9464-6558CF823F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28E77F52-648B-444E-9464-6558CF823F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28E77F52-648B-444E-9464-6558CF823F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28E77F52-648B-444E-9464-6558CF823F0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7BFB2710-FAF6-4A7F-8369-C271CDEE8AB1}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{28E77F52-648B-444E-9464-6558CF823F0B} = {9DBDF80B-6354-488C-A6E3-B83B31ED7DC3}
 	EndGlobalSection
 EndGlobal
