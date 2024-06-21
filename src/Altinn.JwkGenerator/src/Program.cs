@@ -5,7 +5,7 @@ using static System.IdentityModel.Tokens.Jwt.JsonExtensions;
 
 namespace Altinn.Authorization.JwkGenerator;
 
-class Program
+static class Program
 {
     static async Task Main(string[] args)
     {
@@ -116,7 +116,7 @@ class Program
                 File.WriteAllText(publicKeySetPath, SerializeToJson(pubKeys));
             }
 
-            filePath = Path.Combine(keySetPath, jwkPriv.Kid); ;
+            filePath = Path.Combine(keySetPath, jwkPriv.Kid);
         }
 
         if (!Directory.Exists(filePath))
