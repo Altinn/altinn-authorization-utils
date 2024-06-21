@@ -68,6 +68,7 @@ static class Program
 
         await rootCommand.InvokeAsync(args);
     }
+
     static void CreateJwk(string keyName, int keySize, string alg, string use, string filePath, string keySetName)
     {
         string date = DateTime.Now.ToString("yyyy-MM-dd");
