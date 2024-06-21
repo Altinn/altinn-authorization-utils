@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JwkGenerator", "src\JwkGenerator.csproj", "{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JwkGenerator", "src\JwkGenerator\JwkGenerator.csproj", "{4B4AFC99-851D-4CFF-B40C-245D9A142A4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
