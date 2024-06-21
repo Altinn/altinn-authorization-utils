@@ -5,8 +5,6 @@
 
 ### Features
 
-* create Altinn.JwkGenerator 
-
 
 ### Miscellaneous Chores
 
