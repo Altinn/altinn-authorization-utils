@@ -1,10 +1,12 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 using static System.IdentityModel.Tokens.Jwt.JsonExtensions;
 
 namespace Altinn.Authorization.JwkGenerator;
 
+[ExcludeFromCodeCoverage]
 static class Program
 {
     static async Task Main(string[] args)
