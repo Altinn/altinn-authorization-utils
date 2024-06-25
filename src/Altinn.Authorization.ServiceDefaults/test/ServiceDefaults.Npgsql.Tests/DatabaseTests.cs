@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -6,7 +7,7 @@ using Npgsql;
 using System.Data;
 using System.Diagnostics;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 public class DatabaseTests
     : IClassFixture<DbFixture>
@@ -263,7 +264,7 @@ public class DatabaseTests
         });
 
         hostAppBuilder.AddAltinnServiceDefaults("test");
-        
+
         hostAppBuilder
             .AddAltinnPostgresDataSource(configureDataSourceBuilder: configure)
             .AddYuniqlMigrations(opts =>

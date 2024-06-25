@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 internal sealed class InMemoryFileProvider
     : IFileProvider
@@ -162,7 +162,7 @@ internal sealed class InMemoryFileProvider
         public InMemoryFile CreateFile(string name, string content)
             => CreateFile(name, Encoding.UTF8.GetBytes(content));
 
-        protected override Stream CreateReadStream() 
+        protected override Stream CreateReadStream()
             => ThrowHelper.ThrowNotSupportedException<Stream>("Cannot read a directory");
 
         IEnumerator<IFileInfo> IEnumerable<IFileInfo>.GetEnumerator()
