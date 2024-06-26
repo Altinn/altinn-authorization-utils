@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -10,14 +11,6 @@ namespace Altinn.Authorization.JwkGenerator;
 [ExcludeFromCodeCoverage]
 internal class CreateJwkCommand
 {
-    internal static readonly Option<DirectoryInfo> _outPathOption = new Option<DirectoryInfo>(
-            aliases: ["--out", "-o"],
-            description: "Output directory for the generated JWKs.",
-            getDefaultValue: () => new DirectoryInfo(Environment.CurrentDirectory))
-    {
-        ArgumentHelpName = "DIR",
-    };
-
     public static Command Command => CreateCommand();
 
     private static Command CreateCommand()
@@ -54,7 +47,6 @@ internal class CreateJwkCommand
             sizeOption,
             algOption,
             useOption,
-            _outPathOption,
         };
 
         cmd.AddValidator(commandResult =>
@@ -78,7 +70,7 @@ internal class CreateJwkCommand
             }
         });
 
-        cmd.SetHandler(ExecuteAsync, nameArg, testOption, prodOption, sizeOption, algOption, useOption, _outPathOption);
+        cmd.SetHandler(ExecuteAsync, nameArg, testOption, prodOption, sizeOption, algOption, useOption, Program.JwkDirOption);
         return cmd;
     }
 
@@ -153,11 +145,19 @@ internal class CreateJwkCommand
         Console.WriteLine($"Generating key {keyId} for key-set {keySetId}");
         var (privateKey, publicKey) = GenerateKeyPair(keyId);
 
-        var privateKeyPath = Path.Combine(_outPath.FullName, $"{keySetId}.json");
-        var publicKeyPath = Path.Combine(_outPath.FullName, $"{keySetId}.pub.json");
+        if (!_outPath.Exists)
+        {
+            _outPath.Create();
+        }
 
-        await AddOrUpdateKeySet(privateKeyPath, privateKey);
-        await AddOrUpdateKeySet(publicKeyPath, publicKey);
+        var privateKeyPath = Path.Combine(_outPath.FullName, $"{keySetId}.key.json");
+        var privateKeyBase64Path = Path.Combine(_outPath.FullName, $"{keySetId}.key.base64");
+        var privateKeySetPath = Path.Combine(_outPath.FullName, $"{keySetId}.json");
+        var publicKeySetPath = Path.Combine(_outPath.FullName, $"{keySetId}.pub.json");
+
+        await AddOrUpdateKeySet(privateKeySetPath, privateKey);
+        await AddOrUpdateKeySet(publicKeySetPath, publicKey);
+        await WritePrivateKeyFile(privateKeyPath, privateKeyBase64Path, privateKey);
     }
 
     private async Task AddOrUpdateKeySet(string keySetPath, JsonWebKey newKey)
@@ -184,6 +184,20 @@ internal class CreateJwkCommand
         // truncate the file
         fs.SetLength(0);
         await JsonSerializer.SerializeAsync(fs, keySet, Options);
+    }
+
+    private async Task WritePrivateKeyFile(string privateKeyPath, string privateKeyBase64Path, JsonWebKey key)
+    {
+        await using var keyFs = File.Open(privateKeyPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+        
+        keyFs.SetLength(0);
+        await JsonSerializer.SerializeAsync(keyFs, key, Options);
+
+        await using var base64Fs = File.Open(privateKeyBase64Path, FileMode.Create, FileAccess.Write, FileShare.None);
+        await using var writeStream = new CryptoStream(base64Fs, new ToBase64Transform(), CryptoStreamMode.Write);
+
+        keyFs.Seek(0, SeekOrigin.Begin);
+        await keyFs.CopyToAsync(writeStream);
     }
 
     private (JsonWebKey privateKey, JsonWebKey publicKey) GenerateKeyPair(string keyId)
