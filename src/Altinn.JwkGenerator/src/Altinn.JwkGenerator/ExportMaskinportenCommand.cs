@@ -1,12 +1,13 @@
-﻿using System.Buffers.Text;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text.Json;
 
 namespace Altinn.Authorization.JwkGenerator;
 
 [ExcludeFromCodeCoverage]
-internal class KeyCommand
+internal class ExportMaskinportenCommand
 {
     public static Command Command => CreateCommand();
 
@@ -18,63 +19,67 @@ internal class KeyCommand
             aliases: ["--prod", "-p"],
             description: "Generate PROD keys. Defaults to true unless --test is specified.");
 
-        var base64Option = new Option<bool>(
-            aliases: ["--base64", "-b"],
-            description: "Output the base64 version of the key.");
-
-        var cmd = new Command("key", "Get a JWK")
+        var cmd = new Command("maskinporten", "Export a key set for maskinporten")
         {
             nameArg,
             prodOption,
-            base64Option,
         };
 
-        cmd.SetHandler(ExecuteAsync, nameArg, prodOption, base64Option, Program.JwkDirOption);
+        cmd.SetHandler(ExecuteAsync, nameArg, prodOption, Program.JwkDirOption);
         return cmd;
     }
 
     private static Task<int> ExecuteAsync(
         string name,
         bool prod,
-        bool base64,
         DirectoryInfo jwkDirectory)
     {
-        var command = new KeyCommand(name, prod, base64, jwkDirectory);
+        var command = new ExportMaskinportenCommand(name, prod, jwkDirectory);
         return command.ExecuteAsync();
     }
 
     private readonly string _name;
     private readonly bool _prod;
-    private readonly bool _base64;
     private readonly DirectoryInfo _jwkDirectory;
 
-    public KeyCommand(
+    public ExportMaskinportenCommand(
         string name,
         bool prod,
-        bool base64,
         DirectoryInfo jwkDirectory)
     {
         _name = name;
         _prod = prod;
-        _base64 = base64;
         _jwkDirectory = jwkDirectory;
     }
 
-    private Task<int> ExecuteAsync()
+    private async Task<int> ExecuteAsync()
     {
         var environment = _prod ? "PROD" : "TEST";
         var keySetId = string.Create(CultureInfo.InvariantCulture, $"{_name}-{environment}");
 
-        var privateKeyPath = Path.Combine(_jwkDirectory.FullName, $"{keySetId}.key.json");
-        var privateKeyBase64Path = Path.Combine(_jwkDirectory.FullName, $"{keySetId}.key.base64");
+        var publicKeySetPath = Path.Combine(_jwkDirectory.FullName, $"{keySetId}.pub.json");
+        var keySet = await LoadKeySet(publicKeySetPath);
 
-        if (_base64)
+        if (keySet is null)
         {
-            return OutFile(privateKeyBase64Path);
+            Console.Error.WriteLine($"Key set not found or failed to parse: {publicKeySetPath}");
+            return 1;
         }
-        else
+
+        await JsonSerializer.SerializeAsync(Console.OpenStandardOutput(), keySet.Keys, JsonOptions.Options);
+        return 0;
+    }
+
+    private async Task<JsonWebKeySet?> LoadKeySet(string path)
+    {
+        try
         {
-            return OutFile(privateKeyPath);
+            await using var keyFs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
+            return await JsonSerializer.DeserializeAsync<JsonWebKeySet>(keyFs, JsonOptions.Options);
+        }
+        catch (FileNotFoundException)
+        {
+            return null;
         }
     }
 

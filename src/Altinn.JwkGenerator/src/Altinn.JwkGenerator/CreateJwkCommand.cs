@@ -183,7 +183,7 @@ internal class CreateJwkCommand
 
         // truncate the file
         fs.SetLength(0);
-        await JsonSerializer.SerializeAsync(fs, keySet, Options);
+        await JsonSerializer.SerializeAsync(fs, keySet, JsonOptions.Options);
     }
 
     private async Task WritePrivateKeyFile(string privateKeyPath, string privateKeyBase64Path, JsonWebKey key)
@@ -191,7 +191,7 @@ internal class CreateJwkCommand
         await using var keyFs = File.Open(privateKeyPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         
         keyFs.SetLength(0);
-        await JsonSerializer.SerializeAsync(keyFs, key, Options);
+        await JsonSerializer.SerializeAsync(keyFs, key, JsonOptions.Options);
 
         await using var base64Fs = File.Open(privateKeyBase64Path, FileMode.Create, FileAccess.Write, FileShare.None);
         await using var writeStream = new CryptoStream(base64Fs, new ToBase64Transform(), CryptoStreamMode.Write);
@@ -241,10 +241,5 @@ internal class CreateJwkCommand
         return (privJwk, pubJwk);
     }
 
-    private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web)
-    {
-#if DEBUG
-        WriteIndented = true,
-#endif
-    };
+    
 }

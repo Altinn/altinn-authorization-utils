@@ -34,6 +34,7 @@ static class Program
 
         rootCommand.AddCommand(CreateJwkCommand.Command);
         rootCommand.AddCommand(KeyCommand.Command);
+        rootCommand.AddCommand(ExportCommand.Command);
 
         var parser = new CommandLineBuilder(rootCommand)
             .UseDefaults()
