@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.JwkGenerator;
+﻿namespace Altinn.Cli.Jwks;
 
 /// <summary>
 /// JWK algorithm.

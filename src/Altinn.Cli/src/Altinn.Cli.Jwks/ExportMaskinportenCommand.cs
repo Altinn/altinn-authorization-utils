@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Json;
 
-namespace Altinn.Authorization.JwkGenerator;
+namespace Altinn.Cli.Jwks;
 
 [ExcludeFromCodeCoverage]
 internal class ExportMaskinportenCommand

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Altinn.Authorization.JwkGenerator;
+namespace Altinn.Cli.Jwks;
 
 internal static class JsonOptions
 {

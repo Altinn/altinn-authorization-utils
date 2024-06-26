@@ -1,7 +1,7 @@
 ﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Altinn.Authorization.JwkGenerator;
+namespace Altinn.Cli.Jwks;
 
 [ExcludeFromCodeCoverage]
 internal class ExportCommand

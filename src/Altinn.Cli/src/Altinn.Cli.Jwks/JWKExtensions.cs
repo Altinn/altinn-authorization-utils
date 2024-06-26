@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
-namespace Altinn.Authorization.JwkGenerator;
+namespace Altinn.Cli.Jwks;
 
 [ExcludeFromCodeCoverage]
 internal static class JWKExtensions

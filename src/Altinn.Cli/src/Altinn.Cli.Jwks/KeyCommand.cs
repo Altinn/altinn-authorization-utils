@@ -1,9 +1,8 @@
-﻿using System.Buffers.Text;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace Altinn.Authorization.JwkGenerator;
+namespace Altinn.Cli.Jwks;
 
 [ExcludeFromCodeCoverage]
 internal class KeyCommand

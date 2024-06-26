@@ -1,12 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace Altinn.Authorization.JwkGenerator;
+namespace Altinn.Cli.Jwks;
 
 [ExcludeFromCodeCoverage]
 internal class CreateJwkCommand
@@ -189,7 +188,7 @@ internal class CreateJwkCommand
     private async Task WritePrivateKeyFile(string privateKeyPath, string privateKeyBase64Path, JsonWebKey key)
     {
         await using var keyFs = File.Open(privateKeyPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-        
+
         keyFs.SetLength(0);
         await JsonSerializer.SerializeAsync(keyFs, key, JsonOptions.Options);
 
@@ -241,5 +240,5 @@ internal class CreateJwkCommand
         return (privJwk, pubJwk);
     }
 
-    
+
 }
