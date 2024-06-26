@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <AssemblyName>altinn-jwkgen</AssemblyName>
+    <AssemblyName>altinn-jwks</AssemblyName>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>$(AssemblyName)</ToolCommandName>
   </PropertyGroup>

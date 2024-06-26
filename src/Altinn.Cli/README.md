@@ -1,23 +1,23 @@
-# Altinn.JwkGenerator Console App
+# Altinn.Cli Console App
 
 The `Altinn.JwkGenerator` console application provides a convenient way to generate Json Web Keys.
 
 ## Installation
 
-Install using `dotnet tool install -g altinn-jwkgen`.
+Install using `dotnet tool install -g altinn-jwks`.
 
 ## Usage
 
-Use your favorite terminal and execute the `altinn-jwkgen`.
+Use your favorite terminal and execute the `altinn-jwks`.
 
-Here's an example of the `altinn-jwkgen` console application's built in help page:
+Here's an example of the `altinn-jwks` console application's built in help page:
 
 ```
 Description:
   Creates a new JWK
 
 Usage:
-  altinn-jwkgen create <name> [options]
+  altinn-jwks create <name> [options]
 
 Arguments:
   <name>  Name of the integration to generate JWKs for.
@@ -37,7 +37,7 @@ Options:
 To create a JWK using the default values simply execute the app with the `create` command:
 
 ```pwsh
-.\altinn-jwkgen create br
+.\altinn-jwks create br
 ```
 
 Output:
@@ -50,7 +50,7 @@ Generating key br-PROD.2024-06-21 for key-set br-PROD
 Any of the `options` can be used to override defaults when executing the`create` command:
 
 ```powershell
-.\altinn-jwkgen create br --size 4096 --alg RS512 --use sig --out ./keys
+.\altinn-jwks create br --size 4096 --alg RS512 --use sig --out ./keys
 ```
 
 Output:
