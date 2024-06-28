@@ -239,10 +239,7 @@ internal class DirectoryJsonWebKeySetStore
         public async ValueTask Commit()
         {
             var stream = Interlocked.Exchange(ref _stream, null);
-            if (stream is null)
-            {
-                throw new ObjectDisposedException(nameof(TempFile));
-            }
+            ObjectDisposedException.ThrowIf(stream is null, this);
 
             await stream.DisposeAsync();
             File.Move(_temp, _destination, overwrite: true);
