@@ -7,7 +7,7 @@ namespace Altinn.Cli.Jwks.Stores;
 [ExcludeFromCodeCoverage]
 internal abstract class JsonWebKeySetStore
 {
-    public abstract IAsyncEnumerable<(string Name, JsonWebKeySetEnvironments Variants)> List(JsonWebKeySetEnvironmentFilter filter = JsonWebKeySetEnvironmentFilter.All, CancellationToken cancellationToken = default);
+    public abstract IAsyncEnumerable<(string Name, JsonWebKeySetEnvironments Variants)> List(JsonWebKeySetEnvironmentFilters filter = JsonWebKeySetEnvironmentFilters.All, CancellationToken cancellationToken = default);
     public abstract Task<Stream> GetKeySetReadStream(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public, CancellationToken cancellationToken = default);
     public abstract Task<Stream> GetCurrentPrivateKeyReadStream(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, CancellationToken cancellationToken = default);
     public abstract Task AddKeyToKeySet(string name, JsonWebKeySetEnvironment environment, JsonWebKey privateKey, JsonWebKey publicKey, CancellationToken cancellationToken = default);

@@ -50,7 +50,7 @@ internal enum JsonWebKeySetEnvironments
 /// JWKS variants available.
 /// </summary>
 [Flags]
-public enum JsonWebKeySetEnvironmentFilter
+public enum JsonWebKeySetEnvironmentFilters
 {
     /// <summary>
     /// No keys available.

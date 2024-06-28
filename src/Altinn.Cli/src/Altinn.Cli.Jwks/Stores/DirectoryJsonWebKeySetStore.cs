@@ -17,7 +17,7 @@ internal class DirectoryJsonWebKeySetStore
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    public override async IAsyncEnumerable<(string Name, JsonWebKeySetEnvironments Variants)> List(JsonWebKeySetEnvironmentFilter filter = JsonWebKeySetEnvironmentFilter.All, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public override async IAsyncEnumerable<(string Name, JsonWebKeySetEnvironments Variants)> List(JsonWebKeySetEnvironmentFilters filter = JsonWebKeySetEnvironmentFilters.All, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var testKeySetsSuffix = $"-{JsonWebKeySetEnvironment.Test.Name()}.pub.json";
         var prodKeySetsSuffix = $"-{JsonWebKeySetEnvironment.Prod.Name()}.pub.json";
@@ -153,16 +153,16 @@ internal class DirectoryJsonWebKeySetStore
         await keyTemp.Commit();
     }
 
-    private class TempFile
-    : IAsyncDisposable
+    private sealed class TempFile
+        : IAsyncDisposable
     {
         public static async Task<TempFile> Create(string destination)
         {
-            var path = Path.GetTempFileName();
+            string? path = null;
             FileStream? fs = null;
             try
             {
-                fs = File.Open(path, FileMode.Open, FileAccess.Write, FileShare.None);
+                (fs, path) = CreateTempFile();
                 var tempFile = new TempFile(destination, path, fs);
                 fs = null;
                 path = null;
@@ -183,6 +183,23 @@ internal class DirectoryJsonWebKeySetStore
                         File.Delete(path);
                     }
                     catch (FileNotFoundException)
+                    {
+                    }
+                }
+            }
+
+            static (FileStream Stream, string Path) CreateTempFile()
+            {
+                var retries = 0;
+                while (true)
+                {
+                    var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                    try
+                    {
+                        var fs = File.Open(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+                        return (fs, path);
+                    }
+                    catch (IOException) when (retries++ < 5)
                     {
                     }
                 }
