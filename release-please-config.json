@@ -43,8 +43,8 @@
         }
       ]
     },
-    "src/Altinn.JwkGenerator": {
-      "component": "Altinn.JwkGenerator",
+    "src/Altinn.Cli": {
+      "component": "Altinn.Cli",
       "extra-files": [
         {
           "type": "xml",
