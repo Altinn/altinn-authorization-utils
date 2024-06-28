@@ -1,12 +1,26 @@
 {
   "profiles": {
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
-    },
     "create br": {
       "commandName": "Project",
-      "commandLineArgs": "create br",
+      "commandLineArgs": "--store ./test-keys create br",
+      "workingDirectory": "obj",
+      "hotReloadEnabled": false
+    },
+    "list": {
+      "commandName": "Project",
+      "commandLineArgs": "--store ./test-keys list",
+      "workingDirectory": "obj",
+      "hotReloadEnabled": false
+    },
+    "export key": {
+      "commandName": "Project",
+      "commandLineArgs": "--store ./test-keys export key br",
+      "workingDirectory": "obj",
+      "hotReloadEnabled": false
+    },
+    "export key base64": {
+      "commandName": "Project",
+      "commandLineArgs": "--store ./test-keys export key br --base64",
       "workingDirectory": "obj",
       "hotReloadEnabled": false
     }

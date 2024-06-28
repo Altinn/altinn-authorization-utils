@@ -3,7 +3,7 @@
 /// <summary>
 /// JWK algorithm.
 /// </summary>
-public enum JWKAlgorithm
+public enum JsonWebKeyAlgorithm
 {
     /// <summary>
     /// RSASSA-PKCS1-v1_5 using SHA-256
