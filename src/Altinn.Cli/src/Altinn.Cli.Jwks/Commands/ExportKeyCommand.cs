@@ -1,5 +1,6 @@
 ﻿using Altinn.Cli.Jwks.Stores;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
@@ -41,7 +42,12 @@ internal class ExportKeyCommand
         CancellationToken cancellationToken)
     {
         var environment = prod ? JsonWebKeySetEnvironment.Prod : JsonWebKeySetEnvironment.Test;
-        await using var keyStream = await store.GetCurrentPrivateKeyReadStream(name, environment, cancellationToken);
+        await using var keyStream = await store.GetCurrentPrivateKeyStream(name, environment, cancellationToken);
+        if (keyStream is null)
+        {
+            console.Error.WriteLine($"Key-set {name} not found.");
+            return 1;
+        }
 
         if (base64)
         {
