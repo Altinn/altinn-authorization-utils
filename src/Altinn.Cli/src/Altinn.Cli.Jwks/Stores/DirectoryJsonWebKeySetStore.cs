@@ -1,5 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipelines;
+﻿using Nerdbank.Streams;
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Altinn.Cli.Jwks.Stores;
@@ -11,6 +12,7 @@ internal class DirectoryJsonWebKeySetStore
     private readonly DirectoryInfo _dir;
 
     public DirectoryJsonWebKeySetStore(DirectoryInfo dir)
+        : base(".key.json", ".json", ".pub.json")
     {
         _dir = dir;
     }
@@ -31,7 +33,12 @@ internal class DirectoryJsonWebKeySetStore
         }
     }
 
-    protected override Task<PipeReader?> GetKeySetReader(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public, CancellationToken cancellationToken = default)
+    protected override async Task<bool> GetKeySet(
+        IBufferWriter<byte> writer,
+        string name,
+        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
+        JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public,
+        CancellationToken cancellationToken = default)
     {
         var path = Path.Combine(_dir.FullName, variant switch
         {
@@ -42,37 +49,51 @@ internal class DirectoryJsonWebKeySetStore
 
         try
         {
-            return Task.FromResult<PipeReader?>(PipeReader.Create(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read)));
+            await using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            await fs.CopyToAsync(writer.AsStream(), cancellationToken);
+            return true;
         }
         catch (FileNotFoundException)
         {
-            return Task.FromResult<PipeReader?>(null);
+            return false;
         }
         catch (DirectoryNotFoundException)
         {
-            return Task.FromResult<PipeReader?>(null);
+            return false;
         }
     }
 
-    protected override Task<PipeReader?> GetCurrentPrivateKeyReader(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, CancellationToken cancellationToken = default)
+    public override async Task<bool> GetCurrentPrivateKey(
+        IBufferWriter<byte> writer,
+        string name,
+        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
+        CancellationToken cancellationToken = default)
     {
         var path = Path.Combine(_dir.FullName, PrivateKeyName(name, environment));
 
         try
         {
-            return Task.FromResult<PipeReader?>(PipeReader.Create(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read)));
+            await using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            await fs.CopyToAsync(writer.AsStream(), cancellationToken);
+            return true;
         }
         catch (FileNotFoundException)
         {
-            return Task.FromResult<PipeReader?>(null);
+            return false;
         }
         catch (DirectoryNotFoundException)
         {
-            return Task.FromResult<PipeReader?>(null);
+            return false;
         }
     }
 
-    protected override async Task WriteNewKey(string name, JsonWebKeySetEnvironment environment, PipeReader privateKeySetReader, PipeReader publicKeySetReader, PipeReader currentKeyReader, CancellationToken cancellationToken)
+    protected override async Task WriteNewKey(
+        string name,
+        JsonWebKeySetEnvironment environment,
+        ReadOnlySequence<byte> privateKeySet,
+        ReadOnlySequence<byte> publicKeySet,
+        ReadOnlySequence<byte> currentKey,
+        CancellationToken cancellationToken)
     {
         if (!_dir.Exists)
         {
@@ -83,11 +104,9 @@ internal class DirectoryJsonWebKeySetStore
         await using var pubTemp = await TempFile.Create(Path.Combine(_dir.FullName, PublicKeySetName(name, environment)));
         await using var keyTemp = await TempFile.Create(Path.Combine(_dir.FullName, PrivateKeyName(name, environment)));
 
-        await Task.WhenAll(
-            privateKeySetReader.CopyToAsync(privTemp.Stream, cancellationToken),
-            publicKeySetReader.CopyToAsync(pubTemp.Stream, cancellationToken),
-            currentKeyReader.CopyToAsync(keyTemp.Stream, cancellationToken)
-        );
+        await privTemp.Stream.WriteAsync(privateKeySet, cancellationToken);
+        await pubTemp.Stream.WriteAsync(publicKeySet, cancellationToken);
+        await keyTemp.Stream.WriteAsync(currentKey, cancellationToken);
 
         await privTemp.Commit();
         await pubTemp.Commit();
@@ -187,5 +206,3 @@ internal class DirectoryJsonWebKeySetStore
         }
     }
 }
-
-

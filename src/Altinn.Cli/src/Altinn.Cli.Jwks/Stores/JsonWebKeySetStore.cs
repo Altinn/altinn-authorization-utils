@@ -1,33 +1,57 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Nerdbank.Streams;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 
 namespace Altinn.Cli.Jwks.Stores;
 
 [ExcludeFromCodeCoverage]
 internal abstract class JsonWebKeySetStore
 {
-    protected abstract IAsyncEnumerable<string> ListNames(CancellationToken cancellationToken = default);
-    protected abstract Task<PipeReader?> GetKeySetReader(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public, CancellationToken cancellationToken = default);
-    protected abstract Task<PipeReader?> GetCurrentPrivateKeyReader(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, CancellationToken cancellationToken = default);
-    protected abstract Task WriteNewKey(string name, JsonWebKeySetEnvironment environment, PipeReader privateKeySetReader, PipeReader publicKeySetReader, PipeReader currentKeyReader, CancellationToken cancellationToken);
+    private readonly string _privateKeySuffix;
+    private readonly string _privateKeySetSuffix;
+    private readonly string _publicKeySetSuffix;
 
-    public async Task<Stream?> GetCurrentPrivateKeyStream(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, CancellationToken cancellationToken = default)
-        => (await GetCurrentPrivateKeyReader(name, environment, cancellationToken))?.AsStream();
+    protected JsonWebKeySetStore(
+        string privateKeySuffix, 
+        string privateKeySetSuffix,
+        string publicKeySetSuffix)
+    {
+        _privateKeySuffix = privateKeySuffix;
+        _privateKeySetSuffix = privateKeySetSuffix;
+        _publicKeySetSuffix = publicKeySetSuffix;
+    }
+
+    private string KeySetId(string name, JsonWebKeySetEnvironment environment)
+        => $"{name}-{environment.Name()}";
+
+    public string KeyId(string name, JsonWebKeySetEnvironment environment, string suffix)
+        => $"{KeySetId(name, environment)}.{suffix}";
+
+    protected string PrivateKeyName(string name, JsonWebKeySetEnvironment environment)
+        => $"{KeySetId(name, environment)}{_privateKeySuffix}";
+
+    protected string PrivateKeySetName(string name, JsonWebKeySetEnvironment environment)
+        => $"{KeySetId(name, environment)}{_privateKeySetSuffix}";
+
+    protected string PublicKeySetName(string name, JsonWebKeySetEnvironment environment)
+        => $"{KeySetId(name, environment)}{_publicKeySetSuffix}";
+
+    protected abstract IAsyncEnumerable<string> ListNames(CancellationToken cancellationToken = default);
+    protected abstract Task<bool> GetKeySet(IBufferWriter<byte> writer, string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public, CancellationToken cancellationToken = default);
+    public abstract Task<bool> GetCurrentPrivateKey(IBufferWriter<byte> writer, string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, CancellationToken cancellationToken = default);
+    protected abstract Task WriteNewKey(string name, JsonWebKeySetEnvironment environment, ReadOnlySequence<byte> privateKeySet, ReadOnlySequence<byte> publicKeySet, ReadOnlySequence<byte> currentKey, CancellationToken cancellationToken);
 
     public async Task<JsonWebKeySet> GetKeySet(string name, JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test, JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public, CancellationToken cancellationToken = default)
     {
-        var reader = await GetKeySetReader(name, environment, variant, cancellationToken);
-        if (reader is null)
+        using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
+        if (!await GetKeySet(data, name, environment, variant, cancellationToken))
         {
             throw new FileNotFoundException($"Key-set {name} not found.");
         }
-            
-        await using var stream = reader.AsStream();
 
-        var parsed = await JsonSerializer.DeserializeAsync<JsonWebKeySet>(stream, cancellationToken: cancellationToken);
+        var parsed = JsonUtils.Deserialize<JsonWebKeySet>(data.AsReadOnlySequence);
         if (parsed is null)
         {
             throw new InvalidOperationException("Failed to parse JsonWebKeySet");
@@ -38,8 +62,8 @@ internal abstract class JsonWebKeySetStore
 
     public async IAsyncEnumerable<(string Name, JsonWebKeySetEnvironments Variants)> List(JsonWebKeySetEnvironmentFilters filter = JsonWebKeySetEnvironmentFilters.All, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var testKeySetsSuffix = $"-{JsonWebKeySetEnvironment.Test.Name()}.pub.json";
-        var prodKeySetsSuffix = $"-{JsonWebKeySetEnvironment.Prod.Name()}.pub.json";
+        var testKeySetsSuffix = $"-{JsonWebKeySetEnvironment.Test.Name()}{_publicKeySetSuffix}";
+        var prodKeySetsSuffix = $"-{JsonWebKeySetEnvironment.Prod.Name()}{_publicKeySetSuffix}";
 
         var keySets = new SortedDictionary<string, JsonWebKeySetEnvironments>();
 
@@ -85,22 +109,18 @@ internal abstract class JsonWebKeySetStore
         JsonWebKeySet? pub = null;
 
         {
-            var reader = await GetKeySetReader(name, environment, JsonWebKeySetVariant.Private, cancellationToken);
-            if (reader is not null)
+            using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
+            if (await GetKeySet(data, name, environment, JsonWebKeySetVariant.Private, cancellationToken))
             {
-                await using var stream = reader.AsStream();
-
-                priv = await JsonSerializer.DeserializeAsync<JsonWebKeySet>(stream, cancellationToken: cancellationToken);
+                priv = JsonUtils.Deserialize<JsonWebKeySet>(data.AsReadOnlySequence);
             }
         }
 
         {
-            var reader = await GetKeySetReader(name, environment, JsonWebKeySetVariant.Public, cancellationToken);
-            if (reader is not null)
+            using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
+            if (await GetKeySet(data, name, environment, JsonWebKeySetVariant.Public, cancellationToken))
             {
-                await using var stream = reader.AsStream();
-
-                pub = await JsonSerializer.DeserializeAsync<JsonWebKeySet>(stream, cancellationToken: cancellationToken);
+                pub = JsonUtils.Deserialize<JsonWebKeySet>(data.AsReadOnlySequence);
             }
         }
 
@@ -130,37 +150,14 @@ internal abstract class JsonWebKeySetStore
         priv.Keys.Add(privateKey);
         pub.Keys.Add(publicKey);
 
-        var privPipe = new Pipe();
-        var pubPipe = new Pipe();
-        var keyPipe = new Pipe();
+        using var privData = new Sequence<byte>(ArrayPool<byte>.Shared);
+        using var pubData = new Sequence<byte>(ArrayPool<byte>.Shared);
+        using var keyData = new Sequence<byte>(ArrayPool<byte>.Shared);
 
-        var writeTask = Task.Run(() => WriteNewKey(name, environment, privPipe.Reader, pubPipe.Reader, keyPipe.Reader, cancellationToken));
+        JsonUtils.Serialize(privData, priv);
+        JsonUtils.Serialize(pubData, pub);
+        JsonUtils.Serialize(keyData, privateKey);
 
-        { 
-            await using var privStream = privPipe.Writer.AsStream();
-            await using var pubStream = pubPipe.Writer.AsStream();
-            await using var keyStream = keyPipe.Writer.AsStream();
-
-            await JsonSerializer.SerializeAsync(privStream, priv, JsonOptions.Options, cancellationToken);
-            await JsonSerializer.SerializeAsync(pubStream, pub, JsonOptions.Options, cancellationToken);
-            await JsonSerializer.SerializeAsync(keyStream, privateKey, JsonOptions.Options, cancellationToken);
-        }
-
-        await writeTask;
+        await WriteNewKey(name, environment, privData.AsReadOnlySequence, pubData.AsReadOnlySequence, keyData.AsReadOnlySequence, cancellationToken);
     }
-
-    private string KeySetId(string name, JsonWebKeySetEnvironment environment)
-        => $"{name}-{environment.Name()}";
-
-    public string KeyId(string name, JsonWebKeySetEnvironment environment, string suffix)
-        => $"{KeySetId(name, environment)}.{suffix}";
-
-    protected string PrivateKeyName(string name, JsonWebKeySetEnvironment environment)
-        => $"{KeySetId(name, environment)}.key.json";
-
-    protected string PrivateKeySetName(string name, JsonWebKeySetEnvironment environment)
-        => $"{KeySetId(name, environment)}.json";
-
-    protected string PublicKeySetName(string name, JsonWebKeySetEnvironment environment)
-        => $"{KeySetId(name, environment)}.pub.json";
 }

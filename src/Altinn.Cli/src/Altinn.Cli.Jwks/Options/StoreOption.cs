@@ -1,5 +1,7 @@
 ﻿using Altinn.Cli.Jwks.Commands;
 using Altinn.Cli.Jwks.Stores;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using System.CommandLine;
 using System.CommandLine.Help;
 using System.CommandLine.Parsing;
@@ -71,6 +73,12 @@ internal class StoreOption
         {
             var path = uri.LocalPath;
             return new DirectoryJsonWebKeySetStore(new DirectoryInfo(path));
+        }
+
+        if (string.Equals("https", uri.Scheme, StringComparison.OrdinalIgnoreCase) && uri.Host.EndsWith("vault.azure.net", StringComparison.OrdinalIgnoreCase))
+        {
+            var client = new SecretClient(uri, new AzureCliCredential());
+            return new KeyVaultJsonWebKeySetStore(client);
         }
 
         result.ErrorMessage = $"Unsupported URI scheme: {uri.Scheme}";

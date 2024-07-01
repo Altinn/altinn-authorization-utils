@@ -38,7 +38,7 @@ internal class ExportMaskinportenCommand
         var keySet = await store.GetKeySet(name, environment, JsonWebKeySetVariant.Public, cancellationToken);
 
         await using var stdout = System.Console.OpenStandardOutput();
-        await JsonSerializer.SerializeAsync(stdout, keySet.Keys, JsonOptions.Options, cancellationToken);
+        await JsonSerializer.SerializeAsync(stdout, keySet.Keys, JsonUtils.Options, cancellationToken);
         return 0;
     }
 }

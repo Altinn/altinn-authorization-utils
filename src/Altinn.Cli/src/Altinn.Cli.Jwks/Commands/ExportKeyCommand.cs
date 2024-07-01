@@ -1,4 +1,6 @@
 ﻿using Altinn.Cli.Jwks.Stores;
+using Nerdbank.Streams;
+using System.Buffers;
 using System.CommandLine;
 using System.CommandLine.IO;
 using System.Diagnostics.CodeAnalysis;
@@ -42,8 +44,8 @@ internal class ExportKeyCommand
         CancellationToken cancellationToken)
     {
         var environment = prod ? JsonWebKeySetEnvironment.Prod : JsonWebKeySetEnvironment.Test;
-        await using var keyStream = await store.GetCurrentPrivateKeyStream(name, environment, cancellationToken);
-        if (keyStream is null)
+        using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
+        if (!await store.GetCurrentPrivateKey(data, name, environment, cancellationToken))
         {
             console.Error.WriteLine($"Key-set {name} not found.");
             return 1;
@@ -51,27 +53,26 @@ internal class ExportKeyCommand
 
         if (base64)
         {
-            await OutBase64Stream(keyStream, cancellationToken);
+            await OutBase64Stream(data.AsReadOnlySequence, cancellationToken);
         }
         else
         {
-            await OutStream(keyStream, cancellationToken);
+            await OutStream(data.AsReadOnlySequence, cancellationToken);
         }
 
         return 0;
     }
 
-    private async Task OutBase64Stream(Stream stream, CancellationToken cancellationToken)
+    private Task OutBase64Stream(ReadOnlySequence<byte> data, CancellationToken cancellationToken)
     {
-        await using var outStream = System.Console.OpenStandardOutput();
-        await using var writeStream = new CryptoStream(outStream, new ToBase64Transform(), CryptoStreamMode.Write);
-
-        await stream.CopyToAsync(writeStream, cancellationToken);
+        using var base64 = new Sequence<byte>(ArrayPool<byte>.Shared);
+        Base64Helper.EncodeUtf8(base64, data);
+        return OutStream(base64.AsReadOnlySequence, cancellationToken);
     }
 
-    private async Task OutStream(Stream stream, CancellationToken cancellationToken)
+    private async Task OutStream(ReadOnlySequence<byte> data, CancellationToken cancellationToken)
     {
         await using var outStream = System.Console.OpenStandardOutput();
-        await stream.CopyToAsync(outStream, cancellationToken);
+        await outStream.WriteAsync(data, cancellationToken);
     }
 }
