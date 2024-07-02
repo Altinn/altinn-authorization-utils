@@ -77,9 +77,20 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
         NpgsqlConnection db,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        var path = $"{prefix}{dir.Name}";
+
         if (tableName is not null)
         {
-            var isEmpty = await IsTableEmpty(db, tableName, cancellationToken);
+            bool isEmpty;
+            try 
+            {
+                isEmpty = await IsTableEmpty(db, tableName, cancellationToken);
+            }
+            catch(Exception ex)
+            {
+                Log.CheckTableEmptyFailed(_logger, tableName, ex);
+                throw new DataSeedingFailedException(this, ex);
+            }
 
             if (!isEmpty)
             {
@@ -88,7 +99,6 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
             }
         }
 
-        var path = $"{prefix}{dir.Name}";
         var checkPath = $"{path}/_check.sql";
         var file = _fileProvider.GetFileInfo(checkPath);
         if (file.Exists)
@@ -96,20 +106,34 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
             await using var fs = file.CreateReadStream();
             using var reader = new StreamReader(fs, encoding: Encoding.UTF8, leaveOpen: true);
             var data = await reader.ReadToEndAsync(cancellationToken);
+            bool checkResult;
 
-            await using var cmd = db.CreateCommand(data);
-            await using var dbReader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow | CommandBehavior.SingleResult | CommandBehavior.SequentialAccess, cancellationToken);
-
-            if (await dbReader.ReadAsync(cancellationToken))
+            try
             {
-                // we expect a single boolean result.
-                var result = dbReader.GetBoolean(0);
-                if (!result)
+                await using var cmd = db.CreateCommand(data);
+                await using var dbReader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow | CommandBehavior.SingleResult | CommandBehavior.SequentialAccess, cancellationToken);
+
+                if (await dbReader.ReadAsync(cancellationToken))
                 {
-                    // if we get false, we skip the directory.
-                    Log.SkippingDirectory(_logger, dir.PhysicalPath ?? dir.Name, "check returned false");
-                    yield break;
+                    // we expect a single boolean result.
+                    checkResult = dbReader.GetBoolean(0);
                 }
+                else
+                {
+                    throw new InvalidDataException("Check script did not return any rows.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.CheckScriptFailed(_logger, file.PhysicalPath ?? checkPath, ex);
+                throw new DataSeedingFailedException(this, ex);
+            }
+
+            if (!checkResult)
+            {
+                // if we get false, we skip the directory.
+                Log.SkippingDirectory(_logger, dir.PhysicalPath ?? dir.Name, "check returned false");
+                yield break;
             }
         }
 
@@ -368,6 +392,12 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
 
         [LoggerMessage(8, LogLevel.Debug, "Skipping file {FileName} because {Reason}.")]
         public static partial void SkippingFile(ILogger logger, string fileName, string reason);
+
+        [LoggerMessage(9, LogLevel.Error, "Check table empty failed for {TableName}.")]
+        public static partial void CheckTableEmptyFailed(ILogger logger, string tableName, Exception exception);
+
+        [LoggerMessage(10, LogLevel.Error, "Check script at {Path} failed.")]
+        public static partial void CheckScriptFailed(ILogger logger, string path, Exception exception);
     }
 
     [DebuggerDisplay("Name = {DisplayName}")]
