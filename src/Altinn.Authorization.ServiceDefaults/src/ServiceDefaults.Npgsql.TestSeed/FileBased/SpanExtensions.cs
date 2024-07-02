@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Seeding.FileBased;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 /// <summary>
 /// Extension methods for <see cref="Span{T}"/>.
@@ -13,12 +13,12 @@ internal static class SpanExtensions
     /// <param name="span">The span.</param>
     /// <param name="separator">The separator search-values.</param>
     /// <param name="options">Optional string split options.</param>
-    /// <returns>An enumerable over the subslices of the string span.</returns>
+    /// <returns>An enumerable over the sub-slices of the string span.</returns>
     public static StringSplitEnumerable Split(this ReadOnlySpan<char> span, SearchValues<char> separator, StringSplitOptions options = StringSplitOptions.None)
         => new(span, separator, options);
 
     /// <summary>
-    /// An enumerable of subspans of a string, split by a separator.
+    /// An enumerable of sub-spans of a string, split by a separator.
     /// </summary>
     public readonly ref struct StringSplitEnumerable
     {
@@ -43,7 +43,7 @@ internal static class SpanExtensions
         public Enumerator GetEnumerator() => new(_span, _separator, _options);
 
         /// <summary>
-        /// An enumerator of subspans of a string, split by a separator.
+        /// An enumerator of sub-spans of a string, split by a separator.
         /// </summary>
         public ref struct Enumerator
         {

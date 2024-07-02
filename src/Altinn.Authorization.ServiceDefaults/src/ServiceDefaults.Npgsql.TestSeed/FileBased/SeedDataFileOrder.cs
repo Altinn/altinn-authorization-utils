@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Seeding.FileBased;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 /// <summary>
 /// Represents how a file from a <see cref="SeedDataDirectoryTestDataSeederProvider"/>
@@ -33,20 +33,20 @@ internal readonly record struct SeedDataFileOrder
         => (byte)((value & TypeOrderMask) >> 16);
 
     private static uint SetTypeOrderByte(uint value, byte byteValue)
-        => (value & ~TypeOrderMask) | ((uint)byteValue << 16);
+        => value & ~TypeOrderMask | (uint)byteValue << 16;
 
     private static byte GetDirectoryOrderByte(uint value)
         => (byte)((value & DirectoryOrderMask) >> 8);
 
     private static uint SetDirectoryOrderByte(uint value, byte byteValue)
-        => (value & ~DirectoryOrderMask) | ((uint)byteValue << 8);
+        => value & ~DirectoryOrderMask | (uint)byteValue << 8;
 
     private static byte GetFileOrderByte(uint value)
         => (byte)(value & FileOrderMask);
 
     private static uint SetFileOrderByte(uint value, byte byteValue)
-        => (value & ~FileOrderMask) | byteValue;
-    
+        => value & ~FileOrderMask | byteValue;
+
     /// <inheritdoc/>
     public bool Equals(SeedDataFileOrder other)
         => _value == other._value;

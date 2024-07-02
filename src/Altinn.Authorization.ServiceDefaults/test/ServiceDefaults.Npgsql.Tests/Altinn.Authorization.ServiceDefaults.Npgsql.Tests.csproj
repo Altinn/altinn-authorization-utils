@@ -12,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\src\ServiceDefaults.Npgsql.TestSeed\Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.csproj" />
 		<ProjectReference Include="..\..\src\ServiceDefaults.Npgsql.Yuniql\Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.csproj" />
 	</ItemGroup>
 

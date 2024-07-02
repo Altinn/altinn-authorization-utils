@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Seeding.FileBased;
+﻿using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Seeding.FileBased;
 
@@ -58,11 +58,21 @@ public class QuerySplitterTests
             SELECT * FROM table1 -- line1
             WHERE foo = 'bar'; -- line2
             SELECT * FROM table2 -- line3
-            WHERE foo = 'bar'; -- line4
+            WHERE foo = 'bar';
+            SELECT * FROM table3 -- line5
+            WHERE foo = 'bar';
             """,
             [
-                "SELECT * FROM table1\nWHERE foo = 'bar'",
-                "SELECT * FROM table2\nWHERE foo = 'bar'"
+                """
+                SELECT * FROM table1
+                WHERE foo = 'bar';
+                SELECT * FROM table2
+                WHERE foo = 'bar'
+                """.Replace(Environment.NewLine, "\n"),
+                """
+                SELECT * FROM table3
+                WHERE foo = 'bar'
+                """.Replace(Environment.NewLine, "\n"),
             ]);
     }
 

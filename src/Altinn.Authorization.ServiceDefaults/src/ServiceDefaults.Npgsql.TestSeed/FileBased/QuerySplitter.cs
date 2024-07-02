@@ -2,7 +2,7 @@
 using System.Buffers;
 using System.Text;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Seeding.FileBased;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 /// <summary>
 /// Splits a sql scripts into individual queries.
@@ -12,7 +12,7 @@ namespace Altinn.Authorization.ServiceDefaults.Npgsql.Seeding.FileBased;
 /// We only care about semicolons that are at the end of a line (after removing
 /// leading and trailing whitespace and comments).
 /// </remarks>
-public readonly ref struct QuerySplitter
+internal readonly ref struct QuerySplitter
 {
     private readonly ReadOnlySpan<char> _query;
 
@@ -62,7 +62,7 @@ public readonly ref struct QuerySplitter
             // Loop through the query, line by line
             foreach (var (lineRaw, rest) in _query.Split(LineTerminators, StringSplitOptions.RemoveEmptyEntries))
             {
-                var line = RemoveLineComments(lineRaw.TrimEnd());
+                var line = RemoveLineComments(lineRaw.TrimEnd(), out var hasTrailingComment);
 
                 // Skip empty lines.
                 if (line.IsEmpty)
@@ -74,7 +74,7 @@ public readonly ref struct QuerySplitter
                 _current.Append(line);
 
                 // If the line ends with a semicolon, we have a complete query.
-                if (line[^1] == ';')
+                if (line[^1] == ';' && !hasTrailingComment)
                 {
                     // Remove the semicolon from the current query.
                     _current.Length = _current.Length - 1;
@@ -108,14 +108,16 @@ public readonly ref struct QuerySplitter
             return query[..^1];
         }
 
-        private static ReadOnlySpan<char> RemoveLineComments(ReadOnlySpan<char> line)
+        private static ReadOnlySpan<char> RemoveLineComments(ReadOnlySpan<char> line, out bool hasTrailingComment)
         {
             var commentStart = line.IndexOf(['-', '-']);
             if (commentStart == -1)
             {
+                hasTrailingComment = false;
                 return line;
             }
 
+            hasTrailingComment = true;
             return line[..commentStart].TrimEnd();
         }
     }
