@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration.Json;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 internal static class ConfigurationBuilderExtensions
 {

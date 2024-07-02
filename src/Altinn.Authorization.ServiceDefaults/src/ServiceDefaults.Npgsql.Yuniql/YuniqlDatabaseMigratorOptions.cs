@@ -47,11 +47,6 @@ public sealed class YuniqlDatabaseMigratorOptions
             yield return new ValidationResult("Workspace path or file provider is required", [nameof(Workspace), nameof(WorkspaceFileProvider)]);
         }
 
-        if (!Directory.Exists(Workspace))
-        {
-            yield return new ValidationResult("Workspace path does not exist or is not a directory", [nameof(Workspace)]);
-        }
-
         if (Tokens is null)
         {
             yield return new ValidationResult("Tokens cannot be null", [nameof(Tokens)]);

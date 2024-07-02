@@ -73,6 +73,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A356DDAF-DD7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Cli.Jwks", "Altinn.Cli\src\Altinn.Cli.Jwks\Altinn.Cli.Jwks.csproj", "{2D4570CD-39CF-45BE-9CCB-0327D97DD638}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed", "Altinn.Authorization.ServiceDefaults\src\ServiceDefaults.Npgsql.TestSeed\Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.csproj", "{261C441B-F4D7-4E25-A6CF-49316A19AB29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,10 @@ Global
 		{2D4570CD-39CF-45BE-9CCB-0327D97DD638}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D4570CD-39CF-45BE-9CCB-0327D97DD638}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D4570CD-39CF-45BE-9CCB-0327D97DD638}.Release|Any CPU.Build.0 = Release|Any CPU
+		{261C441B-F4D7-4E25-A6CF-49316A19AB29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{261C441B-F4D7-4E25-A6CF-49316A19AB29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{261C441B-F4D7-4E25-A6CF-49316A19AB29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{261C441B-F4D7-4E25-A6CF-49316A19AB29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,6 +200,7 @@ Global
 		{9796A747-31D2-4366-A8C1-910AF722030B} = {4FC59E30-49CB-419D-B009-9B9E60FDB6B1}
 		{A356DDAF-DD7B-4CCC-A069-C0EB37E40AEE} = {EC90677D-5F37-4A68-97A5-0FD840FCAD97}
 		{2D4570CD-39CF-45BE-9CCB-0327D97DD638} = {A356DDAF-DD7B-4CCC-A069-C0EB37E40AEE}
+		{261C441B-F4D7-4E25-A6CF-49316A19AB29} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A2B25D1-5A10-4899-A920-AB7F206BE9D4}

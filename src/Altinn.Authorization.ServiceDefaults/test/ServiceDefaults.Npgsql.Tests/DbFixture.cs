@@ -1,11 +1,11 @@
 ﻿using Testcontainers.PostgreSql;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 public class DbFixture
     : IAsyncLifetime
 {
-    private PostgreSqlContainer _container 
+    private PostgreSqlContainer _container
         = new PostgreSqlBuilder()
             .WithImage("docker.io/postgres:16.1-alpine")
             .WithUsername("superadmin_user")

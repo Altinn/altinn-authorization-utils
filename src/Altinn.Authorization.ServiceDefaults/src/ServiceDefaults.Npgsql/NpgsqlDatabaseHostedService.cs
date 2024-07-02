@@ -72,7 +72,7 @@ internal partial class NpgsqlDatabaseHostedService
         {
             Log.SkippingDatabaseSeedNotDevEnv(_logger);
         }
-        else if (!options.CreateDatabase)
+        else if (!options.SeedDatabase)
         {
             Log.SkippingDatabaseSeedConfig(_logger);
         }
