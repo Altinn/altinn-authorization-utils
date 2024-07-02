@@ -24,12 +24,12 @@ public static class NpgsqlDatabaseSeedingExtensions
     /// Adds a seeder to the database initialization.
     /// </summary>
     /// <param name="builder">The <see cref="INpgsqlDatabaseBuilder"/>.</param>
-    /// <param name="migrator">The seeder type.</param>
+    /// <param name="seeder">The seeder type.</param>
     /// <param name="lifetime">The <see cref="ServiceLifetime"/>.</param>
     /// <returns><paramref name="builder"/>.</returns>
-    public static INpgsqlDatabaseBuilder TryAddSeeder(this INpgsqlDatabaseBuilder builder, Type migrator, ServiceLifetime lifetime = ServiceLifetime.Transient)
+    public static INpgsqlDatabaseBuilder TryAddSeeder(this INpgsqlDatabaseBuilder builder, Type seeder, ServiceLifetime lifetime = ServiceLifetime.Transient)
     {
-        builder.Services.TryAdd(new ServiceDescriptor(typeof(INpgsqlDatabaseSeeder), migrator, lifetime));
+        builder.Services.TryAdd(new ServiceDescriptor(typeof(INpgsqlDatabaseSeeder), seeder, lifetime));
         return builder;
     }
 }

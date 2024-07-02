@@ -92,7 +92,7 @@ public static class TestSeedServiceCollectionExtensions
     public static INpgsqlDatabaseBuilder SeedFromFileProvider(
         this INpgsqlDatabaseBuilder builder,
         IFileProvider fileProvider,
-        string? subPath)
+        string? subPath = null)
     {
         return builder.SeedFromFileProvider((_, settings) =>
         {
