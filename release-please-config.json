@@ -42,6 +42,16 @@
           "xpath": "//Project/PropertyGroup/Version"
         }
       ]
+    },
+    "src/Altinn.Cli": {
+      "component": "Altinn.Cli",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
     }
   }
 }
