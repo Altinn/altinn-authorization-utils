@@ -17,3 +17,6 @@ dotnet_diagnostic.SA1001.severity = none
 
 # FAA0002: Replace Xunit assertion with Fluent Assertions equivalent
 dotnet_diagnostic.FAA0002.severity = none
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none

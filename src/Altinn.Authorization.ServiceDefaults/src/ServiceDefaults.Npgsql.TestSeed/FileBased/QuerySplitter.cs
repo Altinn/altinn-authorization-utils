@@ -93,21 +93,6 @@ internal readonly ref struct QuerySplitter
             return false;
         }
 
-        private static ReadOnlySpan<char> CheckQuery(ReadOnlySpan<char> query)
-        {
-            if (query.IsEmpty)
-            {
-                ThrowHelper.ThrowInvalidOperationException("Empty query.");
-            }
-
-            if (query[^1] != ';')
-            {
-                ThrowHelper.ThrowInvalidOperationException("Query does not end with ';'.");
-            }
-
-            return query[..^1];
-        }
-
         private static ReadOnlySpan<char> RemoveLineComments(ReadOnlySpan<char> line, out bool hasTrailingComment)
         {
             var commentStart = line.IndexOf(['-', '-']);

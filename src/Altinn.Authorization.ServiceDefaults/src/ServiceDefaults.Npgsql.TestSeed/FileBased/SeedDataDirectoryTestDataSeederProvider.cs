@@ -19,7 +19,6 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
 {
     private readonly ILogger<SeedDataDirectoryTestDataSeederProvider> _logger;
     private readonly IFileProvider _fileProvider;
-    private readonly SeedDataDirectorySettings _options;
 
     /// <summary>
     /// Constructs a new instance of <see cref="SeedDataDirectoryTestDataSeederProvider"/>.
@@ -29,7 +28,6 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
         SeedDataDirectorySettings options)
     {
         _logger = logger;
-        _options = options;
 
         _fileProvider = GetOrCreateFileProvider(options);
         DisplayName = GetOrCreateCreateDisplayName(options, _fileProvider);
@@ -39,7 +37,9 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
     public string DisplayName { get; }
 
     /// <inheritdoc/>
-    public async IAsyncEnumerable<ITestDataSeeder> GetSeeders(NpgsqlConnection db, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<ITestDataSeeder> GetSeeders(
+        NpgsqlConnection db, 
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         foreach (var entry in _fileProvider.GetDirectoryContents("/"))
         {
