@@ -404,12 +404,12 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
     private sealed class SeedDataFileTestDataSeeder
         : ITestDataSeeder
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<SeedDataFileTestDataSeeder> _logger;
         private readonly IFileInfo _file;
         private readonly SeedDataFileOrder _order;
 
         public SeedDataFileTestDataSeeder(
-            ILogger<SeedDataDirectoryTestDataSeederProvider> logger,
+            ILogger<SeedDataFileTestDataSeeder> logger,
             IFileInfo file,
             SeedDataFileOrder order)
         {
