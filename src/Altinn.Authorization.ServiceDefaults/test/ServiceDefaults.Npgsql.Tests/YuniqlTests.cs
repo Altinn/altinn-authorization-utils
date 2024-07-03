@@ -180,4 +180,53 @@ public class TestSeedTests(DbFixture fixture)
 
         items.Should().BeEquivalentTo(["prepare", "01-normal", "02-normal", "finalize"]);
     }
+
+    [Fact]
+    public async Task CheckScript_CanDisable_WholeGroup()
+    {
+        await using var ctx = await CreateBuilder()
+            .AddYuniqlMigrations([
+                /*strpsql*/"CREATE TABLE app.test (id BIGSERIAL PRIMARY KEY NOT NULL, value TEXT NOT NULL);",
+            ])
+            .AddTestSeedData([
+                KeyValuePair.Create("test/_check.sql", /*strpsql*/"SELECT FALSE;"),
+                KeyValuePair.Create("test/01-normal.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('01-normal');"),
+                KeyValuePair.Create("test/02-normal.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('02-normal');"),
+                KeyValuePair.Create("test/_prepare.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('prepare');"),
+                KeyValuePair.Create("test/_finalize.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('finalize');"),
+            ]);
+
+        await using var result = await ctx.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        var items = new List<string>();
+
+        while (await result.ReadAsync())
+        {
+            items.Add(result.GetString(0));
+        }
+
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task CheckScript_CanEnable_WholeGroup()
+    {
+        await using var ctx = await CreateBuilder()
+            .AddYuniqlMigrations([
+                /*strpsql*/"CREATE TABLE app.test (id BIGSERIAL PRIMARY KEY NOT NULL, value TEXT NOT NULL);",
+            ])
+            .AddTestSeedData([
+                KeyValuePair.Create("test/_check.sql", /*strpsql*/"SELECT TRUE;"),
+                KeyValuePair.Create("test/value.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('value');"),
+            ]);
+
+        await using var result = await ctx.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        var items = new List<string>();
+
+        while (await result.ReadAsync())
+        {
+            items.Add(result.GetString(0));
+        }
+
+        items.Should().BeEquivalentTo(["value"]);
+    }
 }
