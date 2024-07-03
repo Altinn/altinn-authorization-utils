@@ -123,24 +123,22 @@ internal partial class TestDataDatabaseSeeder
         var seeders = new List<ITestDataSeeder>();
         foreach (var provider in providers)
         {
+            using var scope = provider.BeginLoggerScope(_logger);
+            try
             {
-                using var scope = provider.BeginLoggerScope(_logger);
-                try
+                await foreach (var seeder in provider.GetSeeders(connection, cancellationToken))
                 {
-                    await foreach (var seeder in provider.GetSeeders(connection, cancellationToken))
-                    {
-                        Log.GotSeeder(_logger, seeder.DisplayName, seeder.Order);
-                        seeders.Add(seeder);
-                    }
+                    Log.GotSeeder(_logger, seeder.DisplayName, seeder.Order);
+                    seeders.Add(seeder);
                 }
-                catch (OperationCanceledException ex) when (ex.CancellationToken == cancellationToken)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new DataSeedingFailedException(provider, ex);
-                }
+            }
+            catch (OperationCanceledException ex) when (ex.CancellationToken == cancellationToken)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DataSeedingFailedException(provider, ex);
             }
 
             await tx.RollbackAsync(COLLECT_SAVEPOINT, cancellationToken);

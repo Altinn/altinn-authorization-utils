@@ -321,12 +321,6 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
         return lastDot == -1 ? fileName : fileName[..lastDot];
     }
 
-    private static ReadOnlySpan<char> DirName(ReadOnlySpan<char> path)
-    {
-        var lastSlash = path.LastIndexOf('/');
-        return lastSlash == -1 ? path : path[..lastSlash];
-    }
-
     private static IFileProvider GetOrCreateFileProvider(SeedDataDirectorySettings options)
     {
         if (options.FileProvider is { } fromOptionsFileProvider)
@@ -422,7 +416,7 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
 
         public string DisplayName => $"File: {_file.PhysicalPath ?? _file.Name}";
 
-        public async Task SeedData(BatchBuilder batch, CancellationToken cancellationToken)
+        public async Task SeedData(BatchBuilder batch, CancellationToken cancellationToken = default)
         {
             Log.SeedData(_logger, _file.PhysicalPath ?? _file.Name);
             await using var fs = _file.CreateReadStream();
