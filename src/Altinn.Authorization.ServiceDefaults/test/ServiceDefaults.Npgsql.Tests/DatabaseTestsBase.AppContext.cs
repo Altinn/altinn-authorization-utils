@@ -21,6 +21,19 @@ public abstract partial class DatabaseTestsBase
         public NpgsqlDataSource DataSource =>
             _host.Services.GetRequiredService<NpgsqlDataSource>();
 
+        public async Task<NpgsqlDataReader> ExecuteReader(string sql, params NpgsqlParameter[] parameters)
+        {
+            await using var cmd = DataSource.CreateCommand();
+            cmd.CommandText = sql;
+
+            foreach (var p in parameters)
+            {
+                cmd.Parameters.Add(p);
+            }
+
+            return await cmd.ExecuteReaderAsync();
+        }
+
         public async Task<T> ExecuteScalar<T>(string sql, params NpgsqlParameter[] parameters)
         {
             await using var cmd = DataSource.CreateCommand();

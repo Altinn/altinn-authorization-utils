@@ -155,4 +155,29 @@ public class TestSeedTests(DbFixture fixture)
         var result = await ctx.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
         result.Should().Be(1);
     }
+
+    [Fact]
+    public async Task ScriptGroupOrdering()
+    {
+        await using var ctx = await CreateBuilder()
+            .AddYuniqlMigrations([
+                /*strpsql*/"CREATE TABLE app.test (id BIGSERIAL PRIMARY KEY NOT NULL, value TEXT NOT NULL);",
+            ])
+            .AddTestSeedData([
+                KeyValuePair.Create("[app.test]/01-normal.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('01-normal');"),
+                KeyValuePair.Create("[app.test]/02-normal.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('02-normal');"),
+                KeyValuePair.Create("[app.test]/_prepare.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('prepare');"),
+                KeyValuePair.Create("[app.test]/_finalize.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('finalize');"),
+            ]);
+
+        await using var result = await ctx.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        var items = new List<string>();
+
+        while (await result.ReadAsync())
+        {
+            items.Add(result.GetString(0));
+        }
+
+        items.Should().BeEquivalentTo(["prepare", "01-normal", "02-normal", "finalize"]);
+    }
 }
