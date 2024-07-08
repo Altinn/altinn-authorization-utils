@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 internal sealed class InMemoryFileProvider
     : IFileProvider
@@ -137,18 +137,37 @@ internal sealed class InMemoryFileProvider
 
         public InMemoryDirectory CreateSubdirectory(string name)
         {
-            if (_entries.ContainsKey(name))
+            if (_entries.TryGetValue(name, out var entry))
             {
-                ThrowHelper.ThrowInvalidOperationException("Directory already exists.");
+                if (entry is InMemoryDirectory dir)
+                {
+                    return dir;
+                }
+
+                ThrowHelper.ThrowInvalidOperationException("Directory already contains file with that name.");
             }
 
-            var dir = new InMemoryDirectory(name, $"{Path}{name}/");
-            _entries.Add(name, dir);
-            return dir;
+            var newDir = new InMemoryDirectory(name, $"{Path}{name}/");
+            _entries.Add(name, newDir);
+            return newDir;
         }
 
         public InMemoryFile CreateFile(string name, byte[] contents)
         {
+            if (name.Contains('/'))
+            {
+                var segments = name.Split('/');
+                name = segments[^1];
+
+                var dir = this;
+                for (var i = 0; i < segments.Length - 1; i++)
+                {
+                    dir = dir.CreateSubdirectory(segments[i]);
+                }
+
+                return dir.CreateFile(name, contents);
+            }
+
             if (_entries.ContainsKey(name))
             {
                 ThrowHelper.ThrowInvalidOperationException("File already exists.");
@@ -162,7 +181,7 @@ internal sealed class InMemoryFileProvider
         public InMemoryFile CreateFile(string name, string content)
             => CreateFile(name, Encoding.UTF8.GetBytes(content));
 
-        protected override Stream CreateReadStream() 
+        protected override Stream CreateReadStream()
             => ThrowHelper.ThrowNotSupportedException<Stream>("Cannot read a directory");
 
         IEnumerator<IFileInfo> IEnumerable<IFileInfo>.GetEnumerator()

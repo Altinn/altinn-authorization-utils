@@ -1,7 +1,8 @@
+using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 public class ActivityHelperTests
 {
@@ -46,7 +47,7 @@ public class ActivityHelperTests
 
         threads.ForEach(static t => t.Start());
         ready.Set();
-        
+
         // Wait for all threads to finish
         threads.ForEach(static t => t.Join());
 
