@@ -1,11 +1,13 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics;
 
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// An instance of a <see cref="ValidationErrorDescriptor"/>, with optional paths and extensions.
 /// </summary>
-public sealed class ValidationErrorInstance
+[DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
+public sealed record class ValidationErrorInstance
 {
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>.
@@ -48,7 +50,7 @@ public sealed class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<KeyValuePair<string, string>> extensions) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ProblemExtensionData extensions) 
         => new ValidationErrorInstance(descriptor, paths: [], extensions: extensions);
 
     /// <summary>
@@ -67,7 +69,7 @@ public sealed class ValidationErrorInstance
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, ImmutableArray<KeyValuePair<string, string>> extensions) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions) 
         => new ValidationErrorInstance(descriptor, paths: [path], extensions: extensions);
 
     /// <summary>
@@ -87,7 +89,7 @@ public sealed class ValidationErrorInstance
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ImmutableArray<KeyValuePair<string, string>> extensions) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions) 
         => new ValidationErrorInstance(descriptor, paths: paths, extensions: extensions);
 
     /// <summary>
@@ -107,7 +109,7 @@ public sealed class ValidationErrorInstance
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ImmutableArray<KeyValuePair<string, string>> extensions) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions) 
         => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: extensions);
 
     /// <summary>
@@ -122,7 +124,7 @@ public sealed class ValidationErrorInstance
 
     private readonly ValidationErrorDescriptor _descriptor;
     private readonly ImmutableArray<string> _paths;
-    private readonly ImmutableArray<KeyValuePair<string, string>> _extensions;
+    private readonly ProblemExtensionData _extensions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ValidationErrorInstance"/> class.
@@ -133,7 +135,7 @@ public sealed class ValidationErrorInstance
     internal ValidationErrorInstance(
         ValidationErrorDescriptor descriptor, 
         ImmutableArray<string> paths, 
-        ImmutableArray<KeyValuePair<string, string>> extensions)
+        ProblemExtensionData extensions)
     {
         _descriptor = descriptor;
         _paths = paths;
@@ -157,7 +159,7 @@ public sealed class ValidationErrorInstance
     /// <summary>
     /// Gets the extensions.
     /// </summary>
-    public ImmutableArray<KeyValuePair<string, string>> Extensions => _extensions;
+    public ProblemExtensionData Extensions => _extensions;
 
     /// <summary>
     /// Implicitly converts a <see cref="ProblemDescriptor"/> to a <see cref="ProblemInstance"/>.

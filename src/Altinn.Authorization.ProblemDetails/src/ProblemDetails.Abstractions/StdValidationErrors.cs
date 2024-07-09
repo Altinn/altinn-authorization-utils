@@ -13,4 +13,16 @@ public static class StdValidationErrors
     /// </summary>
     public static ValidationErrorDescriptor Required { get; }
         = _factory.Create(0, "The field is required.");
+
+    /// <summary>
+    /// Standard problem descriptors' error codes.
+    /// </summary>
+    public static class ErrorCodes
+    {
+        /// <summary>
+        /// Gets the error code for a required validation-error.
+        /// </summary>
+        public static ErrorCode Required
+            => StdValidationErrors.Required.ErrorCode;
+    }
 }

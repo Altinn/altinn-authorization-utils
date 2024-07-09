@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net;
 
 namespace Altinn.Authorization.ProblemDetails;
@@ -8,7 +7,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// An instance of a <see cref="ProblemDescriptor"/>, with optional extensions.
 /// </summary>
 [DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
-public sealed class ProblemInstance
+public record class ProblemInstance
 {
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>.
@@ -24,7 +23,7 @@ public sealed class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, ImmutableArray<KeyValuePair<string, string>> extensions) 
+    public static ProblemInstance Create(ProblemDescriptor descriptor, ProblemExtensionData extensions) 
         => new ProblemInstance(descriptor, extensions);
 
     /// <summary>
@@ -37,14 +36,14 @@ public sealed class ProblemInstance
         => new ProblemInstance(descriptor, [..extensions]);
 
     private readonly ProblemDescriptor _descriptor;
-    private readonly ImmutableArray<KeyValuePair<string, string>> _extensions;
+    private readonly ProblemExtensionData _extensions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstance"/> class.
     /// </summary>
     /// <param name="descriptor">The problem descriptor.</param>
     /// <param name="extensions">The extensions.</param>
-    internal ProblemInstance(ProblemDescriptor descriptor, ImmutableArray<KeyValuePair<string, string>> extensions)
+    internal ProblemInstance(ProblemDescriptor descriptor, ProblemExtensionData extensions)
     {
         _descriptor = descriptor;
         _extensions = extensions;
@@ -62,7 +61,11 @@ public sealed class ProblemInstance
     /// <summary>
     /// Gets the extensions.
     /// </summary>
-    public ImmutableArray<KeyValuePair<string, string>> Extensions => _extensions;
+    public ProblemExtensionData Extensions
+    {
+        get => _extensions;
+        internal init => _extensions = value;
+    }
 
     /// <summary>
     /// Implicitly converts a <see cref="ProblemDescriptor"/> to a <see cref="ProblemInstance"/>.

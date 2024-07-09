@@ -32,10 +32,7 @@ public class AltinnProblemDetails
 
         if (!instance.Extensions.IsDefaultOrEmpty)
         {
-            foreach (var (key, value) in instance.Extensions)
-            {
-                Extensions[key] = value;
-            }
+            Extensions = instance.Extensions;
         }
     }
 
