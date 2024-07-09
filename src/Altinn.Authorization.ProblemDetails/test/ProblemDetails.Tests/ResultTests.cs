@@ -2,59 +2,58 @@
 
 public class ResultTests
 {
-    public static TheoryData<Result<ErrorCode>, ErrorCode> ErrorCodeResults => new()
+    [Fact]
+    public void CanPatternMatch_OrderIndependent()
     {
-        { StdProblemDescriptors.ErrorCodes.ValidationError, StdProblemDescriptors.ErrorCodes.ValidationError },
-        { StdProblemDescriptors.ValidationError, StdProblemDescriptors.ErrorCodes.ValidationError },
-    };
+        Test(StdProblemDescriptors.ErrorCodes.ValidationError, StdProblemDescriptors.ErrorCodes.ValidationError);
+        Test(StdProblemDescriptors.ValidationError, StdProblemDescriptors.ErrorCodes.ValidationError);
 
-    [Theory]
-    [MemberData(nameof(ErrorCodeResults))]
-    public void CanPatternMatch_OrderIndependent(Result<ErrorCode> input, ErrorCode expected)
-    {
-        ErrorCode actual;
-
-        // IsSuccess check
-        actual = input switch
+        static void Test(Result<ErrorCode> input, ErrorCode expected)
         {
-            { IsSuccess: true } => input.Value,
-            _ => input.Problem.ErrorCode,
-        };
+            ErrorCode actual;
 
-        actual.Should().Be(expected);
+            // IsSuccess check
+            actual = input switch
+            {
+                { IsSuccess: true } => input.Value,
+                _ => input.Problem.ErrorCode,
+            };
 
-        // IsProblem check
-        actual = input switch
-        {
-            { IsProblem: true } => input.Problem.ErrorCode,
-            _ => input.Value,
-        };
+            actual.Should().Be(expected);
 
-        actual.Should().Be(expected);
+            // IsProblem check
+            actual = input switch
+            {
+                { IsProblem: true } => input.Problem.ErrorCode,
+                _ => input.Value,
+            };
 
-        // Using the 'is' pattern with IsSuccess
-        if (input is { IsSuccess: true })
-        {
-            actual = input.Value;
+            actual.Should().Be(expected);
+
+            // Using the 'is' pattern with IsSuccess
+            if (input is { IsSuccess: true })
+            {
+                actual = input.Value;
+            }
+            else
+            {
+                actual = input.Problem.ErrorCode;
+            }
+
+            actual.Should().Be(expected);
+
+            // Using the 'is' pattern with IsProblem
+            if (input is { IsProblem: true })
+            {
+                actual = input.Problem.ErrorCode;
+            }
+            else
+            {
+                actual = input.Value;
+            }
+
+            actual.Should().Be(expected);
         }
-        else
-        {
-            actual = input.Problem.ErrorCode;
-        }
-
-        actual.Should().Be(expected);
-
-        // Using the 'is' pattern with IsProblem
-        if (input is { IsProblem: true })
-        {
-            actual = input.Problem.ErrorCode;
-        }
-        else
-        {
-            actual = input.Value;
-        }
-
-        actual.Should().Be(expected);
     }
 
     [Theory]

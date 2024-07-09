@@ -125,10 +125,6 @@ public readonly struct ProblemExtensionData
         => TryGetValue(key, out _);
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is ProblemExtensionData other && Equals(other);
-
-    /// <inheritdoc/>
     public override int GetHashCode()
     {
         if (_values.IsDefaultOrEmpty)
@@ -178,6 +174,10 @@ public readonly struct ProblemExtensionData
 
         return hash.ToHashCode();
     }
+
+    /// <inheritdoc/>
+    public override bool Equals([NotNullWhen(true)] object? obj)
+        => obj is ProblemExtensionData other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(ProblemExtensionData other)
@@ -354,7 +354,7 @@ public readonly struct ProblemExtensionData
         }
     }
 
-    private class ValuesCollection
+    private sealed class ValuesCollection
         : ICollection<object?> // IDictionary<string, object?>.Values
         , IEnumerable<string> // IReadOnlyDictionary<string, string>.Values
     {
@@ -399,7 +399,7 @@ public readonly struct ProblemExtensionData
         bool ICollection<object?>.Remove(object? item) => ThrowHelper.ThrowNotSupportedException<bool>();
     }
 
-    private class KeysCollection
+    private sealed class KeysCollection
         : ICollection<string> // IDictionary<string, object?>.Keys
         , IEnumerable<string> // IReadOnlyDictionary<string, string>.Keys
     {
