@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -8,6 +9,31 @@ namespace Altinn.Authorization.ProblemDetails;
 public sealed class AltinnValidationProblemDetails
     : AltinnProblemDetails
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AltinnValidationProblemDetails"/> class from a
+    /// <see cref="ValidationProblemInstance"/>.
+    /// </summary>
+    /// <param name="instance">The <see cref="ValidationProblemInstance"/>.</param>
+    internal AltinnValidationProblemDetails(ValidationProblemInstance instance)
+        : base(instance)
+    {
+        var errors = instance.Errors;
+        if (!errors.IsDefaultOrEmpty)
+        {
+            var builder = ImmutableArray.CreateBuilder<AltinnValidationError>(errors.Length);
+            foreach (var error in errors)
+            {
+                builder.Add(new AltinnValidationError(error));
+            }
+
+            Errors = builder.ToImmutable();
+        }
+        else
+        {
+            Errors = [];
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AltinnValidationProblemDetails"/> class.
     /// </summary>

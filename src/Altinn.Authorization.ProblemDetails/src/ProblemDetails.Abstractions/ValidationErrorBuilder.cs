@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -63,25 +64,24 @@ public struct ValidationErrorBuilder
         };
 
     /// <summary>
-    /// Converts the validation errors to an immutable array of <typeparamref name="T"/>s.
+    /// Creates a new <see cref="ValidationProblemInstance"/> from this builder if any
+    /// validation errors have been added.
     /// </summary>
-    /// <typeparam name="T">The type to map errors to.</typeparam>
-    /// <param name="mapper">The mapper.</param>
-    /// <returns>A <see cref="ImmutableArray{T}"/> of <typeparamref name="T"/>s.</returns>
-    public readonly ImmutableArray<T> MapToImmutable<T>(Func<ValidationErrorInstance, T> mapper)
+    /// <param name="instance">The resulting <see cref="ValidationProblemInstance"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if any validation errors have been added and the <paramref name="instance"/>
+    /// has been created; otherwise <see langword="false"/>.
+    /// </returns>
+    public readonly bool TryBuild([NotNullWhen(true)] out ValidationProblemInstance? instance)
     {
         var errors = _errors;
-        if (errors is null)
+        if (errors is null or { Count: 0 })
         {
-            return [];
+            instance = null;
+            return false;
         }
 
-        var builder = ImmutableArray.CreateBuilder<T>(errors.Count);
-        foreach (var error in errors)
-        {
-            builder.Add(mapper(error));
-        }
-
-        return builder.MoveToImmutable();
+        instance = new(errors: [.. errors], extensions: []);
+        return true;
     }
 }

@@ -10,7 +10,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// <summary>
 /// An unique error code that identifies a specific error.
 /// </summary>
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{_value,nq}")]
 [JsonConverter(typeof(ErrorCodeJsonConverter))]
 public readonly struct ErrorCode
     : IEquatable<ErrorCode>
@@ -74,19 +74,6 @@ public readonly struct ErrorCode
     /// <inheritdoc/>
     public string ToString(string? format, IFormatProvider? formatProvider)
         => _value ?? string.Empty;
-
-    private string DebuggerDisplay
-    {
-        get
-        {
-            if (_value is null)
-            {
-                return "null";
-            }
-
-            return $"\"{_value}\"";
-        }
-    }
 
     /// <inheritdoc/>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)

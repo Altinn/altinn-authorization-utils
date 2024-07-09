@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Diagnostics;
+using System.Diagnostics;
 
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// An immutable descriptor for a validation error.
 /// </summary>
-public sealed class ValidationErrorDescriptor
+[DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
+public sealed record class ValidationErrorDescriptor
 {
     /// <summary>
     /// Gets the error code.

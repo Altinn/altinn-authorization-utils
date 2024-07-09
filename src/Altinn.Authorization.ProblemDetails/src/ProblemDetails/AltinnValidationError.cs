@@ -30,10 +30,7 @@ public sealed class AltinnValidationError
 
         if (!instance.Extensions.IsDefaultOrEmpty)
         {
-            foreach (var (key, value) in instance.Extensions)
-            {
-                Extensions[key] = value;
-            }
+            Extensions = instance.Extensions;
         }
     }
 
