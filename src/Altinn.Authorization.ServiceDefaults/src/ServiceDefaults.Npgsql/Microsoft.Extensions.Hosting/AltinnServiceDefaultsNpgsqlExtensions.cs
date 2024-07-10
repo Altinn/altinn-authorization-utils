@@ -18,6 +18,7 @@ namespace Microsoft.Extensions.Hosting;
 /// <summary>
 /// Host builder extensions for Npgsql.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AltinnServiceDefaultsNpgsqlExtensions
 {
     private static string DefaultConfigSectionName(string connectionName)
@@ -202,6 +203,8 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
                     connBuilder.Username = dbOwner;
                     connBuilder.Password = dbPassword;
                 }
+
+                initConnectionString = connBuilder.ConnectionString;
             }
 
             builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(options =>

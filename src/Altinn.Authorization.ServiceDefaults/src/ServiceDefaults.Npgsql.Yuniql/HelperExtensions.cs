@@ -1,10 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 
 /// <summary>
 /// Helper extension methods.
 /// </summary>
+[ExcludeFromCodeCoverage]
 internal static class HelperExtensions
 {
     public static string? GetVersion(this Assembly assembly)

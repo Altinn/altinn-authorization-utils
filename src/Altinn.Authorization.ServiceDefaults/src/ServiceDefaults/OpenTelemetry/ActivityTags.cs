@@ -1,8 +1,10 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Telemetry;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 
+[ExcludeFromCodeCoverage]
 internal struct ActivityTags
     : TelemetryHelpers.ITags
 {

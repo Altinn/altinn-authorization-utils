@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ServiceDefaults;
 
 /// <summary>
 /// Altinn host factories.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AltinnHost
 {
     /// <summary>
