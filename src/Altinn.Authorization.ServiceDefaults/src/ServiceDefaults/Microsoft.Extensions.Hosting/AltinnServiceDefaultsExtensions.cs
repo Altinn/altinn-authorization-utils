@@ -1,9 +1,17 @@
 ﻿using Altinn.Authorization.ServiceDefaults;
+using Altinn.Authorization.ServiceDefaults.ApplicationInsights;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using Altinn.Authorization.ServiceDefaults.Options;
+using Altinn.Authorization.ServiceDefaults.Telemetry;
+using Azure.Identity;
 using CommunityToolkit.Diagnostics;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -13,6 +21,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -21,6 +30,9 @@ namespace Microsoft.Extensions.Hosting;
 /// </summary>
 public static class AltinnServiceDefaultsExtensions
 {
+    internal readonly static string HealthEndpoint = "/health";
+    internal readonly static string AliveEndpoint = "/alive";
+
     /// <summary>
     /// Adds default services for an Altinn service.
     /// </summary>
@@ -41,6 +53,12 @@ public static class AltinnServiceDefaultsExtensions
             return builder;
         }
 
+        builder.AddAltinnConfiguration();
+
+        // Note - this has to happen early due to a bug in Application Insights
+        // See: https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
+        builder.AddApplicationInsights(); 
+
         var isLocalDevelopment = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Altinn:LocalDev");
 
         serviceDescription = new AltinnServiceDescriptor(name, isLocalDevelopment);
@@ -51,6 +69,8 @@ public static class AltinnServiceDefaultsExtensions
         builder.Services.AddOptions<ForwardedHeadersOptions>()
             .Configure((ForwardedHeadersOptions options, IOptionsMonitor<AltinnClusterInfo> clusterInfoOptions) =>
             {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+
                 var clusterInfo = clusterInfoOptions.CurrentValue;
                 if (clusterInfo.ClusterNetwork is { } clusterNetwork)
                 {
@@ -75,6 +95,37 @@ public static class AltinnServiceDefaultsExtensions
     }
 
     /// <summary>
+    /// Adds default Altinn middleware.
+    /// </summary>
+    /// <remarks>
+    /// Requires that <see cref="AddAltinnServiceDefaults(IHostApplicationBuilder, string)"/> has been called.
+    /// </remarks>
+    /// <param name="app">The <see cref="WebApplication"/>.</param>
+    /// <param name="errorHandlingPath">The path to use for error handling in production environments.</param>
+    /// <returns><paramref name="app"/>.</returns>
+    public static WebApplication AddDefaultAltinnMiddleware(this WebApplication app, string errorHandlingPath)
+    {
+        Log("Startup // Configure");
+
+        if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+        {
+            Log("IsDevelopment || IsStaging => Using developer exception page");
+
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            Log("Production => Using exception haneler");
+
+            app.UseExceptionHandler(errorHandlingPath);
+        }
+
+        app.UseForwardedHeaders();
+
+        return app;
+    }
+
+    /// <summary>
     /// Maps default Altinn endpoints.
     /// </summary>
     /// <remarks>
@@ -85,10 +136,10 @@ public static class AltinnServiceDefaultsExtensions
     public static WebApplication MapDefaultAltinnEndpoints(this WebApplication app)
     {
         // All health checks must pass for app to be considered ready to accept traffic after starting
-        app.MapHealthChecks("/health");
+        app.MapHealthChecks(HealthEndpoint);
 
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
-        app.MapHealthChecks("/alive", new HealthCheckOptions
+        app.MapHealthChecks(AliveEndpoint, new HealthCheckOptions
         {
             Predicate = static r => r.Tags.Contains("live"),
         });
@@ -120,6 +171,14 @@ public static class AltinnServiceDefaultsExtensions
         => builder.Services.GetAltinnServiceDescriptor();
 
     /// <summary>
+    /// Gets the configured <see cref="AltinnServiceDescriptor"/>.
+    /// </summary>
+    /// <param name="builder">The <see cref="IHost"/>.</param>
+    /// <returns>The <see cref="AltinnServiceDescriptor"/>.</returns>
+    public static AltinnServiceDescriptor GetAltinnServiceDescriptor(this IHost builder)
+        => builder.Services.GetRequiredService<AltinnServiceDescriptor>();
+
+    /// <summary>
     /// Gets whether the service is running in local development mode.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
@@ -134,6 +193,14 @@ public static class AltinnServiceDefaultsExtensions
     /// <returns><see langword="true"/> if currently running in local-dev mode, otherwise <see langword="false"/>.</returns>
     public static bool IsLocalDevelopment(this IHostApplicationBuilder builder)
         => builder.Services.IsLocalDevelopment();
+
+    /// <summary>
+    /// Gets whether the service is running in local development mode.
+    /// </summary>
+    /// <param name="builder">The <see cref="IHost"/>.</param>
+    /// <returns><see langword="true"/> if currently running in local-dev mode, otherwise <see langword="false"/>.</returns>
+    public static bool IsLocalDevelopment(this IHost builder)
+        => builder.GetAltinnServiceDescriptor().IsLocalDev;
 
     private static bool TryFindAltinnServiceDescription(this IServiceCollection services, [NotNullWhen(true)] out AltinnServiceDescriptor? serviceDescription)
     {
@@ -185,8 +252,25 @@ public static class AltinnServiceDefaultsExtensions
                     tracing.SetSampler(new AlwaysOnSampler());
                 }
 
-                tracing.AddAspNetCoreInstrumentation()
-                       .AddHttpClientInstrumentation();
+                tracing.AddAspNetCoreInstrumentation(o =>
+                {
+                    o.Filter = (httpContext) =>
+                    {
+                        if (TelemetryHelpers.ShouldExclude(httpContext.Request.Path))
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    };
+
+                    o.EnrichWithHttpRequest = (activity, request) =>
+                    {
+                        TelemetryHelpers.EnrichFromRequest(new ActivityTags(activity), request.HttpContext);
+                    };
+                });
+                
+                tracing.AddHttpClientInstrumentation(); 
             });
 
         builder.AddOpenTelemetryExporters();
@@ -225,5 +309,106 @@ public static class AltinnServiceDefaultsExtensions
             .AddCheck("self", static () => HealthCheckResult.Healthy(), ["live"]);
 
         return builder;
+    }
+
+    private static IHostApplicationBuilder AddApplicationInsights(this IHostApplicationBuilder builder)
+    {
+        var applicationInsightsInstrumentationKey = builder.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+
+        if (!string.IsNullOrEmpty(applicationInsightsInstrumentationKey))
+        {
+            var applicationInsightsConnectionString = $"InstrumentationKey={applicationInsightsInstrumentationKey}";
+            builder.Configuration.AddInMemoryCollection([
+                KeyValuePair.Create("ApplicationInsights:ConnectionString", (string?)applicationInsightsConnectionString),
+                KeyValuePair.Create("ConnectionStrings:ApplicationInsights", (string?)applicationInsightsConnectionString),
+            ]);
+
+            // NOTE: due to a bug in application insights, this must be registered before anything else
+            // See https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
+            builder.Services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp/logtelemetry" });
+            builder.Services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+            {
+                ConnectionString = applicationInsightsConnectionString,
+            });
+
+            builder.Services.AddApplicationInsightsTelemetryProcessor<ApplicationInsightsEndpointFilterProcessor>();
+            builder.Services.AddApplicationInsightsTelemetryProcessor<ApplicationInsightsRequestTelemetryEnricherProcessor>();
+            builder.Services.AddSingleton<ITelemetryInitializer, AltinnServiceTelemetryInitializer>();
+
+            Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");
+        }
+        else
+        {
+            Log("No ApplicationInsights:InstrumentationKey found - skipping Application Insights");
+        }
+
+        return builder;
+    }
+
+    private static IHostApplicationBuilder AddAltinnConfiguration(this IHostApplicationBuilder builder)
+    {
+        builder.Configuration.AddAltinnDbSecretsJson();
+        builder.Configuration.AddAltinnKeyVault();
+
+        return builder;
+    }
+
+    private static IConfigurationBuilder AddAltinnDbSecretsJson(this IConfigurationBuilder builder)
+    {
+        var parentDir = Path.GetDirectoryName(Environment.CurrentDirectory);
+        if (parentDir is null)
+        {
+            Log("No parent directory found - skipping altinn-dbsettings-secret.json");
+            return builder;
+        }
+
+        var altinnDbSecretsConfigFile = Path.Combine(
+            parentDir,
+            "altinn-appsettings",
+            "altinn-dbsettings-secret.json");
+
+        if (!File.Exists(altinnDbSecretsConfigFile))
+        {
+            Log($"No altinn-dbsettings-secret.json found at \"{altinnDbSecretsConfigFile}\" - skipping altinn-dbsettings-secret.json");
+            return builder;
+        }
+
+        Log($"Loading configuration from \"{altinnDbSecretsConfigFile}\"");
+        builder.AddJsonFile(altinnDbSecretsConfigFile, optional: false, reloadOnChange: true);
+        return builder;
+    }
+
+    private static IConfigurationBuilder AddAltinnKeyVault(this IConfigurationManager manager)
+    {
+        var clientId = manager.GetValue<string>("kvSetting:ClientId");
+        var tenantId = manager.GetValue<string>("kvSetting:TenantId");
+        var clientSecret = manager.GetValue<string>("kvSetting:ClientSecret");
+        var keyVaultUri = manager.GetValue<string>("kvSetting:SecretUri");
+
+        if (!string.IsNullOrEmpty(clientId)
+            && !string.IsNullOrEmpty(tenantId)
+            && !string.IsNullOrEmpty(clientSecret)
+            && !string.IsNullOrEmpty(keyVaultUri))
+        {
+            Log($"adding config from keyvault using client-secret credentials");
+            var credential = new ClientSecretCredential(
+                tenantId: tenantId,
+                clientId: clientId,
+                clientSecret: clientSecret);
+            manager.AddAzureKeyVault(new Uri(keyVaultUri), credential);
+        }
+        else
+        {
+            Log($"Missing keyvault settings - skipping adding keyvault to configuration");
+        }
+
+        return manager;
+    }
+
+    private static void Log(
+        string message,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        Console.WriteLine($"// {nameof(AltinnServiceDefaultsExtensions)}.{callerMemberName}: {message}");
     }
 }

@@ -1,9 +1,12 @@
-﻿namespace Altinn.Authorization.ServiceDefaults;
+﻿using System.Diagnostics;
+
+namespace Altinn.Authorization.ServiceDefaults;
 
 /// <summary>
 /// A descriptor for an Altinn service.
 /// </summary>
-public sealed class AltinnServiceDescriptor
+[DebuggerDisplay("Name = {Name}, IsLocalDev = {IsLocalDev}")]
+public sealed record AltinnServiceDescriptor
 {
     /// <summary>
     /// Gets the name of the service.
