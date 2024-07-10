@@ -6,7 +6,7 @@ internal class AltinnServiceResourceDetector
     : IResourceDetector
 {
     private readonly Resource _resource;
-
+    
     public AltinnServiceResourceDetector(AltinnServiceDescriptor serviceDescription)
     {
         var attributes = new List<KeyValuePair<string, object>>(2)

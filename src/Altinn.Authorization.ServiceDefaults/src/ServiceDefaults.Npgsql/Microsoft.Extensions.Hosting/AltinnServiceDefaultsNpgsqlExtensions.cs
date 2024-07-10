@@ -18,6 +18,7 @@ namespace Microsoft.Extensions.Hosting;
 /// <summary>
 /// Host builder extensions for Npgsql.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AltinnServiceDefaultsNpgsqlExtensions
 {
     private static string DefaultConfigSectionName(string connectionName)
@@ -85,32 +86,32 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         NpgsqlSettings settings = new();
         builder.Configuration.GetSection(configurationSectionName).Bind(settings);
 
-        if (builder.Configuration.GetConnectionString($"{connectionName}_db") is string connDb)
-        {
-            settings.ConnectionString = connDb;
-            settings.Migrate.ConnectionString = connDb;
-            settings.Seed.ConnectionString = connDb;
-        }
-
-        if (builder.Configuration.GetConnectionString($"{connectionName}_db_migrate") is string connDbMigrate)
-        {
-            settings.Migrate.ConnectionString = connDbMigrate;
-            settings.Seed.ConnectionString = connDbMigrate;
-        }
-
         if (builder.Configuration.GetConnectionString($"{connectionName}_db_seed") is string connDbSeed)
         {
-            settings.Seed.ConnectionString = connDbSeed;
+            settings.Seed.ConnectionString ??= connDbSeed;
         }
 
         if (builder.Configuration.GetConnectionString($"{connectionName}_db_cluster") is string connDbCluster)
         {
-            settings.Create.ClusterConnectionString = connDbCluster;
+            settings.Create.ClusterConnectionString ??= connDbCluster;
         }
 
         if (builder.Configuration.GetConnectionString($"{connectionName}_db_init") is string connDbCreator)
         {
-            settings.Create.DatabaseConnectionString = connDbCreator;
+            settings.Create.DatabaseConnectionString ??= connDbCreator;
+        }
+
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db_migrate") is string connDbMigrate)
+        {
+            settings.Migrate.ConnectionString ??= connDbMigrate;
+            settings.Seed.ConnectionString ??= connDbMigrate;
+        }
+
+        if (builder.Configuration.GetConnectionString($"{connectionName}_db") is string connDb)
+        {
+            settings.ConnectionString ??= connDb;
+            settings.Migrate.ConnectionString ??= connDb;
+            settings.Seed.ConnectionString ??= connDb;
         }
 
         configureSettings?.Invoke(settings);
@@ -202,6 +203,8 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
                     connBuilder.Username = dbOwner;
                     connBuilder.Password = dbPassword;
                 }
+
+                initConnectionString = connBuilder.ConnectionString;
             }
 
             builder.Services.Configure<NpgsqlDatabaseHostedService.Options>(options =>

@@ -14,7 +14,8 @@ internal partial class YuniqlDatabaseMigrator
     : INpgsqlDatabaseMigrator
 {
     private static readonly string TOOL_NAME = "Altinn-Npgsql-Yuniql";
-    private static readonly string TOOL_VERSION = typeof(YuniqlDatabaseMigrator).Assembly.GetName().Version?.ToString() ?? "";
+    private static readonly string TOOL_VERSION = typeof(YuniqlDatabaseMigrator).Assembly.GetVersion()
+        ?.RemoveBuildInfo().TruncateVersionLength(16) ?? "";
 
     private static readonly object _lock = new();
 
@@ -110,7 +111,12 @@ internal partial class YuniqlDatabaseMigrator
         }
 
         var provider = options.WorkspaceFileProvider;
-        var relPath = options.Workspace ?? "";
+        var relPath = options.Workspace ?? "/";
+        if (relPath.Length == 0)
+        {
+            relPath = "/";
+        }
+
         var fileInfo = provider.GetFileInfo(relPath);
         if ((!fileInfo.Exists || !fileInfo.IsDirectory)
             // Some file-providers does not return file-info for directories
@@ -132,7 +138,7 @@ internal partial class YuniqlDatabaseMigrator
 
         try
         {
-            WriteContents(provider, relPath, tempDir);
+            WriteContents(provider, relPath, tempDir, tempDir);
             EnsureYuniqlDirs(tempDir);
             var ret = new Workspace(tempDir.FullName, isTemp: true);
             tempDir = null;
@@ -144,7 +150,7 @@ internal partial class YuniqlDatabaseMigrator
         }
     }
 
-    private static void WriteContents(IFileProvider provider, string path, DirectoryInfo target)
+    private void WriteContents(IFileProvider provider, string path, DirectoryInfo target, DirectoryInfo rootDir)
     {
         var contents = provider.GetDirectoryContents(path);
         if (!contents.Exists)
@@ -158,14 +164,19 @@ internal partial class YuniqlDatabaseMigrator
             {
                 var subPath = Path.Combine(path, entry.Name);
                 var subTarget = target.CreateSubdirectory(entry.Name);
-                WriteContents(provider, subPath, subTarget);
+                WriteContents(provider, subPath, subTarget, rootDir);
             }
             else
             {
                 var file = new FileInfo(Path.Combine(target.FullName, entry.Name));
-                using var readStream = entry.CreateReadStream();
-                using var writeStream = file.Create();
-                readStream.CopyTo(writeStream);
+                {
+                    using var readStream = entry.CreateReadStream();
+                    using var writeStream = file.Create();
+                    readStream.CopyTo(writeStream);
+                }
+
+                var relPath = Path.GetRelativePath(rootDir.FullName, file.FullName);
+                Log.WroteWorkspaceFile(_logger, relPath);
             }
         }
     }
@@ -225,5 +236,8 @@ internal partial class YuniqlDatabaseMigrator
 
         [LoggerMessage(3, LogLevel.Information, "Created temporary workspace directory '{TempDir}'.")]
         public static partial void CreateTemporaryWorkspaceDirectory(ILogger logger, string tempDir);
+
+        [LoggerMessage(4, LogLevel.Trace, "Wrote workspace file '{File}'.")]
+        public static partial void WroteWorkspaceFile(ILogger logger, string file);
     }
 }
