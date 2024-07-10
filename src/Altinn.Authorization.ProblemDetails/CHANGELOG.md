@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v2.0.0...Altinn.Authorization.ProblemDetails-v3.0.0) (2024-07-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* The ValidationErrorBuilder class has been moved to the ProblemDetails.Abstractions assembly.
+* The various Extensions properties in ProblemDetails.Abstractions have been changed from being a immutable array of key-value pairs, to a new ProblemExtensionData type.
+
+### Features
+
+* add ProblemExtensionData to ProblemDetails.Abstractions ([91c428a](https://github.com/Altinn/altinn-authorization-utils/commit/91c428adcd8341c9096b6b015fe65d118dcc55bf))
+* add Result to ProblemDetails.Abstractions ([#81](https://github.com/Altinn/altinn-authorization-utils/issues/81)) ([91c428a](https://github.com/Altinn/altinn-authorization-utils/commit/91c428adcd8341c9096b6b015fe65d118dcc55bf))
+* create ValidationProblemInstance in ProblemDetails.Abstractions. ([91c428a](https://github.com/Altinn/altinn-authorization-utils/commit/91c428adcd8341c9096b6b015fe65d118dcc55bf))
+
+
+### Code Refactoring
+
+* move ValidationErrorBuilder to ProblemDetails.Abstractions ([91c428a](https://github.com/Altinn/altinn-authorization-utils/commit/91c428adcd8341c9096b6b015fe65d118dcc55bf))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v1.1.1...Altinn.Authorization.ProblemDetails-v2.0.0) (2024-06-11)
 
 
