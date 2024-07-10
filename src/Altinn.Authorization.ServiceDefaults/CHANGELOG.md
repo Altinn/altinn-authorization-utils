@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v1.2.0...Altinn.Authorization.ServiceDefaults-v2.0.0) (2024-07-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* The connection-string priorities have been modified in cases where multiple connection-strings are provided.
+
+### Features
+
+* add ApplicationInsights and KeyVault support ([#83](https://github.com/Altinn/altinn-authorization-utils/issues/83)) ([712b93e](https://github.com/Altinn/altinn-authorization-utils/commit/712b93e69d701af06f94bd4e202b18e9f4d9e843))
+* add TestSeed library ([#77](https://github.com/Altinn/altinn-authorization-utils/issues/77)) ([0c6d662](https://github.com/Altinn/altinn-authorization-utils/commit/0c6d662b99ca31e137f1a9065881d541024eed07))
+* modify connection-string priorities ([712b93e](https://github.com/Altinn/altinn-authorization-utils/commit/712b93e69d701af06f94bd4e202b18e9f4d9e843))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v1.1.0...Altinn.Authorization.ServiceDefaults-v1.2.0) (2024-06-20)
 
 
