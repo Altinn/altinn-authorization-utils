@@ -27,6 +27,8 @@ internal class ApplicationInsightsRequestTelemetryEnricherProcessor
         {
             TelemetryHelpers.EnrichFromRequest(new DictionaryTags(itemWithProps.Properties), ctx);
         }
+
+        _next.Process(item);
     }
 
     private struct DictionaryTags

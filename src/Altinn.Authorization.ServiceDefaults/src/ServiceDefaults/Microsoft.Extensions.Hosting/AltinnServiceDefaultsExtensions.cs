@@ -28,6 +28,7 @@ namespace Microsoft.Extensions.Hosting;
 /// <summary>
 /// Extension methods for adding default services to an Altinn service.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AltinnServiceDefaultsExtensions
 {
     internal readonly static string HealthEndpoint = "/health";
