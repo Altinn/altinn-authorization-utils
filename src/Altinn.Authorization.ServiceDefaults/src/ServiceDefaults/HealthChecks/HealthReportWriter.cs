@@ -72,8 +72,8 @@ internal class HealthReportWriter
 {
     private static readonly string ContentType = "application/json";
 
-    private bool _includeData;
-    private bool _includeTags;
+    private readonly bool _includeData;
+    private readonly bool _includeTags;
     private readonly HealthReportWriterSettings.ExceptionHandling _exceptionHandling;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
