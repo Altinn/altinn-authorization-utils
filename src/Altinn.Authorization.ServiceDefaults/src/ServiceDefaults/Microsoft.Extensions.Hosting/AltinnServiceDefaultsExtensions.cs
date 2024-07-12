@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ServiceDefaults;
 using Altinn.Authorization.ServiceDefaults.ApplicationInsights;
+using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using Altinn.Authorization.ServiceDefaults.Options;
 using Altinn.Authorization.ServiceDefaults.Telemetry;
@@ -11,6 +12,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -116,7 +118,7 @@ public static class AltinnServiceDefaultsExtensions
         }
         else
         {
-            Log("Production => Using exception haneler");
+            Log("Production => Using exception handler");
 
             app.UseExceptionHandler(errorHandlingPath);
         }
@@ -136,8 +138,13 @@ public static class AltinnServiceDefaultsExtensions
     /// <returns><paramref name="app"/>.</returns>
     public static WebApplication MapDefaultAltinnEndpoints(this WebApplication app)
     {
+        var writer = app.Services.GetRequiredService<HealthReportWriter>();
+
         // All health checks must pass for app to be considered ready to accept traffic after starting
-        app.MapHealthChecks(HealthEndpoint);
+        app.MapHealthChecks(HealthEndpoint, new HealthCheckOptions
+        {
+            ResponseWriter = writer,
+        });
 
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
         app.MapHealthChecks(AliveEndpoint, new HealthCheckOptions
@@ -305,6 +312,21 @@ public static class AltinnServiceDefaultsExtensions
 
     private static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddSingleton<HealthReportWriter>();
+        builder.Services.AddOptions<HealthReportWriterSettings>()
+            .Configure((HealthReportWriterSettings opts, IHostEnvironment env) =>
+            {
+                if (!env.IsProduction())
+                {
+                    opts.Exceptions |= HealthReportWriterSettings.ExceptionHandling.Include;
+                }
+
+                if (env.IsDevelopment())
+                {
+                    opts.Exceptions |= HealthReportWriterSettings.ExceptionHandling.IncludeStackTrace;
+                }
+            });
+
         builder.Services.AddHealthChecks()
             // Add a default liveness check to ensure app is responsive
             .AddCheck("self", static () => HealthCheckResult.Healthy(), ["live"]);
