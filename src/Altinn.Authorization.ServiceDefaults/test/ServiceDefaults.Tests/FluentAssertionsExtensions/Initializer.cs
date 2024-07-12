@@ -9,9 +9,17 @@ internal static class Initializer
     [ModuleInitializer]
     public static void SetDefaults()
     {
-        AssertionOptions.AssertEquivalencyUsing(options => options.ComparingByValue<IPAddress>());
-        AssertionOptions.AssertEquivalencyUsing(options => options.ComparingByValue<IPNetwork>());
-        AssertionOptions.AssertEquivalencyUsing(options => options.Using(new CIDREquivalencyStep()));
+        AssertionOptions.AssertEquivalencyUsing(options =>
+        {
+            options.ComparingByValue<IPAddress>();
+            options.ComparingByValue<IPNetwork>();
+            options.Using(new IPNetworkConversionStep());
+            options.Using(new JsonDocumentConversionStep());
+            options.Using(new JsonStringConversionStep());
+            options.Using(new JsonElementEquivalencyStep());
+
+            return options;
+        });
 
         Formatter.AddFormatter(new CIDRValueFormatter());
     }

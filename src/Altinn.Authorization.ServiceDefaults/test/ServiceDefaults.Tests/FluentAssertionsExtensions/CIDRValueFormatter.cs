@@ -1,10 +1,12 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Utils;
 using CommunityToolkit.Diagnostics;
 using FluentAssertions.Formatting;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace Altinn.Authorization.ServiceDefaults.Tests.FluentAssertionsExtensions;
 
+[ExcludeFromCodeCoverage]
 internal class CIDRValueFormatter
     : IValueFormatter
 {
