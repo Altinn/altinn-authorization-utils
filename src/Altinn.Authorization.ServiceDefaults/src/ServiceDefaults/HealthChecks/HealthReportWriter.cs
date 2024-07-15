@@ -14,6 +14,11 @@ namespace Altinn.Authorization.ServiceDefaults.HealthChecks;
 public class HealthReportWriterSettings
 {
     /// <summary>
+    /// Gets or sets what format the health report should be written in.
+    /// </summary>
+    public HealthReportFormat Format { get; set; } = HealthReportFormat.JsonV1;
+
+    /// <summary>
     /// Gets or sets whether to include "data" in the health report.
     /// </summary>
     public bool IncludeData { get; set; } = false;
@@ -66,12 +71,29 @@ public class HealthReportWriterSettings
         /// </summary>
         IncludeInnerException = (1 << 2) | Include,
     }
+
+    /// <summary>
+    /// Formats for health report serialization.
+    /// </summary>
+    public enum HealthReportFormat
+    {
+        /// <summary>
+        /// Write the health report as plain text. This just writes the health status as a string.
+        /// </summary>
+        PlainText,
+
+        /// <summary>
+        /// Write the health report as a JSON object. This is the default format.
+        /// </summary>
+        JsonV1,
+    }
 }
 
 internal class HealthReportWriter
 {
     private static readonly string ContentType = "application/json";
 
+    private readonly HealthReportWriterSettings.HealthReportFormat _format;
     private readonly bool _includeData;
     private readonly bool _includeTags;
     private readonly HealthReportWriterSettings.ExceptionHandling _exceptionHandling;
@@ -82,30 +104,47 @@ internal class HealthReportWriter
     {
         var settings = options.Value;
 
+        _format = settings.Format;
         _includeData = settings.IncludeData;
         _includeTags = settings.IncludeTags;
         _exceptionHandling = settings.Exceptions;
         _jsonSerializerOptions = settings.JsonSerializerOptions;
     }
 
-    public static implicit operator Func<HttpContext, HealthReport?, Task>(HealthReportWriter writer)
+    public static implicit operator Func<HttpContext, HealthReport, Task>(HealthReportWriter writer)
         => writer.WriteHealthCheckReport;
 
-    public Task WriteHealthCheckReport(HttpContext context, HealthReport? report)
+    public Task WriteHealthCheckReport(HttpContext context, HealthReport report)
     {
-        context.Response.ContentType = ContentType;
-
-        if (report is null)
+        switch (_format)
         {
-            context.Response.BodyWriter.Write("{}"u8);
-            return context.Response.BodyWriter.FlushAsync(context.RequestAborted).AsTask();
-        }
+            case HealthReportWriterSettings.HealthReportFormat.PlainText:
+                context.Response.ContentType = "text/plain";
+                WriteMinimalPlainText(report, context.Response.BodyWriter);
+                break;
 
-        WriteReport(report, context.Response.BodyWriter);
+            case HealthReportWriterSettings.HealthReportFormat.JsonV1:
+            default:
+                context.Response.ContentType = ContentType;
+                WriteJsonReport(report, context.Response.BodyWriter);
+                break;
+        }
+        
         return context.Response.BodyWriter.FlushAsync(context.RequestAborted).AsTask();
     }
 
-    private void WriteReport(HealthReport report, PipeWriter pipeWriter)
+    private void WriteMinimalPlainText(HealthReport report, PipeWriter pipeWriter)
+    {
+        pipeWriter.Write(report.Status switch
+        {
+            HealthStatus.Degraded => "Degraded"u8,
+            HealthStatus.Unhealthy => "Unhealthy"u8,
+            HealthStatus.Healthy => "Healthy"u8,
+            _ => "Unknown"u8,
+        });
+    }
+
+    private void WriteJsonReport(HealthReport report, PipeWriter pipeWriter)
     {
         using var writer = new Utf8JsonWriter(pipeWriter, new JsonWriterOptions
         {
