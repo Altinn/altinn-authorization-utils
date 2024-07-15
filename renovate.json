@@ -9,6 +9,7 @@
     "groupName": "Microsoft.CodeAnalysis",
     "groupSlug": "microsoft-codeanalysis",
     "prBodyNotes": [":warning: Updating Microsoft.CodeAnalysis packages requires new compiler version. This typically requires people to update VS. :warning:"],
-    "addLabels": ["dependencies/breaking"]
+    "addLabels": ["dependencies/breaking"],
+    "minimumReleaseAge": "60 days"
   }]
 }
