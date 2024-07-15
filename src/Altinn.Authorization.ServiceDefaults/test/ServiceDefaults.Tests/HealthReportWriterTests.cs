@@ -12,10 +12,18 @@ public class HealthReportWriterTests
     private static UTF8Encoding Encoding = new(throwOnInvalidBytes: true, encoderShouldEmitUTF8Identifier: false);
 
     [Fact]
-    public async Task NullReport_WritesEmptyJsonObject()
+    public async Task CanWritePlaintext()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings { }));
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
+        { 
+            Format = HealthReportWriterSettings.HealthReportFormat.PlainText 
+        }));
+        var report = new HealthReport(new Dictionary<string, HealthReportEntry>
+        {
+            { "self", new(HealthStatus.Healthy, "self is healthy", TimeSpan.FromSeconds(2), exception: null, data: null, tags: null) }
+        }, TimeSpan.FromSeconds(2));
+
         using var responseStream = new MemoryStream();
         var ctx = new DefaultHttpContext()
         {
@@ -26,12 +34,12 @@ public class HealthReportWriterTests
         };
 
         // Act
-        await writer.WriteHealthCheckReport(ctx, null);
+        await writer.WriteHealthCheckReport(ctx, report);
 
         // Assert
-        var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be("application/json");
-        doc.Should().BeEquivalentTo("{}");
+        var doc = Encoding.GetString(responseStream.ToArray());
+        ctx.Response.ContentType.Should().Be("text/plain");
+        doc.Should().Be("Healthy");
     }
 
     [Fact]
