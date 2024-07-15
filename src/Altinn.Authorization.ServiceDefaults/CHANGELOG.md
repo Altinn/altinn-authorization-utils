@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.0.0...Altinn.Authorization.ServiceDefaults-v2.1.0) (2024-07-15)
+
+
+### Features
+
+* add health report information ([#86](https://github.com/Altinn/altinn-authorization-utils/issues/86)) ([8b21096](https://github.com/Altinn/altinn-authorization-utils/commit/8b2109645a583074c7dd956d464cbed629670cb4))
+* add plain format support for health writer ([#88](https://github.com/Altinn/altinn-authorization-utils/issues/88)) ([0022dc6](https://github.com/Altinn/altinn-authorization-utils/commit/0022dc6b44efaec97d8d627f2634bf3593e602d2))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v1.2.0...Altinn.Authorization.ServiceDefaults-v2.0.0) (2024-07-10)
 
 
