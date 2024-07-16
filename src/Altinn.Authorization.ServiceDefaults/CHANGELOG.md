@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.1.0...Altinn.Authorization.ServiceDefaults-v2.1.1) (2024-07-16)
+
+
+### Bug Fixes
+
+* telemetry tags ([#89](https://github.com/Altinn/altinn-authorization-utils/issues/89)) ([9ca0a47](https://github.com/Altinn/altinn-authorization-utils/commit/9ca0a47a4069a8905c5d1aa025689963ba9abb91))
+
 ## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.0.0...Altinn.Authorization.ServiceDefaults-v2.1.0) (2024-07-15)
 
 
