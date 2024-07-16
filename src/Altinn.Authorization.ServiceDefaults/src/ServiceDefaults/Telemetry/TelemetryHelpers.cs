@@ -72,7 +72,7 @@ internal static class TelemetryHelpers
                 {
                     if (!hasUserId && int.TryParse(claim.Value, out var userId))
                     {
-                        hasPartyId = true;
+                        hasUserId = true;
                         tags["altinn.user_id"] = userId.ToString();
                     }
 
