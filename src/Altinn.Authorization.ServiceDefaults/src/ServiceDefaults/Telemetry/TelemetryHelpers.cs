@@ -46,7 +46,7 @@ internal static class TelemetryHelpers
             bool hasAuthLevel = false, hasPartyId = false, hasUserId = false, hasOrgNumber = false;
             foreach (var claim in user.Claims)
             {
-                if (string.Equals(claim.Type, AuthenticationLevel))
+                if (string.Equals(claim.Type, AuthenticationLevel, StringComparison.Ordinal))
                 {
                     if (!hasAuthLevel && int.TryParse(claim.Value, out var authLevel))
                     {
@@ -57,7 +57,7 @@ internal static class TelemetryHelpers
                     continue;
                 }
                 
-                if (string.Equals(claim.Type, PartyID))
+                if (string.Equals(claim.Type, PartyID, StringComparison.Ordinal))
                 {
                     if (!hasPartyId && int.TryParse(claim.Value, out var partyId))
                     {
@@ -68,7 +68,7 @@ internal static class TelemetryHelpers
                     continue;
                 }
                 
-                if (string.Equals(claim.Type, UserId))
+                if (string.Equals(claim.Type, UserId, StringComparison.Ordinal))
                 {
                     if (!hasUserId && int.TryParse(claim.Value, out var userId))
                     {
@@ -79,7 +79,7 @@ internal static class TelemetryHelpers
                     continue;
                 }
                 
-                if (string.Equals(claim.Type, OrgNumber))
+                if (string.Equals(claim.Type, OrgNumber, StringComparison.Ordinal))
                 {
                     if (!hasOrgNumber && int.TryParse(claim.Value, out var orgNumber))
                     {
