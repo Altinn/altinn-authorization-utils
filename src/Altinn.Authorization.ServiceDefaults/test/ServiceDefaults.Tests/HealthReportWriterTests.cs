@@ -12,12 +12,12 @@ public class HealthReportWriterTests
     private static UTF8Encoding Encoding = new(throwOnInvalidBytes: true, encoderShouldEmitUTF8Identifier: false);
 
     [Fact]
-    public async Task CanWritePlaintext()
+    public async Task ContentNegotiation_DefaultsTo_PlainText()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
-        { 
-            Format = HealthReportWriterSettings.HealthReportFormat.PlainText 
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
+        {
+            Format = HealthReportWriterSettings.HealthReportFormat.Auto,
         }));
         var report = new HealthReport(new Dictionary<string, HealthReportEntry>
         {
@@ -30,7 +30,45 @@ public class HealthReportWriterTests
             Response =
             {
                 Body = responseStream,
-            }
+            },
+        };
+
+        // Act
+        await writer.WriteHealthCheckReport(ctx, report);
+
+        // Assert
+        var doc = Encoding.GetString(responseStream.ToArray());
+        ctx.Response.ContentType.Should().Be(PlainTextHealthReportFormatter.ContentType);
+        doc.Should().Be("Healthy");
+    }
+
+    [Fact]
+    public async Task ContentNegotiation_Supports_PlainText()
+    {
+        // Arrange
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
+        {
+            Format = HealthReportWriterSettings.HealthReportFormat.Auto,
+        }));
+        var report = new HealthReport(new Dictionary<string, HealthReportEntry>
+        {
+            { "self", new(HealthStatus.Healthy, "self is healthy", TimeSpan.FromSeconds(2), exception: null, data: null, tags: null) }
+        }, TimeSpan.FromSeconds(2));
+
+        using var responseStream = new MemoryStream();
+        var ctx = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Headers =
+                {
+                    Accept = "text/plain",
+                },
+            },
+            Response =
+            {
+                Body = responseStream,
+            },
         };
 
         // Act
@@ -43,10 +81,115 @@ public class HealthReportWriterTests
     }
 
     [Fact]
-    public async Task Report_SingleEntry_NoException_NoData_NoTags()
+    public async Task ContentNegotiation_Supports_ApplicationJson()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings { }));
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
+        {
+            Format = HealthReportWriterSettings.HealthReportFormat.Auto,
+        }));
+        var report = new HealthReport(new Dictionary<string, HealthReportEntry>
+        {
+            { "self", new(HealthStatus.Healthy, "self is healthy", TimeSpan.FromSeconds(2), exception: null, data: null, tags: null) }
+        }, TimeSpan.FromSeconds(2));
+
+        using var responseStream = new MemoryStream();
+        var ctx = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Headers =
+                {
+                    Accept = "application/json",
+                },
+            },
+            Response =
+            {
+                Body = responseStream,
+            },
+        };
+
+        // Act
+        await writer.WriteHealthCheckReport(ctx, report);
+
+        // Assert
+        ctx.Response.ContentType.Should().Be("application/json");
+        var doc = ParseDoc(responseStream);
+        doc.Should().BeEquivalentTo(
+            """
+            {
+                "status": "healthy",
+                "totalDuration": "00:00:02",
+                "entries": {
+                    "self": {
+                        "status": "healthy",
+                        "description": "self is healthy",
+                        "duration": "00:00:02"
+                    }
+                }
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task ContentNegotiation_Supports_JsonV1ContentType()
+    {
+        // Arrange
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
+        {
+            Format = HealthReportWriterSettings.HealthReportFormat.Auto,
+        }));
+        var report = new HealthReport(new Dictionary<string, HealthReportEntry>
+        {
+            { "self", new(HealthStatus.Healthy, "self is healthy", TimeSpan.FromSeconds(2), exception: null, data: null, tags: null) }
+        }, TimeSpan.FromSeconds(2));
+
+        using var responseStream = new MemoryStream();
+        var ctx = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Headers =
+                {
+                    Accept = JsonV1HealthReportFormatter.ContentType,
+                },
+            },
+            Response =
+            {
+                Body = responseStream,
+            },
+        };
+
+        // Act
+        await writer.WriteHealthCheckReport(ctx, report);
+
+        // Assert
+        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
+        var doc = ParseDoc(responseStream);
+        doc.Should().BeEquivalentTo(
+            """
+            {
+                "status": "healthy",
+                "totalDuration": "00:00:02",
+                "entries": {
+                    "self": {
+                        "status": "healthy",
+                        "description": "self is healthy",
+                        "duration": "00:00:02"
+                    }
+                }
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task CanWritePlaintext()
+    {
+        // Arrange
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
+        { 
+            Format = HealthReportWriterSettings.HealthReportFormat.PlainText,
+        }));
         var report = new HealthReport(new Dictionary<string, HealthReportEntry>
         {
             { "self", new(HealthStatus.Healthy, "self is healthy", TimeSpan.FromSeconds(2), exception: null, data: null, tags: null) }
@@ -58,7 +201,38 @@ public class HealthReportWriterTests
             Response =
             {
                 Body = responseStream,
-            }
+            },
+        };
+
+        // Act
+        await writer.WriteHealthCheckReport(ctx, report);
+
+        // Assert
+        var doc = Encoding.GetString(responseStream.ToArray());
+        ctx.Response.ContentType.Should().Be(PlainTextHealthReportFormatter.ContentType);
+        doc.Should().Be("Healthy");
+    }
+
+    [Fact]
+    public async Task Report_SingleEntry_NoException_NoData_NoTags()
+    {
+        // Arrange
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
+        {
+            Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
+        }));
+        var report = new HealthReport(new Dictionary<string, HealthReportEntry>
+        {
+            { "self", new(HealthStatus.Healthy, "self is healthy", TimeSpan.FromSeconds(2), exception: null, data: null, tags: null) }
+        }, TimeSpan.FromSeconds(2));
+
+        using var responseStream = new MemoryStream();
+        var ctx = new DefaultHttpContext()
+        {
+            Response =
+            {
+                Body = responseStream,
+            },
         };
 
         // Act
@@ -66,7 +240,7 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be("application/json");
+        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
         doc.Should().BeEquivalentTo(
             """
             {
@@ -87,7 +261,10 @@ public class HealthReportWriterTests
     public async Task WriteHealthCheckReportWithoutExceptions_IgnoresExceptions()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings { }));
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
+        {
+            Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
+        }));
         var exn = new Exception("foo");
         var report = new HealthReport(new Dictionary<string, HealthReportEntry>
         {
@@ -100,7 +277,7 @@ public class HealthReportWriterTests
             Response =
             {
                 Body = responseStream,
-            }
+            },
         };
 
         // Act
@@ -108,7 +285,7 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be("application/json");
+        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
         doc.Should().BeEquivalentTo(
             """
             {
@@ -130,6 +307,7 @@ public class HealthReportWriterTests
         // Arrange
         var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
         {
+            Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
             Exceptions = HealthReportWriterSettings.ExceptionHandling.Include,
         }));
         var exn = new Exception("foo");
@@ -144,7 +322,7 @@ public class HealthReportWriterTests
             Response =
             {
                 Body = responseStream,
-            }
+            },
         };
 
         // Act
@@ -152,7 +330,7 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be("application/json");
+        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
         doc.Should().BeEquivalentTo(
             """
             {
@@ -178,6 +356,7 @@ public class HealthReportWriterTests
         // Arrange
         var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
         {
+            Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
             Exceptions = HealthReportWriterSettings.ExceptionHandling.IncludeStackTrace 
                 | HealthReportWriterSettings.ExceptionHandling.IncludeInnerException,
         }));
@@ -196,7 +375,7 @@ public class HealthReportWriterTests
             Response =
             {
                 Body = responseStream,
-            }
+            },
         };
 
         // Act
@@ -204,7 +383,7 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be("application/json");
+        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
         doc.Should().BeEquivalentTo(
             $$"""
             {

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using System.Buffers;
+using Microsoft.Extensions.Primitives;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipelines;
 using System.Text.Json;
 
 namespace Altinn.Authorization.ServiceDefaults.HealthChecks;
@@ -16,7 +17,7 @@ public class HealthReportWriterSettings
     /// <summary>
     /// Gets or sets what format the health report should be written in.
     /// </summary>
-    public HealthReportFormat Format { get; set; } = HealthReportFormat.JsonV1;
+    public HealthReportFormat Format { get; set; } = HealthReportFormat.Auto;
 
     /// <summary>
     /// Gets or sets whether to include "data" in the health report.
@@ -78,6 +79,11 @@ public class HealthReportWriterSettings
     public enum HealthReportFormat
     {
         /// <summary>
+        /// Automatically determine the format based on the request.
+        /// </summary>
+        Auto = 0,
+
+        /// <summary>
         /// Write the health report as plain text. This just writes the health status as a string.
         /// </summary>
         PlainText,
@@ -91,13 +97,16 @@ public class HealthReportWriterSettings
 
 internal class HealthReportWriter
 {
-    private static readonly string ContentType = "application/json";
+    private static readonly Comparison<MediaTypeSegmentWithQuality> _sortFunction = (left, right) =>
+    {
+        return left.Quality > right.Quality ? -1 : (left.Quality == right.Quality ? 0 : 1);
+    };
 
+    private static readonly HealthReportFormatter _plain = new PlainTextHealthReportFormatter();
+
+    private readonly HealthReportFormatter _jsonV1;
     private readonly HealthReportWriterSettings.HealthReportFormat _format;
-    private readonly bool _includeData;
-    private readonly bool _includeTags;
-    private readonly HealthReportWriterSettings.ExceptionHandling _exceptionHandling;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly ImmutableArray<HealthReportFormatter> _formatters;
 
     public HealthReportWriter(
         IOptions<HealthReportWriterSettings> options)
@@ -105,10 +114,13 @@ internal class HealthReportWriter
         var settings = options.Value;
 
         _format = settings.Format;
-        _includeData = settings.IncludeData;
-        _includeTags = settings.IncludeTags;
-        _exceptionHandling = settings.Exceptions;
-        _jsonSerializerOptions = settings.JsonSerializerOptions;
+        _jsonV1 = new JsonV1HealthReportFormatter(settings);
+
+        // Note: order matters here, the first formatter that can handle the media type will be used
+        _formatters = [
+            _jsonV1,
+            _plain,
+        ];
     }
 
     public static implicit operator Func<HttpContext, HealthReport, Task>(HealthReportWriter writer)
@@ -116,155 +128,61 @@ internal class HealthReportWriter
 
     public Task WriteHealthCheckReport(HttpContext context, HealthReport report)
     {
-        switch (_format)
+        var (formatter, contentType) = _format switch
         {
-            case HealthReportWriterSettings.HealthReportFormat.PlainText:
-                context.Response.ContentType = "text/plain";
-                WriteMinimalPlainText(report, context.Response.BodyWriter);
-                break;
+            HealthReportWriterSettings.HealthReportFormat.PlainText => (_plain, PlainTextHealthReportFormatter.ContentType),
+            HealthReportWriterSettings.HealthReportFormat.JsonV1 => (_jsonV1, JsonV1HealthReportFormatter.ContentType),
+            _ => SelectFormatter(context.Request.Headers.Accept),
+        };
 
-            case HealthReportWriterSettings.HealthReportFormat.JsonV1:
-            default:
-                context.Response.ContentType = ContentType;
-                WriteJsonReport(report, context.Response.BodyWriter);
-                break;
+        context.Response.ContentType = contentType;
+        return formatter.WriteAsync(report, contentType, context.Response.BodyWriter, context.RequestAborted);
+    }
+
+    private (HealthReportFormatter Formatter, string ContentType) SelectFormatter(StringValues acceptHeader)
+    {
+        if (!SelectFormatter(acceptHeader, out var formatter, out var contentType))
+        {
+            // default to plain text
+            formatter = _plain;
+            contentType = PlainTextHealthReportFormatter.ContentType;
         }
+
+        return (formatter, contentType);
+    }
+
+    private bool SelectFormatter(
+        StringValues acceptHeader, 
+        [NotNullWhen(true)] out HealthReportFormatter? formatter, 
+        [NotNullWhen(true)] out string? selectedContentType)
+    {
+        var acceptableMediaTypes = new List<MediaTypeSegmentWithQuality>();
+        AcceptHeaderParser.ParseAcceptHeader(acceptHeader, acceptableMediaTypes);
+
+        acceptableMediaTypes.Sort(_sortFunction);
         
-        return context.Response.BodyWriter.FlushAsync(context.RequestAborted).AsTask();
-    }
-
-    private void WriteMinimalPlainText(HealthReport report, PipeWriter pipeWriter)
-    {
-        pipeWriter.Write(report.Status switch
+        if (acceptableMediaTypes.Count == 0)
         {
-            HealthStatus.Degraded => "Degraded"u8,
-            HealthStatus.Unhealthy => "Unhealthy"u8,
-            HealthStatus.Healthy => "Healthy"u8,
-            _ => "Unknown"u8,
-        });
-    }
+            formatter = null;
+            selectedContentType = null;
+            return false;
+        }
 
-    private void WriteJsonReport(HealthReport report, PipeWriter pipeWriter)
-    {
-        using var writer = new Utf8JsonWriter(pipeWriter, new JsonWriterOptions
+        foreach (var mediaType in acceptableMediaTypes)
         {
-            Indented = _jsonSerializerOptions.WriteIndented,
-            MaxDepth = _jsonSerializerOptions.MaxDepth,
-            Encoder = _jsonSerializerOptions.Encoder,
-        });
-        Span<byte> scratch = stackalloc byte[32];
-
-        writer.WriteStartObject();
-        {
-            WriteStatus(writer, "status"u8, report.Status);
-            WriteDuration(writer, "totalDuration"u8, report.TotalDuration, scratch);
-
-            writer.WriteStartObject("entries"u8);
-            foreach (var (name, entry) in report.Entries)
+            foreach (var f in _formatters)
             {
-                writer.WriteStartObject(name);
-                WriteEntry(writer, in entry, scratch);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndObject();
-        }
-        writer.WriteEndObject();
-    }
-
-    private void WriteEntry(Utf8JsonWriter writer, in HealthReportEntry entry, Span<byte> scratch)
-    {
-        WriteStatus(writer, "status"u8, entry.Status);
-        WriteDuration(writer, "duration"u8, entry.Duration, scratch);
-
-        var description = entry.Description;
-
-        if (ShouldIncludeExceptions(_exceptionHandling) && entry.Exception is { } exn)
-        {
-            description ??= exn.Message;
-            WriteException(writer, "exception"u8, exn);
-        }
-
-        if (description is not null)
-        {
-            writer.WriteString("description"u8, description);
-        }
-
-        // write data
-        if (_includeData && entry.Data.Count > 0)
-        {
-            writer.WritePropertyName("data"u8);
-            JsonSerializer.Serialize(writer, entry.Data, _jsonSerializerOptions);
-        }
-        // end data
-
-        // write tags
-        if (_includeTags)
-        {
-            var first = true;
-            foreach (var tag in entry.Tags)
-            {
-                if (first)
+                if (f.Handles(new MediaType(mediaType.MediaType)))
                 {
-                    writer.WriteStartArray("tags"u8);
-                    first = false;
+                    selectedContentType = mediaType.MediaType.ToString();
+                    formatter = f;
+                    return true;
                 }
-
-                writer.WriteStringValue(tag);
-            }
-
-            if (!first)
-            {
-                writer.WriteEndArray();
             }
         }
-        // end tags
+
+        formatter = null;
+        selectedContentType = null;
+        return false;
     }
-
-    private static void WriteException(Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, Exception exn)
-    {
-        writer.WriteStartObject(utf8PropertyName);
-        writer.WriteString("message"u8, exn.Message);
-
-        if (exn.StackTrace is { } stackTrace)
-        {
-            writer.WriteString("stackTrace"u8, stackTrace);
-        }
-
-        if (exn.InnerException is { } inner)
-        {
-            WriteException(writer, "innerException"u8, inner);
-        }
-
-        writer.WriteEndObject();
-    }
-
-    private static void WriteStatus(Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, HealthStatus status)
-    {
-        writer.WriteString(utf8PropertyName, status switch
-        {
-            HealthStatus.Unhealthy => "unhealthy"u8,
-            HealthStatus.Degraded => "degraded"u8,
-            HealthStatus.Healthy => "healthy"u8,
-            _ => "unknown"u8,
-        });
-    }
-
-    private static void WriteDuration(Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, TimeSpan duration, Span<byte> scratch)
-    {
-        if (!duration.TryFormat(scratch, out var written, "c"))
-        {
-            // c requires 16 bytes at most
-            Unreachable();
-        }
-
-        writer.WriteString(utf8PropertyName, scratch[..written]);
-    }
-
-    private static bool ShouldIncludeExceptions(HealthReportWriterSettings.ExceptionHandling handling)
-        => handling != HealthReportWriterSettings.ExceptionHandling.None;
-
-    [DoesNotReturn]
-    private static void Unreachable() 
-        => throw new InvalidOperationException("Unreachable code executed.");
-
 }

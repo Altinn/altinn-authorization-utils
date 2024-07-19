@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql.TypeMapping;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -14,6 +15,11 @@ public interface INpgsqlDatabaseBuilder
     /// The <see cref="IServiceCollection"/> for the database being configured.
     /// </summary>
     public IServiceCollection Services { get; }
+
+    /// <summary>
+    /// The <see cref="IConfiguration"/> for the database being configured.
+    /// </summary>
+    public IConfiguration Configuration { get; }
 
     /// <summary>
     /// Configures the <see cref="NpgsqlDataSourceBuilder"/>.

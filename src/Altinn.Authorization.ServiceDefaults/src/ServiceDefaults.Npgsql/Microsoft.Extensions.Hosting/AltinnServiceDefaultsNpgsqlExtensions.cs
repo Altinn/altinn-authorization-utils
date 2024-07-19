@@ -77,14 +77,15 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
     {
         Guard.IsNotNull(builder);
 
+        var configuration = builder.Configuration.GetSection(configurationSectionName);
         if (builder.Services.Any(s => s.ServiceType == typeof(NpgsqlDatabaseHostedServiceMarker)))
         {
             // already registered
-            return new NpgsqlDatabaseBuilder(builder.Services);
+            return new NpgsqlDatabaseBuilder(builder.Services, configuration);
         }
 
         NpgsqlSettings settings = new();
-        builder.Configuration.GetSection(configurationSectionName).Bind(settings);
+        configuration.Bind(settings);
 
         if (builder.Configuration.GetConnectionString($"{connectionName}_db_seed") is string connDbSeed)
         {
@@ -163,7 +164,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
                 });
         }
 
-        var dbBuilder = new NpgsqlDatabaseBuilder(builder.Services);
+        var dbBuilder = new NpgsqlDatabaseBuilder(builder.Services, configuration);
 
         if (builder.Environment.IsDevelopment() && settings.Create.Enabled)
         {

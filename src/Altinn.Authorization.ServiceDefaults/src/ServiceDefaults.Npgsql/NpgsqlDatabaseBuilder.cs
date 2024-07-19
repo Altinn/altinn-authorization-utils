@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -8,13 +9,16 @@ namespace Altinn.Authorization.ServiceDefaults.Npgsql;
 internal class NpgsqlDatabaseBuilder
     : INpgsqlDatabaseBuilder
 {
-    public NpgsqlDatabaseBuilder(IServiceCollection services)
+    public NpgsqlDatabaseBuilder(IServiceCollection services, IConfiguration configuration)
     {
         Services = services;
+        Configuration = configuration;
     }
 
     /// <inheritdoc />
     public IServiceCollection Services { get; }
+
+    public IConfiguration Configuration { get; }
 
     public INpgsqlDatabaseBuilder Configure(Action<NpgsqlDataSourceBuilder> configure)
     {
