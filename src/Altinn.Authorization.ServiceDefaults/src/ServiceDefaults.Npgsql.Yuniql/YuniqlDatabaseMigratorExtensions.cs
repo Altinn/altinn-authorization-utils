@@ -1,6 +1,7 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Yuniql.Extensibility;
@@ -23,6 +24,7 @@ public static class YuniqlDatabaseMigratorExtensions
         Action<IServiceProvider, YuniqlDatabaseMigratorOptions> configure)
     {
         builder.Services.AddOptions<YuniqlDatabaseMigratorOptions>()
+            .Bind(builder.Configuration.GetSection("Yuniql"))
             .Configure((YuniqlDatabaseMigratorOptions opts, IServiceProvider services) =>
             {
                 configure(services, opts);
@@ -54,6 +56,17 @@ public static class YuniqlDatabaseMigratorExtensions
         this INpgsqlDatabaseBuilder builder,
         Action<YuniqlDatabaseMigratorOptions> configure)
         => AddYuniqlMigrations(builder, (_, opts) => configure(opts));
+
+    /// <summary>
+    /// Adds Yuniql migrations to the <see cref="INpgsqlDatabaseBuilder"/>.
+    /// </summary>
+    /// <param name="builder">The <see cref="INpgsqlDatabaseBuilder"/>.</param>
+    /// <param name="fileProvider">The <see cref="IFileProvider"/> used as <see cref="YuniqlDatabaseMigratorOptions.WorkspaceFileProvider"/>.</param>
+    /// <returns><paramref name="builder"/>.</returns>
+    public static INpgsqlDatabaseBuilder AddYuniqlMigrations(
+        this INpgsqlDatabaseBuilder builder,
+        IFileProvider fileProvider)
+        => AddYuniqlMigrations(builder, (opts) => opts.WorkspaceFileProvider = fileProvider);
 
     private sealed class ConfigureYuniqlEnvironmentFromHostEnvironment
         : IConfigureNamedOptions<YuniqlDatabaseMigratorOptions>
