@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.2.0...Altinn.Authorization.ServiceDefaults-v2.2.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* wait for database server to be ready ([#100](https://github.com/Altinn/altinn-authorization-utils/issues/100)) ([81878be](https://github.com/Altinn/altinn-authorization-utils/commit/81878be0297a3e8b10a2a8d0900e77fe548a0b02))
+
 ## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.1.1...Altinn.Authorization.ServiceDefaults-v2.2.0) (2024-07-19)
 
 
