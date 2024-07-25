@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.1.1...Altinn.Authorization.ServiceDefaults-v2.2.0) (2024-07-19)
+
+
+### Features
+
+* add content-negotiation support for health report writer ([#92](https://github.com/Altinn/altinn-authorization-utils/issues/92)) ([8e3700e](https://github.com/Altinn/altinn-authorization-utils/commit/8e3700ed7baf730442c196d1a51b93c8e9ca9e3c))
+
 ## [2.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.1.0...Altinn.Authorization.ServiceDefaults-v2.1.1) (2024-07-16)
 
 
