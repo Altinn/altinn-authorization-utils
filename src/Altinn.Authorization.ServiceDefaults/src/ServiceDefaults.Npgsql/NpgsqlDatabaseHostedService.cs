@@ -99,32 +99,35 @@ internal partial class NpgsqlDatabaseHostedService
                     NpgsqlException => PredicateResult.True(),
                     _ => PredicateResult.False(),
                 },
-                OnRetry = args => {
-                    Log.FailedToConnectToDatabase(_logger, args.Outcome.Exception);
-                    
-                    return ValueTask.CompletedTask;
-                },
             })
             .Build();
 
-        return pipeline.ExecuteAsync(async (CancellationToken cancellationToken) =>
-        {
-            var provider = new TempSharedNonPooledNpgsqlConnectionProvider(connectionString);
-            try
+        return pipeline.ExecuteAsync(CreatePipelineCallback(connectionString, _logger), cancellationToken);
+
+        static Func<CancellationToken, ValueTask<TempSharedNonPooledNpgsqlConnectionProvider>> CreatePipelineCallback(string connectionString, ILogger logger)
+            => async (CancellationToken cancellationToken) =>
             {
-                await provider.GetConnection(cancellationToken);
-                var ret = provider;
-                provider = null;
-                return ret;
-            }
-            finally
-            {
-                if (provider is IAsyncDisposable disposable)
+                var provider = new TempSharedNonPooledNpgsqlConnectionProvider(connectionString);
+                try
                 {
-                    await disposable.DisposeAsync();
+                    await provider.GetConnection(cancellationToken);
+                    var ret = provider;
+                    provider = null;
+                    return ret;
                 }
-            }
-        }, cancellationToken);
+                catch (Exception ex)
+                {
+                    Log.FailedToConnectToDatabase(logger, ex);
+                    throw;
+                }
+                finally
+                {
+                    if (provider is IAsyncDisposable disposable)
+                    {
+                        await disposable.DisposeAsync();
+                    }
+                }
+            };
     }
 
     private async Task CreateDatabases(Options options, CancellationToken cancellationToken)
