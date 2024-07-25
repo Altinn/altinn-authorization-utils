@@ -99,6 +99,11 @@ internal partial class NpgsqlDatabaseHostedService
                     NpgsqlException => PredicateResult.True(),
                     _ => PredicateResult.False(),
                 },
+                OnRetry = args => {
+                    Log.FailedToConnectToDatabase(_logger, args.Outcome.Exception);
+                    
+                    return ValueTask.CompletedTask;
+                },
             })
             .Build();
 
@@ -297,5 +302,8 @@ internal partial class NpgsqlDatabaseHostedService
 
         [LoggerMessage(16, LogLevel.Warning, "No database init connection string found. Skipping database creation.")]
         public static partial void NoLocalDatabaseInitConnectionStringFound(ILogger logger);
+
+        [LoggerMessage(17, LogLevel.Warning, "Failed to connect to database.")]
+        public static partial void FailedToConnectToDatabase(ILogger logger, Exception? exception);
     }
 }
