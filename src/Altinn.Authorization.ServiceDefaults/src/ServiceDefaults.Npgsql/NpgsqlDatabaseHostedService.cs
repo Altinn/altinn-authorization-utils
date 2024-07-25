@@ -156,7 +156,7 @@ internal partial class NpgsqlDatabaseHostedService
             {
                 await using var scope = _serviceScopeFactory.CreateAsyncScope();
                 cancellationToken.ThrowIfCancellationRequested();
-                await creator.InitializeDatabaseAsync((INpgsqlConnectionProvider)connectionProvider, scope.ServiceProvider, cancellationToken);
+                await creator.InitializeDatabaseAsync(connectionProvider, scope.ServiceProvider, cancellationToken);
             }
         }
 
