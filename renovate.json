@@ -19,7 +19,8 @@
         "Microsoft.IdentityModel.Tokens"
       ],
       "groupName": "IdentityModel Extensions for .NET",
-      "groupSlug": "azure-activedirectory-identitymodel-extensions-for-dotnet"
+      "groupSlug": "azure-activedirectory-identitymodel-extensions-for-dotnet",
+      "matchUpdateTypes": ["major"]
     }
   ]
 }
