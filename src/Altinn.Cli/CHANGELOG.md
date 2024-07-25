@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.0.0...Altinn.Cli-v1.1.0) (2024-07-25)
+
+
+### Features
+
+* add keyvault as valid jwks store ([58346b7](https://github.com/Altinn/altinn-authorization-utils/commit/58346b739fc1a7ffaea72bfeb825e9b794827f9e))
+
 ## 1.0.0 (2024-06-28)
 
 
