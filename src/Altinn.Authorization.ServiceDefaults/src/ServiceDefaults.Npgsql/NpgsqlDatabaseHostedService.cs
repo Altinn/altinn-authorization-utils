@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Retry;
 using System.Collections.Immutable;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql;
@@ -83,30 +85,81 @@ internal partial class NpgsqlDatabaseHostedService
         }
     }
 
+    private ValueTask<TempSharedNonPooledNpgsqlConnectionProvider> DatabaseReady(string connectionString, CancellationToken cancellationToken)
+    {
+        var pipeline = new ResiliencePipelineBuilder<TempSharedNonPooledNpgsqlConnectionProvider>()
+            .AddRetry(new RetryStrategyOptions<TempSharedNonPooledNpgsqlConnectionProvider>
+            {
+                MaxRetryAttempts = 5,
+                BackoffType = DelayBackoffType.Exponential,
+                Delay = TimeSpan.FromMilliseconds(200),
+                MaxDelay = TimeSpan.FromSeconds(5),
+                ShouldHandle = static args => args.Outcome.Exception switch
+                {
+                    NpgsqlException => PredicateResult.True(),
+                    _ => PredicateResult.False(),
+                },
+            })
+            .Build();
+
+        return pipeline.ExecuteAsync(CreatePipelineCallback(connectionString, _logger), cancellationToken);
+
+        static Func<CancellationToken, ValueTask<TempSharedNonPooledNpgsqlConnectionProvider>> CreatePipelineCallback(string connectionString, ILogger logger)
+            => async (CancellationToken cancellationToken) =>
+            {
+                var provider = new TempSharedNonPooledNpgsqlConnectionProvider(connectionString);
+                try
+                {
+                    await provider.GetConnection(cancellationToken);
+                    var ret = provider;
+                    provider = null;
+                    return ret;
+                }
+                catch (Exception ex)
+                {
+                    Log.FailedToConnectToDatabase(logger, ex);
+                    throw;
+                }
+                finally
+                {
+                    if (provider is IAsyncDisposable disposable)
+                    {
+                        await disposable.DisposeAsync();
+                    }
+                }
+            };
+    }
+
     private async Task CreateDatabases(Options options, CancellationToken cancellationToken)
     {
-        if (_databaseCreators.Length == 0)
-        {
-            Log.NoDatabaseCreators(_logger);
-            return;
-        }
-
-        var dbServerConnectionString = options.CreateDatabaseClusterConnectionString;
+        string? dbServerConnectionString, dbInitConnectionString;
+        
+        dbServerConnectionString = options.CreateDatabaseClusterConnectionString;
         if (string.IsNullOrEmpty(dbServerConnectionString))
         {
             Log.NoLocalDatabaseServerConnectionStringFound(_logger);
             return;
         }
 
-        var dbInitConnectionString = options.CreateDatabaseInitConnectionString;
-        if (string.IsNullOrEmpty(dbInitConnectionString))
         {
-            Log.NoLocalDatabaseInitConnectionStringFound(_logger);
-            return;
-        }
+            // Note: this is typically only used for local development where the database is running in a docker container
+            // that may be started at the same time as the service. This can lead to connecting to the database before it is ready.
+            // As such, when doing CreateDatabase, we first wait for the database to be ready before proceeding.
+            await using var connectionProvider = await DatabaseReady(dbServerConnectionString, cancellationToken);
 
-        {
-            await using var connectionProvider = new TempSharedNonPooledNpgsqlConnectionProvider(dbServerConnectionString);
+            if (_databaseCreators.Length == 0)
+            {
+                Log.NoDatabaseCreators(_logger);
+                return;
+            }
+
+            dbInitConnectionString = options.CreateDatabaseInitConnectionString;
+            if (string.IsNullOrEmpty(dbInitConnectionString))
+            {
+                Log.NoLocalDatabaseInitConnectionStringFound(_logger);
+                return;
+            }
+
             foreach (var creator in _databaseCreators.Where(c => c.Order <= DatabaseCreationOrder.CreateDatabases))
             {
                 await using var scope = _serviceScopeFactory.CreateAsyncScope();
@@ -252,5 +305,8 @@ internal partial class NpgsqlDatabaseHostedService
 
         [LoggerMessage(16, LogLevel.Warning, "No database init connection string found. Skipping database creation.")]
         public static partial void NoLocalDatabaseInitConnectionStringFound(ILogger logger);
+
+        [LoggerMessage(17, LogLevel.Warning, "Failed to connect to database.")]
+        public static partial void FailedToConnectToDatabase(ILogger logger, Exception? exception);
     }
 }
