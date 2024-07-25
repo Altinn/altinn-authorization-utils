@@ -114,9 +114,9 @@ internal partial class NpgsqlDatabaseHostedService
             }
             finally
             {
-                if (provider is not null)
+                if (provider is IAsyncDisposable disposable)
                 {
-                    await ((IAsyncDisposable)provider).DisposeAsync();
+                    await disposable.DisposeAsync();
                 }
             }
         }, cancellationToken);
