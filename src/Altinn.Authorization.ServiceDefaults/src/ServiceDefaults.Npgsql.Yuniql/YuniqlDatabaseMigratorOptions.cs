@@ -35,6 +35,14 @@ public sealed class YuniqlDatabaseMigratorOptions
     /// </summary>
     public Dictionary<string, string> Tokens { get; set; } = [];
 
+    /// <summary>
+    /// Gets or sets a boolean value that indicates whether the OpenTelemetry tracing is disabled or not.
+    /// </summary>
+    /// <value>
+    /// The default value is <see langword="false"/>.
+    /// </value>
+    public bool DisableTracing { get; set; }
+
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {
         if (string.IsNullOrEmpty(Environment))
