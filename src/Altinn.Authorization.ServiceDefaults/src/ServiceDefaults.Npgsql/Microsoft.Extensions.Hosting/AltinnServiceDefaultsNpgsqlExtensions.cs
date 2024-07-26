@@ -78,11 +78,13 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         Guard.IsNotNull(builder);
 
         var configuration = builder.Configuration.GetSection(configurationSectionName);
-        if (builder.Services.Any(s => s.ServiceType == typeof(NpgsqlDatabaseHostedServiceMarker)))
+        if (builder.Services.Contains(Marker.ServiceDescriptor))
         {
             // already registered
             return new NpgsqlDatabaseBuilder(builder.Services, configuration);
         }
+
+        builder.Services.Add(Marker.ServiceDescriptor);
 
         NpgsqlSettings settings = new();
         configuration.Bind(settings);
@@ -117,7 +119,6 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
 
         configureSettings?.Invoke(settings);
 
-        builder.Services.AddSingleton<NpgsqlDatabaseHostedServiceMarker>();
         builder.Services.AddSingleton<IHostedService, NpgsqlDatabaseHostedService>();
         builder.RegisterNpgsqlServices(settings, configurationSectionName, connectionName, configureDataSourceBuilder);
 
@@ -434,7 +435,8 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         }
     }
 
-    private sealed class NpgsqlDatabaseHostedServiceMarker
+    private sealed class Marker
     {
+        public static readonly ServiceDescriptor ServiceDescriptor = ServiceDescriptor.Singleton<Marker, Marker>();
     }
 }

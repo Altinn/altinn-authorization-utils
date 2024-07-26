@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Trace;
 using Yuniql.Extensibility;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
@@ -30,18 +31,27 @@ public static class YuniqlDatabaseMigratorExtensions
                 configure(services, opts);
             });
 
-        if (builder.Services.Any(s => s.ServiceType == typeof(Marker)))
+        if (builder.Services.Contains(Marker.ServiceDescriptor))
         {
             return builder;
         }
 
-        builder.Services.AddSingleton<Marker>();
+        builder.Services.Add(Marker.ServiceDescriptor);
+
         builder.Services.AddLogging();
         builder.Services.TryAddSingleton<ITraceService, YuniqlTraceService>();
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<YuniqlDatabaseMigratorOptions>, ConfigureYuniqlEnvironmentFromHostEnvironment>());
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<YuniqlDatabaseMigratorOptions>, ConfigureYuniqlTokensFromDatabaseMigrationOptions>());
 
         builder.Services.AddSingleton<INpgsqlDatabaseMigrator, YuniqlDatabaseMigrator>();
+        builder.Services.ConfigureOpenTelemetryTracerProvider((services, builder) =>
+        {
+            var options = services.GetRequiredService<IOptions<YuniqlDatabaseMigratorOptions>>().Value;
+            if (!options.DisableTracing)
+            {
+                builder.AddSource(YuniqlActivityProvider.SourceName);
+            }
+        });
 
         return builder;
     }
@@ -130,5 +140,6 @@ public static class YuniqlDatabaseMigratorExtensions
 
     private sealed class Marker
     {
+        public static readonly ServiceDescriptor ServiceDescriptor = ServiceDescriptor.Singleton<Marker, Marker>();
     }
 }
