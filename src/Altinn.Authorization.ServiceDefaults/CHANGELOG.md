@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.2.1...Altinn.Authorization.ServiceDefaults-v2.2.2) (2024-07-26)
+
+
+### Bug Fixes
+
+* emit opentelemetry traces for yuniql package ([#102](https://github.com/Altinn/altinn-authorization-utils/issues/102)) ([b16157a](https://github.com/Altinn/altinn-authorization-utils/commit/b16157a60371e389df95b131f15eccf14cc0d462))
+
 ## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.2.0...Altinn.Authorization.ServiceDefaults-v2.2.1) (2024-07-25)
 
 
