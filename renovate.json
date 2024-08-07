@@ -1,17 +1,25 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>Altinn/renovate-config"],
-  "labels": ["dependencies"],
+  "extends": [
+    "local>Altinn/renovate-config"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["Microsoft.CodeAnalysis"],
       "groupName": "Microsoft.CodeAnalysis",
       "groupSlug": "microsoft-codeanalysis",
       "prBodyNotes": [
         ":warning: Updating Microsoft.CodeAnalysis packages requires new compiler version. This typically requires people to update VS. :warning:"
       ],
-      "addLabels": ["dependencies/breaking"],
-      "minimumReleaseAge": "60 days"
+      "addLabels": [
+        "dependencies/breaking"
+      ],
+      "minimumReleaseAge": "60 days",
+      "matchPackageNames": [
+        "Microsoft.CodeAnalysis{/,}**"
+      ]
     },
     {
       "matchPackageNames": [
@@ -20,7 +28,9 @@
       ],
       "groupName": "IdentityModel Extensions for .NET",
       "groupSlug": "azure-activedirectory-identitymodel-extensions-for-dotnet",
-      "matchUpdateTypes": ["major"]
+      "matchUpdateTypes": [
+        "major"
+      ]
     }
   ]
 }
