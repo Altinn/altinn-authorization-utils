@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v1.1.1...Altinn.Swashbuckle-v2.0.0) (2024-08-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* Moves SwaggerStringAttribute to abstractions
+
+### Features
+
+* add SwaggerStringAttribute to abstractions ([#109](https://github.com/Altinn/altinn-authorization-utils/issues/109)) ([97e01ae](https://github.com/Altinn/altinn-authorization-utils/commit/97e01ae3184ade6df375e8cb2459e829599c30eb))
+
 ## [1.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v1.1.0...Altinn.Swashbuckle-v1.1.1) (2024-06-12)
 
 
