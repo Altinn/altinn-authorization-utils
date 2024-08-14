@@ -1,4 +1,6 @@
-﻿namespace Altinn.Swashbuckle.Filters;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Altinn.Swashbuckle.Filters;
 
 /// <summary>
 /// Attribute for specifying that a type should be represented as a string in the OpenAPI schema.
@@ -15,5 +17,6 @@ public sealed class SwaggerStringAttribute
     /// <summary>
     /// Gets or sets the (optional) pattern of the string.
     /// </summary>
+    [StringSyntax(StringSyntaxAttribute.Regex)]
     public string? Pattern { get; set; }
 }
