@@ -1,5 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Swashbuckle.Filters;
 
@@ -9,7 +8,6 @@ namespace Altinn.Swashbuckle.Filters;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum, AllowMultiple = false)]
 public sealed class SwaggerStringAttribute
     : Attribute
-    , ISchemaFilter
 {
     /// <summary>
     /// Gets or sets the (optional) format of the string.
@@ -19,19 +17,6 @@ public sealed class SwaggerStringAttribute
     /// <summary>
     /// Gets or sets the (optional) pattern of the string.
     /// </summary>
+    [StringSyntax(StringSyntaxAttribute.Regex)]
     public string? Pattern { get; set; }
-
-    /// <inheritdoc/>
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
-    {
-        // Reset the schema type to string
-        // reset defaults
-        schema.Properties.Clear();
-        schema.Required.Clear();
-        schema.AdditionalPropertiesAllowed = false;
-        schema.AdditionalProperties = null;
-        schema.Type = "string";
-        schema.Format = Format;
-        schema.Pattern = Pattern;
-    }
 }

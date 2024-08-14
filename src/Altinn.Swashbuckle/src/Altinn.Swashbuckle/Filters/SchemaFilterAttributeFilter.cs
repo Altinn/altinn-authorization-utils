@@ -1,22 +1,13 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 
 namespace Altinn.Swashbuckle.Filters;
 
 internal class SchemaFilterAttributeFilter
-    : ISchemaFilter
+    : AttributeFilter<ISchemaFilter>
 {
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    protected override void Apply(ISchemaFilter attribute, OpenApiSchema schema, SchemaFilterContext context)
     {
-        var filters = context.Type.GetCustomAttributes()
-            .Concat(context.ParameterInfo?.GetCustomAttributes() ?? [])
-            .Concat(context.MemberInfo?.GetCustomAttributes() ?? [])
-            .OfType<ISchemaFilter>();
-
-        foreach (var filter in filters)
-        {
-            filter.Apply(schema, context);
-        }
+        attribute.Apply(schema, context);
     }
 }

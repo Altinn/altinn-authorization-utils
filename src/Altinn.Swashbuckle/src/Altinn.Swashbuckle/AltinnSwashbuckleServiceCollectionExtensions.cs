@@ -33,11 +33,13 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
     public static IServiceCollection AddSwaggerFilterAttributeSupport(this IServiceCollection services)
     {
         services.AddSingleton<SchemaFilterAttributeFilter>();
+        services.AddSingleton<SwaggerStringAttributeFilter>();
 
         services.AddOptions<SwaggerGenOptions>()
-            .Configure((SwaggerGenOptions options, SchemaFilterAttributeFilter filter) =>
+            .Configure((SwaggerGenOptions options, IServiceProvider s) =>
             {
-                options.SchemaGeneratorOptions.SchemaFilters.Add(filter);
+                options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SchemaFilterAttributeFilter>());
+                options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerStringAttributeFilter>());
             });
 
         return services;
