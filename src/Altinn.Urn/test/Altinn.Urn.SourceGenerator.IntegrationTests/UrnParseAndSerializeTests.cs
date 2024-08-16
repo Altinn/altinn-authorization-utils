@@ -32,6 +32,18 @@ public partial class UrnParseAndSerializeTests
         value.Value.Should().Be("foo:bar");
     }
 
+    [Fact]
+    public void UrnsCanBeHierarchical()
+    {
+        Assert.True(HierarchicalUrn.TryParse("urn:parent:123", out var parent));
+        Assert.True(parent.IsParent(out var parentId));
+        parentId.Should().Be(123);
+
+        Assert.True(HierarchicalUrn.TryParse("urn:parent:child:456", out var child));
+        Assert.True(child.IsChild(out var childId));
+        childId.Should().Be(456);
+    }
+
     [KeyValueUrn]
     public abstract partial record PersonUrn
     {
@@ -56,6 +68,16 @@ public partial class UrnParseAndSerializeTests
     {
         [UrnKey("any")]
         public partial bool IsAny(out AnyValue value);
+    }
+
+    [KeyValueUrn]
+    public abstract partial record HierarchicalUrn
+    {
+        [UrnKey("parent")]
+        public partial bool IsParent(out int parent);
+
+        [UrnKey("parent:child")]
+        public partial bool IsChild(out int child);
     }
 
     public record AnyValue(string Value)
