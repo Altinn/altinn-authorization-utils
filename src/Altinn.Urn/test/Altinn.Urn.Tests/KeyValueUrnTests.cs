@@ -144,9 +144,23 @@ public class KeyValueUrnTests
 
         obj.Value.KeySpan.ToString().Should().Be("altinn:foo");
         obj.Value.ValueSpan.ToString().Should().Be("1234");
+        obj.ToString().Should().Be("urn:altinn:foo:1234");
 
         var serialized = JsonSerializer.SerializeToDocument(obj);
         serialized.RootElement.GetProperty("type").GetString().Should().Be("urn:altinn:foo");
         serialized.RootElement.GetProperty("value").GetString().Should().Be("1234");
+    }
+
+    [Fact]
+    public void UrnJsonTypeValue_Equality()
+    {
+        var urn1 = KeyValueUrn.Create("urn:altinn:foo", 11);
+        var urn2 = KeyValueUrn.Create("urn:altinn:foo", 11);
+
+        UrnJsonTypeValue obj1 = urn1;
+        UrnJsonTypeValue obj2 = urn2;
+
+        (obj1 == obj2).Should().BeTrue();
+        (obj1 != obj2).Should().BeFalse();
     }
 }

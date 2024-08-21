@@ -28,9 +28,7 @@ public readonly struct UrnJsonTypeValue
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? obj)
-    {
-        return Value.Equals(obj);
-    }
+        => obj is UrnJsonTypeValue value && Value.Equals(value.Value);
 
     /// <inheritdoc/>
     public override int GetHashCode()
