@@ -4,6 +4,7 @@ using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using Altinn.Authorization.ServiceDefaults.Options;
 using Altinn.Authorization.ServiceDefaults.Telemetry;
+using Azure.Core;
 using Azure.Identity;
 using CommunityToolkit.Diagnostics;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
@@ -12,7 +13,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -407,17 +407,51 @@ public static class AltinnServiceDefaultsExtensions
         var tenantId = manager.GetValue<string>("kvSetting:TenantId");
         var clientSecret = manager.GetValue<string>("kvSetting:ClientSecret");
         var keyVaultUri = manager.GetValue<string>("kvSetting:SecretUri");
+        var enableEnvironmentCredential = manager.GetValue("kvSetting:Credentials:Environment:Enable", defaultValue: false);
+        var enableWorkloadIdentityCredential = manager.GetValue("kvSetting:Credentials:WorkloadIdentity:Enable", defaultValue: true);
+        var enableManagedIdentityCredential = manager.GetValue("kvSetting:Credentials:ManagedIdentity:Enable", defaultValue: true);
 
-        if (!string.IsNullOrEmpty(clientId)
-            && !string.IsNullOrEmpty(tenantId)
-            && !string.IsNullOrEmpty(clientSecret)
-            && !string.IsNullOrEmpty(keyVaultUri))
+        if (!string.IsNullOrEmpty(keyVaultUri))
         {
-            Log($"adding config from keyvault using client-secret credentials");
-            var credential = new ClientSecretCredential(
-                tenantId: tenantId,
-                clientId: clientId,
-                clientSecret: clientSecret);
+            List<TokenCredential> credentialList = [];
+
+            if (!string.IsNullOrEmpty(clientId)
+                && !string.IsNullOrEmpty(tenantId)
+                && !string.IsNullOrEmpty(clientSecret))
+            {
+                Log($"adding config from keyvault using client-secret credentials");
+                credentialList.Add(new ClientSecretCredential(
+                    tenantId: tenantId,
+                    clientId: clientId,
+                    clientSecret: clientSecret));
+            }
+
+            if (enableEnvironmentCredential)
+            {
+                Log("adding config from keyvault using environment credentials");
+                credentialList.Add(new EnvironmentCredential());
+            }
+            
+            if (enableWorkloadIdentityCredential)
+            {
+                Log("adding config from keyvault using workload identity credentials");
+                credentialList.Add(new WorkloadIdentityCredential());
+            }
+
+            if (enableManagedIdentityCredential)
+            {
+                Log("adding config from keyvault using managed identity credentials");
+                credentialList.Add(new ManagedIdentityCredential());
+            }
+
+            if (credentialList.Count == 0)
+            {
+                Log("No credentials found for keyvault - skipping adding keyvault to configuration");
+                return manager;
+            }
+
+            var credential = new ChainedTokenCredential([.. credentialList]);
+
             manager.AddAzureKeyVault(new Uri(keyVaultUri), credential);
         }
         else
