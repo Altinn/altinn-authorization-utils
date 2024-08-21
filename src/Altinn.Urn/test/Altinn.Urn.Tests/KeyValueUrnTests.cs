@@ -145,7 +145,7 @@ public class KeyValueUrnTests
         obj.Value.KeySpan.ToString().Should().Be("altinn:foo");
         obj.Value.ValueSpan.ToString().Should().Be("1234");
 
-        var serialized = JsonSerializer.SerializeToDocument(json);
+        var serialized = JsonSerializer.SerializeToDocument(obj);
         serialized.RootElement.GetProperty("type").GetString().Should().Be("urn:altinn:foo");
         serialized.RootElement.GetProperty("value").GetString().Should().Be("1234");
     }
