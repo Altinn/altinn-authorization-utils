@@ -129,8 +129,61 @@ internal static class UrnJsonConverter
         return result;
     }
 
+    public static KeyValueUrn ReadGenericTypeValueObject(ref Utf8JsonReader reader)
+    {
+        string? type = null;
+        string? value = null;
+
+        while (reader.Read())
+        {
+            if (reader.TokenType is JsonTokenType.EndObject)
+            {
+                break;
+            }
+
+            if (reader.TokenType is JsonTokenType.PropertyName)
+            {
+                if (reader.ValueTextEquals(TypePropertyName.EncodedUtf8Bytes))
+                {
+                    reader.Read();
+                    type = reader.GetString();
+                }
+                else if (reader.ValueTextEquals(ValuePropertyName.EncodedUtf8Bytes))
+                {
+                    reader.Read();
+                    value = reader.GetString();
+                }
+                else
+                {
+                    throw new JsonException($"Unexpected property {reader.GetString()}");
+                }
+            }
+        }
+
+        if (type is null)
+        {
+            throw new JsonException($"Missing type property");
+        }
+
+        if (value is null)
+        {
+            throw new JsonException($"Missing value property");
+        }
+
+        var urn = $"{type}:{value}";
+        return KeyValueUrn.Create(urn, type.Length + 1);
+    }
+
     public static void WriteUrnTypeValueObject<T>(Utf8JsonWriter writer, T value)
         where T : IKeyValueUrn
+    {
+        writer.WriteStartObject();
+        writer.WriteString(TypePropertyName, value.PrefixSpan);
+        writer.WriteString(ValuePropertyName, value.ValueSpan);
+        writer.WriteEndObject();
+    }
+
+    public static void WriteUrnTypeValueObject(Utf8JsonWriter writer, KeyValueUrn value)
     {
         writer.WriteStartObject();
         writer.WriteString(TypePropertyName, value.PrefixSpan);

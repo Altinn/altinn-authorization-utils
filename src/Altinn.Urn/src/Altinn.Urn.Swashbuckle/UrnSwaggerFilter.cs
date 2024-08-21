@@ -53,6 +53,27 @@ internal class UrnSwaggerFilter
             GetFilterFor(type)?.ApplyUrnSchemaFilter(schema, type, context, _openApiExampleProvider);
             return;
         }
+
+        if (type == typeof(UrnJsonTypeValue))
+        {
+            // reset defaults
+            schema.Properties.Clear();
+            schema.Required.Clear();
+            schema.AdditionalPropertiesAllowed = false;
+            schema.AdditionalProperties = null;
+            schema.Type = "object";
+            schema.Properties.Add("type", new OpenApiSchema
+            {
+                Type = "string",
+                Pattern = "^urn:.+[^:]$",
+            });
+            schema.Properties.Add("value", new OpenApiSchema
+            {
+                Type = "string",
+            });
+            schema.Required.Add("type");
+            schema.Required.Add("value");
+        }
     }
 
     private static UrnTypeSchemaFilter? GetFilterFor(Type type)

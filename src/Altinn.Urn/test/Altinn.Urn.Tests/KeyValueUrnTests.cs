@@ -1,3 +1,6 @@
+using Altinn.Urn.Json;
+using System.Text.Json;
+
 namespace Altinn.Urn.Tests;
 
 public class KeyValueUrnTests
@@ -131,5 +134,15 @@ public class KeyValueUrnTests
             sut.TryFormat(chard, out var charsWritten, format, null).Should().BeTrue();
             chard[..charsWritten].ToString().Should().Be(expected);
         }
+    }
+
+    [Fact]
+    public void TypeValueJsonConverter_CanDeserialize()
+    {
+        var json = """{"type":"urn:altinn:foo", "value":"1234"}""";
+        var obj = JsonSerializer.Deserialize<UrnJsonTypeValue>(json);
+
+        obj.Value.KeySpan.ToString().Should().Be("altinn:foo");
+        obj.Value.ValueSpan.ToString().Should().Be("1234");
     }
 }
