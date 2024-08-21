@@ -7,6 +7,60 @@ namespace Altinn.Urn.Json;
 /// <summary>
 /// A utility wrapper for URNs that can be serialized and deserialized as JSON objects with a type and a value property.
 /// </summary>
+[JsonConverter(typeof(TypeValueObjectKeyValueUrnJsonConverter))]
+public readonly struct UrnJsonTypeValue
+    : IEqualityOperators<UrnJsonTypeValue, UrnJsonTypeValue, bool>
+{
+    /// <summary>
+    /// Gets the URN value.
+    /// </summary>
+    public KeyValueUrn Value { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the URN has a value.
+    /// </summary>
+    public bool HasValue => Value.HasValue;
+
+    private UrnJsonTypeValue(KeyValueUrn value)
+    {
+        Value = value;
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals([NotNullWhen(true)] object? obj)
+        => obj is UrnJsonTypeValue value && Value.Equals(value.Value);
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+
+    /// <summary>
+    /// Implicitly converts a URN value to a <see cref="UrnJsonTypeValue{T}"/>.
+    /// </summary>
+    /// <param name="value"></param>
+    public static implicit operator UrnJsonTypeValue(KeyValueUrn value)
+        => new(value);
+
+    /// <inheritdoc/>
+    public static bool operator ==(UrnJsonTypeValue left, UrnJsonTypeValue right)
+        => left.Equals(right);
+
+    /// <inheritdoc/>
+    public static bool operator !=(UrnJsonTypeValue left, UrnJsonTypeValue right)
+        => !(left == right);
+}
+
+/// <summary>
+/// A utility wrapper for URNs that can be serialized and deserialized as JSON objects with a type and a value property.
+/// </summary>
 /// <typeparam name="T"></typeparam>
 [JsonConverter(typeof(TypeValueObjectUrnJsonConverter))]
 public readonly struct UrnJsonTypeValue<T>

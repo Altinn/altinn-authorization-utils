@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace Altinn.Urn.Json;
 
 /// <summary>
-/// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
+/// An implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
 /// 
 /// It supports reading URNs as objects with a type and value property, and writing URNs as objects with a type and value property.
 /// </summary>
