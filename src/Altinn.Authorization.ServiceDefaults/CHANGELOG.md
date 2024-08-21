@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.2.2...Altinn.Authorization.ServiceDefaults-v2.3.0) (2024-08-21)
+
+
+### Features
+
+* add support for managed/workload identity ([#112](https://github.com/Altinn/altinn-authorization-utils/issues/112)) ([2d8ad2a](https://github.com/Altinn/altinn-authorization-utils/commit/2d8ad2a17bc3b92b08506fea14eacfd217879007))
+
 ## [2.2.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.2.1...Altinn.Authorization.ServiceDefaults-v2.2.2) (2024-07-26)
 
 
