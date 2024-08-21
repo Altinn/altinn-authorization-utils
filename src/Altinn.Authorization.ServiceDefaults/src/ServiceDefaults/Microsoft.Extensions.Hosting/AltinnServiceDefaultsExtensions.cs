@@ -6,8 +6,6 @@ using Altinn.Authorization.ServiceDefaults.Options;
 using Altinn.Authorization.ServiceDefaults.Telemetry;
 using Azure.Core;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-
 using CommunityToolkit.Diagnostics;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
@@ -15,7 +13,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
