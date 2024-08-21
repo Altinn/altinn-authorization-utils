@@ -4,7 +4,10 @@ using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using Altinn.Authorization.ServiceDefaults.Options;
 using Altinn.Authorization.ServiceDefaults.Telemetry;
+
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+
 using CommunityToolkit.Diagnostics;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
@@ -408,17 +411,22 @@ public static class AltinnServiceDefaultsExtensions
         var clientSecret = manager.GetValue<string>("kvSetting:ClientSecret");
         var keyVaultUri = manager.GetValue<string>("kvSetting:SecretUri");
 
-        if (!string.IsNullOrEmpty(clientId)
-            && !string.IsNullOrEmpty(tenantId)
-            && !string.IsNullOrEmpty(clientSecret)
-            && !string.IsNullOrEmpty(keyVaultUri))
+        if (!string.IsNullOrEmpty(keyVaultUri))
         {
-            Log($"adding config from keyvault using client-secret credentials");
-            var credential = new ClientSecretCredential(
-                tenantId: tenantId,
-                clientId: clientId,
-                clientSecret: clientSecret);
-            manager.AddAzureKeyVault(new Uri(keyVaultUri), credential);
+            if (!string.IsNullOrEmpty(clientId)
+                && !string.IsNullOrEmpty(tenantId)
+                && !string.IsNullOrEmpty(clientSecret))
+            {
+                Log($"adding config from keyvault using client-secret credentials");
+                var credential = new ClientSecretCredential(
+                    tenantId: tenantId,
+                    clientId: clientId,
+                    clientSecret: clientSecret);
+                manager.AddAzureKeyVault(new Uri(keyVaultUri), credential);
+            } else {
+                var credential = new DefaultAzureCredential();
+                manager.AddAzureKeyVault(new Uri(keyVaultUri), credential);
+            }
         }
         else
         {
