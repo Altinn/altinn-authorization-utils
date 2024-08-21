@@ -137,12 +137,16 @@ public class KeyValueUrnTests
     }
 
     [Fact]
-    public void TypeValueJsonConverter_CanDeserialize()
+    public void TypeValueJsonConverter_RoundTrip()
     {
         var json = """{"type":"urn:altinn:foo", "value":"1234"}""";
         var obj = JsonSerializer.Deserialize<UrnJsonTypeValue>(json);
 
         obj.Value.KeySpan.ToString().Should().Be("altinn:foo");
         obj.Value.ValueSpan.ToString().Should().Be("1234");
+
+        var serialized = JsonSerializer.SerializeToDocument(json);
+        serialized.RootElement.GetProperty("type").GetString().Should().Be("urn:altinn:foo");
+        serialized.RootElement.GetProperty("value").GetString().Should().Be("1234");
     }
 }
