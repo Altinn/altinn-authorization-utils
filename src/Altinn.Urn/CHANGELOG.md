@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.4.0...Altinn.Urn-v2.5.0) (2024-08-22)
+
+
+### Features
+
+* better type-value swagger objects ([#120](https://github.com/Altinn/altinn-authorization-utils/issues/120)) ([7071c9e](https://github.com/Altinn/altinn-authorization-utils/commit/7071c9e75350881ae0c43dbec56598c5a2dd2b58))
+
 ## [2.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.3.2...Altinn.Urn-v2.4.0) (2024-08-21)
 
 
