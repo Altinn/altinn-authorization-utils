@@ -216,7 +216,8 @@ internal class UrnSwaggerFilter
             }
 
             var mapping = new Dictionary<string, string>();
-            schema.OneOf.Clear();
+            var oneOf = schema.OneOf;
+            oneOf.Clear();
             schema.Discriminator = new OpenApiDiscriminator
             {
                 PropertyName = "type",
@@ -237,6 +238,7 @@ internal class UrnSwaggerFilter
                     referenceSchema = context.SchemaGenerator.GenerateSchema(variantType, context.SchemaRepository);
                 }
 
+                oneOf.Add(referenceSchema);
                 foreach (var prefix in TUrn.PrefixesFor(variant))
                 {
                     mapping.Add(prefix, referenceSchema.Reference.ReferenceV3);
