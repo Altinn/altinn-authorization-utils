@@ -56,7 +56,7 @@ internal class ExportPemCommand
     private void WriteRsa(IConsole console, RsaSecurityKey key)
     {
         var rsa = key.Rsa ?? RSA.Create(key.Parameters);
-        var pem = rsa.ExportRSAPublicKeyPem();
+        var pem = rsa.ExportSubjectPublicKeyInfoPem();
         console.Out.WriteLine(pem);
     }
 }
