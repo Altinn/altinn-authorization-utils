@@ -38,7 +38,7 @@ internal class ExportPemCommand
         var environment = prod ? JsonWebKeySetEnvironment.Prod : JsonWebKeySetEnvironment.Test;
         var keySet = await store.GetKeySet(name, environment, JsonWebKeySetVariant.Public, cancellationToken);
 
-        var signingKey = keySet.GetSigningKeys().Last();
+        var signingKey = keySet.GetSigningKeys()[^1];
         switch (signingKey)
         {
             case RsaSecurityKey rsa:
