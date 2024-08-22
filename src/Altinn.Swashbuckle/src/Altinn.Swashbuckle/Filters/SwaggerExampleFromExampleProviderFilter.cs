@@ -1,9 +1,11 @@
 ﻿using Altinn.Swashbuckle.Examples;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Swashbuckle.Filters;
 
+[ExcludeFromCodeCoverage]
 internal class SwaggerExampleFromExampleProviderFilter
     : AttributeFilter<SwaggerExampleFromExampleProviderAttribute>
 {

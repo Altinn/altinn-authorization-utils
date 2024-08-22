@@ -3,12 +3,14 @@ using Altinn.Swashbuckle.Filters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extension methods for adding example-data to the generated OpenAPI spec.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AltinnSwashbuckleServiceCollectionExtensions
 {
     /// <summary>
