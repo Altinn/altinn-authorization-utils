@@ -277,6 +277,12 @@ internal class UrnSwaggerFilter
 
             schema.Properties.Add("value", referenceSchema);
             schema.Required.Add("value");
+
+            schema.Example = new OpenApiObject
+            {
+                ["type"] = new OpenApiString(TUrn.CanonicalPrefixFor(variant)),
+                ["value"] = exampleProvider.GetExample(valueType)?.FirstOrDefault() ?? new OpenApiString("string"),
+            };
         }
 
         private static void ApplyBaseUrnFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
