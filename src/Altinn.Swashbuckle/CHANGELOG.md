@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.0.0...Altinn.Swashbuckle-v2.1.0) (2024-08-22)
+
+
+### Features
+
+* add SwaggerExampleFromExampleProviderAttribute ([#123](https://github.com/Altinn/altinn-authorization-utils/issues/123)) ([9a057d6](https://github.com/Altinn/altinn-authorization-utils/commit/9a057d6cbf34227b4013ceb7982730b30081d727))
+* better type-value swagger objects ([#120](https://github.com/Altinn/altinn-authorization-utils/issues/120)) ([7071c9e](https://github.com/Altinn/altinn-authorization-utils/commit/7071c9e75350881ae0c43dbec56598c5a2dd2b58))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v1.1.1...Altinn.Swashbuckle-v2.0.0) (2024-08-14)
 
 
