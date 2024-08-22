@@ -32,14 +32,18 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
     /// <returns><paramref name="services"/>.</returns>
     public static IServiceCollection AddSwaggerFilterAttributeSupport(this IServiceCollection services)
     {
+        services.AddOpenApiExampleProvider();
+
         services.AddSingleton<SchemaFilterAttributeFilter>();
         services.AddSingleton<SwaggerStringAttributeFilter>();
+        services.AddSingleton<SwaggerExampleFromExampleProviderFilter>();
 
         services.AddOptions<SwaggerGenOptions>()
             .Configure((SwaggerGenOptions options, IServiceProvider s) =>
             {
                 options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SchemaFilterAttributeFilter>());
                 options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerStringAttributeFilter>());
+                options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerExampleFromExampleProviderFilter>());
             });
 
         return services;
