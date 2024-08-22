@@ -11,7 +11,8 @@ public abstract partial record PersonUrn
     [UrnKey("altinn:organization:org-no")]
     public partial bool IsOrganizationNo(out OrgNo orgNo);
 
-    [UrnKey("altinn:party:id")]
+    [UrnKey("altinn:party:id", Canonical = true)]
+    [UrnKey("altinn:party-old:id")]
     public partial bool IsPartyId(out int partyId);
 
     [UrnKey("altinn:party:uuid")]

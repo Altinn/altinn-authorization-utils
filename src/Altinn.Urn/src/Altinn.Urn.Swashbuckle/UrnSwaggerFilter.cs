@@ -34,7 +34,7 @@ internal class UrnSwaggerFilter
                 GetFilterFor(urnType)?.ApplyUrnSchemaFilter(schema, urnType, context, _openApiExampleProvider);
                 return;
             }
-            else if (definition == typeof(UrnJsonTypeValue<>))
+            else if (definition == typeof(UrnJsonTypeValue<>) || definition == typeof(UrnJsonTypeValueVariant<>))
             {
                 var urnType = type.GetGenericArguments()[0];
                 GetFilterFor(urnType)?.ApplyUrnTypeValueObjectSchemaFilter(schema, urnType, context, _openApiExampleProvider);
@@ -134,55 +134,21 @@ internal class UrnSwaggerFilter
 
         public override void ApplyUrnTypeValueObjectSchemaFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
         {
-            TVariants variant = default;
-
-            if (type != typeof(TUrn))
-            {
-                // we're dealing with a variant type
-                Debug.Assert(typeof(TUrn).IsAssignableFrom(type));
-                foreach (var v in TUrn.Variants)
-                {
-                    if (TUrn.VariantTypeFor(v) == type)
-                    {
-                        variant = v;
-                        break;
-                    }
-                }
-            }
-
-            ReadOnlySpan<TVariants> variants = [variant];
-
             if (type == typeof(TUrn))
             {
-                variants = TUrn.Variants;
+                ApplyBaseUrnTypeValueObjectFilter(schema, type, context, exampleProvider);
+                return;
             }
 
-            var keySchema = new OpenApiSchema
+            Debug.Assert(typeof(TUrn).IsAssignableFrom(type));
+            foreach (var variant in TUrn.Variants)
             {
-                Type = "string",
-                Enum = [],
-            };
-
-            foreach (var v in variants)
-            {
-                keySchema.Enum.Add(new OpenApiString(TUrn.CanonicalPrefixFor(v)));
+                if (TUrn.VariantTypeFor(variant) == type)
+                {
+                    ApplyVariantUrnTypeValueObjectFilter(schema, type, context, variant, exampleProvider);
+                    return;
+                }
             }
-
-            var valueSchema = new OpenApiSchema
-            {
-                Type = "string",
-            };
-
-            // reset defaults
-            schema.Properties.Clear();
-            schema.Required.Clear();
-            schema.AdditionalPropertiesAllowed = false;
-            schema.AdditionalProperties = null;
-            schema.Type = "object";
-            schema.Properties.Add("type", keySchema);
-            schema.Properties.Add("value", valueSchema);
-            schema.Required.Add("type");
-            schema.Required.Add("value");
         }
 
         public override void ApplyUrnDictionarySchemaFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
@@ -232,6 +198,98 @@ internal class UrnSwaggerFilter
                     schema.Properties.Add(prefix, valueSchema);
                 }
             }
+        }
+
+        private static void ApplyBaseUrnTypeValueObjectFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
+        {
+            // reset defaults
+            schema.Properties.Clear();
+            schema.Required.Clear();
+            schema.AdditionalPropertiesAllowed = false;
+            schema.AdditionalProperties = null;
+            schema.Type = "object";
+
+            var typeValues = new List<IOpenApiAny>();
+            foreach (var prefix in TUrn.Prefixes)
+            {
+                typeValues.Add(new OpenApiString(prefix));
+            }
+
+            var mapping = new Dictionary<string, string>();
+            var oneOf = schema.OneOf;
+            oneOf.Clear();
+            schema.Discriminator = new OpenApiDiscriminator
+            {
+                PropertyName = "type",
+                Mapping = mapping,
+            };
+            schema.Properties.Add("type", new OpenApiSchema
+            {
+                Type = "string",
+                Enum = typeValues,
+            });
+            schema.Required.Add("type");
+
+            foreach (var variant in TUrn.Variants)
+            {
+                var variantType = typeof(UrnJsonTypeValueVariant<>).MakeGenericType(TUrn.VariantTypeFor(variant));
+                if (!context.SchemaRepository.TryLookupByType(variantType, out var referenceSchema))
+                {
+                    referenceSchema = context.SchemaGenerator.GenerateSchema(variantType, context.SchemaRepository);
+                }
+
+                oneOf.Add(referenceSchema);
+                foreach (var prefix in TUrn.PrefixesFor(variant))
+                {
+                    mapping.Add(prefix, referenceSchema.Reference.ReferenceV3);
+                }
+            }
+
+            schema.Example = exampleProvider.GetExample(typeof(UrnJsonTypeValue<>).MakeGenericType(type))?.FirstOrDefault();
+        }
+
+        private static void ApplyVariantUrnTypeValueObjectFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, TVariants variant, OpenApiExampleProvider exampleProvider)
+        {
+            // reset defaults
+            schema.Properties.Clear();
+            schema.Required.Clear();
+            schema.AdditionalPropertiesAllowed = false;
+            schema.AdditionalProperties = null;
+            schema.Type = "object";
+
+            var typeValues = new List<IOpenApiAny>();
+            foreach (var prefix in TUrn.PrefixesFor(variant))
+            {
+                typeValues.Add(new OpenApiString(prefix));
+            }
+
+            schema.OneOf.Clear();
+            schema.Properties.Add("type", new OpenApiSchema
+            {
+                Type = "string",
+                Enum = typeValues,
+            });
+            schema.Required.Add("type");
+
+            var valueType = TUrn.ValueTypeFor(variant);
+            var valueSchema = new OpenApiSchema
+            {
+                Type = "string",
+            };
+
+            schema.Properties.Add("value", valueSchema);
+            schema.Required.Add("value");
+
+            schema.Example = new OpenApiObject
+            {
+                ["type"] = new OpenApiString(TUrn.CanonicalPrefixFor(variant)),
+                ["value"] = exampleProvider.GetExample(valueType, typeof(string), static (object? v) => v switch
+                {
+                    null => null,
+                    IFormattable f => f.ToString(format: null, formatProvider: null),
+                    _ => v?.ToString() ?? "string",
+                })?.FirstOrDefault() ?? new OpenApiString("string"),
+            };
         }
 
         private static void ApplyBaseUrnFilter(OpenApiSchema schema, Type type, SchemaFilterContext context, OpenApiExampleProvider exampleProvider)
@@ -317,4 +375,6 @@ internal class UrnSwaggerFilter
             return builder.ToString();
         }
     }
+
+    private abstract class UrnJsonTypeValueVariant<T>();
 }

@@ -26,7 +26,7 @@ public sealed class StringParsableJsonConverter
 
     private static bool IsStringCompatible(Type typeToConvert, Type[] interfaces)
     {
-        if (!typeToConvert.IsAssignableTo(typeof(ISpanFormattable)))
+        if (!typeToConvert.IsAssignableTo(typeof(IFormattable)))
         {
             return false;
         }
@@ -239,7 +239,7 @@ public sealed class StringParsableJsonConverter
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            WriteAsString(writer, value);
         }
 
         protected static T? ReadAsString(ref Utf8JsonReader reader)
