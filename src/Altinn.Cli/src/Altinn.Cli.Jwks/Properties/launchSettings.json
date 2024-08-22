@@ -23,6 +23,12 @@
       "commandLineArgs": "--store ./test-keys export key br --base64",
       "workingDirectory": "obj",
       "hotReloadEnabled": false
+    },
+    "export key pem": {
+      "commandName": "Project",
+      "commandLineArgs": "--store ./test-keys export pem br",
+      "workingDirectory": "obj",
+      "hotReloadEnabled": false
     }
   }
 }

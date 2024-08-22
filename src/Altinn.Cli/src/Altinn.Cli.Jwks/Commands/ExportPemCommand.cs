@@ -1,12 +1,14 @@
 ﻿using Altinn.Cli.Jwks.Stores;
+using Microsoft.IdentityModel.Tokens;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+using System.Security.Cryptography;
 
 namespace Altinn.Cli.Jwks.Commands;
 
 [ExcludeFromCodeCoverage]
-internal class ExportMaskinportenCommand
+internal class ExportPemCommand
     : BaseCommand
 {
     public static Argument<string> NameArg { get; }
@@ -17,8 +19,8 @@ internal class ExportMaskinportenCommand
             aliases: ["--prod", "-p"],
             description: "Generate PROD keys. Defaults to true unless --test is specified.");
 
-    public ExportMaskinportenCommand()
-        : base("maskinporten", "Export a key set for maskinporten")
+    public ExportPemCommand()
+        : base("pem", "Export a public key in pem format")
     {
         AddArgument(NameArg);
         AddOption(ProdOption);
@@ -36,8 +38,25 @@ internal class ExportMaskinportenCommand
         var environment = prod ? JsonWebKeySetEnvironment.Prod : JsonWebKeySetEnvironment.Test;
         var keySet = await store.GetKeySet(name, environment, JsonWebKeySetVariant.Public, cancellationToken);
 
-        await using var stdout = System.Console.OpenStandardOutput();
-        await JsonSerializer.SerializeAsync(stdout, keySet.Keys, JsonUtils.Options, cancellationToken);
+        var signingKey = keySet.GetSigningKeys().Last();
+        switch (signingKey)
+        {
+            case RsaSecurityKey rsa:
+                WriteRsa(console, rsa);
+                break;
+
+            default:
+                console.Error.WriteLine("Unsupported key type.");
+                return 1;
+        }
+
         return 0;
+    }
+
+    private void WriteRsa(IConsole console, RsaSecurityKey key)
+    {
+        var rsa = key.Rsa ?? RSA.Create(key.Parameters);
+        var pem = rsa.ExportRSAPublicKeyPem();
+        console.Out.WriteLine(pem);
     }
 }
