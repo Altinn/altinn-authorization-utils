@@ -33,7 +33,16 @@ public sealed class OpenApiExampleProvider
     /// <typeparam name="T">The type to get an example for.</typeparam>
     /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
     public IEnumerable<IOpenApiAny>? GetExample<T>()
-        => GetExample(typeof(T));
+        => GetExample<T>(mapper: null);
+
+    /// <summary>
+    /// Gets an example for the specified type mapped by an optional mapper.
+    /// </summary>
+    /// <typeparam name="T">The type to get an example for.</typeparam>
+    /// <param name="mapper">A mapper to apply to all example items.</param>
+    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
+    public IEnumerable<IOpenApiAny>? GetExample<T>(Func<T, object>? mapper)
+        => GetExample(typeof(T), mapper is null ? null : x => mapper((T)x));
 
     /// <summary>
     /// Gets an example for the specified type.
@@ -41,14 +50,23 @@ public sealed class OpenApiExampleProvider
     /// <param name="type">The type to get an example for.</param>
     /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
     public IEnumerable<IOpenApiAny>? GetExample(Type type)
+        => GetExample(type, mapper: null);
+
+    /// <summary>
+    /// Gets an example for the specified type mapped by an optional mapper.
+    /// </summary>
+    /// <param name="type">The type to get an example for.</param>
+    /// <param name="mapper">A mapper to apply to all example items.</param>
+    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
+    public IEnumerable<IOpenApiAny>? GetExample(Type type, Func<object, object>? mapper)
     {
         var exampleDataOptions = _exampleDataOptions.CurrentValue ?? ExampleDataOptions.DefaultOptions;
         var jsonOptions = _jsonOptions.CurrentValue?.SerializerOptions ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-        return GetExample(type, exampleDataOptions, jsonOptions);
+        return GetExample(type, mapper, exampleDataOptions, jsonOptions);
     }
 
-    private static IEnumerable<IOpenApiAny>? GetExample(Type type, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<IOpenApiAny>? GetExample(Type type, Func<object, object>? mapper, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
     {
         var examples = ExampleData.GetExamples(type, exampleDataOptions);
         if (examples is null)
@@ -56,14 +74,19 @@ public sealed class OpenApiExampleProvider
             return null;
         }
 
-        return ConvertExamples(examples, type, jsonSerializerOptions);
+        if (mapper is not null)
+        {
+            examples = examples.Cast<object>().Select(mapper);
+        }
+
+        return ConvertExamples(examples, mapper is null ? type : null, jsonSerializerOptions);
     }
 
-    private static IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type type, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type? type, JsonSerializerOptions jsonSerializerOptions)
     {
         foreach (var example in examples)
         {
-            var doc = JsonSerializer.SerializeToDocument(example, type, jsonSerializerOptions);
+            var doc = JsonSerializer.SerializeToDocument(example, type ?? example.GetType(), jsonSerializerOptions);
             if (doc is null)
             {
                 continue;

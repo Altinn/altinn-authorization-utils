@@ -272,18 +272,22 @@ internal class UrnSwaggerFilter
             schema.Required.Add("type");
 
             var valueType = TUrn.ValueTypeFor(variant);
-            if (!context.SchemaRepository.TryLookupByType(valueType, out var referenceSchema))
+            var valueSchema = new OpenApiSchema
             {
-                referenceSchema = context.SchemaGenerator.GenerateSchema(valueType, context.SchemaRepository);
-            }
+                Type = "string",
+            };
 
-            schema.Properties.Add("value", referenceSchema);
+            schema.Properties.Add("value", valueSchema);
             schema.Required.Add("value");
 
             schema.Example = new OpenApiObject
             {
                 ["type"] = new OpenApiString(TUrn.CanonicalPrefixFor(variant)),
-                ["value"] = exampleProvider.GetExample(valueType)?.FirstOrDefault() ?? new OpenApiString("string"),
+                ["value"] = exampleProvider.GetExample(valueType, static (object v) => v switch
+                {
+                    IFormattable f => f.ToString(format: null, formatProvider: null),
+                    _ => v?.ToString() ?? "string",
+                })?.FirstOrDefault() ?? new OpenApiString("string"),
             };
         }
 
