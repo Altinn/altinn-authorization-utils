@@ -283,8 +283,9 @@ internal class UrnSwaggerFilter
             schema.Example = new OpenApiObject
             {
                 ["type"] = new OpenApiString(TUrn.CanonicalPrefixFor(variant)),
-                ["value"] = exampleProvider.GetExample(valueType, static (object v) => v switch
+                ["value"] = exampleProvider.GetExample(valueType, typeof(string), static (object? v) => v switch
                 {
+                    null => null,
                     IFormattable f => f.ToString(format: null, formatProvider: null),
                     _ => v?.ToString() ?? "string",
                 })?.FirstOrDefault() ?? new OpenApiString("string"),

@@ -33,16 +33,17 @@ public sealed class OpenApiExampleProvider
     /// <typeparam name="T">The type to get an example for.</typeparam>
     /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
     public IEnumerable<IOpenApiAny>? GetExample<T>()
-        => GetExample<T>(mapper: null);
+        => GetExample(typeof(T));
 
     /// <summary>
     /// Gets an example for the specified type mapped by an optional mapper.
     /// </summary>
     /// <typeparam name="T">The type to get an example for.</typeparam>
+    /// <typeparam name="U">The mapped type.</typeparam>
     /// <param name="mapper">A mapper to apply to all example items.</param>
     /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
-    public IEnumerable<IOpenApiAny>? GetExample<T>(Func<T, object>? mapper)
-        => GetExample(typeof(T), mapper is null ? null : x => mapper((T)x));
+    public IEnumerable<IOpenApiAny>? GetExample<T, U>(Func<T, U> mapper)
+        => GetExample(typeof(T), typeof(U), x => x is null ? null : mapper((T)x));
 
     /// <summary>
     /// Gets an example for the specified type.
@@ -50,23 +51,29 @@ public sealed class OpenApiExampleProvider
     /// <param name="type">The type to get an example for.</param>
     /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
     public IEnumerable<IOpenApiAny>? GetExample(Type type)
-        => GetExample(type, mapper: null);
+    {
+        var exampleDataOptions = _exampleDataOptions.CurrentValue ?? ExampleDataOptions.DefaultOptions;
+        var jsonOptions = _jsonOptions.CurrentValue?.SerializerOptions ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
+
+        return GetExample(type, type, mapper: null, exampleDataOptions, jsonOptions);
+    }
 
     /// <summary>
     /// Gets an example for the specified type mapped by an optional mapper.
     /// </summary>
     /// <param name="type">The type to get an example for.</param>
+    /// <param name="mappedType">The type produced by the mapper.</param>
     /// <param name="mapper">A mapper to apply to all example items.</param>
     /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
-    public IEnumerable<IOpenApiAny>? GetExample(Type type, Func<object, object>? mapper)
+    public IEnumerable<IOpenApiAny>? GetExample(Type type, Type mappedType, Func<object?, object?> mapper)
     {
         var exampleDataOptions = _exampleDataOptions.CurrentValue ?? ExampleDataOptions.DefaultOptions;
         var jsonOptions = _jsonOptions.CurrentValue?.SerializerOptions ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-        return GetExample(type, mapper, exampleDataOptions, jsonOptions);
+        return GetExample(type, mappedType, mapper, exampleDataOptions, jsonOptions);
     }
 
-    private static IEnumerable<IOpenApiAny>? GetExample(Type type, Func<object, object>? mapper, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<IOpenApiAny>? GetExample(Type type, Type mappedType, Func<object?, object?>? mapper, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
     {
         var examples = ExampleData.GetExamples(type, exampleDataOptions);
         if (examples is null)
@@ -79,14 +86,14 @@ public sealed class OpenApiExampleProvider
             examples = examples.Cast<object>().Select(mapper);
         }
 
-        return ConvertExamples(examples, mapper is null ? type : null, jsonSerializerOptions);
+        return ConvertExamples(examples, mappedType, jsonSerializerOptions);
     }
 
-    private static IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type? type, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type type, JsonSerializerOptions jsonSerializerOptions)
     {
         foreach (var example in examples)
         {
-            var doc = JsonSerializer.SerializeToDocument(example, type ?? example.GetType(), jsonSerializerOptions);
+            var doc = JsonSerializer.SerializeToDocument(example, type, jsonSerializerOptions);
             if (doc is null)
             {
                 continue;
