@@ -1,4 +1,5 @@
 ﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Urn.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -61,6 +62,14 @@ public class UrnSwaggerFilterTests
                 .NotBeNullOrEmpty()
                 .And.StartWith("^urn:");
         }
+    }
+
+    [Fact]
+    public void Apply_ForJsonTypeValueObjectUrn_CreatesDiscriminator()
+    {
+        var schema = SchemaFor<UrnJsonTypeValue<PersonUrn>>();
+
+        schema.Discriminator.Should().NotBeNull();
     }
 
     //private ISchemaFilter SchemaFilter => _sut;
