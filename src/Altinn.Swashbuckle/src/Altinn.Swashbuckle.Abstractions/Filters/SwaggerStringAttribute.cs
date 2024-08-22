@@ -5,6 +5,7 @@ namespace Altinn.Swashbuckle.Filters;
 /// <summary>
 /// Attribute for specifying that a type should be represented as a string in the OpenAPI schema.
 /// </summary>
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum, AllowMultiple = false)]
 public sealed class SwaggerStringAttribute
     : Attribute
