@@ -1,8 +1,8 @@
-using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
+using Altinn.Authorization.ServiceDefaults.Telemetry;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Tests;
 
 public class ActivityHelperTests
 {

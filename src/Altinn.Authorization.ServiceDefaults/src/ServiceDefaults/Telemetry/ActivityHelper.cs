@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
+namespace Altinn.Authorization.ServiceDefaults.Telemetry;
 
 internal static class ActivityHelper
 {
