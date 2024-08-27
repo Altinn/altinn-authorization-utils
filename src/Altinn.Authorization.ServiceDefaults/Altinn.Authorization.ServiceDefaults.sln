@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed", "src\ServiceDefaults.Npgsql.TestSeed\Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.csproj", "{142C0EB1-8F87-49BF-A60D-6199B9ED41B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Telemetry", "src\ServiceDefaults.Telemetry\Altinn.Authorization.ServiceDefaults.Telemetry.csproj", "{0F9F3EA6-0BD2-4001-94A2-2AB5C0D04E8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{142C0EB1-8F87-49BF-A60D-6199B9ED41B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{142C0EB1-8F87-49BF-A60D-6199B9ED41B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{142C0EB1-8F87-49BF-A60D-6199B9ED41B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F9F3EA6-0BD2-4001-94A2-2AB5C0D04E8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F9F3EA6-0BD2-4001-94A2-2AB5C0D04E8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F9F3EA6-0BD2-4001-94A2-2AB5C0D04E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F9F3EA6-0BD2-4001-94A2-2AB5C0D04E8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{15976B81-CDD3-49D3-817D-B9FC6A5164B6} = {3A84ED44-A848-46D0-8E2C-14262DC2183D}
@@ -60,5 +66,6 @@ Global
 		{BBA82424-5DE2-4835-AA0C-808C0C1AD236} = {5FA0B47B-5DBE-4B17-A0F6-2D18A4B8E56E}
 		{AD3D26CB-F818-4D0F-9E0B-C9DDA30CA893} = {5FA0B47B-5DBE-4B17-A0F6-2D18A4B8E56E}
 		{142C0EB1-8F87-49BF-A60D-6199B9ED41B8} = {3A84ED44-A848-46D0-8E2C-14262DC2183D}
+		{0F9F3EA6-0BD2-4001-94A2-2AB5C0D04E8E} = {3A84ED44-A848-46D0-8E2C-14262DC2183D}
 	EndGlobalSection
 EndGlobal
