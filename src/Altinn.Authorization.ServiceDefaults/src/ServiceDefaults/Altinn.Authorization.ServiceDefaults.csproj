@@ -17,4 +17,8 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceDefaults.Telemetry\Altinn.Authorization.ServiceDefaults.Telemetry.csproj" />
+  </ItemGroup>
+
 </Project>
