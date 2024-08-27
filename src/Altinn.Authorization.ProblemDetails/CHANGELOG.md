@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.0.0...Altinn.Authorization.ProblemDetails-v3.0.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* add documentation for problem-details ([#128](https://github.com/Altinn/altinn-authorization-utils/issues/128)) ([9eca254](https://github.com/Altinn/altinn-authorization-utils/commit/9eca2540b7d234327d2806fbadb15928000ebf2e))
+
 ## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v2.0.0...Altinn.Authorization.ProblemDetails-v3.0.0) (2024-07-10)
 
 
