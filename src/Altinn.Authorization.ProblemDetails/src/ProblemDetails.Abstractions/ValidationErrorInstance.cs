@@ -23,7 +23,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="path">The path.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path)
         => new ValidationErrorInstance(descriptor, paths: [path], extensions: []);
 
     /// <summary>
@@ -32,7 +33,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths)
         => new ValidationErrorInstance(descriptor, paths: paths, extensions: []);
 
     /// <summary>
@@ -41,7 +43,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
         => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: []);
 
     /// <summary>
@@ -50,7 +53,7 @@ public sealed record class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ProblemExtensionData extensions) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ProblemExtensionData extensions)
         => new ValidationErrorInstance(descriptor, paths: [], extensions: extensions);
 
     /// <summary>
@@ -59,7 +62,7 @@ public sealed record class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
         => new ValidationErrorInstance(descriptor, paths: [], extensions: [.. extensions]);
 
     /// <summary>
@@ -69,7 +72,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions)
         => new ValidationErrorInstance(descriptor, paths: [path], extensions: extensions);
 
     /// <summary>
@@ -79,7 +83,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions)
         => new ValidationErrorInstance(descriptor, paths: [path], extensions: [.. extensions]);
 
     /// <summary>
@@ -89,7 +94,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions)
         => new ValidationErrorInstance(descriptor, paths: paths, extensions: extensions);
 
     /// <summary>
@@ -99,7 +105,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions)
         => new ValidationErrorInstance(descriptor, paths: paths, extensions: [.. extensions]);
 
     /// <summary>
@@ -109,7 +116,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions)
         => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: extensions);
 
     /// <summary>
@@ -119,7 +127,8 @@ public sealed record class ValidationErrorInstance
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions) 
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions)
         => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: [.. extensions]);
 
     private readonly ValidationErrorDescriptor _descriptor;
@@ -152,7 +161,35 @@ public sealed record class ValidationErrorInstance
     /// Gets the error paths.
     /// </summary>
     /// <remarks>
-    /// This SHOULD be a set of JSON Pointer values that identify the path(s) to the erroneous field(s) within the request document or parameters.
+    /// The paths SHOULD be a set of JSON Pointer values that identify the path(s) to the erroneous field(s) within the request document or parameters.
+    /// 
+    /// A few examples of JSON Pointers:
+    /// <list type="table">
+    ///   <listheader>
+    ///     <term>Path</term>
+    ///     <description>Description</description>
+    ///   </listheader>
+    ///   <item>
+    ///     <term><c>/foo/bar</c></term>
+    ///     <description>The json field <c>foo.bar</c> in the body.</description>
+    ///   </item>
+    ///   <item>
+    ///     <term><c>/$QUERY/baz</c></term>
+    ///     <description>The query parameter <c>baz</c>.</description>
+    ///   </item>
+    ///   <item>
+    ///     <term><c>/$HEADER/x-value</c></term>
+    ///     <description>The header <c>X-Value</c> (headers are case insensitive, so it's lowercased).</description>
+    ///   </item>
+    ///   <item>
+    ///     <term><c>/$HEADER/authorization/bearer</c></term>
+    ///     <description>The bearer token value in a authorization header.</description>
+    ///   </item>
+    ///   <item>
+    ///     <term><c>/$PATH/id</c></term>
+    ///     <description>The path parameter <c>id</c>.</description>
+    ///   </item>
+    /// </list>
     /// </remarks>
     public ImmutableArray<string> Paths => _paths;
 

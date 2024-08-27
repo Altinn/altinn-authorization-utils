@@ -136,6 +136,7 @@ public static class AltinnProblemDetailsExtensions
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="path">The path that is erroneous.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, string path)
         => new AltinnValidationError(descriptor)
@@ -148,6 +149,7 @@ public static class AltinnProblemDetailsExtensions
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths)
         => new AltinnValidationError(descriptor)
@@ -160,6 +162,7 @@ public static class AltinnProblemDetailsExtensions
     /// </summary>
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
         => new AltinnValidationError(descriptor)
@@ -207,6 +210,7 @@ public static class AltinnProblemDetailsExtensions
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="path">The path that is erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, string path, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
@@ -229,6 +233,7 @@ public static class AltinnProblemDetailsExtensions
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="path">The path that is erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, string path, IEnumerable<KeyValuePair<string, object?>> extensions)
     {
@@ -251,6 +256,7 @@ public static class AltinnProblemDetailsExtensions
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
@@ -273,6 +279,7 @@ public static class AltinnProblemDetailsExtensions
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, ReadOnlySpan<string> paths, IEnumerable<KeyValuePair<string, object?>> extensions)
     {
@@ -295,6 +302,7 @@ public static class AltinnProblemDetailsExtensions
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ReadOnlySpan<KeyValuePair<string, object?>> extensions)
     {
@@ -317,6 +325,7 @@ public static class AltinnProblemDetailsExtensions
     /// <param name="descriptor">The descriptor.</param>
     /// <param name="paths">The paths that are erroneous.</param>
     /// <param name="extensions">Additional properties for the error.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <returns>A <see cref="AltinnValidationError"/>.</returns>
     public static AltinnValidationError ToValidationError(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IEnumerable<KeyValuePair<string, object?>> extensions)
     {

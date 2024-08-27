@@ -58,9 +58,7 @@ public sealed class AltinnValidationError
     /// <summary>
     /// Gets or sets the error paths.
     /// </summary>
-    /// <remarks>
-    /// This SHOULD be a set of JSON Pointer values that identify the path(s) to the erroneous field(s) within the request document or parameters.
-    /// </remarks>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [JsonPropertyOrder(-1)]
     [JsonPropertyName("paths")]
