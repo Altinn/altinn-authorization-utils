@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.4.0...Altinn.Authorization.ServiceDefaults-v2.5.0) (2024-08-27)
+
+
+### Features
+
+* move AltinnActivityExtensions to new package ([#126](https://github.com/Altinn/altinn-authorization-utils/issues/126)) ([189c9ae](https://github.com/Altinn/altinn-authorization-utils/commit/189c9aeb0c9e1a22e6bb033c95d72e0ef5f53c00))
+
 ## [2.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.3.0...Altinn.Authorization.ServiceDefaults-v2.4.0) (2024-08-23)
 
 
