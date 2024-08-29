@@ -27,9 +27,9 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.8.0" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="8.1.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageVersion Include="Nerdbank.Streams" Version="2.11.74" />
+    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+    <PackageVersion Include="Nerdbank.Streams" Version="2.11.79" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="8.0.3" />
     <PackageVersion Include="Npgsql" Version="8.0.3" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
@@ -38,12 +38,12 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry" Version="1.9.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="6.7.1" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.1" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="6.7.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.3" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
     <PackageVersion Include="System.IO.Pipelines" Version="8.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="3.9.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.3.0" />
