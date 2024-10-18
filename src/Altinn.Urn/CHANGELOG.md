@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.5.0...Altinn.Urn-v2.5.1) (2024-10-18)
+
+
+### Bug Fixes
+
+* better json support for KeyValueUrn ([#141](https://github.com/Altinn/altinn-authorization-utils/issues/141)) ([b780a1b](https://github.com/Altinn/altinn-authorization-utils/commit/b780a1b24413b713d7ea09c9cbf43e7359621573))
+* broken by dependency updates ([#142](https://github.com/Altinn/altinn-authorization-utils/issues/142)) ([e64d510](https://github.com/Altinn/altinn-authorization-utils/commit/e64d510c28c9989bd538a8f090b5563e60635b0b))
+
 ## [2.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.4.0...Altinn.Urn-v2.5.0) (2024-08-22)
 
 
