@@ -164,7 +164,7 @@ public readonly struct KeyValueUrn
     public static bool operator !=(KeyValueUrn left, KeyValueUrn right)
         => !left.Equals(right);
 
-    private class JsonConverter
+    private sealed class JsonConverter
         : JsonConverter<KeyValueUrn>
     {
         public override KeyValueUrn Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
