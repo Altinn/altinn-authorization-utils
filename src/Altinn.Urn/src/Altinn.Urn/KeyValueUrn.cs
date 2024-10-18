@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Urn;
 
@@ -12,6 +14,7 @@ namespace Altinn.Urn;
 /// To construct a <see cref="KeyValueUrn"/>, you need to know where the prefix ends and the value starts.
 /// </remarks>
 [DebuggerDisplay("{Urn}")]
+[JsonConverter(typeof(JsonConverter))]
 public readonly struct KeyValueUrn
     : IKeyValueUrn
     , IEquatable<KeyValueUrn>
@@ -160,4 +163,18 @@ public readonly struct KeyValueUrn
     /// <inheritdoc/>
     public static bool operator !=(KeyValueUrn left, KeyValueUrn right)
         => !left.Equals(right);
+
+    private class JsonConverter
+        : JsonConverter<KeyValueUrn>
+    {
+        public override KeyValueUrn Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            throw new NotSupportedException($"Deserialization of {nameof(KeyValueUrn)} is not supported.");
+        }
+
+        public override void Write(Utf8JsonWriter writer, KeyValueUrn value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.Urn);
+        }
+    }
 }

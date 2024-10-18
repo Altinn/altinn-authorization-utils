@@ -163,4 +163,23 @@ public class KeyValueUrnTests
         (obj1 == obj2).Should().BeTrue();
         (obj1 != obj2).Should().BeFalse();
     }
+
+    [Fact]
+    public void KeyValueUrn_IsSerializeable()
+    {
+        var sut = KeyValueUrn.Create("urn:example:123", 12);
+        var json = JsonSerializer.Serialize(sut);
+
+        json.Should().Be(@"""urn:example:123""");
+    }
+
+    [Fact]
+    public void KeyValueUrn_Deserialize_ShouldThrow()
+    {
+        var json = @"""urn:example:123""";
+        Action act = () => JsonSerializer.Deserialize<KeyValueUrn>(json);
+
+        act.Should().Throw<NotSupportedException>()
+            .Which.Message.Should().StartWith($"Deserialization of {nameof(KeyValueUrn)} is not supported.");
+    }
 }
