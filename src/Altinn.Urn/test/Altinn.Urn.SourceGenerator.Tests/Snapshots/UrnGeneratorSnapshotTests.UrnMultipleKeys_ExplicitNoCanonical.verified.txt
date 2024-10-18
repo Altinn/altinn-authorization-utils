@@ -1,14 +1,17 @@
 ﻿{
   Diagnostics: [
     {
-      Id: AURN0016,
-      Title: Urn type-method prefix is missing canonical,
-      Severity: Error,
-      WarningLevel: 0,
       Location: : (8,4)-(10,43),
-      MessageFormat: Urn type-method prefix is missing canonical. This is required because it supports multiple urn prefixes or has explicitly set Canonical to false on all cases.,
       Message: Urn type-method prefix is missing canonical. This is required because it supports multiple urn prefixes or has explicitly set Canonical to false on all cases.,
-      Category: UrnGenerator
+      Severity: Error,
+      Descriptor: {
+        Id: AURN0016,
+        Title: Urn type-method prefix is missing canonical,
+        MessageFormat: Urn type-method prefix is missing canonical. This is required because it supports multiple urn prefixes or has explicitly set Canonical to false on all cases.,
+        Category: UrnGenerator,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
     }
   ]
 }
