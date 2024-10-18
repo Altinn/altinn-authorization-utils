@@ -31,7 +31,7 @@ public class ExampleDataTests
             var data = new TheoryData<Type>();
             foreach (var type in BuiltinValueTypes)
             {
-                data.Add(typeof(Nullable<>).MakeGenericType((Type)type[0]));
+                data.Add(typeof(Nullable<>).MakeGenericType(type));
             }
 
             return data;

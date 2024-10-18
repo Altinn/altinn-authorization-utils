@@ -1,34 +1,43 @@
 ﻿{
   Diagnostics: [
     {
-      Id: AURN0008,
-      Title: Urn type-method prefix has whitespace,
-      Severity: Error,
-      WarningLevel: 0,
       Location: : (8,5)-(8,41),
-      MessageFormat: Urn type-method prefix has whitespace,
       Message: Urn type-method prefix has whitespace,
-      Category: UrnGenerator
+      Severity: Error,
+      Descriptor: {
+        Id: AURN0008,
+        Title: Urn type-method prefix has whitespace,
+        MessageFormat: Urn type-method prefix has whitespace,
+        Category: UrnGenerator,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
     },
     {
-      Id: AURN0006,
-      Title: Urn type-method prefix starts with 'urn',
-      Severity: Error,
-      WarningLevel: 0,
       Location: : (8,5)-(8,41),
-      MessageFormat: Urn type-method prefix starts with 'urn',
       Message: Urn type-method prefix starts with 'urn',
-      Category: UrnGenerator
+      Severity: Error,
+      Descriptor: {
+        Id: AURN0006,
+        Title: Urn type-method prefix starts with 'urn',
+        MessageFormat: Urn type-method prefix starts with 'urn',
+        Category: UrnGenerator,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
     },
     {
-      Id: AURN0019,
-      Title: Urn type-method prefix ends with ':',
-      Severity: Error,
-      WarningLevel: 0,
       Location: : (8,5)-(8,41),
-      MessageFormat: Urn type-method prefix ends with ':',
       Message: Urn type-method prefix ends with ':',
-      Category: UrnGenerator
+      Severity: Error,
+      Descriptor: {
+        Id: AURN0019,
+        Title: Urn type-method prefix ends with ':',
+        MessageFormat: Urn type-method prefix ends with ':',
+        Category: UrnGenerator,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
     }
   ]
 }
