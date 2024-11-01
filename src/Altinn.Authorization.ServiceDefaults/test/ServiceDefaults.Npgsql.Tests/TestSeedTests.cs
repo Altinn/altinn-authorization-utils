@@ -14,7 +14,7 @@ public class TestSeedTests(DbFixture fixture)
                 KeyValuePair.Create("[app.test].sql", /*strpsql*/"INSERT INTO app.test (id) VALUES (2);")
             ]);
 
-        var result = await ctx.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
+        var result = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
         result.Should().Be(2);
     }
 
@@ -30,7 +30,7 @@ public class TestSeedTests(DbFixture fixture)
                 KeyValuePair.Create("[app.test].sql", /*strpsql*/"INSERT INTO app.test (id) VALUES (2);")
             ]);
 
-        var result = await ctx.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
+        var result = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
         result.Should().Be(1);
     }
 
@@ -48,7 +48,7 @@ public class TestSeedTests(DbFixture fixture)
                 KeyValuePair.Create("[app.test]/_finalize.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('finalize');"),
             ]);
 
-        await using var result = await ctx.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
         while (await result.ReadAsync())
@@ -74,7 +74,7 @@ public class TestSeedTests(DbFixture fixture)
                 KeyValuePair.Create("test/_finalize.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('finalize');"),
             ]);
 
-        await using var result = await ctx.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
         while (await result.ReadAsync())
@@ -97,7 +97,7 @@ public class TestSeedTests(DbFixture fixture)
                 KeyValuePair.Create("test/value.sql", /*strpsql*/"INSERT INTO app.test (value) VALUES ('value');"),
             ]);
 
-        await using var result = await ctx.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
         while (await result.ReadAsync())
