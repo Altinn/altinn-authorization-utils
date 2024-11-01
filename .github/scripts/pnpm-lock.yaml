@@ -22,13 +22,13 @@ importers:
         version: 14.0.2
       tsx:
         specifier: ^4.7.1
-        version: 4.19.1
+        version: 4.19.2
       typescript:
         specifier: ^5.4.3
-        version: 5.6.2
+        version: 5.6.3
       zx:
         specifier: ^8.0.0
-        version: 8.1.6
+        version: 8.1.9
 
 packages:
 
@@ -353,13 +353,13 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
-  tsx@4.19.1:
-    resolution: {integrity: sha512-0flMz1lh74BR4wOvBjuh9olbnwqCPc35OOlfyzHba0Dc+QNUeWX/Gq2YTbnwcWPO3BMd8fkzRVrHcsR+a7z7rA==}
+  tsx@4.19.2:
+    resolution: {integrity: sha512-pOUl6Vo2LUq/bSa8S5q7b91cgNSjctn9ugq/+Mvow99qW6x/UZYwzxy/3NmqoT66eHYfCVvFvACC58UBPFf28g==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  typescript@5.6.2:
-    resolution: {integrity: sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==}
+  typescript@5.6.3:
+    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -377,8 +377,8 @@ packages:
   universal-user-agent@7.0.2:
     resolution: {integrity: sha512-0JCqzSKnStlRRQfCdowvqy3cy0Dvtlb8xecj/H8JFZuCze4rwjPZQOgvFvn0Ws/usCHQFGpyr+pB9adaGwXn4Q==}
 
-  zx@8.1.6:
-    resolution: {integrity: sha512-SYAriWG+i2CFqMOJcF8QayI8wprlMYQsrmP6tFD7rSPnDLcImNSW7n/8crOYvNVrB2EFgz8LAQk23U1+Y7WrKA==}
+  zx@8.1.9:
+    resolution: {integrity: sha512-UHuLHphHmsBYKkAchkSrEN4nzDyagafqC9HUxtc1J7eopaScW6H9dsLJ1lmkAntnLtDTGoM8fa+jrJrXiIfKFA==}
     engines: {node: '>= 12.17.0'}
     hasBin: true
 
@@ -663,14 +663,14 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  tsx@4.19.1:
+  tsx@4.19.2:
     dependencies:
       esbuild: 0.23.1
       get-tsconfig: 4.8.1
     optionalDependencies:
       fsevents: 2.3.3
 
-  typescript@5.6.2: {}
+  typescript@5.6.3: {}
 
   undici-types@6.19.8: {}
 
@@ -680,7 +680,7 @@ snapshots:
 
   universal-user-agent@7.0.2: {}
 
-  zx@8.1.6:
+  zx@8.1.9:
     optionalDependencies:
       '@types/fs-extra': 11.0.4
       '@types/node': 22.8.4
