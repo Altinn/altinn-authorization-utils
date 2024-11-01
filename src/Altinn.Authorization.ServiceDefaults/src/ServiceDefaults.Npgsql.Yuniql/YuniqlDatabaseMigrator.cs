@@ -19,13 +19,16 @@ internal partial class YuniqlDatabaseMigrator
 
     private static readonly object _lock = new();
 
+    private readonly Settings _settings;
     private readonly IOptionsMonitor<YuniqlDatabaseMigratorOptions> _options;
     private readonly ILogger<YuniqlDatabaseMigrator> _logger;
 
     public YuniqlDatabaseMigrator(
+        Settings settings,
         IOptionsMonitor<YuniqlDatabaseMigratorOptions> options,
         ILogger<YuniqlDatabaseMigrator> logger)
     {
+        _settings = settings;
         _options = options;
         _logger = logger;
     }
@@ -43,7 +46,7 @@ internal partial class YuniqlDatabaseMigrator
 
     private void MigrateDatabaseSync(string connectionString, ITraceService traceService)
     {
-        var options = _options.CurrentValue;
+        var options = _options.Get(_settings.Name);
 
         using var workspace = ResolveWorkspace(options);
 
@@ -202,6 +205,12 @@ internal partial class YuniqlDatabaseMigrator
 
             return Directory.CreateDirectory(dir);
         }
+    }
+
+    internal sealed class Settings
+    {
+        public required string? Name { get; init; }
+        public required object? Key { get; init; }
     }
 
     private sealed class Workspace

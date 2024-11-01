@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
+﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
+using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
@@ -146,9 +147,9 @@ public abstract partial class DatabaseTestsBase
         return new(hostAppBuilder, dbBuilder);
     }
 
-    protected partial class AppContext
+    protected sealed partial class AppContext
     {
-        public class Builder
+        public sealed class Builder
         {
             private readonly HostApplicationBuilder _hostBuilder;
             private readonly INpgsqlDatabaseBuilder _dbBuilder;
@@ -175,24 +176,37 @@ public abstract partial class DatabaseTestsBase
                 return this;
             }
 
+            public Builder AddYuniqlMigrations(object? serviceKey, Action<YuniqlDatabaseMigratorOptions> configure)
+            {
+                _dbBuilder.AddYuniqlMigrations(serviceKey, configure);
+
+                return this;
+            }
+
             public Builder AddYuniqlMigrations(IEnumerable<string> scripts)
             {
-                var fs = new InMemoryFileProvider();
+                return AddYuniqlMigrations(YuniqlTestFileProvider.Create(scripts));
+            }
 
-                var dir = fs.Root;
-                var version = 0;
-                foreach (var script in scripts)
-                {
-                    var versionDir = dir.CreateSubdirectory($"v{version++}.00");
-                    versionDir.CreateFile("00-script.sql", script);
-                }
-
-                return AddYuniqlMigrations(fs);
+            public Builder AddYuniqlMigrations(object? serviceKey, IEnumerable<string> scripts)
+            {
+                return AddYuniqlMigrations(serviceKey, YuniqlTestFileProvider.Create(scripts));
             }
 
             public Builder AddYuniqlMigrations(IFileProvider fs)
             {
                 return AddYuniqlMigrations(opts =>
+                {
+                    opts.WorkspaceFileProvider = fs;
+                    opts.Workspace = "/";
+                    opts.MigrationsTable.Schema = "yuniql";
+                    opts.MigrationsTable.Name = "migrations";
+                });
+            }
+
+            public Builder AddYuniqlMigrations(object? serviceKey,IFileProvider fs)
+            {
+                return AddYuniqlMigrations(serviceKey, opts =>
                 {
                     opts.WorkspaceFileProvider = fs;
                     opts.Workspace = "/";
