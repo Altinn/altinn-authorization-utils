@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.5.0...Altinn.Authorization.ServiceDefaults-v2.6.0) (2024-11-01)
+
+
+### Features
+
+* add support for multiple yuniql migrators ([#146](https://github.com/Altinn/altinn-authorization-utils/issues/146)) ([bfa873b](https://github.com/Altinn/altinn-authorization-utils/commit/bfa873b6ec8dcb3adedd09c5ca8f4b3ea1911a8c))
+
 ## [2.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.4.0...Altinn.Authorization.ServiceDefaults-v2.5.0) (2024-08-27)
 
 
