@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.1.0...Altinn.Swashbuckle-v2.1.1) (2024-11-01)
+
+
+### Bug Fixes
+
+* broken by dependency updates ([#142](https://github.com/Altinn/altinn-authorization-utils/issues/142)) ([e64d510](https://github.com/Altinn/altinn-authorization-utils/commit/e64d510c28c9989bd538a8f090b5563e60635b0b))
+
 ## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.0.0...Altinn.Swashbuckle-v2.1.0) (2024-08-22)
 
 
