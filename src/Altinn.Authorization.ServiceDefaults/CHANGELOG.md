@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.6.0...Altinn.Authorization.ServiceDefaults-v2.6.1) (2024-11-04)
+
+
+### Bug Fixes
+
+* obsolete yuniql migrations overload without serviceKey ([#148](https://github.com/Altinn/altinn-authorization-utils/issues/148)) ([647b9a2](https://github.com/Altinn/altinn-authorization-utils/commit/647b9a28a897b293c70db224e5eac7b0f6c959ec))
+
 ## [2.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.5.0...Altinn.Authorization.ServiceDefaults-v2.6.0) (2024-11-01)
 
 
