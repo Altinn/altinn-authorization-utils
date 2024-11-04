@@ -24,6 +24,7 @@ public static class YuniqlDatabaseMigratorExtensions
     /// <param name="builder">The <see cref="INpgsqlDatabaseBuilder"/>.</param>
     /// <param name="configure">Configuration delegate for configuring Yuniql migrations.</param>
     /// <returns><paramref name="builder"/>.</returns>
+    [Obsolete("Use overload with serviceKey", error: false)]
     public static INpgsqlDatabaseBuilder AddYuniqlMigrations(
         this INpgsqlDatabaseBuilder builder,
         Action<IServiceProvider, YuniqlDatabaseMigratorOptions> configure)
@@ -88,6 +89,7 @@ public static class YuniqlDatabaseMigratorExtensions
     /// <param name="builder">The <see cref="INpgsqlDatabaseBuilder"/>.</param>
     /// <param name="configure">Configuration delegate for configuring Yuniql migrations.</param>
     /// <returns><paramref name="builder"/>.</returns>
+    [Obsolete("Use overload with serviceKey", error: false)]
     public static INpgsqlDatabaseBuilder AddYuniqlMigrations(
         this INpgsqlDatabaseBuilder builder,
         Action<YuniqlDatabaseMigratorOptions> configure)
@@ -112,6 +114,7 @@ public static class YuniqlDatabaseMigratorExtensions
     /// <param name="builder">The <see cref="INpgsqlDatabaseBuilder"/>.</param>
     /// <param name="fileProvider">The <see cref="IFileProvider"/> used as <see cref="YuniqlDatabaseMigratorOptions.WorkspaceFileProvider"/>.</param>
     /// <returns><paramref name="builder"/>.</returns>
+    [Obsolete("Use overload with serviceKey", error: false)]
     public static INpgsqlDatabaseBuilder AddYuniqlMigrations(
         this INpgsqlDatabaseBuilder builder,
         IFileProvider fileProvider)
