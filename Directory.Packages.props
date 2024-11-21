@@ -25,7 +25,7 @@
     <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="8.2.2" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.1.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
