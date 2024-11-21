@@ -26,6 +26,7 @@ public class ActivityHelperTests
 
         ActivitySource.AddActivityListener(listener);
 
+        var linkContext = new ActivityContext(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom(), ActivityTraceFlags.None);
         for (var i = 0; i < count; i++)
         {
             var index = i;
@@ -36,11 +37,14 @@ public class ActivityHelperTests
                     new("thread.id", Environment.CurrentManagedThreadId),
                     new("test.iteration", index),
                 ];
+                Span<ActivityLink> links = [
+                    new(linkContext),
+                ];
 
                 ready.WaitOne();
 
-                RunOuterActivity($"part1-{index}", source, tags);
-                RunOuterActivity($"part2-{index}", source, tags);
+                RunOuterActivity($"part1-{index}", source, tags, links);
+                RunOuterActivity($"part2-{index}", source, tags, links);
             });
             threads.Add(thread);
         }
@@ -63,12 +67,19 @@ public class ActivityHelperTests
             activity.Duration.Should().BeGreaterThan(TimeSpan.Zero);
             var testIteration = (int)activity.TagObjects.Single(tag => tag.Key == "test.iteration").Value!;
             var threadId = (int)activity.TagObjects.Single(tag => tag.Key == "thread.id").Value!;
+
+            if (activity.OperationName.EndsWith("-outer"))
+            {
+                activity.Links.Should().HaveCount(1);
+                activity.Links.First().Context.Should().Be(linkContext);
+            }
+
             threadMap[testIteration].ThreadId.Should().Be(threadId);
         }
 
-        static void RunOuterActivity(string name, ActivitySource source, ReadOnlySpan<KeyValuePair<string, object?>> tags)
+        static void RunOuterActivity(string name, ActivitySource source, ReadOnlySpan<KeyValuePair<string, object?>> tags, ReadOnlySpan<ActivityLink> links)
         {
-            using var activity = StartActivity($"{name}-outer", source, tags);
+            using var activity = StartActivity($"{name}-outer", source, tags, links);
             Thread.Sleep(25); // Simulate tiny work
             RunInnerActivity(name, source, tags);
             Thread.Sleep(25); // Simulate tiny work
@@ -80,12 +91,13 @@ public class ActivityHelperTests
             Thread.Sleep(50); // Simulate small work
         }
 
-        static Activity? StartActivity(string name, ActivitySource source, ReadOnlySpan<KeyValuePair<string, object?>> tags)
+        static Activity? StartActivity(string name, ActivitySource source, ReadOnlySpan<KeyValuePair<string, object?>> tags, ReadOnlySpan<ActivityLink> links = default)
         {
             using var state = ActivityHelper.ThreadLocalState;
             state.AddTags(tags);
+            state.AddLinks(links);
 
-            return source.StartActivity(ActivityKind.Internal, tags: state.Tags, name: name);
+            return source.StartActivity(ActivityKind.Internal, tags: state.Tags, links: state.Links, name: name);
         }
     }
 

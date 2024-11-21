@@ -41,38 +41,34 @@ internal static class ActivityHelper
             _inner = ref inner;
         }
 
-        /// <summary>
-        /// Gets the array of tags.
-        /// </summary>
-        public IEnumerable<KeyValuePair<string, object?>> Tags
+        /// <inheritdoc cref="StateInner.Tags"/>
+        public IReadOnlyCollection<KeyValuePair<string, object?>> Tags
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _inner.Tags;
         }
 
-        /// <summary>
-        /// Adds a tag to the list of tags.
-        /// </summary>
-        /// <param name="tags">The tags to add.</param>
+        /// <inheritdoc cref="StateInner.Links"/>
+        public IReadOnlyCollection<ActivityLink> Links
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _inner.Links;
+        }
+
+        /// <inheritdoc cref="StateInner.AddTags(ReadOnlySpan{KeyValuePair{string, object?}})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddTags(ReadOnlySpan<KeyValuePair<string, object?>> tags)
             => _inner.AddTags(tags);
 
-        /// <summary>
-        /// Resets the state of this object to its initial condition.
-        /// </summary>
+        /// <inheritdoc cref="StateInner.AddLinks(ReadOnlySpan{ActivityLink})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddLinks(ReadOnlySpan<ActivityLink> links)
+            => _inner.AddLinks(links);
+
+        /// <inheritdoc cref="StateInner.Clear()"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
             => _inner.Clear();
-
-        /// <summary>
-        /// Gets the number of tags currently in this instance.
-        /// </summary>
-        public int TagsCount
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _inner.TagsCount;
-        }
     }
 
     /// <summary>
@@ -81,11 +77,17 @@ internal static class ActivityHelper
     internal sealed class StateInner
     {
         private readonly TagList _tags = new();
+        private readonly LinkList _links = new();
 
         /// <summary>
-        /// Gets the array of tags.
+        /// Gets the set of tags.
         /// </summary>
-        public IEnumerable<KeyValuePair<string, object?>> Tags => _tags;
+        public IReadOnlyCollection<KeyValuePair<string, object?>> Tags => _tags;
+
+        /// <summary>
+        /// Gets the set of links.
+        /// </summary>
+        public IReadOnlyCollection<ActivityLink> Links => _links;
 
         /// <summary>
         /// Adds a tag to the list of tags.
@@ -97,21 +99,26 @@ internal static class ActivityHelper
         }
 
         /// <summary>
+        /// Adds links to the list of links.
+        /// </summary>
+        /// <param name="links">The links to add.</param>
+        public void AddLinks(ReadOnlySpan<ActivityLink> links)
+        {
+            _links.AddRange(links);
+        }
+
+        /// <summary>
         /// Resets the state of this object to its initial condition.
         /// </summary>
         public void Clear()
         {
             _tags.Clear();
+            _links.Clear();
         }
-
-        /// <summary>
-        /// Gets the number of tags currently in this instance.
-        /// </summary>
-        public int TagsCount => _tags.Count;
     }
 
     private sealed class TagList
-        : IEnumerable<KeyValuePair<string, object?>>
+        : IReadOnlyCollection<KeyValuePair<string, object?>>
         , IEnumerator<KeyValuePair<string, object?>>
     {
         private KeyValuePair<string, object?>[] _values = [];
@@ -218,6 +225,89 @@ internal static class ActivityHelper
         }
 
         IEnumerator<KeyValuePair<string, object?>> IEnumerable<KeyValuePair<string, object?>>.GetEnumerator()
+        {
+            return this;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this;
+        }
+    }
+
+    private sealed class LinkList
+        : IReadOnlyCollection<ActivityLink>
+        , IEnumerator<ActivityLink>
+    {
+        private ActivityLink[] _values = [];
+        private int _count;
+        private int _pos = -1;
+
+        /// <summary>
+        /// Gets the number of links currently in this instance.
+        /// </summary>
+        public int Count => _count;
+
+        /// <summary>
+        /// Allocates some room to put some links.
+        /// </summary>
+        /// <param name="count">The amount of space to allocate.</param>
+        private void Reserve(int count)
+        {
+            int avail = _values.Length - _count;
+            if (count > avail)
+            {
+                var need = _values.Length + (count - avail);
+                Array.Resize(ref _values, need);
+            }
+        }
+
+        /// <summary>
+        /// Adds links to the list.
+        /// </summary>
+        /// <param name="links">The links to add.</param>
+        public void AddRange(ReadOnlySpan<ActivityLink> links)
+        {
+            if (links.Length == 0)
+            {
+                return;
+            }
+
+            Reserve(links.Length);
+            links.CopyTo(_values.AsSpan(_count));
+            _count += links.Length;
+        }
+
+        /// <summary>
+        /// Resets the state of this object to its initial condition.
+        /// </summary>
+        public void Clear()
+        {
+            Array.Clear(_values, 0, _count);
+            _count = 0;
+            _pos = -1;
+        }
+
+        ActivityLink IEnumerator<ActivityLink>.Current => _values[_pos];
+
+        object IEnumerator.Current => _values[_pos];
+
+        bool IEnumerator.MoveNext()
+        {
+            return ++_pos < _count;
+        }
+
+        void IDisposable.Dispose()
+        {
+            _pos = -1;
+        }
+
+        void IEnumerator.Reset()
+        {
+            _pos = -1;
+        }
+
+        IEnumerator<ActivityLink> IEnumerable<ActivityLink>.GetEnumerator()
         {
             return this;
         }
