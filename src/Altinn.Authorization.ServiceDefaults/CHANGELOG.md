@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.6.1...Altinn.Authorization.ServiceDefaults-v2.7.0) (2024-11-21)
+
+
+### Features
+
+* support more Activity props ([#161](https://github.com/Altinn/altinn-authorization-utils/issues/161)) ([c7718d7](https://github.com/Altinn/altinn-authorization-utils/commit/c7718d7a7ac39c0f0552a11a53dff511d55040cd))
+
 ## [2.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.6.0...Altinn.Authorization.ServiceDefaults-v2.6.1) (2024-11-04)
 
 
