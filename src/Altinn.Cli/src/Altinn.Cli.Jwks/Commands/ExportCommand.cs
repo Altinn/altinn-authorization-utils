@@ -11,5 +11,6 @@ internal class ExportCommand
     {
         AddCommand(new ExportKeyCommand());
         AddCommand(new ExportMaskinportenCommand());
+        AddCommand(new ExportPemCommand());
     }
 }
