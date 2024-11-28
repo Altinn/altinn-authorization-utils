@@ -31,6 +31,17 @@
       "matchUpdateTypes": [
         "major"
       ]
+    },
+    {
+      "matchPackageNames": [
+        "Testcontainers",
+        "Testcontainers.PostgreSql"
+      ],
+      "groupName": "Testcontainers for .NET",
+      "groupSlug": "testcontainers-for-dotnet",
+      "matchUpdateTypes": [
+        "major"
+      ]
     }
   ]
 }
