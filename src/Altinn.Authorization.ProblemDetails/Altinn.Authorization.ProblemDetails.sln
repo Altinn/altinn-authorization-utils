@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Proble
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Abstractions", "src\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj", "{72FCCF0A-3C5F-4FEA-8ED2-F6A8B2CCB859}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Validation", "src\ProblemDetails.Validation\Altinn.Authorization.ProblemDetails.Validation.csproj", "{20E7747E-3A77-44C7-BA94-D7FE3991AFBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +36,15 @@ Global
 		{72FCCF0A-3C5F-4FEA-8ED2-F6A8B2CCB859}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72FCCF0A-3C5F-4FEA-8ED2-F6A8B2CCB859}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72FCCF0A-3C5F-4FEA-8ED2-F6A8B2CCB859}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20E7747E-3A77-44C7-BA94-D7FE3991AFBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20E7747E-3A77-44C7-BA94-D7FE3991AFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20E7747E-3A77-44C7-BA94-D7FE3991AFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20E7747E-3A77-44C7-BA94-D7FE3991AFBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C1E314C3-2010-47B4-818B-719F1D1A2540} = {E495A322-353E-44BE-ADEE-4DB514621BBF}
 		{190CF604-A972-4003-8E67-38169F3D57CB} = {25B3E858-1E75-4314-8F6A-99B1E2170709}
 		{72FCCF0A-3C5F-4FEA-8ED2-F6A8B2CCB859} = {25B3E858-1E75-4314-8F6A-99B1E2170709}
+		{20E7747E-3A77-44C7-BA94-D7FE3991AFBD} = {25B3E858-1E75-4314-8F6A-99B1E2170709}
 	EndGlobalSection
 EndGlobal
