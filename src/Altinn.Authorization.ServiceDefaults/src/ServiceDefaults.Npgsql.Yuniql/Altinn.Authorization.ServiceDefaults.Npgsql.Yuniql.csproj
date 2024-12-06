@@ -15,9 +15,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference
-			Include="..\ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj" />
+		<ProjectReference Include="..\ServiceDefaults.Npgsql\Altinn.Authorization.ServiceDefaults.Npgsql.csproj" />
 		<ProjectReference Include="..\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="Microsoft.Build.Artifacts">
+	    <IncludeAssets>build; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 
 </Project>

@@ -10,8 +10,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference
-			Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
+		<ProjectReference Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="Microsoft.Build.Artifacts">
+	    <IncludeAssets>build; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 
 </Project>

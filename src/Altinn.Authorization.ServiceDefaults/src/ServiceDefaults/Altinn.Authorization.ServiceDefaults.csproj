@@ -21,4 +21,10 @@
     <ProjectReference Include="..\ServiceDefaults.Telemetry\Altinn.Authorization.ServiceDefaults.Telemetry.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Build.Artifacts">
+      <IncludeAssets>build; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>
