@@ -17,7 +17,7 @@ public static class SourceGeneratorUtils
 
         // Create a compilation for the source code
         var compilation = await BaseCompilation.Value;
-        compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceFile, new CSharpParseOptions(LanguageVersion.CSharp12)));
+        compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(sourceFile, new CSharpParseOptions(compilation.LanguageVersion)));
 
         // Create an instance of our generator
         var generator = new UrnGenerator();
@@ -49,16 +49,17 @@ public static class SourceGeneratorUtils
         remaining.Should().BeEmpty("All expected exceptions should be present");
     }
 
-    private static readonly Lazy<Task<Compilation>> BaseCompilation = new(async () =>
+    private static readonly Lazy<Task<CSharpCompilation>> BaseCompilation = new(async () =>
     {
         var workspace = MSBuildWorkspace.Create();
-        var projectFile = FindUp("Altinn.Urn.SourceGenerator.Tests.csproj");
+        var projectFile = Path.Combine(
+            Path.GetDirectoryName(Path.GetDirectoryName(FindUp("Altinn.Urn.SourceGenerator.Tests.csproj")))!,
+            "Altinn.Urn.SourceGenerator.IntegrationTests",
+            "Altinn.Urn.SourceGenerator.IntegrationTests.csproj");
         var project = await workspace.OpenProjectAsync(projectFile);
 
         project = project
-            .WithProjectReferences([])
             .WithAnalyzerReferences([]);
-        project = project.AddMetadataReference(Reference<KeyValueUrnAttribute>());
 
         var compilation = await project.GetCompilationAsync();
         if (compilation == null)
@@ -68,7 +69,7 @@ public static class SourceGeneratorUtils
 
         compilation = compilation.RemoveAllSyntaxTrees();
 
-        return compilation;
+        return (CSharpCompilation)compilation;
     }, LazyThreadSafetyMode.ExecutionAndPublication);
 
     private static string FindUp(string fileName)
@@ -87,10 +88,4 @@ public static class SourceGeneratorUtils
 
         throw new FileNotFoundException($"Could not find file '{fileName}'");
     }
-
-    static MetadataReference Reference(string name) =>
-        MetadataReference.CreateFromFile(AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(name)).Location);
-
-    static MetadataReference Reference<T>() =>
-        MetadataReference.CreateFromFile(typeof(T).Assembly.Location);
 }

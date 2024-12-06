@@ -1,7 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-	  <InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults.Tests"/>
+	  <InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Build.Artifacts">
+      <IncludeAssets>build; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 		
 </Project>

@@ -13,4 +13,10 @@
 		<PackageReference Include="CommunityToolkit.Diagnostics" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Update="Microsoft.Build.Artifacts">
+	    <IncludeAssets>build; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+
 </Project>

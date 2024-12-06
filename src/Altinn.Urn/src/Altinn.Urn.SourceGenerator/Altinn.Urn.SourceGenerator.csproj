@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<!-- 👇 Source generators must target netstandard 2.0 -->
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
 		<!-- 👇 We don't want to reference the source generator dll directly in consuming projects -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<!-- 👇 Since we target netstandard2.0 we need to manually set the lang version to get newer

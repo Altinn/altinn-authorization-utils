@@ -9,8 +9,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+    <ProjectReference Include="..\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Build.Artifacts">
+      <IncludeAssets>build; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

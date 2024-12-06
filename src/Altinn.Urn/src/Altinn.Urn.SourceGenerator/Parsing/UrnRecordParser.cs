@@ -151,7 +151,8 @@ internal ref struct UrnRecordParser
         {
             foreach (var attribute in attributeList.Attributes)
             {
-                var attributeCtorSymbol = _semanticModel.GetSymbolInfo(attribute, ct).Symbol as IMethodSymbol;
+                var attributeCtorSymbolInfo = _semanticModel.GetSymbolInfo(attribute, ct);
+                var attributeCtorSymbol = attributeCtorSymbolInfo.Symbol as IMethodSymbol;
                 if (attributeCtorSymbol is null || !attributeCtorSymbol.ContainingType.Equals(_symbols.UrnKeyAttribute, SymbolEqualityComparer.Default))
                 {
                     // badly formed attribute definition, or not the right attribute
