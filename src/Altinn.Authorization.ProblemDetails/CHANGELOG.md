@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.0.1...Altinn.Authorization.ProblemDetails-v3.1.0) (2024-12-06)
+
+
+### Features
+
+* upgrade to .NET 9 ([#166](https://github.com/Altinn/altinn-authorization-utils/issues/166)) ([867c940](https://github.com/Altinn/altinn-authorization-utils/commit/867c9400ac8fd9a37c71d0af6386fbb414523267))
+
 ## [3.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.0.0...Altinn.Authorization.ProblemDetails-v3.0.1) (2024-08-27)
 
 
