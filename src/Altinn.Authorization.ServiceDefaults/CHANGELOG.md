@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.7.0...Altinn.Authorization.ServiceDefaults-v2.8.0) (2024-12-06)
+
+
+### Features
+
+* upgrade to .NET 9 ([#166](https://github.com/Altinn/altinn-authorization-utils/issues/166)) ([867c940](https://github.com/Altinn/altinn-authorization-utils/commit/867c9400ac8fd9a37c71d0af6386fbb414523267))
+
 ## [2.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.6.1...Altinn.Authorization.ServiceDefaults-v2.7.0) (2024-11-21)
 
 
