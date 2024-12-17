@@ -93,4 +93,20 @@ public class ResultTests
             return 42;
         }
     }
+
+    [Fact]
+    public void EnsureSuccess_ThrowsIfProblem()
+    {
+        Result<int> result = StdProblemDescriptors.ValidationError;
+        Action action = () => result.EnsureSuccess();
+        action.Should().Throw<ProblemInstanceException>()
+            .Which.Problem.ErrorCode.Should().Be(StdProblemDescriptors.ErrorCodes.ValidationError);
+    }
+
+    [Fact]
+    public void EnsureSuccess_DoesNotThrowIfSuccess()
+    {
+        Result<int> result = 42;
+        result.EnsureSuccess();
+    }
 }
