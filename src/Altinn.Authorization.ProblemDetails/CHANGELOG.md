@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.1.0...Altinn.Authorization.ProblemDetails-v3.2.0) (2024-12-17)
+
+
+### Features
+
+* add `ProblemInstanceException` ([#172](https://github.com/Altinn/altinn-authorization-utils/issues/172)) ([7bed62f](https://github.com/Altinn/altinn-authorization-utils/commit/7bed62fdf844d534883286ba73c3095714d079b9))
+
 ## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.0.1...Altinn.Authorization.ProblemDetails-v3.1.0) (2024-12-06)
 
 
