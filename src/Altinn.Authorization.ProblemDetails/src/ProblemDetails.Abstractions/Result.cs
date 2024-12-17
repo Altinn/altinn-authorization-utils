@@ -50,6 +50,19 @@ public readonly struct Result<T>
     }
 
     /// <summary>
+    /// Ensures that the operation succeeded.
+    /// </summary>
+    /// <exception cref="ProblemInstanceException">Thrown if the operation failed.</exception>
+    [MemberNotNull(nameof(Value))]
+    public void EnsureSuccess()
+    {
+        if (!IsSuccess)
+        {
+            throw new ProblemInstanceException(_problem!);
+        }
+    }
+
+    /// <summary>
     /// Gets the problem instance if the operation failed, otherwise <see langword="null"/>.
     /// </summary>
     public ProblemInstance? Problem
