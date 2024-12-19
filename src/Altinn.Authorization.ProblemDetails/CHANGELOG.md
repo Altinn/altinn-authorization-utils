@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.0...Altinn.Authorization.ProblemDetails-v3.2.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* add ProblemInstanceException constructor overloads ([#175](https://github.com/Altinn/altinn-authorization-utils/issues/175)) ([95b8a0b](https://github.com/Altinn/altinn-authorization-utils/commit/95b8a0bbfd8a01d3ca72b4239fce63d040f30eb5))
+
 ## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.1.0...Altinn.Authorization.ProblemDetails-v3.2.0) (2024-12-17)
 
 
