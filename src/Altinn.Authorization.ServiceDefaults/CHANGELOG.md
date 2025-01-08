@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.8.0...Altinn.Authorization.ServiceDefaults-v2.9.0) (2025-01-08)
+
+
+### Features
+
+* enable disabling pre-startup logging ([#181](https://github.com/Altinn/altinn-authorization-utils/issues/181)) ([64e776a](https://github.com/Altinn/altinn-authorization-utils/commit/64e776abd7a382b7fd1f9b123b6b923ee903f7b5))
+
 ## [2.8.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.7.0...Altinn.Authorization.ServiceDefaults-v2.8.0) (2024-12-06)
 
 
