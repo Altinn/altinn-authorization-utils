@@ -22,8 +22,10 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -56,11 +58,12 @@ public static class AltinnServiceDefaultsExtensions
             return builder;
         }
 
-        builder.AddAltinnConfiguration();
+        var logger = AltinnPreStartLogger.Create(builder.Configuration, nameof(AltinnServiceDefaultsExtensions));
+        builder.AddAltinnConfiguration(logger);
 
         // Note - this has to happen early due to a bug in Application Insights
         // See: https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
-        builder.AddApplicationInsights(); 
+        builder.AddApplicationInsights(logger); 
 
         var isLocalDevelopment = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Altinn:LocalDev");
 
@@ -108,17 +111,18 @@ public static class AltinnServiceDefaultsExtensions
     /// <returns><paramref name="app"/>.</returns>
     public static WebApplication AddDefaultAltinnMiddleware(this WebApplication app, string errorHandlingPath)
     {
-        Log("Startup // Configure");
+        var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AltinnServiceDefaultsExtensions));
+        logger.LogInformation("Startup // Configure");
 
         if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         {
-            Log("IsDevelopment || IsStaging => Using developer exception page");
+            logger.LogInformation("IsDevelopment || IsStaging => Using developer exception page");
 
             app.UseDeveloperExceptionPage();
         }
         else
         {
-            Log("Production => Using exception handler");
+            logger.LogInformation("Production => Using exception handler");
 
             app.UseExceptionHandler(errorHandlingPath);
         }
@@ -334,7 +338,7 @@ public static class AltinnServiceDefaultsExtensions
         return builder;
     }
 
-    private static IHostApplicationBuilder AddApplicationInsights(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddApplicationInsights(this IHostApplicationBuilder builder, AltinnPreStartLogger logger)
     {
         var applicationInsightsInstrumentationKey = builder.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
 
@@ -358,30 +362,30 @@ public static class AltinnServiceDefaultsExtensions
             builder.Services.AddApplicationInsightsTelemetryProcessor<ApplicationInsightsRequestTelemetryEnricherProcessor>();
             builder.Services.AddSingleton<ITelemetryInitializer, AltinnServiceTelemetryInitializer>();
 
-            Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");
+            logger.Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");
         }
         else
         {
-            Log("No ApplicationInsights:InstrumentationKey found - skipping Application Insights");
+            logger.Log("No ApplicationInsights:InstrumentationKey found - skipping Application Insights");
         }
 
         return builder;
     }
 
-    private static IHostApplicationBuilder AddAltinnConfiguration(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddAltinnConfiguration(this IHostApplicationBuilder builder, AltinnPreStartLogger logger)
     {
-        builder.Configuration.AddAltinnDbSecretsJson();
-        builder.Configuration.AddAltinnKeyVault();
+        builder.Configuration.AddAltinnDbSecretsJson(logger);
+        builder.Configuration.AddAltinnKeyVault(logger);
 
         return builder;
     }
 
-    private static IConfigurationBuilder AddAltinnDbSecretsJson(this IConfigurationBuilder builder)
+    private static IConfigurationBuilder AddAltinnDbSecretsJson(this IConfigurationBuilder builder, AltinnPreStartLogger logger)
     {
         var parentDir = Path.GetDirectoryName(Environment.CurrentDirectory);
         if (parentDir is null)
         {
-            Log("No parent directory found - skipping altinn-dbsettings-secret.json");
+            logger.Log("No parent directory found - skipping altinn-dbsettings-secret.json");
             return builder;
         }
 
@@ -392,16 +396,16 @@ public static class AltinnServiceDefaultsExtensions
 
         if (!File.Exists(altinnDbSecretsConfigFile))
         {
-            Log($"No altinn-dbsettings-secret.json found at \"{altinnDbSecretsConfigFile}\" - skipping altinn-dbsettings-secret.json");
+            logger.Log($"No altinn-dbsettings-secret.json found at \"{altinnDbSecretsConfigFile}\" - skipping altinn-dbsettings-secret.json");
             return builder;
         }
 
-        Log($"Loading configuration from \"{altinnDbSecretsConfigFile}\"");
+        logger.Log($"Loading configuration from \"{altinnDbSecretsConfigFile}\"");
         builder.AddJsonFile(altinnDbSecretsConfigFile, optional: false, reloadOnChange: true);
         return builder;
     }
 
-    private static IConfigurationBuilder AddAltinnKeyVault(this IConfigurationManager manager)
+    private static IConfigurationBuilder AddAltinnKeyVault(this IConfigurationManager manager, AltinnPreStartLogger logger)
     {
         var clientId = manager.GetValue<string>("kvSetting:ClientId");
         var tenantId = manager.GetValue<string>("kvSetting:TenantId");
@@ -419,7 +423,7 @@ public static class AltinnServiceDefaultsExtensions
                 && !string.IsNullOrEmpty(tenantId)
                 && !string.IsNullOrEmpty(clientSecret))
             {
-                Log($"adding config from keyvault using client-secret credentials");
+                logger.Log($"adding config from keyvault using client-secret credentials");
                 credentialList.Add(new ClientSecretCredential(
                     tenantId: tenantId,
                     clientId: clientId,
@@ -428,25 +432,25 @@ public static class AltinnServiceDefaultsExtensions
 
             if (enableEnvironmentCredential)
             {
-                Log("adding config from keyvault using environment credentials");
+                logger.Log("adding config from keyvault using environment credentials");
                 credentialList.Add(new EnvironmentCredential());
             }
             
             if (enableWorkloadIdentityCredential)
             {
-                Log("adding config from keyvault using workload identity credentials");
+                logger.Log("adding config from keyvault using workload identity credentials");
                 credentialList.Add(new WorkloadIdentityCredential());
             }
 
             if (enableManagedIdentityCredential)
             {
-                Log("adding config from keyvault using managed identity credentials");
+                logger.Log("adding config from keyvault using managed identity credentials");
                 credentialList.Add(new ManagedIdentityCredential());
             }
 
             if (credentialList.Count == 0)
             {
-                Log("No credentials found for keyvault - skipping adding keyvault to configuration");
+                logger.Log("No credentials found for keyvault - skipping adding keyvault to configuration");
                 return manager;
             }
 
@@ -456,16 +460,9 @@ public static class AltinnServiceDefaultsExtensions
         }
         else
         {
-            Log($"Missing keyvault settings - skipping adding keyvault to configuration");
+            logger.Log($"Missing keyvault settings - skipping adding keyvault to configuration");
         }
 
         return manager;
-    }
-
-    private static void Log(
-        string message,
-        [CallerMemberName] string callerMemberName = "")
-    {
-        Console.WriteLine($"// {nameof(AltinnServiceDefaultsExtensions)}.{callerMemberName}: {message}");
     }
 }
