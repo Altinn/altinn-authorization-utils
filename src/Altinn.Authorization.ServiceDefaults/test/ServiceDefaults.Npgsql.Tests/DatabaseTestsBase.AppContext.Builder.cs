@@ -45,6 +45,14 @@ public abstract partial class DatabaseTestsBase
         var appConnectionString = builder.ConnectionString;
 
         var configuration = new ConfigurationManager();
+
+        if (!Debugger.IsAttached)
+        {
+            configuration.AddInMemoryCollection([
+                new(AltinnPreStartLogger.DisableConfigKey, "true"),
+            ]);
+        }
+
         configuration.AddJsonConfiguration(
             $$"""
             {
