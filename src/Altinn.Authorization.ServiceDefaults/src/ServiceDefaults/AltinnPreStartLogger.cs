@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Microsoft.Extensions.Hosting;
+namespace Altinn.Authorization.ServiceDefaults;
 
 /// <summary>
 /// A pre-start logger for Altinn services.
@@ -48,6 +48,11 @@ public sealed class AltinnPreStartLogger
         _enabled = enabled;
     }
 
+    /// <summary>
+    /// Logs the specified message.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <param name="callerMemberName">See <see cref="CallerMemberNameAttribute"/>.</param>
     public void Log(string message, [CallerMemberName] string callerMemberName = "")
     {
         var handler = new LogHandler(message.Length, 0, this, callerMemberName);
@@ -55,6 +60,10 @@ public sealed class AltinnPreStartLogger
         handler.LogTo(_writeToStdout);
     }
 
+    /// <summary>
+    /// Logs the specified message.
+    /// </summary>
+    /// <param name="handler">The message.</param>
     public void Log([InterpolatedStringHandlerArgument("")] ref LogHandler handler)
     {
         handler.LogTo(_writeToStdout);
