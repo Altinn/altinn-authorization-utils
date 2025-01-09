@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.0...Altinn.Urn-v2.6.1) (2025-01-09)
+
+
+### Bug Fixes
+
+* trigger rebuild ([#184](https://github.com/Altinn/altinn-authorization-utils/issues/184)) ([8d86886](https://github.com/Altinn/altinn-authorization-utils/commit/8d8688610f25408f44dd129bb40f31076c3fefa7))
+
 ## [2.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.5.1...Altinn.Urn-v2.6.0) (2024-12-06)
 
 
