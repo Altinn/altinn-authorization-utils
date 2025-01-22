@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Altinn.Authorization.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "db export register \"C:\\Users\\ALEHEI\\tmp\\register\""
+    }
+  }
+}
