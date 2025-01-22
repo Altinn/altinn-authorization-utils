@@ -3,10 +3,12 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using System.Collections.Immutable;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Altinn.Authorization.Cli.Database;
 
+[ExcludeFromCodeCoverage]
 public sealed class ExportDatabaseCommand(CancellationToken cancellationToken)
     : AsyncCommand<ExportDatabaseSettings>
 {

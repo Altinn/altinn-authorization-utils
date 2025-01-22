@@ -1,8 +1,10 @@
 ﻿using Altinn.Authorization.Cli.Utils;
 using Spectre.Console.Cli;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.Cli.Database;
 
+[ExcludeFromCodeCoverage]
 public class DatabaseSettings
     : CommandSettings
 {
