@@ -12,11 +12,16 @@ public class EnvironmentVariableAttribute
 {
     private readonly string _name;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnvironmentVariableAttribute"/> class.
+    /// </summary>
+    /// <param name="name">The environment variable name.</param>
     public EnvironmentVariableAttribute(string name)
     {
         _name = name;
     }
 
+    /// <inheritdoc/>
     public override bool TryGetValue(CommandParameterContext context, out object? result)
     {
         result = null;
