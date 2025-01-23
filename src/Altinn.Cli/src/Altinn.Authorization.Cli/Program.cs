@@ -1,6 +1,7 @@
 ﻿using Altinn.Authorization.Cli.Database;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 using var cancellationTokenSource = new CancellationTokenSource();
@@ -41,3 +42,10 @@ void onSignal(PosixSignalContext ctx)
     cancellationTokenSource.Cancel();
 }
 
+/// <summary>
+/// Program entry point.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public partial class Program
+{
+}

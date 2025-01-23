@@ -1,7 +1,12 @@
 ﻿using Spectre.Console.Cli;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.Cli.Utils;
 
+/// <summary>
+/// Provides default value for an option from an environment variable.
+/// </summary>
+[ExcludeFromCodeCoverage]
 public class EnvironmentVariableAttribute
     : ParameterValueProviderAttribute
 {

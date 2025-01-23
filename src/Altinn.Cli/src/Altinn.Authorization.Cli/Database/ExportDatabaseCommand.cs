@@ -8,10 +8,14 @@ using System.Text;
 
 namespace Altinn.Authorization.Cli.Database;
 
+/// <summary>
+/// Exports all tables in a database schema.
+/// </summary>
 [ExcludeFromCodeCoverage]
 public sealed class ExportDatabaseCommand(CancellationToken cancellationToken)
     : AsyncCommand<ExportDatabaseSettings>
 {
+    /// <inheritdoc/>
     public override async Task<int> ExecuteAsync(CommandContext context, ExportDatabaseSettings settings)
     {
         await using var dataSource = CreateDataSource(settings);
@@ -159,6 +163,7 @@ public sealed class ExportDatabaseCommand(CancellationToken cancellationToken)
         return 0;
     }
 
+    /// <inheritdoc/>
     public override ValidationResult Validate(CommandContext context, ExportDatabaseSettings settings)
     {
         if (string.IsNullOrEmpty(settings.ConnectionString))
@@ -292,12 +297,22 @@ public sealed class ExportDatabaseCommand(CancellationToken cancellationToken)
     private sealed record ExportTask(ProgressTask Progress, TableInfo Table, int Index);
 }
 
+/// <summary>
+/// Settings for the export database command.
+/// </summary>
+[ExcludeFromCodeCoverage]
 public class ExportDatabaseSettings
     : DatabaseSettings
 {
+    /// <summary>
+    /// Gets the schema name to export.
+    /// </summary>
     [CommandArgument(0, "<SCHEMA_NAME>")]
     public string? SchemaName { get; init; }
 
+    /// <summary>
+    /// Gets the output directory to write the exported tables to.
+    /// </summary>
     [CommandArgument(1, "<OUTPUT_DIRECTORY>")]
     public DirectoryInfo? OutputDirectory { get; init; }
 }
