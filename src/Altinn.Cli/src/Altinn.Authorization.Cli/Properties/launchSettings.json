@@ -2,7 +2,7 @@
   "profiles": {
     "Altinn.Authorization.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "db export register \"C:\\Users\\ALEHEI\\tmp\\register\""
+      "commandLineArgs": "db cp\r\n\"${REGISTER_DB_MIGRATOR_AT22}\"\r\n\"${REGISTER_DB_LOCAL}\"\r\n\"register\""
     }
   }
 }

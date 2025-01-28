@@ -7,7 +7,7 @@ namespace Altinn.Authorization.Cli.Utils;
 /// Provides default value for an option from an environment variable.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class EnvironmentVariableAttribute
+public sealed class EnvironmentVariableAttribute
     : ParameterValueProviderAttribute
 {
     private readonly string _name;

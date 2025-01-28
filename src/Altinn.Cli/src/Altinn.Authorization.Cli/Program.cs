@@ -15,9 +15,10 @@ app.Configure(config =>
 {
     config.PropagateExceptions();
     config.Settings.Registrar.RegisterInstance(cancellationTokenSource.Token);
-    config.AddBranch<DatabaseSettings>("db", db =>
+    config.AddBranch("db", db =>
     {
         db.AddCommand<ExportDatabaseCommand>("export");
+        db.AddCommand<CopyCommand>("cp");
     });
 });
 
