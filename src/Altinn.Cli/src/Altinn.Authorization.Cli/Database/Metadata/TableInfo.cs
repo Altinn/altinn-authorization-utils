@@ -1,10 +1,12 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.Cli.Database.Metadata;
 
 /// <summary>
 /// Represents information about a table.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class TableInfo
     : TableRef
 {

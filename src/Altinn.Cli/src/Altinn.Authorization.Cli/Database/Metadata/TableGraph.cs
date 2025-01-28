@@ -3,6 +3,7 @@ using Npgsql;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Altinn.Authorization.Cli.Database.Metadata;
@@ -10,6 +11,7 @@ namespace Altinn.Authorization.Cli.Database.Metadata;
 /// <summary>
 /// Represents a graph of tables.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class TableGraph
     : IReadOnlyList<TableGraph.Node>
 {

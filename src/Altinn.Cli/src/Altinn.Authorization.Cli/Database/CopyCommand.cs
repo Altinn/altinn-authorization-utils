@@ -85,7 +85,7 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
                         continue;
                     }
 
-                    var copyTask = ctx.AddTask($"""Copy [yellow]"{table.Name}"[/]""", autoStart: true, maxValue: table.EstimatedTableRows);
+                    var copyTask = ctx.AddTask($"""Copy table "[yellow]{table.Name}[/]" """.TrimEnd(), autoStart: true, maxValue: table.EstimatedTableRows);
                     var colsString = string.Join(',', table.Columns.Select(c => $"\"{c.Name}\""));
                     var copyFrom = /*strpsql*/$"""COPY "{table.Schema}"."{table.Name}" ({colsString}) FROM STDIN""";
                     var copyTo = /*strpsql*/$"""COPY "{table.Schema}"."{table.Name}" ({colsString}) TO STDOUT""";

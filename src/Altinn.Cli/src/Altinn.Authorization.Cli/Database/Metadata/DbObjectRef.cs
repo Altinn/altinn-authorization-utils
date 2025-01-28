@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.Cli.Database.Metadata;
 
 /// <summary>
 /// Represents a reference to a database object.
 /// </summary>
+[ExcludeFromCodeCoverage]
 [DebuggerDisplay("{Schema}.{Name}")]
 public abstract class DbObjectRef
 {
