@@ -1,13 +1,14 @@
 ﻿using Spectre.Console;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.Cli.Utils;
 
 /// <summary>
-/// Extensions for <see cref="Task"/>.
+/// General extensions for the CLI.
 /// </summary>
 [ExcludeFromCodeCoverage]
-public static class TaskExtensions
+public static class CliExtensions
 {
     /// <summary>
     /// Logs a message if the task fails.
@@ -46,5 +47,25 @@ public static class TaskExtensions
             AnsiConsole.MarkupLine(message);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Creates a line progress reporter from a <see cref="ProgressTask"/>.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <returns>A line progress reporter.</returns>
+    public static LineProgress AsLineProgress(this ProgressTask task)
+        => new(task);
+
+    /// <summary>
+    /// A <see cref="IProgress{T}"/> wrapper for <see cref="ProgressTask"/>.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public readonly struct LineProgress(ProgressTask task)
+        : IProgress<int>
+    {
+        /// <inheritdoc/>
+        public readonly void Report(int value)
+            => task.Increment(value);
     }
 }
