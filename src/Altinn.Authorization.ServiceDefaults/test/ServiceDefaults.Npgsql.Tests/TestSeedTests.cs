@@ -118,12 +118,12 @@ public class TestSeedTests(DbFixture fixture)
             .AddTestSeedData([
                 KeyValuePair.Create("[app.test]/01-normal.sql", /*strpsql*/"INSERT INTO app.test (id, value) VALUES (1, '01-normal');"),
                 KeyValuePair.Create(
-                    "[app.test]/02-tsv.asdn-v1.tsv",
+                    "[app.test]/02-asdn-v1.asdn-v1",
                     """
-                    COPY app.test (id, value) FROM stdin
-                    2	02-tsv
-                    3	03-tsv
-                    4	04-tsv
+                    COPY app.test (id, value) FROM stdin (FORMAT csv)
+                    "2","02-asdn-v1"
+                    "3","03-asdn-v1"
+                    "4","04-asdn-v1"
                     """),
                 KeyValuePair.Create("[app.test]/02-normal.sql", /*strpsql*/"INSERT INTO app.test (id, value) VALUES (5, '02-normal');"),
             ]);
@@ -136,6 +136,6 @@ public class TestSeedTests(DbFixture fixture)
             items.Add(result.GetString(0));
         }
 
-        items.Should().BeEquivalentTo(["01-normal", "02-tsv", "03-tsv", "04-tsv", "02-normal"]);
+        items.Should().BeEquivalentTo(["01-normal", "02-asdn-v1", "03-asdn-v1", "04-asdn-v1", "02-normal"]);
     }
 }

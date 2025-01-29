@@ -8,7 +8,7 @@ internal enum SeedDataFileType
     Sql,
 
     /// <summary>
-    /// .asdn-v1.tsv
+    /// .asdn-v1
     /// </summary>
     AltinnServiceDefaultsNpgsqlSeedDataV1,
 }

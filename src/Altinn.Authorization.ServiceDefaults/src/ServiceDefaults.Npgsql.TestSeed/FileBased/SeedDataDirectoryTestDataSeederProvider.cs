@@ -202,7 +202,7 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
         {
             fileType = SeedDataFileType.Sql;
         }
-        else if (name.EndsWith(".asdn-v1.tsv", StringComparison.Ordinal))
+        else if (name.EndsWith(".asdn-v1", StringComparison.Ordinal))
         {
             fileType = SeedDataFileType.AltinnServiceDefaultsNpgsqlSeedDataV1;
         }
