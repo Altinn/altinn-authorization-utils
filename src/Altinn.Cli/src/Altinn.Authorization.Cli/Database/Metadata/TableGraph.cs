@@ -3,6 +3,7 @@ using Npgsql;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
@@ -12,6 +13,7 @@ namespace Altinn.Authorization.Cli.Database.Metadata;
 /// Represents a graph of tables.
 /// </summary>
 [ExcludeFromCodeCoverage]
+[DebuggerDisplay("Count = {Count,nq}")]
 public sealed class TableGraph
     : IReadOnlyList<TableGraph.Node>
 {
@@ -78,7 +80,7 @@ public sealed class TableGraph
     /// <param name="schemaName">The schema name.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
     /// <returns>A <see cref="TableGraph"/>.</returns>
-    public static async Task<TableGraph> GetForSchemaAsync(
+    public static async Task<TableGraph> GetAsync(
         NpgsqlConnection connection,
         string schemaName,
         CancellationToken cancellationToken = default)

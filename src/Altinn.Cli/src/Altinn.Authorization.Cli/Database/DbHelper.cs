@@ -45,8 +45,8 @@ internal sealed class DbHelper
         _conn = conn;
     }
 
-    public Task<TableGraph> GetTableGraphForSchema(string schemaName, CancellationToken cancellationToken)
-        => TableGraph.GetForSchemaAsync(_conn, schemaName, cancellationToken);
+    public Task<SchemaInfo> GetSchemaInfo(string schemaName, CancellationToken cancellationToken)
+        => SchemaInfo.GetAsync(_conn, schemaName, cancellationToken);
 
     public NpgsqlCommand CreateCommand(string commandText)
     {

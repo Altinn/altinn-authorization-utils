@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Altinn.Authorization.Cli.Database;
 
@@ -23,12 +22,15 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
         await using var target = await DbHelper.Create(settings.TargetConnectionString!, cancellationToken)
             .LogOnFailure("[bold red]Failed to connect to the target database[/]");
         
-        var graph = await source.GetTableGraphForSchema(settings.SchemaName!, cancellationToken)
+        var schemaInfo = await source.GetSchemaInfo(settings.SchemaName!, cancellationToken)
             .LogOnFailure($"[bold red]Failed to get table graph for schema \"{settings.SchemaName}\"[/]");
+
+        var graph = schemaInfo.Tables;
 
         var selectionPrompt = new MultiSelectionPrompt<SelectionItem>()
             .Title("Select what to copy")
             .NotRequired()
+            .PageSize(20)
             .MoreChoicesText("[grey](Move up and down to reveal more items)[/]")
             .InstructionsText("[grey](Press [blue]<space>[/] to toggle an item, [green]<enter>[/] to accept)[/]");
 
@@ -38,16 +40,23 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
             tablesGroup,
             tableItems);
 
-        selectionPrompt.Select(tablesGroup);
-        foreach (var tableItem in tableItems)
+        var sequencesGroup = new GroupItem("Sequences");
+        var sequenceItems = schemaInfo.Sequences.Select(s => new SequenceSelectionItem(s)).ToArray();
+        selectionPrompt.AddChoiceGroup(
+            sequencesGroup,
+            sequenceItems);
+
+        IEnumerable<SelectionItem> allItems = [tablesGroup, .. tableItems, sequencesGroup, .. sequenceItems];
+        foreach (var sequenceItem in allItems)
         {
-            selectionPrompt.Select(tableItem);
+            selectionPrompt.Select(sequenceItem);
         }
 
         var selected = AnsiConsole.Prompt(selectionPrompt);
         
         // we need to keep the ordering from the graph
-        var tables = graph.Where(t => selected.Any(s => s is TableSelectionItem ts && ts.Table == t)).ToList();
+        var tables = graph.Where(i => selected.Any(s => s is TableSelectionItem ts && ts.Table == i)).ToList();
+        var sequences = schemaInfo.Sequences.Where(i => selected.Any(s => s is SequenceSelectionItem ss && ss.Sequence == i)).ToList();
 
         await AnsiConsole.Progress()
             .AutoClear(false)
@@ -77,6 +86,7 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
                     ctx.Refresh();
                 }
 
+                var buffer = CharBuffers.MiB(10);
                 foreach (var table in tables)
                 {
                     if (table.EstimatedTableRows < 0)
@@ -93,22 +103,41 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
                     using var reader = await source.BeginTextExport(copyTo, cancellationToken);
                     await using var writer = await target.BeginTextImport(copyFrom, cancellationToken);
 
-                    string? line;
-                    uint rows = 0;
-
-                    while ((line = await reader.ReadLineAsync(cancellationToken)) is not null)
+                    // TODO: this can probably be sped up quite a bit by reading and writing concurrently
+                    int read;
+                    while (true)
                     {
-                        await writer.WriteLineAsync(line.AsMemory(), cancellationToken);
-
-                        if (++rows % 5000 == 0)
+                        read = await reader.ReadAsync(buffer, cancellationToken);
+                        if (read == 0)
                         {
-                            copyTask.Increment(5000);
-                            rows = 0;
+                            // end
+                            break;
                         }
+
+                        var data = buffer[..read];
+                        var newLines = data.Span.Count('\n');
+                        copyTask.Increment(newLines);
+                        await writer.WriteAsync(data, cancellationToken);
                     }
 
                     copyTask.Value = copyTask.MaxValue;
                     copyTask.StopTask();
+                    ctx.Refresh();
+                }
+
+                if (sequences.Count > 0)
+                {
+                    var seqTask = ctx.AddTask("Updating target sequences", autoStart: true, maxValue: sequences.Count);
+                    foreach (var seq in sequences)
+                    {
+                        await UpdateSequence(target, seq, cancellationToken)
+                            .LogOnFailure($"[bold red]Failed to update sequence \"{seq.Schema}\".\"{seq.Name}\"[/]");
+                        seqTask.Increment(1);
+                        ctx.Refresh();
+                    }
+
+                    seqTask.Value = seqTask.MaxValue;
+                    seqTask.StopTask();
                     ctx.Refresh();
                 }
 
@@ -124,42 +153,10 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
         await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    /// <summary>
-    /// Settings for the export database command.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public class Settings
-        : CommandSettings
+    private async Task UpdateSequence(DbHelper db, SequenceInfo seq, CancellationToken cancellationToken)
     {
-        /// <summary>
-        /// Gets the connection string to the source database.
-        /// </summary>
-        [Description("The connection string to the source database.")]
-        [CommandArgument(0, "<SOURCE_CONNECTION_STRING>")]
-        [ExpandEnvironmentVariables]
-        public string? SourceConnectionString { get; init; }
-
-        /// <summary>
-        /// Gets the connection string to the target database.
-        /// </summary>
-        [Description("The connection string to the target database.")]
-        [CommandArgument(1, "<TARGET_CONNECTION_STRING>")]
-        [ExpandEnvironmentVariables]
-        public string? TargetConnectionString { get; init; }
-
-        /// <summary>
-        /// Gets the schema name to copy.
-        /// </summary>
-        [Description("The schema name to copy.")]
-        [CommandArgument(2, "<SCHEMA_NAME>")]
-        public string? SchemaName { get; init; }
-
-        /// <summary>
-        /// Gets a value indicating whether to truncate the target tables before copying.
-        /// </summary>
-        [Description("Don't truncate the target tables before copying.")]
-        [CommandOption("-n|--no-truncate")]
-        public bool NoTruncate { get; init; }
+        await using var cmd = db.CreateCommand(/*strpsql*/$"""SELECT setval('{seq.Schema}.{seq.Name}', {seq.Value}, {seq.IsCalled})""");
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
     [TypeConverterAttribute(typeof(Converter))]
@@ -219,5 +216,52 @@ public sealed class CopyCommand(CancellationToken cancellationToken)
 
             return sb.ToString();
         }
+    }
+
+    private sealed class SequenceSelectionItem(SequenceInfo sequence)
+        : SelectionItem
+    {
+        public SequenceInfo Sequence => sequence;
+
+        public override string GetMarkup()
+            => sequence.Name;
+    }
+
+    /// <summary>
+    /// Settings for the export database command.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public class Settings
+        : CommandSettings
+    {
+        /// <summary>
+        /// Gets the connection string to the source database.
+        /// </summary>
+        [Description("The connection string to the source database.")]
+        [CommandArgument(0, "<SOURCE_CONNECTION_STRING>")]
+        [ExpandEnvironmentVariables]
+        public string? SourceConnectionString { get; init; }
+
+        /// <summary>
+        /// Gets the connection string to the target database.
+        /// </summary>
+        [Description("The connection string to the target database.")]
+        [CommandArgument(1, "<TARGET_CONNECTION_STRING>")]
+        [ExpandEnvironmentVariables]
+        public string? TargetConnectionString { get; init; }
+
+        /// <summary>
+        /// Gets the schema name to copy.
+        /// </summary>
+        [Description("The schema name to copy.")]
+        [CommandArgument(2, "<SCHEMA_NAME>")]
+        public string? SchemaName { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether to truncate the target tables before copying.
+        /// </summary>
+        [Description("Don't truncate the target tables before copying.")]
+        [CommandOption("-n|--no-truncate")]
+        public bool NoTruncate { get; init; }
     }
 }
