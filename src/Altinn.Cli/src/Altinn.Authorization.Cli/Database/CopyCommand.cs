@@ -18,6 +18,7 @@ namespace Altinn.Authorization.Cli.Database;
 public sealed class CopyCommand(CancellationToken cancellationToken)
     : AsyncCommand<CopyCommand.Settings>
 {
+    /// <inheritdoc/>
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
         await using var source = await DbHelper.Create(settings.SourceConnectionString!, cancellationToken)

@@ -140,7 +140,6 @@ public sealed class SchemaItemPrompt
 
         if (ShowTables)
         {
-            var tableGroup = new GroupItem(GroupType.Tables);
             _inner.AddChoices(new GroupItem(GroupType.Tables), group =>
             {
                 group.Select();
@@ -156,7 +155,6 @@ public sealed class SchemaItemPrompt
 
         if (ShowSequences)
         {
-            var sequenceGroup = new GroupItem(GroupType.Sequences);
             _inner.AddChoices(new GroupItem(GroupType.Sequences), group =>
             {
                 group.Select();

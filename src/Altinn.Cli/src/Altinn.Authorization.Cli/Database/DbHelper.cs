@@ -86,7 +86,7 @@ internal sealed class DbHelper
     { 
         if (_transaction is { } t)
         {
-            await _transaction.DisposeAsync();
+            await t.DisposeAsync();
         }
 
         await _conn.DisposeAsync();
