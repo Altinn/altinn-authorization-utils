@@ -77,6 +77,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Telemetry", "Altinn.Authorization.ServiceDefaults\src\ServiceDefaults.Telemetry\Altinn.Authorization.ServiceDefaults.Telemetry.csproj", "{22B753AE-1913-4873-9139-76DBA3C9A3F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Cli", "Altinn.Cli\src\Altinn.Authorization.Cli\Altinn.Authorization.Cli.csproj", "{289B9B95-FC2F-4FBC-8E37-067D567BBE44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,10 @@ Global
 		{22B753AE-1913-4873-9139-76DBA3C9A3F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22B753AE-1913-4873-9139-76DBA3C9A3F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22B753AE-1913-4873-9139-76DBA3C9A3F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{289B9B95-FC2F-4FBC-8E37-067D567BBE44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{289B9B95-FC2F-4FBC-8E37-067D567BBE44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{289B9B95-FC2F-4FBC-8E37-067D567BBE44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{289B9B95-FC2F-4FBC-8E37-067D567BBE44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -208,6 +214,7 @@ Global
 		{2D4570CD-39CF-45BE-9CCB-0327D97DD638} = {A356DDAF-DD7B-4CCC-A069-C0EB37E40AEE}
 		{261C441B-F4D7-4E25-A6CF-49316A19AB29} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
 		{22B753AE-1913-4873-9139-76DBA3C9A3F5} = {D3DEC557-4814-41FD-B74A-E5DCABCB724C}
+		{289B9B95-FC2F-4FBC-8E37-067D567BBE44} = {A356DDAF-DD7B-4CCC-A069-C0EB37E40AEE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A2B25D1-5A10-4899-A920-AB7F206BE9D4}

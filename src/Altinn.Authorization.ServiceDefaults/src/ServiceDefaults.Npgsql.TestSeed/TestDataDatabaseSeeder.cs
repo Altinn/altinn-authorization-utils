@@ -87,7 +87,7 @@ internal partial class TestDataDatabaseSeeder
         await using var batch = connection.CreateBatch();
         batch.Transaction = tx;
 
-        var builder = new BatchBuilder(batch);
+        var builder = new BatchBuilder(connection, batch);
         foreach (var seeder in seeders)
         {
             using var scope = seeder.BeginLoggerScope(_logger);
@@ -105,7 +105,11 @@ internal partial class TestDataDatabaseSeeder
             }
         }
 
-        await batch.ExecuteNonQueryAsync(cancellationToken);
+        if (batch.BatchCommands.Count > 0)
+        {
+            await batch.ExecuteNonQueryAsync(cancellationToken);
+        }
+
         await tx.CommitAsync(cancellationToken);
     }
 

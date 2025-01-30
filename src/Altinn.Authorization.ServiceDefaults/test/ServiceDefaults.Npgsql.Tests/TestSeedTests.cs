@@ -107,4 +107,35 @@ public class TestSeedTests(DbFixture fixture)
 
         items.Should().BeEquivalentTo(["value"]);
     }
+
+    [Fact]
+    public async Task Check_AltinnServiceDefaultsNpgsqlSeedDataV1_Support()
+    {
+        await using var ctx = await CreateBuilder()
+            .AddYuniqlMigrations([
+                /*strpsql*/"CREATE TABLE app.test (id BIGINT PRIMARY KEY NOT NULL, value TEXT NOT NULL);",
+            ])
+            .AddTestSeedData([
+                KeyValuePair.Create("[app.test]/01-normal.sql", /*strpsql*/"INSERT INTO app.test (id, value) VALUES (1, '01-normal');"),
+                KeyValuePair.Create(
+                    "[app.test]/02-asdn-v1.asdn-v1",
+                    """
+                    COPY app.test (id, value) FROM stdin (FORMAT csv)
+                    "2","02-asdn-v1"
+                    "3","03-asdn-v1"
+                    "4","04-asdn-v1"
+                    """),
+                KeyValuePair.Create("[app.test]/02-normal.sql", /*strpsql*/"INSERT INTO app.test (id, value) VALUES (5, '02-normal');"),
+            ]);
+
+        await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
+        var items = new List<string>();
+
+        while (await result.ReadAsync())
+        {
+            items.Add(result.GetString(0));
+        }
+
+        items.Should().BeEquivalentTo(["01-normal", "02-asdn-v1", "03-asdn-v1", "04-asdn-v1", "02-normal"]);
+    }
 }

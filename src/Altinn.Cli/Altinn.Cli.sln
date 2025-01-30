@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9DBDF80B-635
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Cli.Jwks", "src\Altinn.Cli.Jwks\Altinn.Cli.Jwks.csproj", "{28E77F52-648B-444E-9464-6558CF823F0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Cli", "src\Altinn.Authorization.Cli\Altinn.Authorization.Cli.csproj", "{ECA48485-B462-410B-82B9-43971B9C1310}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{28E77F52-648B-444E-9464-6558CF823F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28E77F52-648B-444E-9464-6558CF823F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28E77F52-648B-444E-9464-6558CF823F0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECA48485-B462-410B-82B9-43971B9C1310}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA48485-B462-410B-82B9-43971B9C1310}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA48485-B462-410B-82B9-43971B9C1310}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA48485-B462-410B-82B9-43971B9C1310}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -26,5 +32,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{28E77F52-648B-444E-9464-6558CF823F0B} = {9DBDF80B-6354-488C-A6E3-B83B31ED7DC3}
+		{ECA48485-B462-410B-82B9-43971B9C1310} = {9DBDF80B-6354-488C-A6E3-B83B31ED7DC3}
 	EndGlobalSection
 EndGlobal

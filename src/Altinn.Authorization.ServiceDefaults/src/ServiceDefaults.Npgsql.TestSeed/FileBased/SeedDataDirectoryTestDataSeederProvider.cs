@@ -155,6 +155,7 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
                     yield return new SeedDataFileTestDataSeeder(
                         _logger,
                         entry,
+                        SeedDataFileType.Sql,
                         new SeedDataFileOrder
                         {
                             DirectoryOrder = dirOrder,
@@ -166,6 +167,7 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
                     yield return new SeedDataFileTestDataSeeder(
                         _logger,
                         entry,
+                        SeedDataFileType.Sql,
                         new SeedDataFileOrder
                         {
                             DirectoryOrder = dirOrder,
@@ -195,7 +197,16 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
             throw new InvalidOperationException($"Invalid file name: {name}");
         }
 
-        if (!name.EndsWith(".sql", StringComparison.Ordinal))
+        SeedDataFileType fileType;
+        if (name.EndsWith(".sql", StringComparison.Ordinal))
+        {
+            fileType = SeedDataFileType.Sql;
+        }
+        else if (name.EndsWith(".asdn-v1", StringComparison.Ordinal))
+        {
+            fileType = SeedDataFileType.AltinnServiceDefaultsNpgsqlSeedDataV1;
+        }
+        else
         {
             Log.InvalidFileType(_logger, file.PhysicalPath ?? file.Name);
             throw new InvalidOperationException($"Invalid file type: {name}");
@@ -207,7 +218,7 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
             Type = SeedDataFileOrder.SeedDataFileType.SeedScript,
             DirectoryOrder = dirOrder,
         };
-        var seeder = new SeedDataFileTestDataSeeder(_logger, file, order);
+        var seeder = new SeedDataFileTestDataSeeder(_logger, file, fileType, order);
         if (!table.IsEmpty)
         {
             var tableName = new string(table);
@@ -400,15 +411,18 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
     {
         private readonly ILogger<SeedDataDirectoryTestDataSeederProvider> _logger;
         private readonly IFileInfo _file;
+        private readonly SeedDataFileType _fileType;
         private readonly SeedDataFileOrder _order;
 
         public SeedDataFileTestDataSeeder(
             ILogger<SeedDataDirectoryTestDataSeederProvider> logger,
             IFileInfo file,
+            SeedDataFileType fileType,
             SeedDataFileOrder order)
         {
             _logger = logger;
             _file = file;
+            _fileType = fileType;
             _order = order;
         }
 
@@ -416,7 +430,15 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
 
         public string DisplayName => $"File: {_file.PhysicalPath ?? _file.Name}";
 
-        public async Task SeedData(BatchBuilder batch, CancellationToken cancellationToken = default)
+        public Task SeedData(BatchBuilder batch, CancellationToken cancellationToken = default)
+            => _fileType switch
+            {
+                SeedDataFileType.Sql => SeedSqlData(batch, cancellationToken),
+                SeedDataFileType.AltinnServiceDefaultsNpgsqlSeedDataV1 => SeedAltinnServiceDefaultsNpgsqlSeedDataV1(batch, cancellationToken),
+                _ => throw new InvalidOperationException($"Unsupported file type: {_fileType}"),
+            };
+
+        private async Task SeedSqlData(BatchBuilder batch, CancellationToken cancellationToken = default)
         {
             Log.SeedData(_logger, _file.PhysicalPath ?? _file.Name);
             await using var fs = _file.CreateReadStream();
@@ -424,6 +446,30 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
             var data = await reader.ReadToEndAsync(cancellationToken);
 
             SplitAndAddQuery(batch, data);
+        }
+
+        private async Task SeedAltinnServiceDefaultsNpgsqlSeedDataV1(BatchBuilder batch, CancellationToken cancellationToken = default)
+        {
+            Log.SeedData(_logger, _file.PhysicalPath ?? _file.Name);
+            await using var fs = _file.CreateReadStream();
+            using var reader = new StreamReader(fs, encoding: Encoding.UTF8, leaveOpen: true);
+            var query = await reader.ReadLineAsync(cancellationToken);
+
+            if (query is null)
+            {
+                return;
+            }
+
+            await using var writer = await batch.CopyIn(query, cancellationToken);
+            var buffer = new char[1024 * 1024 * 5].AsMemory();
+
+            int read;
+            do
+            {
+                read = await reader.ReadAsync(buffer, cancellationToken);
+                await writer.WriteAsync(buffer[..read], cancellationToken);
+            }
+            while (read > 0);
         }
 
         private static void SplitAndAddQuery(BatchBuilder batch, string data)
