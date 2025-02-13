@@ -20,24 +20,27 @@ internal partial class YuniqlDatabaseMigrator
     private static readonly object _lock = new();
 
     private readonly Settings _settings;
+    private readonly TimeProvider _timeProvider;
     private readonly IOptionsMonitor<YuniqlDatabaseMigratorOptions> _options;
     private readonly ILogger<YuniqlDatabaseMigrator> _logger;
 
     public YuniqlDatabaseMigrator(
         Settings settings,
+        TimeProvider timeProvider,
         IOptionsMonitor<YuniqlDatabaseMigratorOptions> options,
         ILogger<YuniqlDatabaseMigrator> logger)
     {
         _settings = settings;
+        _timeProvider = timeProvider;
         _options = options;
         _logger = logger;
     }
 
-    public Task MigrateDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider scopedServices, CancellationToken cancellationToken)
+    public async Task MigrateDatabaseAsync(INpgsqlConnectionProvider connectionProvider, IServiceProvider scopedServices, CancellationToken cancellationToken)
     {
         var traceService = scopedServices.GetRequiredService<ITraceService>();
 
-        return Task.Factory.StartNew(
+        await Task.Factory.StartNew(
             () => MigrateDatabaseSync(connectionProvider.ConnectionString, traceService),
             cancellationToken,
             TaskCreationOptions.LongRunning | TaskCreationOptions.RunContinuationsAsynchronously,
@@ -100,9 +103,19 @@ internal partial class YuniqlDatabaseMigrator
                 new("yuniql.environment", options.Environment),
             ]);
 
+            var start = _timeProvider.GetTimestamp();
             Log.RunningYuniqlMigrations(_logger);
-            migratorService.Run();
-            Log.YuniqlMigrationsComplete(_logger);
+            try
+            {
+                migratorService.Run();
+            }
+            catch (Exception e)
+            {
+                Log.MigrationsFailed(_logger, _timeProvider.GetElapsedTime(start), e);
+                throw;
+            }
+
+            Log.YuniqlMigrationsComplete(_logger, _timeProvider.GetElapsedTime(start));
         }
     }
 
@@ -240,13 +253,16 @@ internal partial class YuniqlDatabaseMigrator
         [LoggerMessage(1, LogLevel.Information, "Running Yuniql migrations.")]
         public static partial void RunningYuniqlMigrations(ILogger logger);
 
-        [LoggerMessage(2, LogLevel.Information, "Yuniql migrations complete.")]
-        public static partial void YuniqlMigrationsComplete(ILogger logger);
+        [LoggerMessage(2, LogLevel.Information, "Yuniql migrations complete, took {Duration}.")]
+        public static partial void YuniqlMigrationsComplete(ILogger logger, TimeSpan duration);
 
         [LoggerMessage(3, LogLevel.Information, "Created temporary workspace directory '{TempDir}'.")]
         public static partial void CreateTemporaryWorkspaceDirectory(ILogger logger, string tempDir);
 
         [LoggerMessage(4, LogLevel.Trace, "Wrote workspace file '{File}'.")]
         public static partial void WroteWorkspaceFile(ILogger logger, string file);
+
+        [LoggerMessage(5, LogLevel.Error, "Yuniql migrations failed after {Duration}.")]
+        public static partial void MigrationsFailed(ILogger logger, TimeSpan duration, Exception exception);
     }
 }
