@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Runtime;
 using Yuniql.Core;
 using Yuniql.Extensibility;
 using Yuniql.PostgreSql;
@@ -41,13 +42,13 @@ internal partial class YuniqlDatabaseMigrator
         var traceService = scopedServices.GetRequiredService<ITraceService>();
 
         await Task.Factory.StartNew(
-            () => MigrateDatabaseSync(connectionProvider.ConnectionString, traceService),
+            () => MigrateDatabaseSync(connectionProvider.ConnectionString, traceService, cancellationToken),
             cancellationToken,
             TaskCreationOptions.LongRunning | TaskCreationOptions.RunContinuationsAsynchronously,
             TaskScheduler.Default);
     }
 
-    private void MigrateDatabaseSync(string connectionString, ITraceService traceService)
+    private void MigrateDatabaseSync(string connectionString, ITraceService traceService, CancellationToken cancellationToken)
     {
         var options = _options.Get(_settings.Name);
 
@@ -107,7 +108,37 @@ internal partial class YuniqlDatabaseMigrator
             Log.RunningYuniqlMigrations(_logger);
             try
             {
-                migratorService.Run();
+                ThreadStart threadStart = () =>
+                {
+                    #pragma warning disable SYSLIB0046 // Type or member is obsolete
+                    ControlledExecution.Run(
+                        () =>
+                        {
+                            migratorService.Run();
+                        },
+                        cancellationToken);
+                    #pragma warning restore SYSLIB0046 // Type or member is obsolete
+                };
+
+                using var subscription = cancellationToken.Register(() =>
+                {
+                    Log.MigrationCancelled(_logger);
+                    Environment.FailFast(
+                        """
+                        Yuniql migration cancelled.
+                        Cancelling a running migration has the potential to corrupt the process.
+                        It's important that the process is killed after this condition has been triggered.
+                        """);
+                });
+
+                var thread = new Thread(threadStart)
+                {
+                    IsBackground = true,
+                    Name = "Yuniql-Migration-Thread",
+                };
+
+                thread.Start();
+                thread.Join();
             }
             catch (Exception e)
             {
@@ -264,5 +295,8 @@ internal partial class YuniqlDatabaseMigrator
 
         [LoggerMessage(5, LogLevel.Error, "Yuniql migrations failed after {Duration}.")]
         public static partial void MigrationsFailed(ILogger logger, TimeSpan duration, Exception exception);
+
+        [LoggerMessage(6, LogLevel.Error, "Migration cancelled.")]
+        public static partial void MigrationCancelled(ILogger logger);
     }
 }
