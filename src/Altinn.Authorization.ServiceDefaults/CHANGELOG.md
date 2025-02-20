@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.10.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.9.0...Altinn.Authorization.ServiceDefaults-v2.10.0) (2025-02-20)
+
+
+### Features
+
+* npgsql export/import ([#187](https://github.com/Altinn/altinn-authorization-utils/issues/187)) ([e73450e](https://github.com/Altinn/altinn-authorization-utils/commit/e73450e291326ee38cc3bdb7463a434ddc236869))
+
+
+### Bug Fixes
+
+* make yuniql cancellable ([#199](https://github.com/Altinn/altinn-authorization-utils/issues/199)) ([ed7f3b1](https://github.com/Altinn/altinn-authorization-utils/commit/ed7f3b1b654642a5ef4173be92bdcfd8e4c2ffe4))
+
 ## [2.9.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.8.0...Altinn.Authorization.ServiceDefaults-v2.9.0) (2025-01-08)
 
 
