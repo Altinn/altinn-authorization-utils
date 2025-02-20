@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.2.0...Altinn.Cli-v1.3.0) (2025-02-20)
+
+
+### Features
+
+* npgsql export/import ([#187](https://github.com/Altinn/altinn-authorization-utils/issues/187)) ([e73450e](https://github.com/Altinn/altinn-authorization-utils/commit/e73450e291326ee38cc3bdb7463a434ddc236869))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.1.0...Altinn.Cli-v1.2.0) (2024-12-06)
 
 
