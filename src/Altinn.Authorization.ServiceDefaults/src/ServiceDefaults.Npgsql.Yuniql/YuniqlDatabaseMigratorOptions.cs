@@ -43,6 +43,11 @@ public sealed class YuniqlDatabaseMigratorOptions
     /// </value>
     public bool DisableTracing { get; set; }
 
+    /// <summary>
+    /// Gets or sets the transaction mode.
+    /// </summary>
+    public YuniqlTransactionMode TransactionMode { get; set; } = YuniqlTransactionMode.Version;
+
     IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
     {
         if (string.IsNullOrEmpty(Environment))
@@ -80,4 +85,25 @@ public sealed class VersionTableOptions
     /// Gets or sets the schema of the version table.
     /// </summary>
     public string? Schema { get; set; }
+}
+
+/// <summary>
+/// Yuniql transaction mode.
+/// </summary>
+public enum YuniqlTransactionMode
+{
+    /// <summary>
+    /// No transaction will be used (transaction per statement).
+    /// </summary>
+    None,
+
+    /// <summary>
+    /// A transaction will be used for each version.
+    /// </summary>
+    Version,
+
+    /// <summary>
+    /// A transaction will be used for each session.
+    /// </summary>
+    Session,
 }
