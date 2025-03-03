@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -72,7 +73,7 @@ internal partial class YuniqlDatabaseMigrator
             config.Environment = options.Environment;
             config.MetaSchemaName = options.MigrationsTable.Schema;
             config.MetaTableName = options.MigrationsTable.Name;
-            config.TransactionMode = "session";
+            config.TransactionMode = GetTransactionMode(options.TransactionMode);
             config.IsContinueAfterFailure = null;
             config.IsRequiredClearedDraft = false;
             config.IsForced = false;
@@ -149,6 +150,15 @@ internal partial class YuniqlDatabaseMigrator
             Log.YuniqlMigrationsComplete(_logger, _timeProvider.GetElapsedTime(start));
         }
     }
+
+    private static string GetTransactionMode(YuniqlTransactionMode mode)
+        => mode switch
+        {
+            YuniqlTransactionMode.None => TRANSACTION_MODE.NONE,
+            YuniqlTransactionMode.Version => TRANSACTION_MODE.VERSION,
+            YuniqlTransactionMode.Session => TRANSACTION_MODE.SESSION,
+            _ => ThrowHelper.ThrowArgumentOutOfRangeException<string>(nameof(mode)),
+        };
 
     private Workspace ResolveWorkspace(YuniqlDatabaseMigratorOptions options)
     {
