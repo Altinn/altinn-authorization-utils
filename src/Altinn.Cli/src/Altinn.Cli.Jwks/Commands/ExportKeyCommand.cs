@@ -18,7 +18,7 @@ internal class ExportKeyCommand
     public static Option<bool> ProdOption { get; }
         = new Option<bool>(
             aliases: ["--prod", "-p"],
-            description: "Generate PROD keys. Defaults to true unless --test is specified.");
+            description: "Export PROD keys.");
 
     public static Option<bool> Base64Option { get; }
         = new Option<bool>(
