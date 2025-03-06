@@ -119,6 +119,29 @@ public class FieldValueTests
         mapped.Value.ShouldBe(42 + 10);
     }
 
+    [Fact]
+    public void CastToValue_ThrowsForUnset()
+    {
+        FieldValue<int> value = FieldValue.Unset;
+
+        Should.Throw<InvalidOperationException>(() => _ = (int)value);
+    }
+
+    [Fact]
+    public void CastToValue_ThrowsForNull() {
+        FieldValue<int> value = FieldValue.Null;
+
+        Should.Throw<InvalidOperationException>(() => _ = (int)value);
+    }
+
+    [Fact]
+    public void CastToValue_ReturnsValue()
+    {
+        FieldValue<int> value = 42;
+
+        ((int)value).ShouldBe(42);
+    }
+
     [Theory]
     [MemberData(nameof(FieldValueEqualityData))]
     public void FieldValue_Equality(FieldValue<int> left, FieldValue<int> right, bool expected)
@@ -134,6 +157,26 @@ public class FieldValueTests
         {
             left.GetHashCode().ShouldBe(right.GetHashCode());
         }
+    }
+
+    [Fact]
+    public void IsFieldValueType_FalseForNonFieldValues()
+    {
+        FieldValue.IsFieldValueType(typeof(int), out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsFieldValueType_TrueForFieldValue()
+    {
+        FieldValue.IsFieldValueType(typeof(FieldValue<int>), out Type? fieldType).ShouldBeTrue();
+        fieldType.ShouldBe(typeof(int));
+    }
+
+    [Fact]
+    public void IsFieldValueType_TrueNestedFieldValue()
+    {
+        FieldValue.IsFieldValueType(typeof(FieldValue<FieldValue<int>>), out Type? fieldType).ShouldBeTrue();
+        fieldType.ShouldBe(typeof(FieldValue<int>));
     }
 
     public static TheoryData<FieldValue<int>, FieldValue<int>, bool> FieldValueEqualityData => [
