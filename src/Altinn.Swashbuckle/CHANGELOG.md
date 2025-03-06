@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.2.0...Altinn.Swashbuckle-v2.3.0) (2025-03-06)
+
+
+### Features
+
+* add model-utils project ([#205](https://github.com/Altinn/altinn-authorization-utils/issues/205)) ([0c8b622](https://github.com/Altinn/altinn-authorization-utils/commit/0c8b6228acb9c2ea3ac61a252ff4abb1e135f056))
+
 ## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.1.1...Altinn.Swashbuckle-v2.2.0) (2024-12-06)
 
 
