@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.1...Altinn.Authorization.ProblemDetails-v3.3.0) (2025-03-06)
+
+
+### Features
+
+* add model-utils project ([#205](https://github.com/Altinn/altinn-authorization-utils/issues/205)) ([0c8b622](https://github.com/Altinn/altinn-authorization-utils/commit/0c8b6228acb9c2ea3ac61a252ff4abb1e135f056))
+
 ## [3.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.0...Altinn.Authorization.ProblemDetails-v3.2.1) (2024-12-19)
 
 
