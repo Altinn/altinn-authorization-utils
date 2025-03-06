@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.10.0...Altinn.Authorization.ServiceDefaults-v2.11.0) (2025-03-06)
+
+
+### Features
+
+* add model-utils project ([#205](https://github.com/Altinn/altinn-authorization-utils/issues/205)) ([0c8b622](https://github.com/Altinn/altinn-authorization-utils/commit/0c8b6228acb9c2ea3ac61a252ff4abb1e135f056))
+
 ## [2.10.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.9.0...Altinn.Authorization.ServiceDefaults-v2.10.0) (2025-03-03)
 
 
