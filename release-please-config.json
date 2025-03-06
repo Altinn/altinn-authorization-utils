@@ -52,6 +52,16 @@
           "xpath": "//Project/PropertyGroup/Version"
         }
       ]
+    },
+    "src/Altinn.Authorization.ModelUtils": {
+      "component": "Altinn.Authorization.ModelUtils",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
     }
   }
 }
