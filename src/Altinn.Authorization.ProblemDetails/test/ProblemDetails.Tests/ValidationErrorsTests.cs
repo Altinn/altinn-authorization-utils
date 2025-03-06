@@ -7,8 +7,8 @@ public class ValidationErrorsTests
     {
         var errors = new ValidationErrorBuilder();
 
-        errors.Count.Should().Be(0);
-        errors.IsEmpty.Should().BeTrue();
+        errors.Count.ShouldBe(0);
+        errors.IsEmpty.ShouldBeTrue();
     }
 
     [Fact]
@@ -18,13 +18,13 @@ public class ValidationErrorsTests
 
         errors.Add(StdValidationErrors.Required, "/path");
         
-        errors.Count.Should().Be(1);
-        errors.IsEmpty.Should().BeFalse();
+        errors.Count.ShouldBe(1);
+        errors.IsEmpty.ShouldBeFalse();
 
         errors.Add(StdValidationErrors.Required, "/path2");
 
-        errors.Count.Should().Be(2);
-        errors.IsEmpty.Should().BeFalse();
+        errors.Count.ShouldBe(2);
+        errors.IsEmpty.ShouldBeFalse();
     }
 
     [Fact]
@@ -32,13 +32,13 @@ public class ValidationErrorsTests
     {
         var errors = new ValidationErrorBuilder();
 
-        errors.TryBuild(out var instance).Should().BeFalse();
-        errors.TryToProblemDetails(out var details).Should().BeFalse();
-        errors.TryToActionResult(out var result).Should().BeFalse();
+        errors.TryBuild(out var instance).ShouldBeFalse();
+        errors.TryToProblemDetails(out var details).ShouldBeFalse();
+        errors.TryToActionResult(out var result).ShouldBeFalse();
 
-        instance.Should().BeNull();
-        details.Should().BeNull();
-        result.Should().BeNull();
+        instance.ShouldBeNull();
+        details.ShouldBeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -49,12 +49,12 @@ public class ValidationErrorsTests
         errors.Add(StdValidationErrors.Required, "/path");
         errors.Add(StdValidationErrors.Required, "/path2");
 
-        errors.TryBuild(out var instance).Should().BeTrue();
-        errors.TryToProblemDetails(out var details).Should().BeTrue();
-        errors.TryToActionResult(out var result).Should().BeTrue();
+        errors.TryBuild(out var instance).ShouldBeTrue();
+        errors.TryToProblemDetails(out var details).ShouldBeTrue();
+        errors.TryToActionResult(out var result).ShouldBeTrue();
 
-        instance.Should().NotBeNull();
-        details.Should().NotBeNull();
-        result.Should().NotBeNull();
+        instance.ShouldNotBeNull();
+        details.ShouldNotBeNull();
+        result.ShouldNotBeNull();
     }
 }

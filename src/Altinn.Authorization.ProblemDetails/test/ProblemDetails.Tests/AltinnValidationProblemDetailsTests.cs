@@ -12,7 +12,7 @@ public class AltinnValidationProblemDetailsTests
     {
         var problemDetails = new AltinnValidationProblemDetails();
 
-        problemDetails.ErrorCode.Should().Be(StdProblemDescriptors.ValidationError.ErrorCode);
+        problemDetails.ErrorCode.ShouldBe(StdProblemDescriptors.ValidationError.ErrorCode);
     }
 
     [Fact]
@@ -28,9 +28,9 @@ public class AltinnValidationProblemDetailsTests
         var deserialized = JsonSerializer.Deserialize<ValidationProblemDetails>(serialized, _options);
 
         Assert.NotNull(deserialized);
-        deserialized.Errors.Should().BeEmpty();
-        deserialized.Status.Should().Be(problemDetails.Status);
-        deserialized.Detail.Should().Be(problemDetails.Detail);
+        deserialized.Errors.ShouldBeEmpty();
+        deserialized.Status.ShouldBe(problemDetails.Status);
+        deserialized.Detail.ShouldBe(problemDetails.Detail);
     }
 
     [Fact]
@@ -46,9 +46,9 @@ public class AltinnValidationProblemDetailsTests
         var deserialized = JsonSerializer.Deserialize<AltinnValidationProblemDetails>(serialized, _options);
 
         Assert.NotNull(deserialized);
-        deserialized.Errors.Should().BeEquivalentTo(problemDetails.Errors);
-        deserialized.Status.Should().Be(problemDetails.Status);
-        deserialized.Detail.Should().Be(problemDetails.Detail);
+        deserialized.Errors.ShouldBeEquivalentTo(problemDetails.Errors);
+        deserialized.Status.ShouldBe(problemDetails.Status);
+        deserialized.Detail.ShouldBe(problemDetails.Detail);
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public class AltinnValidationProblemDetailsTests
         var deserialized = JsonSerializer.Deserialize<AltinnValidationProblemDetails>(json, _options);
         Assert.NotNull(deserialized);
 
-        deserialized.ErrorCode.Should().NotBe(StdProblemDescriptors.ValidationError.ErrorCode);
-        deserialized.Errors.Should().BeEmpty();
+        deserialized.ErrorCode.ShouldNotBe(StdProblemDescriptors.ValidationError.ErrorCode);
+        deserialized.Errors.ShouldBeEmpty();
     }
 
     private static class ValidationDescriptors

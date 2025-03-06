@@ -3,6 +3,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+		<XUnitVersion>v2</XUnitVersion>
   </PropertyGroup>
 
   <ItemGroup>

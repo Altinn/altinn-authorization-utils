@@ -4,6 +4,7 @@
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+		<XUnitVersion>v2</XUnitVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
