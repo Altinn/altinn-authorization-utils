@@ -29,8 +29,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn.Cli", "Altinn.Cli", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7F792CA6-478D-DCB5-A90C-7EF8CD8769D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Cli", "Altinn.Cli\src\Altinn.Authorization.Cli\Altinn.Authorization.Cli.csproj", "{50D02A7A-56B0-40ED-9865-DAD00AD86168}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D3C758B1-2EFB-5E1A-6276-3A5D7C0FB0D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Npgsql.Tests", "Altinn.Authorization.ServiceDefaults\test\ServiceDefaults.Npgsql.Tests\Altinn.Authorization.ServiceDefaults.Npgsql.Tests.csproj", "{F45542CB-19E0-436B-896E-A0C63A3ACA9F}"
