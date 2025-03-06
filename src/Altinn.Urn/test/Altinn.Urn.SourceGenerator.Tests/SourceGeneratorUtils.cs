@@ -35,18 +35,18 @@ public static class SourceGeneratorUtils
         
         if (expectedDiagnostics.Length == 0)
         {
-            result.Diagnostics.Should().BeEmpty();
+            result.Diagnostics.ShouldBeEmpty();
             return;
         }
 
         var remaining = new HashSet<DiagnosticDescriptor>(expectedDiagnostics);
         foreach (var diagnostic in result.Diagnostics)
         {
-            expectedDiagnostics.Should().Contain(diagnostic.Descriptor);
+            expectedDiagnostics.ShouldContain(diagnostic.Descriptor);
             remaining.Remove(diagnostic.Descriptor);
         }
 
-        remaining.Should().BeEmpty("All expected exceptions should be present");
+        remaining.ShouldBeEmpty("All expected exceptions should be present");
     }
 
     private static readonly Lazy<Task<CSharpCompilation>> BaseCompilation = new(async () =>

@@ -49,7 +49,7 @@ public class ExampleDataTests
         var enumerator = examples.GetEnumerator();
 
         // check that it's not empty
-        enumerator.MoveNext().Should().BeTrue();
+        enumerator.MoveNext().ShouldBeTrue();
     }
 
     [Fact]
@@ -61,15 +61,15 @@ public class ExampleDataTests
         var examples = ExampleData.GetExamples<string>(options);
         Assert.NotNull(examples);
 
-        examples.Should().NotBeEmpty();
-        examples.Should().Contain("foo");
-        examples.Should().Contain("bar");
+        examples.ShouldNotBeEmpty();
+        examples.ShouldContain("foo");
+        examples.ShouldContain("bar");
 
         // can still get builtins
         var intExamples = ExampleData.GetExamples<int>(options);
         Assert.NotNull(intExamples);
 
-        intExamples.Should().NotBeEmpty();
+        intExamples.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -81,15 +81,15 @@ public class ExampleDataTests
         var examples = ExampleData.GetExamples<string>(options);
         Assert.NotNull(examples);
 
-        examples.Should().NotBeEmpty();
-        examples.Should().Contain("foo");
-        examples.Should().Contain("bar");
+        examples.ShouldNotBeEmpty();
+        examples.ShouldContain("foo");
+        examples.ShouldContain("bar");
 
         // can still get builtins
         var intExamples = ExampleData.GetExamples<int>(options);
         Assert.NotNull(intExamples);
 
-        intExamples.Should().NotBeEmpty();
+        intExamples.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -104,9 +104,9 @@ public class ExampleDataTests
         examples = ExampleData.GetExamples<TestData>(options);
         Assert.NotNull(examples);
 
-        examples.Should().NotBeEmpty();
-        examples.Should().Contain(new TestData { Name = "foo" });
-        examples.Should().Contain(new TestData { Name = "bar" });
+        examples.ShouldNotBeEmpty();
+        examples.ShouldContain(new TestData { Name = "foo" });
+        examples.ShouldContain(new TestData { Name = "bar" });
     }
 
     private sealed class ExampleStringProvider 

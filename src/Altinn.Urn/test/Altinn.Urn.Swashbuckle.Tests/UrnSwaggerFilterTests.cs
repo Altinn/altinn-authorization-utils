@@ -37,13 +37,12 @@ public class UrnSwaggerFilterTests
     {
         var schema = SchemaFor<PersonUrn.PartyUuid>();
 
-        schema.Type.Should().Be("string");
-        schema.Format.Should().Be("urn");
-        schema.Pattern.Should()
-            .NotBeNullOrEmpty()
-            .And.StartWith("^urn:altinn:party:uuid:");
+        schema.Type.ShouldBe("string");
+        schema.Format.ShouldBe("urn");
+        schema.Pattern.ShouldNotBeNullOrEmpty();
+        schema.Pattern.ShouldStartWith("^urn:altinn:party:uuid:");
 
-        schema.Example.Should().NotBeNull();
+        schema.Example.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,16 +50,16 @@ public class UrnSwaggerFilterTests
     {
         var schema = SchemaFor<PersonUrn>();
 
-        schema.OneOf.Should().NotBeNullOrEmpty()
-            .And.HaveCount(PersonUrn.Variants.Length);
+        schema.OneOf.ShouldNotBeNull();
+        schema.OneOf.ShouldNotBeEmpty();
+        schema.OneOf.Count.ShouldBe(PersonUrn.Variants.Length);
 
         foreach (var variant in schema.OneOf.Select(Resolve))
         {
-            variant.Type.Should().Be("string");
-            variant.Format.Should().Be("urn");
-            variant.Pattern.Should()
-                .NotBeNullOrEmpty()
-                .And.StartWith("^urn:");
+            variant.Type.ShouldBe("string");
+            variant.Format.ShouldBe("urn");
+            variant.Pattern.ShouldNotBeNullOrEmpty();
+            variant.Pattern.ShouldStartWith("^urn:");
         }
     }
 
@@ -69,7 +68,7 @@ public class UrnSwaggerFilterTests
     {
         var schema = SchemaFor<UrnJsonTypeValue<PersonUrn>>();
 
-        schema.Discriminator.Should().NotBeNull();
+        schema.Discriminator.ShouldNotBeNull();
     }
 
     //private ISchemaFilter SchemaFilter => _sut;

@@ -213,10 +213,10 @@ public class ProblemExtensionDataTests
         ];
 
         var values = (data as IDictionary<string, object?>).Values;
-        values.Should().HaveCount(4);
-        values.Should().BeEquivalentTo(["first value", "value", "value 2", "other value"]);
-        values.IsReadOnly.Should().BeTrue();
-        values.Contains("value").Should().BeTrue();
+        values.Count.ShouldBe(4);
+        values.ShouldBe((IEnumerable<object>)["first value", "value", "value 2", "other value"]);
+        values.IsReadOnly.ShouldBeTrue();
+        values.Contains("value").ShouldBeTrue();
     }
 
     [Fact]
@@ -230,10 +230,10 @@ public class ProblemExtensionDataTests
         ];
 
         var keys = (data as IDictionary<string, object?>).Keys;
-        keys.Should().HaveCount(4);
-        keys.Should().BeEquivalentTo(["first key", "key", "key", "other key"]);
-        keys.IsReadOnly.Should().BeTrue();
-        keys.Contains("key").Should().BeTrue();
+        keys.Count.ShouldBe(4);
+        keys.ShouldBe((IEnumerable<string>)["first key", "key", "key", "other key"]);
+        keys.IsReadOnly.ShouldBeTrue();
+        keys.Contains("key").ShouldBeTrue();
     }
 
     private static void AssertEqual(ProblemExtensionData expected, ProblemExtensionData actual)

@@ -22,28 +22,28 @@ public class AltinnProblemDetailsTests
             var deserialized = JsonSerializer.Deserialize<AltinnProblemDetails>(json, _options);
 
             Assert.NotNull(deserialized);
-            deserialized.Detail.Should().Be(problemDetails.Detail);
-            deserialized.Status.Should().Be(problemDetails.Status);
-            deserialized.ErrorCode.Should().Be(problemDetails.ErrorCode);
+            deserialized.Detail.ShouldBe(problemDetails.Detail);
+            deserialized.Status.ShouldBe(problemDetails.Status);
+            deserialized.ErrorCode.ShouldBe(problemDetails.ErrorCode);
         }
     }
 
     [Fact]
     public void SetsStatusCode()
     {
-        TestErrors.BadRequest.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        TestErrors.NotFound.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        TestErrors.InternalServerError.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        TestErrors.NotImplemented.StatusCode.Should().Be(HttpStatusCode.NotImplemented);
+        TestErrors.BadRequest.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        TestErrors.NotFound.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        TestErrors.InternalServerError.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+        TestErrors.NotImplemented.StatusCode.ShouldBe(HttpStatusCode.NotImplemented);
     }
 
     [Fact]
     public void SetsDetail()
     {
-        TestErrors.BadRequest.Detail.Should().Be("Bad request");
-        TestErrors.NotFound.Detail.Should().Be("Not found");
-        TestErrors.InternalServerError.Detail.Should().Be("Internal server error");
-        TestErrors.NotImplemented.Detail.Should().Be("Not implemented");
+        TestErrors.BadRequest.Detail.ShouldBe("Bad request");
+        TestErrors.NotFound.Detail.ShouldBe("Not found");
+        TestErrors.InternalServerError.Detail.ShouldBe("Internal server error");
+        TestErrors.NotImplemented.Detail.ShouldBe("Not implemented");
     }
 
     internal static class TestErrors

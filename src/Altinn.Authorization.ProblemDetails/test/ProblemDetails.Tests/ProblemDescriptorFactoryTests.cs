@@ -14,10 +14,10 @@ public class ProblemDescriptorFactoryTests
         var result = factory.Create(1, HttpStatusCode.BadRequest, "Test error");
 
         // Assert
-        result.Should().NotBeNull();
-        result.ErrorCode.ToString().Should().Be("TEST-00001");
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        result.Detail.Should().Be("Test error");
+        result.ShouldNotBeNull();
+        result.ErrorCode.ToString().ShouldBe("TEST-00001");
+        result.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        result.Detail.ShouldBe("Test error");
     }
 
     [Fact]
@@ -25,6 +25,6 @@ public class ProblemDescriptorFactoryTests
     {
         // Arrange & Act & Assert
         Action act = () => ProblemDescriptorFactory.New("TESTDOMAIN");
-        act.Should().ThrowExactly<ArgumentException>();
+        act.ShouldThrow<ArgumentException>();
     }
 }

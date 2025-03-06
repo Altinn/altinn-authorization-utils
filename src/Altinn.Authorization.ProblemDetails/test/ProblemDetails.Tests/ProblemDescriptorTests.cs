@@ -20,14 +20,12 @@ public class ProblemDescriptorTests
         var result = descriptor.ToProblemDetails(extensions);
 
         // Assert
-        result.Should().NotBeNull();
-        result.ErrorCode.ToString().Should().Be("TEST-00001");
-        result.Status.Should().Be((int)HttpStatusCode.BadRequest);
-        result.Detail.Should().Be("Test error");
-        result.Extensions.Should().ContainKey("Key1")
-            .WhoseValue.Should().Be("Value1");
-        result.Extensions.Should().ContainKey("Key2")
-            .WhoseValue.Should().Be(123);
+        result.ShouldNotBeNull();
+        result.ErrorCode.ToString().ShouldBe("TEST-00001");
+        result.Status.ShouldBe((int)HttpStatusCode.BadRequest);
+        result.Detail.ShouldBe("Test error");
+        result.Extensions.ShouldContainKeyAndValue("Key1", "Value1");
+        result.Extensions.ShouldContainKeyAndValue("Key2", 123);
     }
 
     [Fact]
@@ -44,13 +42,11 @@ public class ProblemDescriptorTests
         ]);
 
         // Assert
-        result.Should().NotBeNull();
-        result.ErrorCode.ToString().Should().Be("TEST-00001");
-        result.Status.Should().Be((int)HttpStatusCode.BadRequest);
-        result.Detail.Should().Be("Test error");
-        result.Extensions.Should().ContainKey("Key1")
-            .WhoseValue.Should().Be("Value1");
-        result.Extensions.Should().ContainKey("Key2")
-            .WhoseValue.Should().Be(123);
+        result.ShouldNotBeNull();
+        result.ErrorCode.ToString().ShouldBe("TEST-00001");
+        result.Status.ShouldBe((int)HttpStatusCode.BadRequest);
+        result.Detail.ShouldBe("Test error");
+        result.Extensions.ShouldContainKeyAndValue("Key1", "Value1");
+        result.Extensions.ShouldContainKeyAndValue("Key2", 123);
     }
 }

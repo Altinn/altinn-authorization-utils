@@ -5,38 +5,67 @@
     <CoreBuildDependsOn>$(CoreBuildDependsOn);_CheckVersion</CoreBuildDependsOn>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(IsTestProject)' == 'true' Or '$(IsPackable)' == 'false' ">
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(IsTestProject)' == 'true' Or '$(IsTestLibrary)' == 'true' ">
 
-  <ItemGroup Condition=" '$(IsTestProject)' == 'true' Or '$(IsPackable)' == 'false' ">
-    <DocFileItem Remove="@(DocFileItem)" />
-  </ItemGroup>
+      <PropertyGroup>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);SA0001</NoWarn>
+        <XUnitVersion Condition=" '$(XUnitVersion)' == '' ">v3</XUnitVersion>
+      </PropertyGroup>
 
-  <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
-    <PackageReference Include="coverlet.collector">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="FluentAssertions.Analyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+      <ItemGroup>
+        <DocFileItem Remove="@(DocFileItem)" />
+      </ItemGroup>
 
-    <Using Include="FluentAssertions" />
-    <Using Include="Xunit" />
-  </ItemGroup>
+      <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
+        <PackageReference Include="coverlet.collector">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="FluentAssertions" Condition=" '$(XUnitVersion)' == 'v2' " />
+        <PackageReference Include="FluentAssertions.Analyzers"
+          Condition=" '$(XUnitVersion)' == 'v2' ">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Shouldly" Condition=" '$(XUnitVersion)' == 'v3' " />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" Condition=" '$(XUnitVersion)' == 'v2' " />
+        <PackageReference Include="xunit.v3" Condition=" '$(XUnitVersion)' == 'v3' " />
+        <PackageReference Include="xunit.runner.visualstudio">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+      </ItemGroup>
 
-  <ItemGroup Condition=" '$(IsTestProject)' != 'true' ">
-    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
-  </ItemGroup>
+      <ItemGroup Condition=" '$(IsTestLibrary)' == 'true' ">
+        <PackageReference Include="FluentAssertions" Condition=" '$(XUnitVersion)' == 'v2' " />
+        <PackageReference Include="Shouldly" Condition=" '$(XUnitVersion)' == 'v3' " />
+        <PackageReference Include="xunit.assert" Condition=" '$(XUnitVersion)' == 'v2' " />
+        <PackageReference Include="xunit.extensibility.core" Condition=" '$(XUnitVersion)' == 'v2' " />
+        <PackageReference Include="xunit.v3.assert" Condition=" '$(XUnitVersion)' == 'v3' " />
+        <PackageReference Include="xunit.v3.extensibility.core"
+          Condition=" '$(XUnitVersion)' == 'v3' " />
+      </ItemGroup>
+
+      <ItemGroup>
+        <Using Include="FluentAssertions" Condition=" '$(XUnitVersion)' == 'v2' " />
+        <Using Include="Shouldly" Condition=" '$(XUnitVersion)' == 'v3' " />
+        <Using Include="Xunit" />
+      </ItemGroup>
+
+    </When>
+
+    <Otherwise>
+      <!-- not test project -->
+
+      <ItemGroup>
+        <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+      </ItemGroup>
+
+    </Otherwise>
+  </Choose>
 
   <ItemGroup Condition=" '$(IsPackable)' == 'true' ">
     <PackageReference Include="Microsoft.Build.Artifacts" PrivateAssets="all"

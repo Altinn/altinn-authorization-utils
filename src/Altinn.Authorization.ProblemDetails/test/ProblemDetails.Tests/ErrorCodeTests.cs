@@ -23,27 +23,27 @@ public class ErrorCodeTests
             var errorCode1 = domain.Code(value);
             var errorCode2 = domain.Code(value);
 
-            errorCode1.Should().Be(errorCode2);
-            errorCode1.GetHashCode().Should().Be(errorCode2.GetHashCode());
-            errorCode1.Equals(errorCode2).Should().BeTrue();
-            errorCode2.Equals(errorCode1).Should().BeTrue();
-            errorCode1.Equals((object)errorCode2).Should().BeTrue();
-            errorCode2.Equals((object)errorCode1).Should().BeTrue();
-            (errorCode1 == errorCode2).Should().BeTrue();
-            (errorCode2 == errorCode1).Should().BeTrue();
-            (errorCode1 != errorCode2).Should().BeFalse();
-            (errorCode2 != errorCode1).Should().BeFalse();
+            errorCode1.ShouldBe(errorCode2);
+            errorCode1.GetHashCode().ShouldBe(errorCode2.GetHashCode());
+            errorCode1.Equals(errorCode2).ShouldBeTrue();
+            errorCode2.Equals(errorCode1).ShouldBeTrue();
+            errorCode1.Equals((object)errorCode2).ShouldBeTrue();
+            errorCode2.Equals((object)errorCode1).ShouldBeTrue();
+            (errorCode1 == errorCode2).ShouldBeTrue();
+            (errorCode2 == errorCode1).ShouldBeTrue();
+            (errorCode1 != errorCode2).ShouldBeFalse();
+            (errorCode2 != errorCode1).ShouldBeFalse();
 
             var other = _domain.Code(42);
-            errorCode1.Should().NotBe(other);
-            errorCode1.Equals(other).Should().BeFalse();
-            other.Equals(errorCode1).Should().BeFalse();
-            errorCode1.Equals((object)other).Should().BeFalse();
-            other.Equals((object)errorCode1).Should().BeFalse();
-            (errorCode1 == other).Should().BeFalse();
-            (other == errorCode1).Should().BeFalse();
-            (errorCode1 != other).Should().BeTrue();
-            (other != errorCode1).Should().BeTrue();
+            errorCode1.ShouldNotBe(other);
+            errorCode1.Equals(other).ShouldBeFalse();
+            other.Equals(errorCode1).ShouldBeFalse();
+            errorCode1.Equals((object)other).ShouldBeFalse();
+            other.Equals((object)errorCode1).ShouldBeFalse();
+            (errorCode1 == other).ShouldBeFalse();
+            (other == errorCode1).ShouldBeFalse();
+            (errorCode1 != other).ShouldBeTrue();
+            (other != errorCode1).ShouldBeTrue();
         }
     }
 
@@ -51,6 +51,6 @@ public class ErrorCodeTests
     public void Throws_IfTooLarge()
     {
         Action act = () => _domain.Code(100_000);
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        act.ShouldThrow<ArgumentOutOfRangeException>();
     }
 }

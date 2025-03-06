@@ -16,14 +16,14 @@ public class UrnExampleDataProviderResolverTests
         var examples = ExampleData.GetExamples<PersonUrn.PartyId>(options);
         Assert.NotNull(examples);
 
-        examples.Should().NotBeEmpty();
+        examples.ShouldNotBeEmpty();
         var examplesList = examples.ToList();
 
-        examplesList.Should().HaveCount(intExamples.Count);
+        examplesList.Count.ShouldBe(intExamples.Count);
 
         for (var i = 0; i < intExamples.Count; i++)
         {
-            examplesList[i].Value.Should().Be(intExamples[i]);
+            examplesList[i].Value.ShouldBe(intExamples[i]);
         }
     }
 
@@ -44,6 +44,6 @@ public class UrnExampleDataProviderResolverTests
             missing.Remove(example.UrnType);
         }
 
-        missing.Should().BeEmpty(because: "The first N examples of PersonUrn should have N different types");
+        missing.ShouldBeEmpty(customMessage: "The first N examples of PersonUrn should have N different types");
     }
 }

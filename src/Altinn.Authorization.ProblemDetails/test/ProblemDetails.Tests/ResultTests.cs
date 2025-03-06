@@ -19,7 +19,7 @@ public class ResultTests
                 _ => input.Problem.ErrorCode,
             };
 
-            actual.Should().Be(expected);
+            actual.ShouldBe(expected);
 
             // IsProblem check
             actual = input switch
@@ -28,7 +28,7 @@ public class ResultTests
                 _ => input.Value,
             };
 
-            actual.Should().Be(expected);
+            actual.ShouldBe(expected);
 
             // Using the 'is' pattern with IsSuccess
             if (input is { IsSuccess: true })
@@ -40,7 +40,7 @@ public class ResultTests
                 actual = input.Problem.ErrorCode;
             }
 
-            actual.Should().Be(expected);
+            actual.ShouldBe(expected);
 
             // Using the 'is' pattern with IsProblem
             if (input is { IsProblem: true })
@@ -52,7 +52,7 @@ public class ResultTests
                 actual = input.Value;
             }
 
-            actual.Should().Be(expected);
+            actual.ShouldBe(expected);
         }
     }
 
@@ -62,18 +62,18 @@ public class ResultTests
     public void ValidationTestCase(bool fail)
     {
         var result = TrySomething(fail);
-        result.IsProblem.Should().Be(fail);
+        result.IsProblem.ShouldBe(fail);
 
         if (result.IsProblem)
         {
-            result.Problem.ErrorCode.Should().Be(StdProblemDescriptors.ErrorCodes.ValidationError);
-            result.Problem.Should().BeOfType<ValidationProblemInstance>()
-                .Which.Errors.Should().ContainSingle()
-                .Which.ErrorCode.Should().Be(StdValidationErrors.ErrorCodes.Required);
+            result.Problem.ErrorCode.ShouldBe(StdProblemDescriptors.ErrorCodes.ValidationError);
+            var problem = result.Problem.ShouldBeOfType<ValidationProblemInstance>();
+            problem.Errors.Length.ShouldBe(1);
+            problem.Errors[0].ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required);
         }
         else
         {
-            result.Value.Should().Be(42);
+            result.Value.ShouldBe(42);
         }
 
         static Result<int> TrySomething(bool fail)
@@ -99,8 +99,8 @@ public class ResultTests
     {
         Result<int> result = StdProblemDescriptors.ValidationError;
         Action action = () => result.EnsureSuccess();
-        action.Should().Throw<ProblemInstanceException>()
-            .Which.Problem.ErrorCode.Should().Be(StdProblemDescriptors.ErrorCodes.ValidationError);
+        action.ShouldThrow<ProblemInstanceException>()
+            .Problem.ErrorCode.ShouldBe(StdProblemDescriptors.ErrorCodes.ValidationError);
     }
 
     [Fact]

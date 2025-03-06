@@ -15,6 +15,6 @@ public class OpenApiExampleProviderTests
         var example = provider.GetExample<DateTimeOffset>();
         Assert.NotNull(example);
 
-        example.Should().NotBeEmpty();
+        example.ShouldNotBeEmpty();
     }
 }
