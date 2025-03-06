@@ -16,7 +16,7 @@ internal class ExportMaskinportenCommand
     public static Option<bool> ProdOption { get; }
         = new Option<bool>(
             aliases: ["--prod", "-p"],
-            description: "Generate PROD keys. Defaults to true unless --test is specified.");
+            description: "Export PROD keys.");
 
     public ExportMaskinportenCommand()
         : base("maskinporten", "Export a key set for maskinporten")
