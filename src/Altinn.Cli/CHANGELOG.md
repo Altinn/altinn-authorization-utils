@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.3.0...Altinn.Cli-v1.4.0) (2025-03-06)
+
+
+### Features
+
+* add model-utils project ([#205](https://github.com/Altinn/altinn-authorization-utils/issues/205)) ([0c8b622](https://github.com/Altinn/altinn-authorization-utils/commit/0c8b6228acb9c2ea3ac61a252ff4abb1e135f056))
+
 ## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.2.0...Altinn.Cli-v1.3.0) (2025-03-06)
 
 
