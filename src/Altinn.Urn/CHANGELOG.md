@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.1...Altinn.Urn-v2.7.0) (2025-03-06)
+
+
+### Features
+
+* add model-utils project ([#205](https://github.com/Altinn/altinn-authorization-utils/issues/205)) ([0c8b622](https://github.com/Altinn/altinn-authorization-utils/commit/0c8b6228acb9c2ea3ac61a252ff4abb1e135f056))
+
 ## [2.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.0...Altinn.Urn-v2.6.1) (2025-01-09)
 
 
