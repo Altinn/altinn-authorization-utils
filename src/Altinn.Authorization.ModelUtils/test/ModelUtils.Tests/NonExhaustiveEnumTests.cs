@@ -99,6 +99,82 @@ public class NonExhaustiveEnumTests
         nonExhaustive.IsUnknown.ShouldBeFalse();
     }
 
+#pragma warning disable CS1718 // Comparison made to same variable
+    [Fact]
+    public void Equality()
+    {
+        NonExhaustiveEnum<Enums.Default> known3 = Enums.Default.OtherValue3;
+        NonExhaustiveEnum<Enums.Default> unknown = Json.Deserialize<NonExhaustiveEnum<Enums.Default>>(@"""not-a-value""");
+
+        known3.Equals(known3).ShouldBeTrue();
+        known3.Equals(Enums.Default.OtherValue3).ShouldBeTrue();
+        known3.Equals(Enums.Default.SomeValue1).ShouldBeFalse();
+        known3.Equals(unknown).ShouldBeFalse();
+        known3.Equals("not-a-value").ShouldBeFalse();
+
+        unknown.Equals(known3).ShouldBeFalse();
+        unknown.Equals(Enums.Default.OtherValue3).ShouldBeFalse();
+        unknown.Equals(Enums.Default.SomeValue1).ShouldBeFalse();
+        unknown.Equals(unknown).ShouldBeTrue();
+        unknown.Equals("not-a-value").ShouldBeTrue();
+
+        known3.Equals((object)known3).ShouldBeTrue();
+        known3.Equals((object)Enums.Default.OtherValue3).ShouldBeTrue();
+        known3.Equals((object)Enums.Default.SomeValue1).ShouldBeFalse();
+        known3.Equals((object)unknown).ShouldBeFalse();
+        known3.Equals((object)"not-a-value").ShouldBeFalse();
+
+        unknown.Equals((object)known3).ShouldBeFalse();
+        unknown.Equals((object)Enums.Default.OtherValue3).ShouldBeFalse();
+        unknown.Equals((object)Enums.Default.SomeValue1).ShouldBeFalse();
+        unknown.Equals((object)unknown).ShouldBeTrue();
+        unknown.Equals((object)"not-a-value").ShouldBeTrue();
+
+        (known3 == known3).ShouldBeTrue();
+        (known3 == Enums.Default.OtherValue3).ShouldBeTrue();
+        (known3 == Enums.Default.SomeValue1).ShouldBeFalse();
+        (known3 == unknown).ShouldBeFalse();
+        (known3 == "not-a-value").ShouldBeFalse();
+
+        (unknown == known3).ShouldBeFalse();
+        (unknown == Enums.Default.OtherValue3).ShouldBeFalse();
+        (unknown == Enums.Default.SomeValue1).ShouldBeFalse();
+        (unknown == unknown).ShouldBeTrue();
+        (unknown == "not-a-value").ShouldBeTrue();
+
+        (known3 != known3).ShouldBeFalse();
+        (known3 != Enums.Default.OtherValue3).ShouldBeFalse();
+        (known3 != Enums.Default.SomeValue1).ShouldBeTrue();
+        (known3 != unknown).ShouldBeTrue();
+        (known3 != "not-a-value").ShouldBeTrue();
+
+        (unknown != known3).ShouldBeTrue();
+        (unknown != Enums.Default.OtherValue3).ShouldBeTrue();
+        (unknown != Enums.Default.SomeValue1).ShouldBeTrue();
+        (unknown != unknown).ShouldBeFalse();
+        (unknown != "not-a-value").ShouldBeFalse();
+    }
+#pragma warning restore CS1718 // Comparison made to same variable
+
+    [Fact]
+    public void DictionaryKeys()
+    {
+        NonExhaustiveEnum<Enums.Default> unknown = Json.Deserialize<NonExhaustiveEnum<Enums.Default>>(@"""not-a-value""");
+        var json =
+            """
+            {
+              "OtherValue3": 3,
+              "not-a-value": 4
+            }
+            """;
+
+
+        var dict = Json.Deserialize<Dictionary<NonExhaustiveEnum<Enums.Default>, int>>(json);
+        dict.ShouldNotBeNull();
+        dict.ShouldContainKeyAndValue(Enums.Default.OtherValue3, 3);
+        dict.ShouldContainKeyAndValue(unknown, 4);
+    }
+
 #if DEBUG
     [Fact]
     public void ThrowsOnNumericEnumConverter()
