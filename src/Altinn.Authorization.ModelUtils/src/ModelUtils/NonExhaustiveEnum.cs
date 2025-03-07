@@ -13,6 +13,7 @@ namespace Altinn.Authorization.ModelUtils;
 /// </summary>
 public static class NonExhaustiveEnum
 {
+    [AttributeUsage(AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
     internal sealed class ConverterAttribute
         : JsonConverterAttribute
     {
@@ -273,6 +274,18 @@ public readonly struct NonExhaustiveEnum<T>
         {
             _inner = (JsonConverter<T>)inner.CreateConverter(typeof(T), options);
             _string = (JsonConverter<string>)options.GetConverter(typeof(string));
+
+#if DEBUG
+            var enumValues = Enum.GetValues<T>();
+            foreach (var value in enumValues)
+            {
+                using var jsonSerialized = JsonSerializer.SerializeToDocument(value, options);
+                if (jsonSerialized.RootElement.ValueKind != JsonValueKind.String)
+                {
+                    ThrowHelper.ThrowInvalidOperationException($"Enum value '{value}' of '{typeof(T)}' is not serialized as a string, did you forget to decorate it with {nameof(StringEnumConverterAttribute)}?");
+                }
+            }
+#endif
         }
 
         public override NonExhaustiveEnum<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

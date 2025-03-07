@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Tests;
 
@@ -98,6 +99,15 @@ public class NonExhaustiveEnumTests
         nonExhaustive.IsUnknown.ShouldBeFalse();
     }
 
+#if DEBUG
+    [Fact]
+    public void ThrowsOnNumericEnumConverter()
+    {
+        var exn = Should.Throw<InvalidOperationException>(() => Json.Deserialize<NonExhaustiveEnum<TestEnum>>(@"1"));
+        exn.Message.ShouldBe($"Enum value '{TestEnum.One}' of '{typeof(TestEnum)}' is not serialized as a string, did you forget to decorate it with {nameof(StringEnumConverterAttribute)}?");
+    }
+#endif
+
     [Theory]
     [Enums.NonExhaustiveEnumCasesData]
     public void JsonRoundTrip(Enums.NonExhaustiveEnumCaseModel model)
@@ -108,5 +118,27 @@ public class NonExhaustiveEnumTests
 
         var deserialized = Json.Deserialize(doc, model.NonExhaustiveType);
         deserialized.ShouldBe(model.Value);
+    }
+
+    [JsonConverter(typeof(NumberEnumConverter))]
+    private enum TestEnum
+        : ulong
+    {
+        One = 1,
+        Two = 2,
+    }
+
+    private sealed class NumberEnumConverter
+        : JsonConverter<TestEnum>
+    {
+        public override TestEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return (TestEnum)reader.GetUInt64();
+        }
+
+        public override void Write(Utf8JsonWriter writer, TestEnum value, JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue((ulong)value);
+        }
     }
 }
