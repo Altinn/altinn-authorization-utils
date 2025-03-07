@@ -13,6 +13,24 @@ namespace Altinn.Authorization.ModelUtils;
 /// </summary>
 public static class NonExhaustiveEnum
 {
+    /// <summary>
+    /// Checks if a type is a <see cref="NonExhaustiveEnum{T}"/> and returns the field type.
+    /// </summary>
+    /// <param name="type">The type to check.</param>
+    /// <param name="fieldType">The inner field type, if <paramref name="type"/> is a constructed <see cref="NonExhaustiveEnum{T}"/> type.</param>
+    /// <returns><see langword="true"/> if <paramref name="type"/> is a constructed <see cref="NonExhaustiveEnum{T}"/> type, otherwise <see langword="false"/>.</returns>
+    public static bool IsNonExhaustiveEnumType(Type type, [NotNullWhen(true)] out Type? fieldType)
+    {
+        if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(NonExhaustiveEnum<>))
+        {
+            fieldType = type.GetGenericArguments()[0];
+            return true;
+        }
+
+        fieldType = null;
+        return false;
+    }
+
     [AttributeUsage(AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
     internal sealed class ConverterAttribute
         : JsonConverterAttribute
