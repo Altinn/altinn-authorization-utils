@@ -1,4 +1,5 @@
-﻿using Altinn.Swashbuckle.Examples;
+﻿using Altinn.Swashbuckle.AutoDoc;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Swashbuckle.Filters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -49,5 +50,41 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
             });
 
         return services;
+    }
+
+    /// <summary>
+    /// Adds documentation to swagger documents based on automatically discovered XML documentation.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddSwaggerAutoDoc(this IServiceCollection services)
+    {
+        services.TryAddSingleton<IXmlDocProvider, XmlDocProvider>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, XmlDocFilterConfigurator>());
+
+        return services;
+    }
+
+    private sealed class XmlDocFilterConfigurator
+        : IConfigureNamedOptions<SwaggerGenOptions>
+    {
+        private readonly IXmlDocProvider _xmlDocProvider;
+
+        public XmlDocFilterConfigurator(IXmlDocProvider xmlDocProvider)
+        {
+            _xmlDocProvider = xmlDocProvider;
+        }
+
+        public void Configure(string? name, SwaggerGenOptions options)
+        {
+            options.AddParameterFilterInstance(new XmlDocParameterFilter(_xmlDocProvider));
+            options.AddRequestBodyFilterInstance(new XmlDocRequestBodyFilter(_xmlDocProvider));
+            options.AddOperationFilterInstance(new XmlDocOperationFilter(_xmlDocProvider));
+            options.AddSchemaFilterInstance(new XmlDocSchemaFilter(_xmlDocProvider));
+            options.AddDocumentFilterInstance(new XmlDocDocumentFilter(_xmlDocProvider, options.SwaggerGeneratorOptions));
+        }
+
+        public void Configure(SwaggerGenOptions options)
+            => Configure(Options.Options.DefaultName, options);
     }
 }
