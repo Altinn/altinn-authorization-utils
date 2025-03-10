@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.10.0...Altinn.Authorization.ServiceDefaults-v2.11.0) (2025-03-10)
+
+
+### Features
+
+* add azure appconfiguration support ([#217](https://github.com/Altinn/altinn-authorization-utils/issues/217)) ([0daf8b2](https://github.com/Altinn/altinn-authorization-utils/commit/0daf8b22f15806782aa4c6b514862d318aa4e34b))
+
 ## [2.10.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.9.0...Altinn.Authorization.ServiceDefaults-v2.10.0) (2025-03-03)
 
 
