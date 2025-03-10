@@ -14,7 +14,9 @@ using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -22,10 +24,7 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -376,6 +375,7 @@ public static class AltinnServiceDefaultsExtensions
     {
         builder.Configuration.AddAltinnDbSecretsJson(logger);
         builder.Configuration.AddAltinnKeyVault(logger);
+        builder.Configuration.AddAltinnAppConfiguration(logger);
 
         return builder;
     }
@@ -461,6 +461,71 @@ public static class AltinnServiceDefaultsExtensions
         else
         {
             logger.Log($"Missing keyvault settings - skipping adding keyvault to configuration");
+        }
+
+        return manager;
+    }
+
+    private static IConfigurationBuilder AddAltinnAppConfiguration(this IConfigurationManager manager, AltinnPreStartLogger logger)
+    {
+        var appConfigurationEndpoint = manager.GetValue<string>("Altinn:AppConfiguration:Endpoint");
+        var appConfigurationLabel = manager.GetValue<string>("Altinn:AppConfiguration:Label");
+        var enableEnvironmentCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:Environment:Enable", defaultValue: false);
+        var enableWorkloadIdentityCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:WorkloadIdentity:Enable", defaultValue: true);
+        var enableManagedIdentityCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:ManagedIdentity:Enable", defaultValue: true);
+
+        if (!string.IsNullOrEmpty(appConfigurationEndpoint))
+        {
+            if (!Uri.TryCreate(appConfigurationEndpoint, UriKind.Absolute, out var appConfigurationEndpointUri))
+            {
+                logger.Log($"Altinn:AppConfiguration:Endpoint is not a valid URI");
+                ThrowHelper.ThrowInvalidOperationException("Altinn:AppConfiguration:Endpoint is not a valid URI");
+            }
+
+            if (string.IsNullOrEmpty(appConfigurationLabel))
+            {
+                logger.Log("Altinn:AppConfiguration:Label is missing but Altinn:AppConfiguration:Endpoint is set");
+                ThrowHelper.ThrowInvalidOperationException("Altinn:AppConfiguration:Label is missing but Altinn:AppConfiguration:Endpoint is set");
+            }
+
+            List<TokenCredential> credentialList = [];
+
+            if (enableEnvironmentCredential)
+            {
+                logger.Log("adding config from appconfiguration using environment credentials");
+                credentialList.Add(new EnvironmentCredential());
+            }
+
+            if (enableWorkloadIdentityCredential)
+            {
+                logger.Log("adding config from appconfiguration using workload identity credentials");
+                credentialList.Add(new WorkloadIdentityCredential());
+            }
+
+            if (enableManagedIdentityCredential)
+            {
+                logger.Log("adding config from appconfiguration using managed identity credentials");
+                credentialList.Add(new ManagedIdentityCredential());
+            }
+
+            if (credentialList.Count == 0)
+            {
+                logger.Log("No credentials configured for appconfiguration - skipping adding appconfiguration to configuration");
+                return manager;
+            }
+
+            var credential = new ChainedTokenCredential([.. credentialList]);
+
+            manager.AddAzureAppConfiguration(options =>
+            {
+                options.Select(KeyFilter.Any, appConfigurationLabel);
+                options.ConfigureKeyVault(kvOptions => kvOptions.SetCredential(credential));
+                options.Connect(appConfigurationEndpointUri, credential);
+            });
+        }
+        else
+        {
+            logger.Log($"Missing Altinn:AppConfiguration:Endpoint - skipping adding app configuration to configuration");
         }
 
         return manager;
