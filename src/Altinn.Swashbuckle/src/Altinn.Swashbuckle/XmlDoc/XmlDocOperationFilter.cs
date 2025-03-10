@@ -24,14 +24,20 @@ internal sealed class XmlDocOperationFilter
     /// <inheritdoc />
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        if (context.MethodInfo == null) return;
+        if (context.MethodInfo is null)
+        {
+            return;
+        }
 
         // If method is from a constructed generic type, look for comments from the generic type method
         var targetMethod = context.MethodInfo.DeclaringType is not null && context.MethodInfo.DeclaringType.IsConstructedGenericType
             ? context.MethodInfo.GetUnderlyingGenericTypeMethod()
             : context.MethodInfo;
 
-        if (targetMethod == null) return;
+        if (targetMethod is null)
+        {
+            return;
+        }
 
         ApplyControllerTags(operation, targetMethod.DeclaringType!);
         ApplyMethodTags(operation, targetMethod);
@@ -39,7 +45,10 @@ internal sealed class XmlDocOperationFilter
 
     private void ApplyControllerTags(OpenApiOperation operation, Type controllerType)
     {
-        if (!_documentationProvider.TryGetXmlDoc(controllerType, out var methodNode)) return;
+        if (!_documentationProvider.TryGetXmlDoc(controllerType, out var methodNode))
+        {
+            return;
+        }
 
         var responseNodes = methodNode.SelectChildren("response");
         ApplyResponseTags(operation, responseNodes);
@@ -47,17 +56,22 @@ internal sealed class XmlDocOperationFilter
 
     private void ApplyMethodTags(OpenApiOperation operation, MethodInfo methodInfo)
     {
-        var methodMemberName = XmlCommentsNodeNameHelper.GetMemberNameForMethod(methodInfo);
-
-        if (!_documentationProvider.TryGetXmlDoc(methodInfo, out var methodNode)) return;
+        if (!_documentationProvider.TryGetXmlDoc(methodInfo, out var methodNode))
+        {
+            return;
+        }
 
         var summaryNode = methodNode.SelectFirstChild("summary");
         if (summaryNode != null)
+        {
             operation.Summary = XmlCommentsTextHelper.Humanize(summaryNode.InnerXml);
+        }
 
         var remarksNode = methodNode.SelectFirstChild("remarks");
         if (remarksNode != null)
+        {
             operation.Description = XmlCommentsTextHelper.Humanize(remarksNode.InnerXml);
+        }
 
         var responseNodes = methodNode.SelectChildren("response");
         ApplyResponseTags(operation, responseNodes);
@@ -79,7 +93,7 @@ internal sealed class XmlDocOperationFilter
                 operation.Responses[code] = response;
             }
 
-            response.Description = XmlCommentsTextHelper.Humanize(responseNodes.Current.InnerXml);
+            response.Description = XmlCommentsTextHelper.Humanize(responseNodes.Current!.InnerXml);
         }
     }
 }

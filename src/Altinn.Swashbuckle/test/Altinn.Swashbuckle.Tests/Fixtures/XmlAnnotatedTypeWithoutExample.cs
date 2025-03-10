@@ -48,20 +48,20 @@ public class XmlAnnotatedTypeWithoutExample
     /// <summary>
     /// Summary for Nullable StringPropertyWithNullExample
     /// </summary>
-    public string StringPropertyWithNullExample { get; set; }
+    public string? StringPropertyWithNullExample { get; set; }
 
     /// <summary>
     /// Summary for StringProperty
     /// </summary>
-    public string StringProperty { get; set; }
+    public string? StringProperty { get; set; }
 
     /// <summary>
     /// Summary for StringPropertyWithUri
     /// </summary>
-    public string StringPropertyWithUri { get; set; }
+    public string? StringPropertyWithUri { get; set; }
 
     /// <summary>
     /// Summary for ObjectProperty
     /// </summary>
-    public object ObjectProperty { get; set; }
+    public object? ObjectProperty { get; set; }
 }

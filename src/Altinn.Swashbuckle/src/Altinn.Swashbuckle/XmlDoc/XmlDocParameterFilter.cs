@@ -49,21 +49,30 @@ internal sealed class XmlDocParameterFilter
         }
 
         var exampleNode = propertyNode.SelectFirstChild("example");
-        if (exampleNode == null) return;
+        if (exampleNode == null)
+        {
+            return;
+        }
 
         parameter.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, parameter.Schema, exampleNode.ToString());
     }
 
     private void ApplyParamTags(OpenApiParameter parameter, ParameterFilterContext context)
     {
-        if (!(context.ParameterInfo.Member is MethodInfo methodInfo)) return;
+        if (context.ParameterInfo.Member is not MethodInfo methodInfo)
+        {
+            return;
+        }
 
         // If method is from a constructed generic type, look for comments from the generic type method
-        var targetMethod = methodInfo.DeclaringType.IsConstructedGenericType
+        var targetMethod = methodInfo.DeclaringType!.IsConstructedGenericType
             ? methodInfo.GetUnderlyingGenericTypeMethod()
             : methodInfo;
 
-        if (targetMethod == null) return;
+        if (targetMethod == null)
+        {
+            return;
+        }
 
         if (!_documentationProvider.TryGetXmlDoc(targetMethod, out var propertyNode))
         {
@@ -77,7 +86,10 @@ internal sealed class XmlDocParameterFilter
             parameter.Description = XmlCommentsTextHelper.Humanize(paramNode.InnerXml);
 
             var example = paramNode.GetAttribute("example");
-            if (string.IsNullOrEmpty(example)) return;
+            if (string.IsNullOrEmpty(example))
+            {
+                return;
+            }
 
             parameter.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, parameter.Schema, example);
         }
