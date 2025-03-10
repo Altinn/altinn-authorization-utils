@@ -1,5 +1,4 @@
-﻿using Altinn.Swashbuckle.XmlDoc;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Xml.XPath;
@@ -34,7 +33,7 @@ internal sealed class XmlDocOperationFilter
 
         if (targetMethod == null) return;
 
-        ApplyControllerTags(operation, targetMethod.DeclaringType);
+        ApplyControllerTags(operation, targetMethod.DeclaringType!);
         ApplyMethodTags(operation, targetMethod);
     }
 

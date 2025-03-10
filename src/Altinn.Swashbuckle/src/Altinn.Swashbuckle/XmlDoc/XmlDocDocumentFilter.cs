@@ -1,5 +1,4 @@
-﻿using Altinn.Swashbuckle.XmlDoc;
-using Microsoft.AspNetCore.Mvc.Controllers;
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -14,10 +13,10 @@ namespace Altinn.Swashbuckle.XmlDoc;
 internal sealed class XmlDocDocumentFilter
     : IDocumentFilter
 {
-    private readonly SwaggerGeneratorOptions _options;
+    private readonly SwaggerGeneratorOptions? _options;
     private readonly IXmlDocProvider _documentationProvider;
     
-    public XmlDocDocumentFilter(IXmlDocProvider documentationProvider, SwaggerGeneratorOptions options)
+    public XmlDocDocumentFilter(IXmlDocProvider documentationProvider, SwaggerGeneratorOptions? options)
     {
         _options = options;
         _documentationProvider = documentationProvider;

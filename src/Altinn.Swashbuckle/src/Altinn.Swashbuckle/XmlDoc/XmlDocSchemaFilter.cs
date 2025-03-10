@@ -1,5 +1,4 @@
-﻿using Altinn.Swashbuckle.XmlDoc;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Xml.XPath;
 
