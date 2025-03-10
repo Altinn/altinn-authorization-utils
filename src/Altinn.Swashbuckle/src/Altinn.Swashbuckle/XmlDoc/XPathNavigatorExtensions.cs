@@ -23,9 +23,9 @@ internal static class XPathNavigatorExtensions
                 .FirstOrDefault();
     }
 
-    internal static XPathNavigator? SelectFirstChildWithAttribute(this XPathNavigator navigator, string childName, string attributeName, string? attributeValue)
+    internal static XPathNavigator? SelectFirstChildWithAttribute(this XPathNavigator navigator, string name, string attributeName, string? attributeValue)
     {
-        return navigator.SelectChildren(childName, EmptyNamespace)
+        return navigator.SelectChildren(name, EmptyNamespace)
                 ?.OfType<XPathNavigator>()
                 .FirstOrDefault(n => n.GetAttribute(attributeName, EmptyNamespace) == attributeValue);
     }

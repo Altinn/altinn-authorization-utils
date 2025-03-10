@@ -9,6 +9,7 @@
     "synopsis",
     "pre",
     "xd:pre",
-    "BaseArtifactsPath"
+    "BaseArtifactsPath",
+    "GenerateDocumentationFile"
   ]
 }

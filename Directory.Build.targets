@@ -10,11 +10,12 @@
 
       <PropertyGroup>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <GenerateDocumentationFile Condition=" '$(TestGenerateDocumentationFileOverride)' != '' ">$(TestGenerateDocumentationFileOverride)</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);SA0001</NoWarn>
         <XUnitVersion Condition=" '$(XUnitVersion)' == '' ">v3</XUnitVersion>
       </PropertyGroup>
 
-      <ItemGroup>
+      <ItemGroup Condition=" '$(GenerateDocumentationFile)' != 'true' ">
         <DocFileItem Remove="@(DocFileItem)" />
       </ItemGroup>
 
