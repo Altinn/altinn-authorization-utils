@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.2.0...Altinn.Swashbuckle-v2.3.0) (2025-03-11)
+
+
+### Features
+
+* swashbuckle auto-doc ([#216](https://github.com/Altinn/altinn-authorization-utils/issues/216)) ([116f9ae](https://github.com/Altinn/altinn-authorization-utils/commit/116f9ae1b0aab024d14e63f89b54ce3cd8056589))
+
 ## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.1.1...Altinn.Swashbuckle-v2.2.0) (2024-12-06)
 
 
