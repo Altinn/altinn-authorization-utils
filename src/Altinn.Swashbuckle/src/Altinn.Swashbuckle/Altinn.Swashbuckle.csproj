@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<TargetsForTfmSpecificContentInPackage>
+			$(TargetsForTfmSpecificContentInPackage);_GetPackageMSBuildItems</TargetsForTfmSpecificContentInPackage>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -10,13 +12,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
+		<ProjectReference
+			Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Update="Microsoft.Build.Artifacts">
-	    <IncludeAssets>build; buildtransitive</IncludeAssets>
-	  </PackageReference>
+		<PackageReference Update="Microsoft.Build.Artifacts">
+			<IncludeAssets>build; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
+
+	<ItemGroup>
+		<PackageMSBuildItem Include="build/Altinn.Swashbuckle.props" />
+		<PackageMSBuildItem Include="build/Altinn.Swashbuckle.targets" />
+	</ItemGroup>
+
+	<Target Name="_GetPackageMSBuildItems">
+		<ItemGroup>
+			<TfmSpecificPackageFile Include="@(PackageMSBuildItem)" BuildAction="None"
+				PackagePath="build/$(TargetFramework)/" />
+		</ItemGroup>
+	</Target>
 
 </Project>

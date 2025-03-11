@@ -1,0 +1,7 @@
+<Project>
+
+  <PropertyGroup>
+    <AltinnSwashbuckleCopyLocalXmlDocs>true</AltinnSwashbuckleCopyLocalXmlDocs>
+  </PropertyGroup>
+
+</Project>
