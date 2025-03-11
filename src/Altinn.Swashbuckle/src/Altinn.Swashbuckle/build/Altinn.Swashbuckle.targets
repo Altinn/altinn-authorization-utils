@@ -1,0 +1,15 @@
+<Project>
+
+  <Target Name="_CopyXmlDocumentationFiles" BeforeTargets="Build"
+    Condition=" '$(AltinnSwashbuckleCopyLocalXmlDocs)' == 'true' ">
+
+    <ItemGroup>
+      <_XmlReferenceFiles Include="%(Reference.RelativeDir)%(Reference.Filename).xml"
+        Condition="Exists('$(OutputPath)%(Filename).dll') And Exists('%(Reference.RelativeDir)%(Reference.Filename).xml')" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_XmlReferenceFiles)" DestinationFolder="$(OutputPath)" />
+
+  </Target>
+
+</Project>
