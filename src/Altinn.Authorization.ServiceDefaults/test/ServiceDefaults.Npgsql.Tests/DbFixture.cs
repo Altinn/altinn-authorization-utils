@@ -7,7 +7,7 @@ public class DbFixture
 {
     private PostgreSqlContainer _container
         = new PostgreSqlBuilder()
-            .WithImage("docker.io/postgres:16.1-alpine")
+            .WithImage("ghcr.io/altinn/library/postgres:16.2-alpine")
             .WithUsername("superadmin_user")
             .WithPassword("superadmin_password")
             .Build();
