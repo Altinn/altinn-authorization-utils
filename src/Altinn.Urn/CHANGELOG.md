@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.1...Altinn.Urn-v2.6.2) (2025-03-14)
+
+
+### Bug Fixes
+
+* remove multiple warnings on generated URN code ([#223](https://github.com/Altinn/altinn-authorization-utils/issues/223)) ([cc492e7](https://github.com/Altinn/altinn-authorization-utils/commit/cc492e7004de4741f51b90b07bcbe7ac93bafea5))
+
 ## [2.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.0...Altinn.Urn-v2.6.1) (2025-01-09)
 
 
