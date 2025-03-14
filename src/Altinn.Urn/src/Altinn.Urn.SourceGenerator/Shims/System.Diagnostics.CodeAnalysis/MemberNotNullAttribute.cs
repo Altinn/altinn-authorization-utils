@@ -1,4 +1,7 @@
 ﻿namespace System.Diagnostics.CodeAnalysis;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
 [ExcludeFromCodeCoverage]
 public sealed class MemberNotNullAttribute : Attribute

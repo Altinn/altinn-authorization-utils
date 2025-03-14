@@ -180,6 +180,7 @@ partial record TestUrn
         }
     }
 
+    /// <inheritdoc cref="IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor)"/>
     [CompilerGenerated]
     protected abstract void Accept(IKeyValueUrnVisitor visitor);
 
@@ -236,6 +237,7 @@ partial record TestUrn
     [CompilerGenerated]
     public override string ToString() => _urn.Urn;
 
+    /// <summary>Gets the debugger display for this Urn.</summary>
     [CompilerGenerated]
     protected string DebuggerDisplay => _urn.Urn;
 
@@ -483,14 +485,19 @@ partial record TestUrn
     [CompilerGenerated]
     private static T Unreachable<T>() => throw new UnreachableException();
 
+    /// <summary>Type of <see cref="TestUrn" />.</summary>
     [CompilerGenerated]
     public enum Type
     {
+        /// <summary>Urn is a <see cref="TestUrn.PartyId" />.</summary>
         PartyId = 1,
+        /// <summary>Urn is a <see cref="TestUrn.PartyUuid" />.</summary>
         PartyUuid = 2,
+        /// <summary>Urn is a <see cref="TestUrn.OrganizationIdentifier" />.</summary>
         OrganizationIdentifier = 3,
     }
 
+    /// <summary>A PartyId variant of <see cref="TestUrn"/>.</summary>
     [CompilerGenerated]
     [DebuggerDisplay("{DebuggerDisplay}")]
     [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
@@ -498,6 +505,7 @@ partial record TestUrn
         : TestUrn
         , IKeyValueUrnVariant<PartyId, TestUrn, Type, int>
     {
+        /// <inheritdoc/>
         [CompilerGenerated]
         public const string CanonicalPrefix = "urn:altinn:party:id";
 
@@ -509,6 +517,7 @@ partial record TestUrn
             "urn:altinn:party:id",
         ];
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
 
@@ -517,10 +526,16 @@ partial record TestUrn
         [CompilerGenerated]
         private PartyId(string urn, int valueIndex, int value) : base(urn, valueIndex, Type.PartyId) => (_value) = (value);
 
+        /// <summary>Constructs a <see cref="PartyId"/> from parsed components.</summary>
+        /// <param name="urn">The raw URN.</param>
+        /// <param name="valueIndex">The index of the value in the URN.</param>
+        /// <param name="value">The parsed value.</param>
+        /// <returns>A <see cref="PartyId"/> constructed from it's parts.</returns>
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal static PartyId FromParsed(string urn, int valueIndex, int value) => new(urn, valueIndex, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public int Value => _value;
         /// <inheritdoc/>
@@ -540,6 +555,7 @@ partial record TestUrn
         public static PartyId Create(int value)
             => new($"""urn:altinn:party:id:{new _FormatHelper(value)}""", 20, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         protected override void Accept(IKeyValueUrnVisitor visitor)
             => visitor.Visit<TestUrn, Type, int>(this, _type, _value);
@@ -562,6 +578,7 @@ partial record TestUrn
         }
     }
 
+    /// <summary>A PartyUuid variant of <see cref="TestUrn"/>.</summary>
     [CompilerGenerated]
     [DebuggerDisplay("{DebuggerDisplay}")]
     [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
@@ -569,6 +586,7 @@ partial record TestUrn
         : TestUrn
         , IKeyValueUrnVariant<PartyUuid, TestUrn, Type, System.Guid>
     {
+        /// <inheritdoc/>
         [CompilerGenerated]
         public const string CanonicalPrefix = "urn:altinn:party:uuid";
 
@@ -580,6 +598,7 @@ partial record TestUrn
             "urn:altinn:party:uuid",
         ];
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
 
@@ -588,10 +607,16 @@ partial record TestUrn
         [CompilerGenerated]
         private PartyUuid(string urn, int valueIndex, System.Guid value) : base(urn, valueIndex, Type.PartyUuid) => (_value) = (value);
 
+        /// <summary>Constructs a <see cref="PartyUuid"/> from parsed components.</summary>
+        /// <param name="urn">The raw URN.</param>
+        /// <param name="valueIndex">The index of the value in the URN.</param>
+        /// <param name="value">The parsed value.</param>
+        /// <returns>A <see cref="PartyUuid"/> constructed from it's parts.</returns>
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal static PartyUuid FromParsed(string urn, int valueIndex, System.Guid value) => new(urn, valueIndex, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public System.Guid Value => _value;
         /// <inheritdoc/>
@@ -611,6 +636,7 @@ partial record TestUrn
         public static PartyUuid Create(System.Guid value)
             => new($"""urn:altinn:party:uuid:{new _FormatHelper(value)}""", 22, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         protected override void Accept(IKeyValueUrnVisitor visitor)
             => visitor.Visit<TestUrn, Type, System.Guid>(this, _type, _value);
@@ -633,6 +659,7 @@ partial record TestUrn
         }
     }
 
+    /// <summary>A OrganizationIdentifier variant of <see cref="TestUrn"/>.</summary>
     [CompilerGenerated]
     [DebuggerDisplay("{DebuggerDisplay}")]
     [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
@@ -640,6 +667,7 @@ partial record TestUrn
         : TestUrn
         , IKeyValueUrnVariant<OrganizationIdentifier, TestUrn, Type, OrganizationNumber>
     {
+        /// <inheritdoc/>
         [CompilerGenerated]
         public const string CanonicalPrefix = "urn:altinn:organization:identifier-no";
 
@@ -651,6 +679,7 @@ partial record TestUrn
             "urn:altinn:organization:identifier-no",
         ];
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
 
@@ -659,10 +688,16 @@ partial record TestUrn
         [CompilerGenerated]
         private OrganizationIdentifier(string urn, int valueIndex, OrganizationNumber value) : base(urn, valueIndex, Type.OrganizationIdentifier) => (_value) = (value);
 
+        /// <summary>Constructs a <see cref="OrganizationIdentifier"/> from parsed components.</summary>
+        /// <param name="urn">The raw URN.</param>
+        /// <param name="valueIndex">The index of the value in the URN.</param>
+        /// <param name="value">The parsed value.</param>
+        /// <returns>A <see cref="OrganizationIdentifier"/> constructed from it's parts.</returns>
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal static OrganizationIdentifier FromParsed(string urn, int valueIndex, OrganizationNumber value) => new(urn, valueIndex, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public OrganizationNumber Value => _value;
         /// <inheritdoc/>
@@ -682,6 +717,7 @@ partial record TestUrn
         public static OrganizationIdentifier Create(OrganizationNumber value)
             => new($"""urn:altinn:organization:identifier-no:{new _FormatHelper(value)}""", 38, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         protected override void Accept(IKeyValueUrnVisitor visitor)
             => visitor.Visit<TestUrn, Type, OrganizationNumber>(this, _type, _value);

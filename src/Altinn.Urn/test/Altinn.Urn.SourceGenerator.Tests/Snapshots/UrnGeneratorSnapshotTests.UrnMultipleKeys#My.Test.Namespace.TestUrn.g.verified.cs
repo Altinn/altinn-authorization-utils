@@ -163,6 +163,7 @@ partial record TestUrn
         }
     }
 
+    /// <inheritdoc cref="IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor)"/>
     [CompilerGenerated]
     protected abstract void Accept(IKeyValueUrnVisitor visitor);
 
@@ -189,6 +190,7 @@ partial record TestUrn
     [CompilerGenerated]
     public override string ToString() => _urn.Urn;
 
+    /// <summary>Gets the debugger display for this Urn.</summary>
     [CompilerGenerated]
     protected string DebuggerDisplay => _urn.Urn;
 
@@ -378,12 +380,15 @@ partial record TestUrn
     [CompilerGenerated]
     private static T Unreachable<T>() => throw new UnreachableException();
 
+    /// <summary>Type of <see cref="TestUrn" />.</summary>
     [CompilerGenerated]
     public enum Type
     {
+        /// <summary>Urn is a <see cref="TestUrn.Test1" />.</summary>
         Test1 = 1,
     }
 
+    /// <summary>A Test1 variant of <see cref="TestUrn"/>.</summary>
     [CompilerGenerated]
     [DebuggerDisplay("{DebuggerDisplay}")]
     [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
@@ -391,6 +396,7 @@ partial record TestUrn
         : TestUrn
         , IKeyValueUrnVariant<Test1, TestUrn, Type, System.Guid>
     {
+        /// <inheritdoc/>
         [CompilerGenerated]
         public const string CanonicalPrefix = "urn:altinn:test2";
 
@@ -403,6 +409,7 @@ partial record TestUrn
             "urn:altinn:test2",
         ];
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
 
@@ -411,10 +418,16 @@ partial record TestUrn
         [CompilerGenerated]
         private Test1(string urn, int valueIndex, System.Guid value) : base(urn, valueIndex, Type.Test1) => (_value) = (value);
 
+        /// <summary>Constructs a <see cref="Test1"/> from parsed components.</summary>
+        /// <param name="urn">The raw URN.</param>
+        /// <param name="valueIndex">The index of the value in the URN.</param>
+        /// <param name="value">The parsed value.</param>
+        /// <returns>A <see cref="Test1"/> constructed from it's parts.</returns>
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal static Test1 FromParsed(string urn, int valueIndex, System.Guid value) => new(urn, valueIndex, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         public System.Guid Value => _value;
         /// <inheritdoc/>
@@ -434,6 +447,7 @@ partial record TestUrn
         public static Test1 Create(System.Guid value)
             => new($"""urn:altinn:test2:{new _FormatHelper(value)}""", 17, value);
 
+        /// <inheritdoc/>
         [CompilerGenerated]
         protected override void Accept(IKeyValueUrnVisitor visitor)
             => visitor.Visit<TestUrn, Type, System.Guid>(this, _type, _value);

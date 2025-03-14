@@ -20,7 +20,7 @@ internal readonly ref partial struct CodeBuilder
         /// <summary>Creates a handler used to append an interpolated string into a <see cref="CodeStringBuilder"/>.</summary>
         /// <param name="literalLength">The number of constant characters outside of interpolation expressions in the interpolated string.</param>
         /// <param name="formattedCount">The number of interpolation expressions in the interpolated string.</param>
-        /// <param name="stringBuilder">The associated StringBuilder to which to append.</param>
+        /// <param name="builder">The associated CodeBuilder to which to append.</param>
         /// <remarks>This is intended to be called only by compiler-generated code. Arguments are not validated as they'd otherwise be for members intended to be used directly.</remarks>
         public AppendInterpolatedStringHandler(int literalLength, int formattedCount, CodeBuilder builder)
         {

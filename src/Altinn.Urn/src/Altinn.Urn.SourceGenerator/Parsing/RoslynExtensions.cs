@@ -32,7 +32,9 @@ internal static class RoslynExtensions
     /// </summary>
     /// <param name="compilation">The <see cref="Compilation"/> to consider for analysis.</param>
     /// <param name="fullyQualifiedMetadataName">The fully-qualified metadata type name to find.</param>
-    /// <returns>The symbol to use for code analysis; otherwise, <see langword="null"/>.</returns>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="symbol">The symbol to use for code analysis; otherwise, <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> if a symbol was found, otherwise <see langword="false"/>.</returns>
     public static bool TryGetBestTypeByMetadataName(
         this Compilation compilation, 
         string fullyQualifiedMetadataName, 
