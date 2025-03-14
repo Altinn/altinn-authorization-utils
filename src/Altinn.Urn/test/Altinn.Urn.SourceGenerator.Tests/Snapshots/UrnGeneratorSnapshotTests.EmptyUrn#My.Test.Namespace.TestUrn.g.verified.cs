@@ -153,6 +153,7 @@ partial record TestUrn
         }
     }
 
+    /// <inheritdoc cref="IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor)"/>
     [CompilerGenerated]
     protected abstract void Accept(IKeyValueUrnVisitor visitor);
 
@@ -164,6 +165,7 @@ partial record TestUrn
     [CompilerGenerated]
     public override string ToString() => _urn.Urn;
 
+    /// <summary>Gets the debugger display for this Urn.</summary>
     [CompilerGenerated]
     protected string DebuggerDisplay => _urn.Urn;
 
@@ -271,6 +273,7 @@ partial record TestUrn
     [CompilerGenerated]
     private static T Unreachable<T>() => throw new UnreachableException();
 
+    /// <summary>Type of <see cref="TestUrn" />.</summary>
     [CompilerGenerated]
     public enum Type
     {

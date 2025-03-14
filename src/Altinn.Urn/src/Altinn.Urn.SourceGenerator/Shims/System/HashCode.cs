@@ -47,6 +47,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #pragma warning disable CA1066 // Implement IEquatable when overriding Object.Equals
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace System;
 

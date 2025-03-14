@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Altinn.Urn.SourceGenerator;
 
+/// <summary>
+/// Source generator for generating URN types.
+/// </summary>
 [Generator]
 public class UrnGenerator
     : IIncrementalGenerator
@@ -13,6 +16,10 @@ public class UrnGenerator
     [ThreadStatic]
     private static StringBuilder? _fileNameBuilder;
 
+    /// <summary>
+    /// Initializes the source generator.
+    /// </summary>
+    /// <param name="context">The <see cref="IncrementalGeneratorInitializationContext"/>.</param>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var records = context.SyntaxProvider.ForAttributeWithMetadataName(

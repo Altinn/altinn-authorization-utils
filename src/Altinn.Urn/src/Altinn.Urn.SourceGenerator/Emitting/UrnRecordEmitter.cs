@@ -317,6 +317,7 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("}");
 
         builder.AppendLine();
+        builder.AppendLine("/// <inheritdoc cref=\"IVisitableKeyValueUrn.Accept(IKeyValueUrnVisitor)\"/>");
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("protected abstract void Accept(IKeyValueUrnVisitor visitor);");
 
@@ -355,6 +356,7 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("public override string ToString() => _urn.Urn;");
 
         builder.AppendLine();
+        builder.AppendLine("/// <summary>Gets the debugger display for this Urn.</summary>");
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("protected string DebuggerDisplay => _urn.Urn;");
 
@@ -619,6 +621,7 @@ internal ref struct UrnRecordEmitter
     {
         ct.ThrowIfCancellationRequested();
 
+        builder.AppendLine($"/// <summary>Type of <see cref=\"{record.TypeName}\" />.</summary>");
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("public enum Type");
         builder.AppendLine("{");
@@ -627,6 +630,7 @@ internal ref struct UrnRecordEmitter
         var inner = builder.Indent();
         foreach (var type in record.Members)
         {
+            inner.AppendLine($"/// <summary>Urn is a <see cref=\"{record.TypeName}.{type.Name}\" />.</summary>");
             inner.AppendLine($"{type.Name} = {value++},");
         }
 
@@ -650,6 +654,7 @@ internal ref struct UrnRecordEmitter
         var canonicalPrefix = $"urn:{member.Prefixes[member.CanonicalPrefixIndex]}";
 
         builder.AppendLine();
+        builder.AppendLine($"/// <summary>A {member.Name} variant of <see cref=\"{record.TypeName}\"/>.</summary>");
         builder.AppendLine("[CompilerGenerated]");
         builder.AppendLine("""[DebuggerDisplay("{DebuggerDisplay}")]""");
         builder.AppendLine($"[{_jsonConverterAttribute}(typeof({_jsonVariantConverterConcreteType}))]");
@@ -658,6 +663,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine($", IKeyValueUrnVariant<{member.Name}, {record.TypeName}, Type, {member.ValueType}>");
         builder.AppendLine("{");
 
+        builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine($"public const string CanonicalPrefix = \"{canonicalPrefix}\";");
 
@@ -677,6 +683,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("];");
 
         builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine("public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();");
 
@@ -688,11 +695,17 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine($"private {member.Name}(string urn, int valueIndex, {member.ValueType} value) : base(urn, valueIndex, Type.{member.Name}) => (_value) = (value);");
 
         builder_lv1.AppendLine();
+        builder_lv1.AppendLine($"/// <summary>Constructs a <see cref=\"{member.Name}\"/> from parsed components.</summary>");
+        builder_lv1.AppendLine("/// <param name=\"urn\">The raw URN.</param>");
+        builder_lv1.AppendLine("/// <param name=\"valueIndex\">The index of the value in the URN.</param>");
+        builder_lv1.AppendLine("/// <param name=\"value\">The parsed value.</param>");
+        builder_lv1.AppendLine($"/// <returns>A <see cref=\"{member.Name}\"/> constructed from it's parts.</returns>");
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine("[EditorBrowsable(EditorBrowsableState.Never)]");
         builder_lv1.AppendLine($"internal static {member.Name} FromParsed(string urn, int valueIndex, {member.ValueType} value) => new(urn, valueIndex, value);");
 
         builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine($"public {member.ValueType} Value => _value;");
 
@@ -717,6 +730,7 @@ internal ref struct UrnRecordEmitter
         builder_lv2.AppendLine($$""""=> new($"""{{canonicalPrefix}}:{new _FormatHelper(value)}""", {{canonicalPrefix.Length + 1}}, value);"""");
 
         builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine("protected override void Accept(IKeyValueUrnVisitor visitor)");
         builder_lv2.AppendLine($"=> visitor.Visit<{record.TypeName}, Type, {member.ValueType}>(this, _type, _value);");
