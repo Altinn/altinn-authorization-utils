@@ -1,13 +1,8 @@
 ﻿using Altinn.Authorization.ModelUtils.Swashbuckle;
-using Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Swashbuckle.XmlDoc;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.Tests.Swashbuckle;
 
