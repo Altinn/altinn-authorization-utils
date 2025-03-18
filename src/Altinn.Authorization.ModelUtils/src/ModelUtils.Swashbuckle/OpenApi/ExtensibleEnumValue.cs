@@ -22,7 +22,7 @@ internal sealed class ExtensibleEnumValue
     {
         writer.WriteStartObject();
 
-        if (!string.IsNullOrEmpty(Title))
+        if (!string.IsNullOrEmpty(Value))
         {
             writer.WriteProperty("value", Value);
         }

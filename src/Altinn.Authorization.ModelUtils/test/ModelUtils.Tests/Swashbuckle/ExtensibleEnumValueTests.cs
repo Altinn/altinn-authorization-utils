@@ -6,10 +6,34 @@ using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.Tests.Swashbuckle;
 
-public class ExtensibleEnumValueTests
+public class ExtensibleEnumOpenApiExtensionTests
 {
     [Fact]
-    public void WritesExpectedFields()
+    public void WritesValuesAsArray()
+    {
+        var ext = new ExtensibleEnumOpenApiExtension();
+        ext.Add(new ExtensibleEnumValue { Value = "value1" });
+        ext.Add(new ExtensibleEnumValue { Value = "value2" });
+
+        using var ms = new MemoryStream();
+        {
+            using var writer = new Utf8JsonWriter(ms);
+            ((IOpenApiExtension)ext).Write(new JsonDocWriter(writer), OpenApiSpecVersion.OpenApi3_0);
+        }
+
+        ms.Position = 0;
+        using var doc = JsonDocument.Parse(ms);
+
+        doc.RootElement.ValueKind.ShouldBe(JsonValueKind.Array);
+        var array = doc.RootElement.EnumerateArray().ToArray();
+
+        array.Length.ShouldBe(2);
+        array[0].GetProperty("value").GetString().ShouldBe("value1");
+        array[1].GetProperty("value").GetString().ShouldBe("value2");
+    }
+
+    [Fact]
+    public void ExtensibleEnumValue_WritesExpectedFields()
     {
         var value = new ExtensibleEnumValue
         {
@@ -28,7 +52,7 @@ public class ExtensibleEnumValueTests
         }
 
         ms.Position = 0;
-        var doc = JsonDocument.Parse(ms);
+        using var doc = JsonDocument.Parse(ms);
 
         doc.RootElement.ValueKind.ShouldBe(JsonValueKind.Object);
         var root = doc.RootElement;
