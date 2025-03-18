@@ -10,7 +10,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
-using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace Altinn.Authorization.ModelUtils.Swashbuckle;
@@ -93,7 +92,6 @@ internal class NonExhaustiveEnumSchemaFilter
                 }
             }
 
-            // TODO: Get description
             var valSchema = new OpenApiSchema
             {
                 Type = "string",
@@ -125,12 +123,17 @@ internal class NonExhaustiveEnumSchemaFilter
         schema.AdditionalPropertiesAllowed = true;
         schema.OneOf = oneOf;
         schema.Example = null;
+        schema.Enum = null;
         schema.AddExtension("x-extensible-enum", extensibleEnum);
     }
 
     private static ConstructorInvoker CreateWrapper(Type type)
     {
-        Debug.Assert(NonExhaustiveEnum.IsNonExhaustiveEnumType(type, out var enumType));
+        if (!NonExhaustiveEnum.IsNonExhaustiveEnumType(type, out var enumType))
+        {
+            throw new ArgumentException("Type is not a NonExhaustiveEnum<T> type.", nameof(type));
+        }
+        
         var ctor = type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, [enumType]);
         Debug.Assert(ctor is not null);
         return ConstructorInvoker.Create(ctor);

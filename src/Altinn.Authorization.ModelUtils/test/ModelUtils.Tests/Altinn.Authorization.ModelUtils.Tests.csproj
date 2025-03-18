@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ModelUtils.Swashbuckle\Altinn.Authorization.ModelUtils.Swashbuckle.csproj" />
     <ProjectReference Include="..\..\src\ModelUtils\Altinn.Authorization.ModelUtils.csproj" />
   </ItemGroup>
 
