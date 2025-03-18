@@ -5,7 +5,7 @@ namespace Altinn.Swashbuckle.Tests.XmlDoc;
 public class XmlDocProviderTests
 {
     private readonly IXmlDocProvider _provider
-        = new XmlDocProvider();
+        = new DefaultXmlDocProvider();
 
     [Fact]
     public void GetXmlDocForType()

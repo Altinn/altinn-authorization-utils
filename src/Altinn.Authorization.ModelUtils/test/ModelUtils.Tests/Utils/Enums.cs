@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -30,6 +29,17 @@ public static class Enums
         => [
             .. EnumTypes.SelectMany(static model => model.Data.Cases.Select(NonExhaustiveEnumCaseModel.From).Concat([new NonExhaustiveEnumCaseModel(model.Data.Type, "does-not-exist", "does-not-exist")]))
         ];
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public sealed class EnumTypesAttribute
+        : DataAttribute
+    {
+        public override ValueTask<IReadOnlyCollection<ITheoryDataRow>> GetData(MethodInfo testMethod, DisposalTracker disposalTracker)
+            => new(EnumTypes);
+
+        public override bool SupportsDiscoveryEnumeration()
+            => true;
+    }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public sealed class EnumCasesDataAttribute
@@ -248,85 +258,211 @@ public static class Enums
     {
     }
 
+    /// <summary>
+    /// Test enum with default naming policy.
+    /// </summary>
     [StringEnumConverter]
     public enum Default
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
     }
 
+    /// <summary>
+    /// Test enum with camel case naming policy.
+    /// </summary>
     [StringEnumConverter(JsonKnownNamingPolicy.CamelCase)]
     public enum CamelCase
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
     }
 
+    /// <summary>
+    /// Test enum with pascal case naming policy.
+    /// </summary>
     [StringEnumConverter(JsonKnownNamingPolicy.KebabCaseLower)]
     public enum KebabCaseLower
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
     }
 
+    /// <summary>
+    /// Test enum with pascal case naming policy.
+    /// </summary>
     [StringEnumConverter(JsonKnownNamingPolicy.KebabCaseUpper)]
     public enum KebabCaseUpper
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
     }
 
+    /// <summary>
+    /// Test enum with snake case naming policy.
+    /// </summary>
     [StringEnumConverter(JsonKnownNamingPolicy.SnakeCaseLower)]
     public enum SnakeCaseLower
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
     }
 
+    /// <summary>
+    /// Test enum with snake case naming policy.
+    /// </summary>
     [StringEnumConverter(JsonKnownNamingPolicy.SnakeCaseUpper)]
     public enum SnakeCaseUpper
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
     }
 
+    /// <summary>
+    /// Test enum with lower case naming policy.
+    /// </summary>
     [LowerCaseStringEnumConverter]
     public enum LowerCase
     {
+        /// <summary>
+        /// Some value 1.
+        /// </summary>
         SomeValue1,
+
+        /// <summary>
+        /// Second value 2.
+        /// </summary>
         SecondValue2,
+
+        /// <summary>
+        /// Other value 3.
+        /// </summary>
         OtherValue3,
+
 #if NET9_0_OR_GREATER
+        /// <summary>
+        /// Custom value 4.
+        /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
 #endif
