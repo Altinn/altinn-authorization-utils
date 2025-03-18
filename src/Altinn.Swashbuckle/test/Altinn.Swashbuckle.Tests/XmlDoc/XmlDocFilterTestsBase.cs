@@ -8,7 +8,7 @@ public class XmlDocFilterTestsBase
 
     public XmlDocFilterTestsBase()
     {
-        _provider = new XmlDocProvider();
+        _provider = new DefaultXmlDocProvider();
     }
 
     protected IXmlDocProvider Provider => _provider;

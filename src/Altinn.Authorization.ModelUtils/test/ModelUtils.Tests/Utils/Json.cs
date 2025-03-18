@@ -18,6 +18,12 @@ public static class Json
     public static JsonDocument SerializeToDocument<T>(T value)
         => SerializeToDocument(value, typeof(T));
 
+    public static string SerializeToString(object? value, Type type)
+        => JsonSerializer.Serialize(value, type, _options);
+
+    public static string SerializeToString<T>(T value)
+        => SerializeToString(value, typeof(T));
+
     public static T? Deserialize<T>(JsonDocument document)
         => JsonSerializer.Deserialize<T>(document, _options);
 
