@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.1...Altinn.Authorization.ProblemDetails-v3.2.2) (2025-03-26)
+
+
+### Bug Fixes
+
+* include more details in `ProblemInstanceException` ([#228](https://github.com/Altinn/altinn-authorization-utils/issues/228)) ([5fe0f72](https://github.com/Altinn/altinn-authorization-utils/commit/5fe0f72b1f4c9505ec5facef39350dc7c63d24e3))
+
 ## [3.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.0...Altinn.Authorization.ProblemDetails-v3.2.1) (2024-12-19)
 
 
