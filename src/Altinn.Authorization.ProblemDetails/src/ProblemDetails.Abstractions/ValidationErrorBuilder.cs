@@ -13,6 +13,7 @@ public struct ValidationErrorBuilder
     : IReadOnlyCollection<ValidationErrorInstance>
 {
     private List<ValidationErrorInstance>? _errors;
+    private List<KeyValuePair<string, string>>? _extensions;
 
     /// <summary>
     /// Adds a validation error.
@@ -22,6 +23,17 @@ public struct ValidationErrorBuilder
     {
         _errors ??= new(8);
         _errors.Add(error);
+    }
+
+    /// <summary>
+    /// Adds an extension to the error (if one is created).
+    /// </summary>
+    /// <param name="key">Extension key.</param>
+    /// <param name="value">Extension value.</param>
+    public void AddExtension(string key, string value)
+    {
+        _extensions ??= new(8);
+        _extensions.Add(new(key, value));
     }
 
     /// <summary>
@@ -81,7 +93,13 @@ public struct ValidationErrorBuilder
             return false;
         }
 
-        instance = new(errors: [.. errors], extensions: []);
+        ProblemExtensionData extensions = [];
+        if (_extensions is { Count: > 0 })
+        {
+            extensions = [.. _extensions];
+        }
+
+        instance = new(errors: [.. errors], extensions: extensions);
         return true;
     }
 }

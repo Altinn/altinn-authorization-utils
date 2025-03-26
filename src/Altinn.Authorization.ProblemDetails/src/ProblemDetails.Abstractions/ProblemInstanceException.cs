@@ -1,4 +1,6 @@
-﻿namespace Altinn.Authorization.ProblemDetails;
+﻿using System.Text;
+
+namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// An exception that represents a <see cref="Problem"/>.
@@ -32,7 +34,7 @@ public class ProblemInstanceException
     /// <param name="innerException">The inner exception.</param>
     /// <param name="problemInstance">The <see cref="Problem"/>.</param>
     public ProblemInstanceException(string? message, Exception? innerException, ProblemInstance problemInstance)
-        : base(message ?? problemInstance.Detail, innerException)
+        : base(message ?? CreateErrorMessage(problemInstance), innerException)
     {
         Problem = problemInstance;
     }
@@ -41,4 +43,16 @@ public class ProblemInstanceException
     /// Gets the <see cref="Problem"/>.
     /// </summary>
     public ProblemInstance Problem { get; }
+
+    private static string CreateErrorMessage(ProblemInstance problemInstance)
+    {
+        var sb = new StringBuilder(problemInstance.Detail);
+
+        sb.AppendLine();
+        sb.AppendLine($"code: {problemInstance.ErrorCode}");
+
+        problemInstance.AddExceptionDetails(sb);
+
+        return sb.ToString();
+    }
 }

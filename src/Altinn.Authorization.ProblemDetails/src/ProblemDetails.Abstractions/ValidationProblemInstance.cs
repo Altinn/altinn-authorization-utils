@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System.Collections.Immutable;
+using System.Text;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -26,4 +27,33 @@ public sealed record ValidationProblemInstance
     /// Gets the validation errors.
     /// </summary>
     public ImmutableArray<ValidationErrorInstance> Errors => _errors;
+
+    internal override void AddExceptionDetails(StringBuilder builder)
+    {
+        base.AddExceptionDetails(builder);
+
+        if (_errors.IsDefaultOrEmpty)
+        {
+            return;
+        }
+
+        builder.AppendLine();
+        builder.AppendLine("Validation errors:");
+        foreach (var error in _errors)
+        {
+            builder.AppendLine($" - {error.ErrorCode}: {error.Detail}");
+            foreach (var path in error.Paths)
+            {
+                builder.AppendLine($"   path: {path}");
+            }
+
+            if (!error.Extensions.IsDefaultOrEmpty)
+            {
+                foreach (var (key, value) in error.Extensions)
+                {
+                    builder.AppendLine($"   {key}: {value}");
+                }
+            }
+        }
+    }
 }

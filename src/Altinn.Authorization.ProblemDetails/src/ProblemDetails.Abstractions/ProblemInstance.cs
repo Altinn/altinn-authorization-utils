@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Text;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -65,6 +66,17 @@ public record class ProblemInstance
     {
         get => _extensions;
         internal init => _extensions = value;
+    }
+
+    internal virtual void AddExceptionDetails(StringBuilder builder)
+    {
+        if (!_extensions.IsDefaultOrEmpty)
+        {
+            foreach (var (key, value) in _extensions)
+            {
+                builder.AppendLine($"{key}: {value}");
+            }
+        }
     }
 
     /// <summary>
