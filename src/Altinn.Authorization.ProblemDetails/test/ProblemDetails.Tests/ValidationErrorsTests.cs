@@ -57,4 +57,33 @@ public class ValidationErrorsTests
         details.ShouldNotBeNull();
         result.ShouldNotBeNull();
     }
+
+    [Fact]
+    public void Errors_IncludedInExceptionMessage()
+    {
+        var errors = new ValidationErrorBuilder();
+
+        errors.Add(StdValidationErrors.Required, "/path", [new("ext", "val")]);
+        errors.Add(StdValidationErrors.Required, ["/path2", "/path3"]);
+        errors.AddExtension("root-ext", "root-val");
+
+        errors.TryBuild(out var instance).ShouldBeTrue();
+        var exception = new ProblemInstanceException(instance);
+
+        exception.Message.ShouldBe(
+            $"""
+            {StdProblemDescriptors.ValidationError.Detail}
+            code: {StdProblemDescriptors.ValidationError.ErrorCode}
+            root-ext: root-val
+
+            Validation errors:
+             - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Detail}
+               path: /path
+               ext: val
+             - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Detail}
+               path: /path2
+               path: /path3
+
+            """);
+    }
 }
