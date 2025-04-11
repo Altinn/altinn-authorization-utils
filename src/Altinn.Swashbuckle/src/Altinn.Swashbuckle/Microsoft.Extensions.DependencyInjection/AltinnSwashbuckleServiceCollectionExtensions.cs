@@ -59,7 +59,7 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
     /// <returns><paramref name="services"/>.</returns>
     public static IServiceCollection AddSwaggerAutoXmlDoc(this IServiceCollection services)
     {
-        services.TryAddSingleton<IXmlDocProvider, XmlDocProvider>();
+        services.TryAddSingleton<IXmlDocProvider, DefaultXmlDocProvider>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, XmlDocFilterConfigurator>());
 
         return services;
