@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json;
@@ -40,7 +41,7 @@ public sealed class FieldValueRecordAttribute
 
             return model.Constructor.Parameters.Length switch
             {
-                0 => new FieldValueRecordConverter<T>(model, options),
+                0 => new FieldValueRecordWithEmptyConstructorConverter<T>(model, options),
                 _ => new FieldValueRecordWithParameterizedConstructorConverter<T>(model, options),
             };
         }
