@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12,6 +13,7 @@ namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 /// </summary>
 /// <typeparam name="TOwner">The field-value-record type.</typeparam>
 /// <typeparam name="TValue">The proeprty type.</typeparam>
+[DebuggerDisplay("{_property,nq}")]
 internal sealed class PropertyModel<TOwner, TValue>
     : IFieldValueRecordPropertyModel<TOwner, TValue>
     where TOwner : class
@@ -41,6 +43,9 @@ internal sealed class PropertyModel<TOwner, TValue>
             || _property.GetCustomAttribute<RequiredAttribute>() is not null
             || _property.GetCustomAttribute<RequiredMemberAttribute>() is not null;
     }
+
+    /// <inheritdoc/>
+    public PropertyInfo PropertyInfo => _property;
 
     /// <inheritdoc/>
     public string Name => _property.Name;

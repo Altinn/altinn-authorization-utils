@@ -1,4 +1,6 @@
-﻿namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
+﻿using System.Reflection;
+
+namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 
 /// <summary>
 /// Represents a property of a field-value-record.
@@ -9,6 +11,11 @@ public interface IFieldValueRecordPropertyModel
     /// Gets the name of the property.
     /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// Gets the <see cref="PropertyInfo"/>.
+    /// </summary>
+    public PropertyInfo PropertyInfo { get; }
 
     /// <summary>
     /// Gets the type of the property.

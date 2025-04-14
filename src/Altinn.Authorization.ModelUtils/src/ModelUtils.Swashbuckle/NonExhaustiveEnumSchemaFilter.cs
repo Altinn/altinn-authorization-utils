@@ -17,7 +17,7 @@ namespace Altinn.Authorization.ModelUtils.Swashbuckle;
 /// <summary>
 /// Schema filter for <see cref="NonExhaustiveEnum{T}"/> values.
 /// </summary>
-internal class NonExhaustiveEnumSchemaFilter
+internal sealed class NonExhaustiveEnumSchemaFilter
     : ISchemaFilter
 {
     private readonly static ConcurrentDictionary<Type, ConstructorInvoker> _wrappers = new();
@@ -139,4 +139,3 @@ internal class NonExhaustiveEnumSchemaFilter
         return ConstructorInvoker.Create(ctor);
     }
 }
-

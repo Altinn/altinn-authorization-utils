@@ -12,6 +12,11 @@ internal interface IFieldValueRecordPropertyJsonModel<in TOwner>
     where TOwner : class
 {
     /// <summary>
+    /// Gets the underlying model.
+    /// </summary>
+    public IFieldValueRecordPropertyModel<TOwner> Model { get; }
+
+    /// <summary>
     /// Gets the json name of the property.
     /// </summary>
     public PropertyName Name { get; }
@@ -116,6 +121,9 @@ internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
         _ignoreCondition = inner.GetCustomAttribute<JsonIgnoreAttribute>(inherit: true)?.Condition ?? options.DefaultIgnoreCondition;
         _name = PropertyName.Create(inner.Name, options.PropertyNamingPolicy);
     }
+
+    /// <inheritdoc/>
+    public IFieldValueRecordPropertyModel<TOwner> Model => _inner;
 
     /// <inheritdoc/>
     public PropertyName Name => _name;
