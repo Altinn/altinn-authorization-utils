@@ -12,6 +12,19 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
 {
     /// <summary>
+    /// Adds Swagger support for authorization model utilities to the service collection.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddAuthorizationModelUtilsSwaggerSupport(this IServiceCollection services)
+    {
+        services.AddExtensibleEnumSwaggerSupport();
+        services.AddFieldValueRecordSwaggerSupport();
+        
+        return services;
+    }
+
+    /// <summary>
     /// Adds support for <see cref="NonExhaustiveEnum{T}"/> for Swagger/OpenAPI.
     /// </summary>
     /// <param name="services">The service collection.</param>
@@ -20,6 +33,19 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     {
         services.TryAddSingleton<NonExhaustiveEnumSchemaFilter>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveEnumSchemaFilter>>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds support for field-value-records for Swagger/OpenAPI.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddFieldValueRecordSwaggerSupport(this IServiceCollection services)
+    {
+        services.TryAddSingleton<FieldValueRecordSchemaFilter>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<FieldValueRecordSchemaFilter>>());
 
         return services;
     }

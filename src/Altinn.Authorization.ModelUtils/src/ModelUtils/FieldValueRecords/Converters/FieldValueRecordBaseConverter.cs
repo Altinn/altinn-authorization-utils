@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -13,6 +14,7 @@ namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 /// <typeparam name="T">The field-value-record type.</typeparam>
 internal abstract class FieldValueRecordBaseConverter<T>
     : JsonConverter<T>
+    , IFieldValueRecordJsonConverter
     where T : class
 {
     /// <summary>
@@ -40,6 +42,23 @@ internal abstract class FieldValueRecordBaseConverter<T>
     /// Gets the maximum length of the property names.
     /// </summary>
     protected abstract int PropertyMaxLength { get; }
+
+    /// <inheritdoc/>
+    FieldValueRecordModel IFieldValueRecordJsonConverter.Model
+        => Model;
+
+    /// <inheritdoc/>
+    bool IFieldValueRecordJsonConverter.TryFindPropertyModel(string name, [NotNullWhen(true)] out IFieldValueRecordPropertyModel? model)
+    {
+        if (PropertyLookup.GetAlternateLookup<string>().TryGetValue(name, out var prop))
+        {
+            model = prop.Model;
+            return true;
+        }
+
+        model = null;
+        return false;
+    }
 
     /// <inheritdoc/>
     public override sealed void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -168,6 +187,8 @@ internal abstract class FieldValueRecordBaseConverter<T>
         {
             _model = model;
         }
+
+        public IFieldValueRecordPropertyModel Model => _model.Model;
 
         public PropertyName Name => _model.Name;
 

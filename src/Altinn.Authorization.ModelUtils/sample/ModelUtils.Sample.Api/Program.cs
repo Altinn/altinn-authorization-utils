@@ -14,7 +14,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerAutoXmlDoc();
 builder.Services.AddSwaggerGen();
-builder.Services.AddExtensibleEnumSwaggerSupport();
+builder.Services.AddAuthorizationModelUtilsSwaggerSupport();
 builder.Services.AddSwaggerFilterAttributeSupport();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
