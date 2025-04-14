@@ -1,125 +1,13 @@
 ﻿using CommunityToolkit.Diagnostics;
-using System;
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
-
-////internal class FieldValueRecordConverter<T>
-////    : JsonConverter<T>
-////    where T : class
-////{
-////    public FieldValueRecordConverter<T> Create(
-////        FieldValueRecordModel<T> model,
-////        JsonSerializerOptions options)
-////    {
-////        if (model.Constructor.Parameters.IsEmpty)
-////        {
-////            return new(model, options);
-////        }
-
-////        if (model.Constructor.Parameters.Length <= 4)
-////        {
-////            return new RecordConverterWithFewConstructorParameters(model, options);
-////        }
-
-////        return new RecordConverterWithConstructorParameters(model, options);
-////    }
-
-////    protected FieldValueRecordConverter(
-////        FieldValueRecordModel<T> model,
-////        JsonSerializerOptions options)
-////    {
-////    }
-
-////    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-////    {
-////        throw new NotImplementedException();
-////    }
-
-////    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-////    {
-////        throw new NotImplementedException();
-////    }
-
-////    protected virtual T Create(in Utf8JsonReader reader, JsonSerializerOptions options)
-////    {
-////        throw new NotImplementedException();
-////    }
-
-////    protected virtual void ReadConstructorParameters(
-////        in Utf8JsonReader reader,
-////        Span<object?> slots,
-////        JsonSerializerOptions options)
-////    {
-
-////    }
-
-////    protected virtual T Create(in Utf8JsonReader reader, Span<object?> parameterSlots, JsonSerializerOptions options)
-////    {
-////        throw new NotImplementedException();
-////    }
-
-////    private sealed class RecordConverterWithFewConstructorParameters
-////        : FieldValueRecordConverter<T>
-////    {
-////        private readonly int _parameterCount;
-
-////        public RecordConverterWithFewConstructorParameters(
-////            FieldValueRecordModel<T> model,
-////            JsonSerializerOptions options)
-////            : base(model, options)
-////        {
-////            Debug.Assert(model.Constructor.Parameters.Length <= 4);
-////            Debug.Assert(model.Constructor.Parameters.Length > 0);
-
-////            _parameterCount = model.Constructor.Parameters.Length;
-////        }
-
-////        protected override T Create(in Utf8JsonReader reader, JsonSerializerOptions options)
-////        {
-////            Span<object?> parameters = [null, null, null, null];
-
-////            return Create(in reader, parameters[.._parameterCount], options);
-////        }
-////    }
-
-////    private sealed class RecordConverterWithConstructorParameters
-////        : FieldValueRecordConverter<T>
-////    {
-////        private readonly int _parameterCount;
-
-////        public RecordConverterWithConstructorParameters(
-////            FieldValueRecordModel<T> model,
-////            JsonSerializerOptions options)
-////            : base(model, options)
-////        {
-////            Debug.Assert(model.Constructor.Parameters.Length > 4);
-
-////            _parameterCount = model.Constructor.Parameters.Length;
-////        }
-
-////        protected override T Create(in Utf8JsonReader reader, JsonSerializerOptions options)
-////        {
-////            object?[] parameters = ArrayPool<object?>.Shared.Rent(_parameterCount);
-
-////            try
-////            {
-////                return Create(in reader, parameters.AsSpan(0, _parameterCount), options);
-////            }
-////            finally
-////            {
-////                ArrayPool<object?>.Shared.Return(parameters);
-////            }
-////        }
-////    }
-////}
 
 internal interface IFieldValueRecordConstructorParameterJsonModel<in TOwner>
     where TOwner : class
@@ -168,8 +56,7 @@ internal interface IFieldValueRecordPropertyJsonModel<in TOwner>
 
     public bool IsRequired { get; }
 
-    // used for constructor invocations
-    public object? Read(ref Utf8JsonReader reader, JsonSerializerOptions options);
+    public void ReadConstructorParameter(ref object? slot, ref Utf8JsonReader reader, JsonSerializerOptions options);
 
     public void ReadInto(TOwner owner, ref Utf8JsonReader reader, JsonSerializerOptions options);
 
@@ -224,8 +111,23 @@ internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
 
     public bool IsRequired => _inner.IsRequired;
 
-    public object? Read(ref Utf8JsonReader reader, JsonSerializerOptions options)
-        => JsonSerializer.Deserialize<TValue>(ref reader, options);
+    public void ReadConstructorParameter(ref object? slot, ref Utf8JsonReader reader, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            _inner.WriteSlot(ref slot, FieldValue.Null);
+            return;
+        }
+
+        var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
+        if (value is null)
+        {
+            _inner.WriteSlot(ref slot, FieldValue.Null);
+            return;
+        }
+
+        _inner.WriteSlot(ref slot, value);
+    }
 
     public void ReadInto(TOwner owner, ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
@@ -432,8 +334,8 @@ internal abstract class FieldValueRecordBaseConverter<T>
         public void ReadInto(T value, ref Utf8JsonReader reader, JsonSerializerOptions options)
             => _model.ReadInto(value, ref reader, options);
 
-        public object? Read(ref Utf8JsonReader reader, JsonSerializerOptions options)
-            => _model.Read(ref reader, options);
+        public void ReadConstructorParameter(ref object? slot, ref Utf8JsonReader reader, JsonSerializerOptions options)
+            => _model.ReadConstructorParameter(ref slot, ref reader, options);
     }
 }
 
@@ -508,6 +410,10 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
     : FieldValueRecordBaseConverter<T>
     where T : class
 {
+    const byte PARAM_STATE_UNSET = 0;
+    const byte PARAM_STATE_DEFAULT = 1;
+    const byte PARAM_STATE_SET = 2;
+
     private readonly FrozenDictionary<PropertyName, Property> _propLookup;
     private readonly ImmutableArray<Property> _properties;
     private readonly int _propertyMaxLength;
@@ -595,13 +501,13 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
 
         var parameterLength = Model.Constructor.Parameters.Length;
         object?[]? parametersScratch = null;
-        bool[]? parametersSetScratch = null;
+        byte[]? parametersSetScratch = null;
         char[]? propertyScratch = null;
 
         try
         {
             parametersScratch = ArrayPool<object?>.Shared.Rent(parameterLength);
-            parametersSetScratch = ArrayPool<bool>.Shared.Rent(parameterLength);
+            parametersSetScratch = ArrayPool<byte>.Shared.Rent(parameterLength);
             propertyScratch = ArrayPool<char>.Shared.Rent(_propertyMaxLength);
 
             parametersSetScratch.AsSpan().Clear();
@@ -622,7 +528,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
 
             if (parametersSetScratch is not null)
             {
-                ArrayPool<bool>.Shared.Return(parametersSetScratch);
+                ArrayPool<byte>.Shared.Return(parametersSetScratch);
             }
 
             if (propertyScratch is not null)
@@ -639,14 +545,14 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
     protected T CreateObject(
         in Utf8JsonReader originalReader,
         Span<object?> parameterSlots,
-        Span<bool> parametersSet,
+        Span<byte> parametersSet,
         Span<char> propertyScratch,
         JsonSerializerOptions options)
     {
         foreach (var ctorParam in _properties.Where(static p => p.IsConstructorParameter && p.DefaultParameterValue.IsSet))
         {
             parameterSlots[ctorParam.ParameterIndex] = ctorParam.DefaultParameterValue.Value;
-            parametersSet[ctorParam.ParameterIndex] = true;
+            parametersSet[ctorParam.ParameterIndex] = PARAM_STATE_DEFAULT;
         }
 
         var reader = originalReader;
@@ -673,6 +579,11 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
             var propLength = reader.CopyString(propertyScratch);
             var propName = propertyScratch[..propLength];
 
+            if (!reader.Read())
+            {
+                throw new JsonException($"Expected property value but got '{reader.TokenType}'");
+            }
+
             if (!lookup.TryGetValue(propName, out var prop))
             {
                 // Skip unknown property
@@ -688,17 +599,17 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
             }
 
             var index = prop.ParameterIndex;
-            parameterSlots[index] = prop.Read(ref reader, options);
-            parametersSet[index] = true;
+            prop.ReadConstructorParameter(ref parameterSlots[index], ref reader, options);
+            parametersSet[index] = PARAM_STATE_SET;
 
-            if (!parametersSet.Contains(false))
+            if (!parametersSet.ContainsAnyExcept(PARAM_STATE_SET))
             {
                 // all parameters found
                 break;
             }
         }
 
-        var missingPropertyIndex = parametersSet.IndexOf(false);
+        var missingPropertyIndex = parametersSet.IndexOf(PARAM_STATE_UNSET);
         if (missingPropertyIndex > -1)
         {
             var missingProperty = _properties.First(p => p.ParameterIndex == missingPropertyIndex);
@@ -796,9 +707,3 @@ internal class PropertyNameComparer
     public int GetHashCode(ReadOnlySpan<char> alternate)
         => _innerSpan.GetHashCode(alternate);
 }
-
-//internal class FieldValueRecordWithSmallParameterizedConstructorConverter<T>
-//    : FieldValueRecordWithParameterizedConstructorConverter<T>
-//    where T : class
-//{
-//}

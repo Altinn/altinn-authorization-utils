@@ -304,6 +304,13 @@ public interface IFieldValueRecordPropertyModel<in TOwner, TValue>
     /// <param name="value">The value.</param>
     public void Write(TOwner owner, FieldValue<TValue> value);
 
+    /// <summary>
+    /// Writes a value to a specified slot, typically used for later calling the constructor.
+    /// </summary>
+    /// <param name="slot">The value slot.</param>
+    /// <param name="value">The value.</param>
+    public void WriteSlot(ref object? slot, FieldValue<TValue> value);
+
     /// <inheritdoc/>
     Type IFieldValueRecordPropertyModel.Type => typeof(TValue);
 

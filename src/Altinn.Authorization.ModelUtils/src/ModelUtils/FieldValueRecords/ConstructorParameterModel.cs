@@ -38,9 +38,12 @@ internal class ConstructorParameterModel<TOwner, TValue>
         }
     }
 
+    /// <inheritdoc/>
     public string? Name => _parameter.Name;
 
+    /// <inheritdoc/>
     public virtual Type Type => typeof(TValue);
 
-    public FieldValue<TValue> DefaultValue => _defaultValue;
+    /// <inheritdoc/>
+    public virtual FieldValue<TValue> DefaultValue => _defaultValue;
 }

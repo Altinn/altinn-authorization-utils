@@ -12,7 +12,7 @@ namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 /// </summary>
 /// <typeparam name="TOwner">The field-value-record type.</typeparam>
 /// <typeparam name="TValue">The proeprty type.</typeparam>
-internal class PropertyModel<TOwner, TValue>
+internal sealed class PropertyModel<TOwner, TValue>
     : IFieldValueRecordPropertyModel<TOwner, TValue>
     where TOwner : class
     where TValue : notnull
@@ -44,7 +44,7 @@ internal class PropertyModel<TOwner, TValue>
 
     public string Name => _property.Name;
 
-    public virtual Type Type => typeof(TValue);
+    public Type Type => typeof(TValue);
 
     public T? GetCustomAttribute<T>(bool inherit) 
         where T : Attribute
@@ -62,7 +62,7 @@ internal class PropertyModel<TOwner, TValue>
 
     public bool IsUnsettable => false;
 
-    public virtual FieldValue<TValue> Read(TOwner owner)
+    public FieldValue<TValue> Read(TOwner owner)
     {
         if (!CanRead)
         {
@@ -76,7 +76,7 @@ internal class PropertyModel<TOwner, TValue>
         };
     }
 
-    public virtual void Write(TOwner owner, FieldValue<TValue> value)
+    public void Write(TOwner owner, FieldValue<TValue> value)
     {
         if (!CanWrite)
         {
@@ -94,5 +94,20 @@ internal class PropertyModel<TOwner, TValue>
         }
 
         _write(owner, value.Value);
+    }
+
+    public void WriteSlot(ref object? slot, FieldValue<TValue> value)
+    {
+        if (value.IsUnset)
+        {
+            ThrowHelper.ThrowInvalidOperationException($"Property {Name} is not unsettable.");
+        }
+
+        if (value.IsNull && !_isNullable)
+        {
+            ThrowHelper.ThrowInvalidOperationException($"Property {Name} is not nullable.");
+        }
+
+        slot = value.Value;
     }
 }

@@ -312,6 +312,32 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
+    public void FieldValueCtorArgumentJsonRoundtrips()
+    {
+        CheckRoundTrip(
+            new FieldValueCtorArgument(FieldValue.Unset),
+            """
+            {}
+            """);
+
+        CheckRoundTrip(
+            new FieldValueCtorArgument(FieldValue.Null),
+            """
+            {
+                "fieldValue": null
+            }
+            """);
+
+        CheckRoundTrip(
+            new FieldValueCtorArgument("value"),
+            """
+            {
+                "fieldValue": "value"
+            }
+            """);
+    }
+
+    [Fact]
     public void MissingRequiredParameter()
     {
         CheckRoundTrip(
@@ -468,6 +494,17 @@ public class FieldValueRecordModelTests
         public string OptionalStringParameter { get; }
 
         public required FieldValue<string> OptionalProperty { get; init; }
+    }
+
+    [FieldValueRecord]
+    public record FieldValueCtorArgument
+    {
+        public FieldValueCtorArgument(FieldValue<string> fieldValue)
+        {
+            FieldValue = fieldValue;
+        }
+
+        public FieldValue<string> FieldValue { get; }
     }
 
     [FieldValueRecord]

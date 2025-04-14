@@ -17,5 +17,14 @@ internal class FieldValueConstructorParameterModel<TOwner, TValue>
     {
     }
 
+    /// <inheritdoc/>
     public override Type Type => typeof(TValue);
+
+    /// <inheritdoc/>
+    public override FieldValue<FieldValue<TValue>> DefaultValue 
+        => base.DefaultValue switch
+        {
+            { IsUnset: true } => FieldValue<TValue>.Unset,
+            var value => value,
+        };
 }
