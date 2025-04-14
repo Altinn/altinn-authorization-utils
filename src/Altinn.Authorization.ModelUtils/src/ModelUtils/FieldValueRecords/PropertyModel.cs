@@ -42,26 +42,35 @@ internal sealed class PropertyModel<TOwner, TValue>
             || _property.GetCustomAttribute<RequiredMemberAttribute>() is not null;
     }
 
+    /// <inheritdoc/>
     public string Name => _property.Name;
 
+    /// <inheritdoc/>
     public Type Type => typeof(TValue);
 
+    /// <inheritdoc/>
     public T? GetCustomAttribute<T>(bool inherit) 
         where T : Attribute
         => _property.GetCustomAttribute<T>(inherit);
 
+    /// <inheritdoc/>
     [MemberNotNullWhen(true, nameof(_read))]
     public bool CanRead => _read is not null;
 
+    /// <inheritdoc/>
     [MemberNotNullWhen(true, nameof(_write))]
     public bool CanWrite => _write is not null;
 
+    /// <inheritdoc/>
     public bool IsRequired => _isRequired;
 
+    /// <inheritdoc/>
     public bool IsNullable => _isNullable;
 
+    /// <inheritdoc/>
     public bool IsUnsettable => false;
 
+    /// <inheritdoc/>
     public FieldValue<TValue> Read(TOwner owner)
     {
         if (!CanRead)
@@ -76,6 +85,7 @@ internal sealed class PropertyModel<TOwner, TValue>
         };
     }
 
+    /// <inheritdoc/>
     public void Write(TOwner owner, FieldValue<TValue> value)
     {
         if (!CanWrite)
@@ -96,6 +106,7 @@ internal sealed class PropertyModel<TOwner, TValue>
         _write(owner, value.Value);
     }
 
+    /// <inheritdoc/>
     public void WriteSlot(ref object? slot, FieldValue<TValue> value)
     {
         if (value.IsUnset)

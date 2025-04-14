@@ -30,26 +30,35 @@ internal sealed class FieldValuePropertyModel<TOwner, TValue>
         _write = _property.GetSetMethod(true)?.CreateDelegate<Action<TOwner, FieldValue<TValue>>>();
     }
 
+    /// <inheritdoc/>
     public string Name => _property.Name;
 
+    /// <inheritdoc/>
     public Type Type => typeof(TValue);
 
+    /// <inheritdoc/>
     public T? GetCustomAttribute<T>(bool inherit)
         where T : Attribute
         => _property.GetCustomAttribute<T>(inherit);
 
+    /// <inheritdoc/>
     [MemberNotNullWhen(true, nameof(_read))]
     public bool CanRead => _read is not null;
 
+    /// <inheritdoc/>
     [MemberNotNullWhen(true, nameof(_write))]
     public bool CanWrite => _write is not null;
 
+    /// <inheritdoc/>
     public bool IsRequired => false;
 
+    /// <inheritdoc/>
     public bool IsNullable => true;
 
+    /// <inheritdoc/>
     public bool IsUnsettable => true;
 
+    /// <inheritdoc/>
     public FieldValue<TValue> Read(TOwner owner)
     {
         if (!CanRead)
@@ -60,6 +69,7 @@ internal sealed class FieldValuePropertyModel<TOwner, TValue>
         return _read(owner);
     }
 
+    /// <inheritdoc/>
     public void Write(TOwner owner, FieldValue<TValue> value)
     {
         if (!CanWrite)
@@ -70,6 +80,7 @@ internal sealed class FieldValuePropertyModel<TOwner, TValue>
         _write(owner, value);
     }
 
+    /// <inheritdoc/>
     public void WriteSlot(ref object? slot, FieldValue<TValue> value)
     {
         slot = value;

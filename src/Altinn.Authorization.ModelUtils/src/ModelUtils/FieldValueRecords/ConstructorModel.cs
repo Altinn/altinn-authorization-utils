@@ -23,6 +23,7 @@ internal class ConstructorModel<T>
 
     public ImmutableArray<IFieldValueRecordConstructorParameterModel> Parameters { get; }
 
+    /// <inheritdoc/>
     public T Invoke(Span<object?> parameters)
         => (T)_invoker.Invoke(parameters);
 }

@@ -338,6 +338,52 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
+    public void NestedFieldValueJsonRoundtrips()
+    {
+        CheckRoundTrip(
+            new Outer { Inner = FieldValue.Unset },
+            """
+            {}
+            """);
+
+        CheckRoundTrip(
+            new Outer { Inner = FieldValue.Null },
+            """
+            {
+                "inner": null
+            }
+            """);
+
+        CheckRoundTrip(
+            new Outer { Inner = new Inner { Value = FieldValue.Unset } },
+            """
+            {
+                "inner": {}
+            }
+            """);
+
+        CheckRoundTrip(
+            new Outer { Inner = new Inner { Value = FieldValue.Null } },
+            """
+            {
+                "inner": {
+                    "value": null
+                }
+            }
+            """);
+
+        CheckRoundTrip(
+            new Outer { Inner = new Inner { Value = "some value" } },
+            """
+            {
+                "inner": {
+                    "value": "some value"
+                }
+            }
+            """);
+    }
+
+    [Fact]
     public void MissingRequiredParameter()
     {
         CheckRoundTrip(
@@ -536,5 +582,17 @@ public class FieldValueRecordModelTests
         {
             set => _fieldValue = value;
         }
+    }
+
+    [FieldValueRecord]
+    public record Outer
+    {
+        public required FieldValue<Inner> Inner { get; init; }
+    }
+
+    [FieldValueRecord]
+    public record Inner
+    {
+        public required FieldValue<string> Value { get; init; }
     }
 }
