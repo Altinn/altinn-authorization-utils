@@ -22,8 +22,8 @@ internal class PropertyModel<TOwner, TValue>
     private readonly PropertyInfo _property;
     private readonly bool _isRequired;
     private readonly bool _isNullable;
-    private readonly Func<TOwner, TValue>? _read;
-    private readonly Action<TOwner, TValue>? _write;
+    private readonly Func<TOwner, TValue?>? _read;
+    private readonly Action<TOwner, TValue?>? _write;
 
     public PropertyModel(PropertyInfo property)
     {
@@ -33,8 +33,8 @@ internal class PropertyModel<TOwner, TValue>
         }
 
         _property = property;
-        _read = _property.GetGetMethod(true)?.CreateDelegate<Func<TOwner, TValue>>();
-        _write = _property.GetSetMethod(true)?.CreateDelegate<Action<TOwner, TValue>>();
+        _read = _property.GetGetMethod(true)?.CreateDelegate<Func<TOwner, TValue?>>();
+        _write = _property.GetSetMethod(true)?.CreateDelegate<Action<TOwner, TValue?>>();
 
         _isNullable = _nullabilityInfoContext.Create(_property).WriteState != NullabilityState.NotNull;
         _isRequired = _property.GetCustomAttribute<JsonRequiredAttribute>() is not null
@@ -60,6 +60,8 @@ internal class PropertyModel<TOwner, TValue>
 
     public bool IsNullable => _isNullable;
 
+    public bool IsUnsettable => false;
+
     public virtual FieldValue<TValue> Read(TOwner owner)
     {
         if (!CanRead)
@@ -70,7 +72,7 @@ internal class PropertyModel<TOwner, TValue>
         return _read(owner) switch
         {
             null => FieldValue.Null,
-            TValue value => value,
+            var value => value,
         };
     }
 
@@ -81,9 +83,16 @@ internal class PropertyModel<TOwner, TValue>
             ThrowHelper.ThrowInvalidOperationException($"Property {Name} is not writable.");
         }
 
-        if (value.HasValue)
+        if (value.IsUnset)
         {
-            _write(owner, value.Value);
+            ThrowHelper.ThrowInvalidOperationException($"Property {Name} is not unsettable.");
         }
+
+        if (value.IsNull && !_isNullable)
+        {
+            ThrowHelper.ThrowInvalidOperationException($"Property {Name} is not nullable.");
+        }
+
+        _write(owner, value.Value);
     }
 }

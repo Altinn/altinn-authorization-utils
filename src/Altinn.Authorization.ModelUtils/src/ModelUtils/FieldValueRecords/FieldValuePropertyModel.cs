@@ -48,6 +48,8 @@ internal class FieldValuePropertyModel<TOwner, TValue>
 
     public bool IsNullable => true;
 
+    public bool IsUnsettable => true;
+
     public virtual FieldValue<TValue> Read(TOwner owner)
     {
         if (!CanRead)

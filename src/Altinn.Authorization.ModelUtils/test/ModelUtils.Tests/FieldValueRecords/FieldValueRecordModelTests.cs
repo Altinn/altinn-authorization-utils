@@ -30,6 +30,105 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
+    public void ReadWriteOnlyPropertiesModel()
+    {
+        var model = FieldValueRecordModel.For<Properties>();
+
+        model.Type.ShouldBe(typeof(Properties));
+        model.Parent.ShouldBeNull();
+
+        var props = model.Properties();
+        props.Length.ShouldBe(6);
+
+        var readOnlyProp = props.ShouldContainSingle(static p => p.Name == nameof(Properties.ReadOnlyProperty))
+            .ShouldBeAssignableTo<IFieldValueRecordPropertyModel<Properties, string>>();
+        readOnlyProp.ShouldSatisfyAllConditions([
+            static p => p.Type.ShouldBe(typeof(string)),
+            static p => p.CanRead.ShouldBeTrue(),
+            static p => p.CanWrite.ShouldBeFalse(),
+            static p => p.IsNullable.ShouldBeTrue(),
+            static p => p.IsRequired.ShouldBeFalse(),
+            static p => p.IsUnsettable.ShouldBeFalse(),
+        ]);
+
+        var writeOnlyProp = props.ShouldContainSingle(static p => p.Name == nameof(Properties.WriteOnlyProperty))
+            .ShouldBeAssignableTo<IFieldValueRecordPropertyModel<Properties, string>>();
+        writeOnlyProp.ShouldSatisfyAllConditions([
+            static p => p.Type.ShouldBe(typeof(string)),
+            static p => p.CanRead.ShouldBeFalse(),
+            static p => p.CanWrite.ShouldBeTrue(),
+            static p => p.IsNullable.ShouldBeTrue(),
+            static p => p.IsRequired.ShouldBeFalse(),
+            static p => p.IsUnsettable.ShouldBeFalse(),
+        ]);
+
+        var readOnlyFieldValue = props.ShouldContainSingle(static p => p.Name == nameof(Properties.ReadOnlyFieldValue))
+            .ShouldBeAssignableTo<IFieldValueRecordPropertyModel<Properties, string>>();
+        readOnlyFieldValue.ShouldSatisfyAllConditions([
+            static p => p.Type.ShouldBe(typeof(string)),
+            static p => p.CanRead.ShouldBeTrue(),
+            static p => p.CanWrite.ShouldBeFalse(),
+            static p => p.IsNullable.ShouldBeTrue(),
+            static p => p.IsRequired.ShouldBeFalse(),
+            static p => p.IsUnsettable.ShouldBeTrue(),
+        ]);
+
+        var writeOnlyFieldValue = props.ShouldContainSingle(static p => p.Name == nameof(Properties.WriteOnlyFieldValue))
+            .ShouldBeAssignableTo<IFieldValueRecordPropertyModel<Properties, string>>();
+        writeOnlyFieldValue.ShouldSatisfyAllConditions([
+            static p => p.Type.ShouldBe(typeof(string)),
+            static p => p.CanRead.ShouldBeFalse(),
+            static p => p.CanWrite.ShouldBeTrue(),
+            static p => p.IsNullable.ShouldBeTrue(),
+            static p => p.IsRequired.ShouldBeFalse(),
+            static p => p.IsUnsettable.ShouldBeTrue(),
+        ]);
+
+        var optionalNonNullable = props.ShouldContainSingle(static p => p.Name == nameof(Properties.OptionalNonNullable))
+            .ShouldBeAssignableTo<IFieldValueRecordPropertyModel<Properties, string>>();
+        optionalNonNullable.ShouldSatisfyAllConditions([
+            static p => p.Type.ShouldBe(typeof(string)),
+            static p => p.CanRead.ShouldBeTrue(),
+            static p => p.CanWrite.ShouldBeTrue(),
+            static p => p.IsNullable.ShouldBeFalse(),
+            static p => p.IsRequired.ShouldBeFalse(),
+            static p => p.IsUnsettable.ShouldBeFalse(),
+        ]);
+
+        var requiredNonNullable = props.ShouldContainSingle(static p => p.Name == nameof(Properties.RequiredNonNullable))
+            .ShouldBeAssignableTo<IFieldValueRecordPropertyModel<Properties, string>>();
+        requiredNonNullable.ShouldSatisfyAllConditions([
+            static p => p.Type.ShouldBe(typeof(string)),
+            static p => p.CanRead.ShouldBeTrue(),
+            static p => p.CanWrite.ShouldBeTrue(),
+            static p => p.IsNullable.ShouldBeFalse(),
+            static p => p.IsRequired.ShouldBeTrue(),
+            static p => p.IsUnsettable.ShouldBeFalse(),
+        ]);
+
+        var obj = new Properties { RequiredNonNullable = "required" };
+        readOnlyProp.Read(obj).ShouldBeNull();
+        readOnlyFieldValue.Read(obj).ShouldBeUnset();
+
+        writeOnlyProp.Write(obj, "prop");
+        writeOnlyFieldValue.Write(obj, "field-value");
+
+        readOnlyProp.Read(obj).Value.ShouldBe("prop");
+        readOnlyFieldValue.Read(obj).Value.ShouldBe("field-value");
+
+        writeOnlyFieldValue.Write(obj, FieldValue.Unset);
+        readOnlyFieldValue.Read(obj).ShouldBeUnset();
+
+        Should.Throw<InvalidOperationException>(() => readOnlyProp.Write(obj, "prop")).Message.ShouldBe($"Property {readOnlyProp.Name} is not writable.");
+        Should.Throw<InvalidOperationException>(() => readOnlyFieldValue.Write(obj, "field-value")).Message.ShouldBe($"Property {readOnlyFieldValue.Name} is not writable.");
+        Should.Throw<InvalidOperationException>(() => writeOnlyProp.Read(obj)).Message.ShouldBe($"Property {writeOnlyProp.Name} is not readable.");
+        Should.Throw<InvalidOperationException>(() => writeOnlyProp.Write(obj, FieldValue.Unset)).Message.ShouldBe($"Property {writeOnlyProp.Name} is not unsettable.");
+        Should.Throw<InvalidOperationException>(() => writeOnlyFieldValue.Read(obj)).Message.ShouldBe($"Property {writeOnlyFieldValue.Name} is not readable.");
+        Should.Throw<InvalidOperationException>(() => optionalNonNullable.Write(obj, FieldValue.Null)).Message.ShouldBe($"Property {optionalNonNullable.Name} is not nullable.");
+        Should.Throw<InvalidOperationException>(() => requiredNonNullable.Write(obj, FieldValue.Null)).Message.ShouldBe($"Property {requiredNonNullable.Name} is not nullable.");
+    }
+
+    [Fact]
     public void BaseWithCtorPropJsonRoundtrip()
     {
         CheckRoundTrip(
@@ -369,5 +468,36 @@ public class FieldValueRecordModelTests
         public string OptionalStringParameter { get; }
 
         public required FieldValue<string> OptionalProperty { get; init; }
+    }
+
+    [FieldValueRecord]
+    public record Properties
+    {
+        private string? _value;
+        private FieldValue<string> _fieldValue;
+
+        public string OptionalNonNullable { get; set; } = "";
+
+        public required string RequiredNonNullable { get; set; }
+
+        public string? ReadOnlyProperty
+        {
+            get => _value;
+        }
+
+        public string? WriteOnlyProperty
+        {
+            set => _value = value;
+        }
+
+        public FieldValue<string> ReadOnlyFieldValue
+        {
+            get => _fieldValue;
+        }
+
+        public FieldValue<string> WriteOnlyFieldValue
+        {
+            set => _fieldValue = value;
+        }
     }
 }

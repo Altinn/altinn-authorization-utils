@@ -261,6 +261,14 @@ public interface IFieldValueRecordPropertyModel
     public bool IsNullable { get; }
 
     /// <summary>
+    /// Gets whether the property can be unset.
+    /// </summary>
+    /// <remarks>
+    /// Writing <see cref="FieldValue{T}.Unset"/> to a property that is not unsettable will not update the value.
+    /// </remarks>
+    public bool IsUnsettable { get; }
+
+    /// <summary>
     /// Gets a custom attribute of the specified type.
     /// </summary>
     /// <typeparam name="T">The attribute type.</typeparam>
