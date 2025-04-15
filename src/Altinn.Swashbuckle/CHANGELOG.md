@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.3.0...Altinn.Swashbuckle-v2.4.0) (2025-04-14)
+
+
+### Features
+
+* non-exhaustive-enum-filter ([#225](https://github.com/Altinn/altinn-authorization-utils/issues/225)) ([0109545](https://github.com/Altinn/altinn-authorization-utils/commit/0109545a6a3352383c27156c12b5b2ecf6acd348))
+
 ## [2.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.2.0...Altinn.Swashbuckle-v2.3.0) (2025-03-11)
 
 
