@@ -82,80 +82,6 @@ public static class ImmutableValueArray
         => ImmutableValueArray<T>.Create(ImmutableArray.Create(items));
 
     /// <summary>
-    /// Produce an <see cref="ImmutableValueArray{T}"/> of contents from specified elements.
-    /// </summary>
-    /// <typeparam name="T">The type of element in the list.</typeparam>
-    /// <param name="items">The elements to store in the array.</param>
-    /// <returns>An immutable array containing the specified items.</returns>
-    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this ReadOnlySpan<T> items)
-        => Create(items);
-
-    /// <summary>
-    /// Produce an <see cref="ImmutableValueArray{T}"/> of contents from specified elements.
-    /// </summary>
-    /// <typeparam name="T">The type of element in the list.</typeparam>
-    /// <param name="items">The elements to store in the array.</param>
-    /// <returns>An immutable array containing the specified items.</returns>
-    [OverloadResolutionPriority(-1)]
-    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this Span<T> items)
-        => Create(items);
-
-    /// <summary>
-    /// Produce an <see cref="ImmutableValueArray{T}"/> of contents from specified elements.
-    /// </summary>
-    /// <typeparam name="T">The type of element in the list.</typeparam>
-    /// <param name="items">The elements to store in the array.</param>
-    /// <returns>An immutable array containing the specified items.</returns>
-    [OverloadResolutionPriority(-2)]
-    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this ImmutableArray<T> items)
-        => Create(items);
-
-    /// <summary>
-    /// Enumerates a sequence exactly once and produces an immutable array of its contents.
-    /// </summary>
-    /// <typeparam name="T">The type of element in the sequence.</typeparam>
-    /// <param name="items">The sequence to enumerate.</param>
-    /// <returns>An immutable array containing the specified items.</returns>
-    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this IEnumerable<T> items)
-    {
-        if (items is ImmutableValueArray<T> immutableValueArray)
-        {
-            return immutableValueArray;
-        }
-
-        return Create(items.ToImmutableArray());
-    }
-
-    /// <summary>
-    /// Returns an immutable copy of the current contents of the builder's collection.
-    /// </summary>
-    /// <param name="builder">The builder to create the immutable array from.</param>
-    /// <returns>An immutable array containing the specified items from <paramref name="builder"/>.</returns>
-    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this ImmutableArray<T>.Builder builder)
-        => Create(builder.ToImmutableArray());
-
-    /// <summary>
-    /// Extracts the internal array as an <see cref="ImmutableValueArray{T}"/> and replaces it
-    /// with a zero length array.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">When <see cref="ImmutableArray{T}.Builder.Count"/> doesn't
-    /// equal <see cref="ImmutableArray{T}.Builder.Capacity"/>.</exception>
-    public static ImmutableValueArray<T> MoveToImmutableValueArray<T>(this ImmutableArray<T>.Builder builder)
-        => Create(builder.MoveToImmutable());
-
-    /// <summary>
-    /// Returns the current contents as an <see cref="ImmutableValueArray{T}"/> and sets the collection to a zero length array.
-    /// </summary>
-    /// <remarks>
-    /// If <see cref="ImmutableArray{T}.Builder.Capacity"/> equals <see cref="ImmutableArray{T}.Builder.Count"/>, 
-    /// the internal array will be extracted as an <see cref="ImmutableValueArray{T}"/> without copying the contents.
-    /// Otherwise, the contents will be copied into a new array. The collection will then be set to a zero length array.
-    /// </remarks>
-    /// <returns>An immutable array.</returns>
-    public static ImmutableValueArray<T> DrainToImmutableValueArray<T>(this ImmutableArray<T>.Builder builder)
-        => Create(builder.DrainToImmutable());
-
-    /// <summary>
     /// Creates an <see cref="ImmutableValueArray{T}"/> with the specified elements.
     /// </summary>
     /// <typeparam name="T">The type of element stored in the array.</typeparam>
@@ -222,6 +148,81 @@ public static class ImmutableValueArray
     /// </remarks>
     public static ImmutableValueArray<T> Create<T>(ImmutableValueArray<T> items, int start, int length)
         => items.Slice(start, length);
+
+    /// <summary>
+    /// Produce an <see cref="ImmutableValueArray{T}"/> of contents from specified elements.
+    /// </summary>
+    /// <typeparam name="T">The type of element in the list.</typeparam>
+    /// <param name="items">The elements to store in the array.</param>
+    /// <returns>An immutable array containing the specified items.</returns>
+    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this ReadOnlySpan<T> items)
+        => Create(items);
+
+    /// <summary>
+    /// Produce an <see cref="ImmutableValueArray{T}"/> of contents from specified elements.
+    /// </summary>
+    /// <typeparam name="T">The type of element in the list.</typeparam>
+    /// <param name="items">The elements to store in the array.</param>
+    /// <returns>An immutable array containing the specified items.</returns>
+    [OverloadResolutionPriority(-1)]
+    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this Span<T> items)
+        => Create(items);
+
+    /// <summary>
+    /// Produce an <see cref="ImmutableValueArray{T}"/> of contents from specified elements.
+    /// </summary>
+    /// <typeparam name="T">The type of element in the list.</typeparam>
+    /// <param name="items">The elements to store in the array.</param>
+    /// <returns>An immutable array containing the specified items.</returns>
+    [OverloadResolutionPriority(-2)]
+    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this ImmutableArray<T> items)
+        => Create(items);
+
+    /// <summary>
+    /// Enumerates a sequence exactly once and produces an immutable array of its contents.
+    /// </summary>
+    /// <typeparam name="T">The type of element in the sequence.</typeparam>
+    /// <param name="items">The sequence to enumerate.</param>
+    /// <returns>An immutable array containing the specified items.</returns>
+    [OverloadResolutionPriority(-3)]
+    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this IEnumerable<T> items)
+    {
+        if (items is ImmutableValueArray<T> immutableValueArray)
+        {
+            return immutableValueArray;
+        }
+
+        return Create(items.ToImmutableArray());
+    }
+
+    /// <summary>
+    /// Returns an immutable copy of the current contents of the builder's collection.
+    /// </summary>
+    /// <param name="builder">The builder to create the immutable array from.</param>
+    /// <returns>An immutable array containing the specified items from <paramref name="builder"/>.</returns>
+    public static ImmutableValueArray<T> ToImmutableValueArray<T>(this ImmutableArray<T>.Builder builder)
+        => Create(builder.ToImmutableArray());
+
+    /// <summary>
+    /// Extracts the internal array as an <see cref="ImmutableValueArray{T}"/> and replaces it
+    /// with a zero length array.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">When <see cref="ImmutableArray{T}.Builder.Count"/> doesn't
+    /// equal <see cref="ImmutableArray{T}.Builder.Capacity"/>.</exception>
+    public static ImmutableValueArray<T> MoveToImmutableValueArray<T>(this ImmutableArray<T>.Builder builder)
+        => Create(builder.MoveToImmutable());
+
+    /// <summary>
+    /// Returns the current contents as an <see cref="ImmutableValueArray{T}"/> and sets the collection to a zero length array.
+    /// </summary>
+    /// <remarks>
+    /// If <see cref="ImmutableArray{T}.Builder.Capacity"/> equals <see cref="ImmutableArray{T}.Builder.Count"/>, 
+    /// the internal array will be extracted as an <see cref="ImmutableValueArray{T}"/> without copying the contents.
+    /// Otherwise, the contents will be copied into a new array. The collection will then be set to a zero length array.
+    /// </remarks>
+    /// <returns>An immutable array.</returns>
+    public static ImmutableValueArray<T> DrainToImmutableValueArray<T>(this ImmutableArray<T>.Builder builder)
+        => Create(builder.DrainToImmutable());
 }
 
 /// <summary>
@@ -266,6 +267,13 @@ public readonly partial struct ImmutableValueArray<T>
     }
 
     internal static ImmutableValueArray<T> Create(ImmutableArray<T> inner) => new(inner);
+
+    /// <summary>
+    /// Gets a <see cref="ImmutableArray{T}"/> from this instance.
+    /// </summary>
+    /// <returns>A <see cref="ImmutableArray{T}"/>.</returns>
+    public ImmutableArray<T> ToImmutableArray()
+        => _inner;
 
     /// <summary>
     /// Gets the element at the specified index in the read-only list.
@@ -505,7 +513,6 @@ public readonly partial struct ImmutableValueArray<T>
     /// <param name="startIndex">The index at which to begin the search.</param>
     /// <param name="equalityComparer">The equality comparer to use in the search.</param>
     /// <returns>The 0-based index into the array where the item was found; or -1 if it could not be found.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int IndexOf(T item, int startIndex, IEqualityComparer<T>? equalityComparer) => _inner.IndexOf(item, startIndex, equalityComparer);
 
     /// <summary>
