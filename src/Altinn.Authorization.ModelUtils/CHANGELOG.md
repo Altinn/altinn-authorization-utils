@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.0.0...Altinn.Authorization.ModelUtils-v1.1.0) (2025-04-21)
+
+
+### Features
+
+* add `ImmutableValueArray` ([#241](https://github.com/Altinn/altinn-authorization-utils/issues/241)) ([f38286d](https://github.com/Altinn/altinn-authorization-utils/commit/f38286daf817c36b68d0e6a6c04aa87e9654d9dd))
+
 ## 1.0.0 (2025-04-15)
 
 
