@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.2...Altinn.Authorization.ModelUtils-v1.1.3) (2025-04-22)
+
+
+### Bug Fixes
+
+* swashbuckle field-value-record handles unserializable types ([#250](https://github.com/Altinn/altinn-authorization-utils/issues/250)) ([901b36e](https://github.com/Altinn/altinn-authorization-utils/commit/901b36ec8d05eccbe1fe6d77c1652ac17b757726))
+
 ## [1.1.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.1...Altinn.Authorization.ModelUtils-v1.1.2) (2025-04-22)
 
 
