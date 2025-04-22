@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.4.0...Altinn.Swashbuckle-v2.4.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* allow registering the xml doc provider alone ([#246](https://github.com/Altinn/altinn-authorization-utils/issues/246)) ([414bc00](https://github.com/Altinn/altinn-authorization-utils/commit/414bc0073a239233b729787c45d8e37217f6374d))
+
 ## [2.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.3.0...Altinn.Swashbuckle-v2.4.0) (2025-04-14)
 
 
