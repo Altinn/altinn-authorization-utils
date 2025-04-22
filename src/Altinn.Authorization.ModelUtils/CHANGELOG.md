@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.0...Altinn.Authorization.ModelUtils-v1.1.1) (2025-04-22)
+
+
+### Bug Fixes
+
+* `ImmutableValueArray` json support ([#244](https://github.com/Altinn/altinn-authorization-utils/issues/244)) ([518b88b](https://github.com/Altinn/altinn-authorization-utils/commit/518b88bc78cfbdbef965a3741814502db87ae3c4))
+
 ## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.0.0...Altinn.Authorization.ModelUtils-v1.1.0) (2025-04-21)
 
 
