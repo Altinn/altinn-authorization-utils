@@ -5,9 +5,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Swashbuckle;
 
@@ -56,7 +58,22 @@ internal sealed class FieldValueRecordSchemaFilter
     {
         var jsonOptions = _jsonSerializerOptions.Value();
         var generatorOptions = _options.Value();
-        var converter = jsonOptions.GetConverter(context.Type);
+
+        if (context.Type.GetCustomAttribute<FieldValueRecordAttribute>() is null)
+        {
+            // Not a field-value-record type
+            return;
+        }
+
+        JsonConverter converter;
+        try
+        {
+            converter = jsonOptions.GetConverter(context.Type);
+        }
+        catch (InvalidOperationException)
+        {
+            return;
+        }
 
         if (converter is IFieldValueRecordJsonConverter fieldValueRecordConverter)
         {
