@@ -31,6 +31,7 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     /// <returns><paramref name="services"/>.</returns>
     public static IServiceCollection AddExtensibleEnumSwaggerSupport(this IServiceCollection services)
     {
+        services.AddXmlDocProvider();
         services.TryAddSingleton<NonExhaustiveEnumSchemaFilter>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveEnumSchemaFilter>>());
 
