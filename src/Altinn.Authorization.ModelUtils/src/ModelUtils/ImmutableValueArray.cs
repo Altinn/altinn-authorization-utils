@@ -10,7 +10,7 @@ namespace Altinn.Authorization.ModelUtils;
 /// <summary>
 /// A set of initialization methods for instances of <see cref="ImmutableValueArray{T}"/>.
 /// </summary>
-public static class ImmutableValueArray
+public static partial class ImmutableValueArray
 {
     /// <summary>
     /// Creates an empty <see cref="ImmutableValueArray{T}"/>.
