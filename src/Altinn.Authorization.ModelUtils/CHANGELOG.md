@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.1...Altinn.Authorization.ModelUtils-v1.1.2) (2025-04-22)
+
+
+### Bug Fixes
+
+* register DI deps ([#248](https://github.com/Altinn/altinn-authorization-utils/issues/248)) ([cd92dbc](https://github.com/Altinn/altinn-authorization-utils/commit/cd92dbcbe89165cbdcbaaebc5e55c57031fa1aae))
+
 ## [1.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.0...Altinn.Authorization.ModelUtils-v1.1.1) (2025-04-22)
 
 
