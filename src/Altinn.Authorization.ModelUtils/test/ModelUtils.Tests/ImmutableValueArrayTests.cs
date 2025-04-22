@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+using System.Collections;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -1171,6 +1172,22 @@ public class ImmutableValueArrayTests
     }
 
     #endregion
+
+    [Theory]
+    [MemberData(nameof(Variants))]
+    public void JsonRoundtrips(int[]? source)
+    {
+        if (source is null)
+        {
+            return;
+        }
+
+        var original = From(source);
+        var serialized = Json.SerializeToDocument(original);
+
+        var deserialized = Json.Deserialize<ImmutableValueArray<int>>(serialized);
+        deserialized.ShouldBe(original);
+    }
 
     public static TheoryData<int[]?> Variants => new([
         null,
