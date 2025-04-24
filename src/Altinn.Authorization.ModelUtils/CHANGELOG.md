@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.3...Altinn.Authorization.ModelUtils-v1.2.0) (2025-04-24)
+
+
+### Features
+
+* add `SelectFieldValue` for `FieldValue` ([#254](https://github.com/Altinn/altinn-authorization-utils/issues/254)) ([bf26efd](https://github.com/Altinn/altinn-authorization-utils/commit/bf26efd9c3e39f32265fe84b49cbce0aa07ace34))
+
 ## [1.1.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.2...Altinn.Authorization.ModelUtils-v1.1.3) (2025-04-22)
 
 
