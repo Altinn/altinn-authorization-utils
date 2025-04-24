@@ -120,6 +120,98 @@ public class FieldValueTests
     }
 
     [Fact]
+    public void Unset_SelectFieldValue_IsUnset()
+    {
+        FieldValue<IntWrapper> value = FieldValue.Unset;
+        FieldValue<int> mapped = value.SelectFieldValue(static w => w.Field);
+
+        mapped.IsUnset.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Null_SelectFieldValue_IsNull()
+    {
+        FieldValue<IntWrapper> value = FieldValue.Null;
+        FieldValue<int> mapped = value.SelectFieldValue(static w => w.Field);
+
+        mapped.IsNull.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void NonNull_SelectFieldValue_InnerUnset_IsUnset()
+    {
+        FieldValue<IntWrapper> value = new IntWrapper(FieldValue.Unset);
+        FieldValue<int> mapped = value.SelectFieldValue(static w => w.Field);
+
+        mapped.IsUnset.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void NonNull_SelectFieldValue_InnerNull_IsNull()
+    {
+        FieldValue<IntWrapper> value = new IntWrapper(FieldValue.Null);
+        FieldValue<int> mapped = value.SelectFieldValue(static w => w.Field);
+
+        mapped.IsNull.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void NonNull_SelectFieldValue_InnerValue_HasValue()
+    {
+        FieldValue<IntWrapper> value = new IntWrapper(42);
+        FieldValue<int> mapped = value.SelectFieldValue(static w => w.Field);
+
+        mapped.HasValue.ShouldBeTrue();
+        mapped.Value.ShouldBe(42);
+    }
+
+    [Fact]
+    public void Unset_SelectFieldValueWithState_IsUnset()
+    {
+        FieldValue<IntWrapper> value = FieldValue.Unset;
+        FieldValue<int> mapped = value.SelectFieldValue(10, static (w, s) => w.Field.Select(s, static (i, s) => i + s));
+
+        mapped.IsUnset.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Null_SelectFieldValueWithState_IsNull()
+    {
+        FieldValue<IntWrapper> value = FieldValue.Null;
+        FieldValue<int> mapped = value.SelectFieldValue(10, static (w, s) => w.Field.Select(s, static (i, s) => i + s));
+
+        mapped.IsNull.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void NonNull_SelectFieldValueWithState_InnerUnset_IsUnset()
+    {
+        FieldValue<IntWrapper> value = new IntWrapper(FieldValue.Unset);
+        FieldValue<int> mapped = value.SelectFieldValue(10, static (w, s) => w.Field.Select(s, static (i, s) => i + s));
+
+        mapped.IsUnset.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void NonNull_SelectFieldValueWithState_InnerNull_IsNull()
+    {
+        FieldValue<IntWrapper> value = new IntWrapper(FieldValue.Null);
+        FieldValue<int> mapped = value.SelectFieldValue(10, static (w, s) => w.Field.Select(s, static (i, s) => i + s));
+
+        mapped.IsNull.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void NonNull_SelectFieldValueWithState_InnerValue_HasValue()
+    {
+        FieldValue<IntWrapper> value = new IntWrapper(42);
+        FieldValue<int> mapped = value.SelectFieldValue(10, static (w, s) => w.Field.Select(s, static (i, s) => i + s));
+
+        mapped.HasValue.ShouldBeTrue();
+        mapped.Value.ShouldBe(10 + 42);
+    }
+
+    [Fact]
     public void CastToValue_ThrowsForUnset()
     {
         FieldValue<int> value = FieldValue.Unset;
@@ -191,4 +283,6 @@ public class FieldValueTests
 
             (42, 41, false),
         ];
+
+    private record struct IntWrapper(FieldValue<int> Field);
 }
