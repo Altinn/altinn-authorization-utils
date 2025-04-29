@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.11.0...Altinn.Authorization.ServiceDefaults-v3.0.0) (2025-04-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* listens on multiple appconfig labels, modifies how localdev is detected.
+
+### Features
+
+* add Altinn environment descriptor ([#257](https://github.com/Altinn/altinn-authorization-utils/issues/257)) ([c201272](https://github.com/Altinn/altinn-authorization-utils/commit/c201272f52d9967c5aeca67512060b49fc2885c7))
+
 ## [2.11.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.10.0...Altinn.Authorization.ServiceDefaults-v2.11.0) (2025-03-10)
 
 
