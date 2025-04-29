@@ -10,7 +10,7 @@ namespace Altinn.Authorization.ServiceDefaults;
 public sealed record AltinnEnvironment
     : IFormattable
 {
-    private static readonly AltinnEnvironment LocalDev = new AltinnEnvironment("local", AltinnEnvironmentType.LocalDev);
+    private static readonly AltinnEnvironment LocalDev = new AltinnEnvironment("LOCAL", AltinnEnvironmentType.LocalDev);
 
     private static readonly AltinnEnvironment AT21 = new AltinnEnvironment("AT21", AltinnEnvironmentType.AT);
 
@@ -40,7 +40,7 @@ public sealed record AltinnEnvironment
             "YT01" => YT01,
             "TT02" => TT02,
             "PROD" => PROD,
-            var other => new AltinnEnvironment(other, AltinnEnvironmentType.Unknow),
+            var upper => new AltinnEnvironment(upper, AltinnEnvironmentType.Unknown),
         };
     }
 
@@ -95,7 +95,7 @@ public sealed record AltinnEnvironment
 
     private enum AltinnEnvironmentType
     {
-        Unknow,
+        Unknown,
         LocalDev,
         AT,
         YT,
