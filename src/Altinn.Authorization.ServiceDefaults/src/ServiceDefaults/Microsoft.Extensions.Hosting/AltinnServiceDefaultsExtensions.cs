@@ -58,16 +58,33 @@ public static class AltinnServiceDefaultsExtensions
         }
 
         var logger = AltinnPreStartLogger.Create(builder.Configuration, nameof(AltinnServiceDefaultsExtensions));
-        builder.AddAltinnConfiguration(logger);
+        var envName = builder.Configuration.GetValue<string?>("ALTINN_ENVIRONMENT", defaultValue: null);
+        if (string.IsNullOrEmpty(envName))
+        {
+            if (builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Altinn:LocalDev"))
+            {
+                logger.Log("LocalDev is set to true in configuration - using local environment");
+                envName = "LOCAL";
+            }
+            else
+            {
+                logger.Log("No ALTINN_ENVIRONMENT found in configuration - using UNKNOWN environment");
+                envName = "UNKNOWN";
+            }
+        }
+
+        var env = AltinnEnvironment.Create(envName);
+        serviceDescription = new AltinnServiceDescriptor(name, env);
+        logger.Log($"Service: {serviceDescription.Name}, Environment: {serviceDescription.Environment}");
+        builder.Services.AddSingleton(serviceDescription);
+        builder.Services.AddSingleton(env);
+
+        builder.AddAltinnConfiguration(serviceDescription, logger);
 
         // Note - this has to happen early due to a bug in Application Insights
         // See: https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
         builder.AddApplicationInsights(logger); 
 
-        var isLocalDevelopment = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("Altinn:LocalDev");
-
-        serviceDescription = new AltinnServiceDescriptor(name, isLocalDevelopment);
-        builder.Services.AddSingleton(serviceDescription);
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
         builder.Services.Configure<AltinnClusterInfo>(builder.Configuration.GetSection("Altinn:ClusterInfo"));
         builder.Services.AddSingleton<IConfigureOptions<AltinnClusterInfo>, ConfigureAltinnClusterInfo>();
@@ -371,11 +388,11 @@ public static class AltinnServiceDefaultsExtensions
         return builder;
     }
 
-    private static IHostApplicationBuilder AddAltinnConfiguration(this IHostApplicationBuilder builder, AltinnPreStartLogger logger)
+    private static IHostApplicationBuilder AddAltinnConfiguration(this IHostApplicationBuilder builder, AltinnServiceDescriptor serviceDescriptor, AltinnPreStartLogger logger)
     {
         builder.Configuration.AddAltinnDbSecretsJson(logger);
         builder.Configuration.AddAltinnKeyVault(logger);
-        builder.Configuration.AddAltinnAppConfiguration(logger);
+        builder.Configuration.AddAltinnAppConfiguration(serviceDescriptor, logger);
 
         return builder;
     }
@@ -466,7 +483,7 @@ public static class AltinnServiceDefaultsExtensions
         return manager;
     }
 
-    private static IConfigurationBuilder AddAltinnAppConfiguration(this IConfigurationManager manager, AltinnPreStartLogger logger)
+    private static IConfigurationBuilder AddAltinnAppConfiguration(this IConfigurationManager manager, AltinnServiceDescriptor serviceDescriptor, AltinnPreStartLogger logger)
     {
         var appConfigurationEndpoint = manager.GetValue<string>("Altinn:AppConfiguration:Endpoint");
         var appConfigurationLabel = manager.GetValue<string>("Altinn:AppConfiguration:Label");
@@ -518,7 +535,22 @@ public static class AltinnServiceDefaultsExtensions
 
             manager.AddAzureAppConfiguration(options =>
             {
-                options.Select(KeyFilter.Any, appConfigurationLabel);
+                options.ConfigureRefresh(refresh =>
+                {
+                    refresh.Register("Sentinel", refreshAll: true);
+                });
+
+                if (!string.IsNullOrEmpty(appConfigurationLabel))
+                {
+                    logger.Log($"Adding app configuration label: '{appConfigurationLabel}'");
+                    options.Select(KeyFilter.Any, appConfigurationLabel);
+                }
+
+                logger.Log($"Adding app configuration key filters for: '{serviceDescriptor.Name}', '{serviceDescriptor.Environment:l}', and '{serviceDescriptor.Environment:l}-{serviceDescriptor.Name}'");
+                options.Select(KeyFilter.Any, serviceDescriptor.Name);
+                options.Select(KeyFilter.Any, serviceDescriptor.Environment.ToString(format: "l"));
+                options.Select(KeyFilter.Any, $"{serviceDescriptor.Environment:l}-{serviceDescriptor.Name}");
+
                 options.ConfigureKeyVault(kvOptions => kvOptions.SetCredential(credential));
                 options.Connect(appConfigurationEndpointUri, credential);
             });
