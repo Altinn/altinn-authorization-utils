@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Immutable;
+﻿using CommunityToolkit.Diagnostics;
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,7 +10,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// </summary>
 [DebuggerDisplay("Count = {Count}")]
 public struct ValidationErrorBuilder
-    : IReadOnlyCollection<ValidationErrorInstance>
+    : IReadOnlyList<ValidationErrorInstance>
 {
     private List<ValidationErrorInstance>? _errors;
     private List<KeyValuePair<string, string>>? _extensions;
@@ -41,6 +41,12 @@ public struct ValidationErrorBuilder
     /// </summary>
     public readonly int Count => _errors?.Count ?? 0;
 
+    /// <inheritdoc/>
+    public readonly ValidationErrorInstance this[int index]
+        => _errors is null
+        ? ThrowHelper.ThrowArgumentOutOfRangeException<ValidationErrorInstance>()
+        : _errors[index];
+
     /// <summary>
     /// Returns <see langword="true"/> if the collection is empty.
     /// </summary>
@@ -60,7 +66,7 @@ public struct ValidationErrorBuilder
         };
 
     /// <inheritdoc/>
-    IEnumerator<ValidationErrorInstance> IEnumerable<ValidationErrorInstance>.GetEnumerator()
+    readonly IEnumerator<ValidationErrorInstance> IEnumerable<ValidationErrorInstance>.GetEnumerator()
         => _errors switch
         {
             null => Enumerable.Empty<ValidationErrorInstance>().GetEnumerator(),
@@ -68,7 +74,7 @@ public struct ValidationErrorBuilder
         };
 
     /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator()
+    readonly IEnumerator IEnumerable.GetEnumerator()
         => _errors switch
         {
             null => Enumerable.Empty<ValidationErrorInstance>().GetEnumerator(),

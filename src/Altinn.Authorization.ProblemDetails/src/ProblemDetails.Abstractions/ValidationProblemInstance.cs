@@ -28,9 +28,9 @@ public sealed record ValidationProblemInstance
     /// </summary>
     public ImmutableArray<ValidationErrorInstance> Errors => _errors;
 
-    internal override void AddExceptionDetails(StringBuilder builder)
+    internal override void AddExceptionDetails(StringBuilder builder, string indent)
     {
-        base.AddExceptionDetails(builder);
+        base.AddExceptionDetails(builder, indent);
 
         if (_errors.IsDefaultOrEmpty)
         {
@@ -38,20 +38,20 @@ public sealed record ValidationProblemInstance
         }
 
         builder.AppendLine();
-        builder.AppendLine("Validation errors:");
+        builder.Append(indent).AppendLine("Validation errors:");
         foreach (var error in _errors)
         {
-            builder.AppendLine($" - {error.ErrorCode}: {error.Detail}");
+            builder.Append(indent).AppendLine($" - {error.ErrorCode}: {error.Detail}");
             foreach (var path in error.Paths)
             {
-                builder.AppendLine($"   path: {path}");
+                builder.Append(indent).AppendLine($"   path: {path}");
             }
 
             if (!error.Extensions.IsDefaultOrEmpty)
             {
                 foreach (var (key, value) in error.Extensions)
                 {
-                    builder.AppendLine($"   {key}: {value}");
+                    builder.Append(indent).AppendLine($"   {key}: {value}");
                 }
             }
         }

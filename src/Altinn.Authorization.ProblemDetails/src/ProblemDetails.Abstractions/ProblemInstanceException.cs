@@ -51,7 +51,7 @@ public class ProblemInstanceException
         sb.AppendLine();
         sb.AppendLine($"code: {problemInstance.ErrorCode}");
 
-        problemInstance.AddExceptionDetails(sb);
+        problemInstance.AddExceptionDetails(sb, string.Empty);
 
         return sb.ToString();
     }
