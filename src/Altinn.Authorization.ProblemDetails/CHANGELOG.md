@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.2...Altinn.Authorization.ProblemDetails-v3.3.0) (2025-05-12)
+
+
+### Features
+
+* add `MultipleProblemDetails` ([#263](https://github.com/Altinn/altinn-authorization-utils/issues/263)) ([397ae08](https://github.com/Altinn/altinn-authorization-utils/commit/397ae083732c2732e933310847b65b2fd828c4a9))
+
 ## [3.2.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.1...Altinn.Authorization.ProblemDetails-v3.2.2) (2025-03-26)
 
 
