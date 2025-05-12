@@ -68,13 +68,13 @@ public record class ProblemInstance
         internal init => _extensions = value;
     }
 
-    internal virtual void AddExceptionDetails(StringBuilder builder)
+    internal virtual void AddExceptionDetails(StringBuilder builder, string indent)
     {
         if (!_extensions.IsDefaultOrEmpty)
         {
             foreach (var (key, value) in _extensions)
             {
-                builder.AppendLine($"{key}: {value}");
+                builder.Append(indent).AppendLine($"{key}: {value}");
             }
         }
     }

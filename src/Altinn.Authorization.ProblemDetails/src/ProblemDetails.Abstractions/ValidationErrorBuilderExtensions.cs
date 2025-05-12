@@ -12,7 +12,6 @@ public static class ValidationErrorBuilderExtensions
     /// </summary>
     /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
-    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor)
         => errors.Add(descriptor.Create());
 

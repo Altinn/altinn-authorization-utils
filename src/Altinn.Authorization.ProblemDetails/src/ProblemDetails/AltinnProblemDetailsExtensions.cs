@@ -389,18 +389,68 @@ public static class AltinnProblemDetailsExtensions
     }
     #endregion
 
-    private static AltinnProblemDetails CreateProblemDetails(ProblemInstance instance)
+    #region MultipleProblemBuilder.TryToProblemDetails
+    /// <summary>
+    /// Tries to convert the problems to a <see cref="AltinnProblemDetails"/>.
+    /// </summary>
+    /// <param name="errors">This <see cref="MultipleProblemBuilder"/> instance.</param>
+    /// <param name="result">The resulting <see cref="AltinnProblemDetails"/>, or <see langword="null"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="AltinnProblemDetails"/> was created,
+    /// otherwise <see langword="false"/>.
+    /// </returns>
+    public static bool TryToProblemDetails(this ref MultipleProblemBuilder errors, [NotNullWhen(true)] out AltinnProblemDetails? result)
     {
-        if (instance is ValidationProblemInstance validationProblemInstance)
+        if (errors.TryBuild(out var instance))
         {
-            return CreateProblemDetails(validationProblemInstance);
+            result = instance.ToProblemDetails();
+            return true;
         }
 
-        return new AltinnProblemDetails(instance);
+        result = null;
+        return false;
     }
+
+    #endregion
+
+    #region MultipleProblemBuilder.TryToActionResult
+    /// <summary>
+    /// Tries to convert the problems to a <see cref="ActionResult"/>.
+    /// </summary>
+    /// <param name="errors">This <see cref="MultipleProblemBuilder"/> instance.</param>
+    /// <param name="result">The resulting <see cref="ActionResult"/>, or <see langword="null"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="ActionResult"/> was created,
+    /// otherwise <see langword="false"/>.
+    /// </returns>
+    public static bool TryToActionResult(this ref MultipleProblemBuilder errors, [NotNullWhen(true)] out ActionResult? result)
+    {
+        if (errors.TryToProblemDetails(out var details))
+        {
+            result = details.ToActionResult();
+            return true;
+        }
+
+        result = null;
+        return false;
+    }
+    #endregion
+
+    private static AltinnProblemDetails CreateProblemDetails(ProblemInstance instance)
+        => instance switch
+        {
+            ValidationProblemInstance validationProblem => CreateProblemDetails(validationProblem),
+            MultipleProblemInstance multipleProblem => CreateProblemDetails(multipleProblem),
+            _ => new AltinnProblemDetails(instance),
+        };
 
     private static AltinnValidationProblemDetails CreateProblemDetails(ValidationProblemInstance instance)
     {
         return new AltinnValidationProblemDetails(instance);
+    }
+
+    private static AltinnMultipleProblemDetails CreateProblemDetails(MultipleProblemInstance instance)
+    {
+        return new AltinnMultipleProblemDetails(instance);
     }
 }
