@@ -1,5 +1,8 @@
 ﻿namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 
+/// <summary>
+/// A model for a root polymorphic record type that consists of <see cref="FieldValue{T}"/>s.
+/// </summary>
 public interface IPolymorphicRootFieldValueRecordModel
     : IPolymorphicFieldValueRecordModel
 {
@@ -11,6 +14,10 @@ public interface IPolymorphicRootFieldValueRecordModel
     public IPolymorphicFieldValueRecordModel ModelFor(Type type);
 }
 
+/// <summary>
+/// A model for a root polymorphic record type that consists of <see cref="FieldValue{T}"/>s.
+/// </summary>
+/// <typeparam name="TDiscriminator">The discriminator type.</typeparam>
 public interface IPolymorphicRootFieldValueRecordModel<TDiscriminator>
     : IPolymorphicFieldValueRecordModel<TDiscriminator>
     , IPolymorphicRootFieldValueRecordModel
@@ -28,6 +35,11 @@ public interface IPolymorphicRootFieldValueRecordModel<TDiscriminator>
         => ModelFor(type);
 }
 
+/// <summary>
+/// A model for a root polymorphic record type that consists of <see cref="FieldValue{T}"/>s.
+/// </summary>
+/// <typeparam name="TDiscriminator">The discriminator type.</typeparam>
+/// <typeparam name="T">The type of the record.</typeparam>
 public interface IPolymorphicRootFieldValueRecordModel<TDiscriminator, T>
     : IPolymorphicFieldValueRecordModel<TDiscriminator, T>
     , IPolymorphicRootFieldValueRecordModel

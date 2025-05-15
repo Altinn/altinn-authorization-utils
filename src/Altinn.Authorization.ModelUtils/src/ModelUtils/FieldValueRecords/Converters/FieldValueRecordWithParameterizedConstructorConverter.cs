@@ -61,6 +61,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
                 ThrowHelper.ThrowInvalidOperationException("Constructor parameter name is null or empty");
             }
 
+            // We're using case-insensitive string comparison here, because typically constructor-parameter names are not the same case as the property names.
             var propName = PropertyName.ConvertName(arg.Name, options.PropertyNamingPolicy);
             if (!propertiesByCaseInsensitiveString.TryGetValue(propName, out var prop))
             {

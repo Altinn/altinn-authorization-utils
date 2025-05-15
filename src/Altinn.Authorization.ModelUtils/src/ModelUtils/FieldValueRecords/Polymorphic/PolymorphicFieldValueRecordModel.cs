@@ -167,8 +167,8 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
     public bool TryGetDescendantModel(TDiscriminator discriminator, [NotNullWhen(true)] out IPolymorphicFieldValueRecordModel<TDiscriminator>? model)
         => _byDiscriminator.TryGetValue(discriminator, out model);
 
-    public ImmutableArray<TDiscriminator> Discriminators(bool includeInherited = true)
-        => includeInherited
+    public ImmutableArray<TDiscriminator> Discriminators(bool includeDescendants = true)
+        => includeDescendants
         ? _byDiscriminator.Keys
         : _discriminators;
 

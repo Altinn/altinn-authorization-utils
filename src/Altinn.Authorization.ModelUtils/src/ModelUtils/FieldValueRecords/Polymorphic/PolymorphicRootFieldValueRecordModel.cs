@@ -135,8 +135,8 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
 
     public IFieldValueRecordPropertyModel<T, NonExhaustiveEnum<TDiscriminator>> DiscriminatorProperty => _root.DiscriminatorProperty;
 
-    public ImmutableArray<TDiscriminator> Discriminators(bool includeInherited = true)
-        => _root.Discriminators(includeInherited);
+    public ImmutableArray<TDiscriminator> Discriminators(bool includeDescendants = true)
+        => _root.Discriminators(includeDescendants);
 
     public IPolymorphicFieldValueRecordModel ModelFor(Type type)
         => _root.TryGetDescendantModel(type, out var model) 
@@ -152,7 +152,7 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
     public bool TryGetDescendantModel(TDiscriminator discriminator, [NotNullWhen(true)] out IPolymorphicFieldValueRecordModel<TDiscriminator>? model)
         => _root.TryGetDescendantModel(discriminator, out model);
 
-    private class BuilderState(IFieldValueRecordModel model)
+    private sealed class BuilderState(IFieldValueRecordModel model)
     {
         public Type Type => model.Type;
 
