@@ -14,6 +14,16 @@ namespace Altinn.Authorization.ModelUtils;
 public static class NonExhaustiveEnum
 {
     /// <summary>
+    /// Creates a new <see cref="NonExhaustiveEnum{T}"/> from the specified value.
+    /// </summary>
+    /// <typeparam name="T">The enum type.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <returns>A <see cref="NonExhaustiveEnum{T}"/> wrapper for <paramref name="value"/>.</returns>
+    public static NonExhaustiveEnum<T> Create<T>(T value)
+        where T : struct, Enum
+        => value;
+
+    /// <summary>
     /// Checks if a type is a <see cref="NonExhaustiveEnum{T}"/> and returns the field type.
     /// </summary>
     /// <param name="type">The type to check.</param>

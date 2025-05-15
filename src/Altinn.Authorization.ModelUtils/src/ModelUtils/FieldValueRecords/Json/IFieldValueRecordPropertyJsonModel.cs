@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ModelUtils;
+using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -67,6 +68,14 @@ internal interface IFieldValueRecordPropertyJsonModel<in TOwner>
     public void WriteFrom(TOwner owner, JsonEncodedText propertyName, Utf8JsonWriter writer, JsonSerializerOptions options);
 }
 
+internal interface IFieldValueRecordPropertyJsonModel<in TOwner, TValue>
+    : IFieldValueRecordPropertyJsonModel<TOwner>
+    where TOwner : class
+    where TValue : notnull
+{
+    public FieldValue<TValue> Read(ref Utf8JsonReader reader, JsonSerializerOptions options);
+}
+
 /// <summary>
 /// Helper methods to create <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/>s.
 /// </summary>
@@ -74,6 +83,22 @@ internal interface IFieldValueRecordPropertyJsonModel<in TOwner>
 internal static class FieldValueRecordPropertyJsonModel<TOwner>
     where TOwner : class
 {
+    /// <summary>
+    /// Creates <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/> from the given
+    /// <see cref="IFieldValueRecordPropertyModel{TOwner}"/> and the given
+    /// <see cref="JsonSerializerOptions"/>.
+    /// </summary>
+    /// <param name="property">The property.</param>
+    /// <param name="options">The json serializer options.</param>
+    /// <returns>A <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/>.</returns>
+    public static IFieldValueRecordPropertyJsonModel<TOwner> Create(
+        IFieldValueRecordPropertyModel<TOwner> property,
+        JsonSerializerOptions options)
+    {
+        var visitor = new FactoryVisitor(options);
+        return property.Accept(visitor);
+    }
+
     /// <summary>
     /// Creates <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/>s from the given
     /// enumerable of <see cref="IFieldValueRecordPropertyModel{TOwner}"/>s and the given
@@ -83,7 +108,7 @@ internal static class FieldValueRecordPropertyJsonModel<TOwner>
     /// <param name="options">The json serializer options.</param>
     /// <returns>An enumerable of <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/>s.</returns>
     public static IEnumerable<IFieldValueRecordPropertyJsonModel<TOwner>> Create(
-        IEnumerable<IFieldValueRecordPropertyModel<TOwner>> properties,
+        ImmutableArray<IFieldValueRecordPropertyModel<TOwner>> properties,
         JsonSerializerOptions options)
     {
         var visitor = new FactoryVisitor(options);
@@ -95,7 +120,7 @@ internal static class FieldValueRecordPropertyJsonModel<TOwner>
     {
         public IFieldValueRecordPropertyJsonModel<TOwner> Visit<TValue>(IFieldValueRecordPropertyModel<TOwner, TValue> property)
             where TValue : notnull
-            => new FieldValueRecordPropertyJsonModel<TOwner, TValue>(property, options);
+            => FieldValueRecordPropertyJsonModel<TOwner, TValue>.Create(property, options);
     }
 }
 
@@ -105,10 +130,23 @@ internal static class FieldValueRecordPropertyJsonModel<TOwner>
 /// <typeparam name="TOwner">The field-value-record type.</typeparam>
 /// <typeparam name="TValue">The property type.</typeparam>
 internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
-    : IFieldValueRecordPropertyJsonModel<TOwner>
+    : IFieldValueRecordPropertyJsonModel<TOwner, TValue>
     where TOwner : class
     where TValue : notnull
 {
+    /// <summary>
+    /// Creates <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/> from the given
+    /// <see cref="IFieldValueRecordPropertyModel{TOwner}"/> and the given
+    /// <see cref="JsonSerializerOptions"/>.
+    /// </summary>
+    /// <param name="property">The property.</param>
+    /// <param name="options">The json serializer options.</param>
+    /// <returns>A <see cref="IFieldValueRecordPropertyJsonModel{TOwner}"/>.</returns>
+    public static IFieldValueRecordPropertyJsonModel<TOwner, TValue> Create(
+        IFieldValueRecordPropertyModel<TOwner, TValue> property,
+        JsonSerializerOptions options)
+        => new FieldValueRecordPropertyJsonModel<TOwner, TValue>(property, options);
+
     private readonly JsonIgnoreCondition _ignoreCondition;
     private readonly IFieldValueRecordPropertyModel<TOwner, TValue> _inner;
     private readonly PropertyName _name;
@@ -141,6 +179,23 @@ internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
     public bool IsRequired => _inner.IsRequired;
 
     /// <inheritdoc/>
+    public FieldValue<TValue> Read(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            return FieldValue.Null;
+        }
+
+        var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
+        if (value is null)
+        {
+            return FieldValue.Null;
+        }
+
+        return value;
+    }
+
+    /// <inheritdoc/>
     public void ReadConstructorParameter(ref object? slot, ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Null)
@@ -164,6 +219,7 @@ internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
     {
         if (_ignoreCondition == JsonIgnoreCondition.Always)
         {
+            reader.Skip();
             return;
         }
 
