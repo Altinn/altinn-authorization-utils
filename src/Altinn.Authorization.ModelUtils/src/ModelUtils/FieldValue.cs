@@ -24,6 +24,16 @@ public static class FieldValue
     public static readonly NullSentinel Null = default;
 
     /// <summary>
+    /// Creates a <see cref="FieldValue{T}"/> from a value.
+    /// </summary>
+    /// <typeparam name="T">The type.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <returns>A <see cref="FieldValue{T}"/> wrapper for <paramref name="value"/>.</returns>
+    public static FieldValue<T> Create<T>(T? value)
+        where T : notnull
+        => value;
+
+    /// <summary>
     /// Creates a <see cref="FieldValue{T}"/> from a nullable struct.
     /// </summary>
     /// <typeparam name="T">The field type.</typeparam>

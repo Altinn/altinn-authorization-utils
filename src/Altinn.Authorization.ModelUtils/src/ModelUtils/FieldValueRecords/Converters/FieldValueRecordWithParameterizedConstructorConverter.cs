@@ -25,7 +25,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
     private readonly int _propertyMaxLength;
 
     internal FieldValueRecordWithParameterizedConstructorConverter(
-        FieldValueRecordModel<T> model,
+        IFieldValueRecordModel<T> model,
         JsonSerializerOptions options)
         : base(model)
     {
@@ -34,11 +34,10 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
         var comparer = GetPropertyComparer(options);
         var modelProperties = model.Properties(includeInherited: true);
         var properties = new Dictionary<PropertyName, Property>(modelProperties.Length, comparer);
-        var propertiesByString = properties.GetAlternateLookup<string>();
         var propertiesList = new List<Property>(modelProperties.Length);
         var parametersList = new List<Property>(model.Constructor.Parameters.Length);
 
-        foreach (var propModel in FieldValueRecordPropertyJsonModel<T>.Create(modelProperties.Cast<IFieldValueRecordPropertyModel<T>>(), options))
+        foreach (var propModel in FieldValueRecordPropertyJsonModel<T>.Create(modelProperties, options))
         {
             var prop = new Property(propModel);
 
@@ -50,6 +49,11 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
         }
 
         var index = 0;
+        var propertiesByCaseInsensitiveString = properties.ToDictionary(
+            static kvp => kvp.Key.Name,
+            static kvp => kvp.Value,
+            StringComparer.OrdinalIgnoreCase);
+
         foreach (var arg in model.Constructor.Parameters)
         {
             if (string.IsNullOrEmpty(arg.Name))
@@ -57,8 +61,9 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
                 ThrowHelper.ThrowInvalidOperationException("Constructor parameter name is null or empty");
             }
 
+            // We're using case-insensitive string comparison here, because typically constructor-parameter names are not the same case as the property names.
             var propName = PropertyName.ConvertName(arg.Name, options.PropertyNamingPolicy);
-            if (!propertiesByString.TryGetValue(propName, out var prop))
+            if (!propertiesByCaseInsensitiveString.TryGetValue(propName, out var prop))
             {
                 ThrowHelper.ThrowInvalidOperationException($"Constructor parameter '{arg.Name}' does not match any property");
             }
@@ -89,7 +94,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
 
     protected override FrozenDictionary<PropertyName, Property> PropertyLookup => _propLookup;
 
-    protected override int PropertyMaxLength => _propertyMaxLength;
+    protected internal override int PropertyMaxLength => _propertyMaxLength;
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

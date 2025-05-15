@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +13,44 @@ namespace Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 [EditorBrowsable(EditorBrowsableState.Never)]
 internal static class ShouldlyJsonExtensions
 {
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void ShouldJsonRoundTripAs<T>(
+        this T actual,
+        [StringSyntax(StringSyntaxAttribute.Json)] string expected,
+        string? customMessage = null)
+    {
+        using var actualDoc = Json.SerializeToDocument(actual);
+        using var expectedDoc = JsonDocument.Parse(expected);
+
+        if (!StructurallyCompare(actualDoc.RootElement, expectedDoc.RootElement, out var errors))
+        {
+            throw new ShouldAssertException(new JsonActualShouldlyMessage(actualDoc.RootElement, expectedDoc.RootElement, errors, customMessage).ToString());
+        }
+
+        var deserialized = Json.Deserialize<T>(expectedDoc);
+        if (!EqualityComparer<T>.Default.Equals(actual, deserialized))
+        {
+            throw new ShouldAssertException(new ExpectedActualShouldlyMessage(actual, deserialized, customMessage).ToString());
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static JsonDocument ShouldJsonSerializeAs<T>(
+        this T actual,
+        [StringSyntax(StringSyntaxAttribute.Json)] string expected,
+        string? customMessage = null)
+    {
+        var actualDoc = Json.SerializeToDocument(actual);
+        using var expectedDoc = JsonDocument.Parse(expected);
+
+        if (!StructurallyCompare(actualDoc.RootElement, expectedDoc.RootElement, out var errors))
+        {
+            throw new ShouldAssertException(new JsonActualShouldlyMessage(actualDoc.RootElement, expectedDoc.RootElement, errors, customMessage).ToString());
+        }
+
+        return actualDoc;
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonDocument actual,
@@ -402,5 +439,5 @@ internal static class ShouldlyJsonExtensions
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void Unreachable() 
-        => throw new NotImplementedException();
+        => throw new UnreachableException();
 }

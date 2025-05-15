@@ -19,7 +19,7 @@ internal class FieldValueRecordWithEmptyConstructorConverter<T>
     private readonly int _propertyMaxLength;
 
     internal FieldValueRecordWithEmptyConstructorConverter(
-        FieldValueRecordModel<T> model,
+        IFieldValueRecordModel<T> model,
         JsonSerializerOptions options)
         : base(model)
     {
@@ -30,7 +30,7 @@ internal class FieldValueRecordWithEmptyConstructorConverter<T>
         var properties = new Dictionary<PropertyName, Property>(modelProperties.Length, comparer);
         var propertiesList = new List<Property>(modelProperties.Length);
 
-        foreach (var propModel in FieldValueRecordPropertyJsonModel<T>.Create(modelProperties.Cast<IFieldValueRecordPropertyModel<T>>(), options))
+        foreach (var propModel in FieldValueRecordPropertyJsonModel<T>.Create(modelProperties, options))
         {
             var prop = new Property(propModel);
 
@@ -56,7 +56,7 @@ internal class FieldValueRecordWithEmptyConstructorConverter<T>
 
     protected override FrozenDictionary<PropertyName, Property> PropertyLookup => _propLookup;
 
-    protected override int PropertyMaxLength => _propertyMaxLength;
+    protected internal override int PropertyMaxLength => _propertyMaxLength;
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

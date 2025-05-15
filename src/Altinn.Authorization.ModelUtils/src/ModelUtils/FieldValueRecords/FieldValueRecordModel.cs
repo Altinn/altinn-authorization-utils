@@ -8,61 +8,39 @@ using System.Text.Json.Serialization;
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 
 /// <summary>
-/// A model for a record type that consists of <see cref="FieldValue{T}"/>s.
+/// Field-value-record model factory.
 /// </summary>
-public abstract class FieldValueRecordModel
+public static class FieldValueRecordModel
 {
-    private static readonly ConcurrentDictionary<Type, FieldValueRecordModel> _cache = new();
-
-    /// <summary>
-    /// Gets the type of the record.
-    /// </summary>
-    public abstract Type Type { get; }
-
-    /// <summary>
-    /// Gets the parent model, if any.
-    /// </summary>
-    public abstract FieldValueRecordModel? Parent { get; }
-
-    /// <summary>
-    /// Gets the properties of the record.
-    /// </summary>
-    /// <param name="includeInherited">Whether or not to include inherited properties.</param>
-    /// <returns>The properties of the model.</returns>
-    public abstract ImmutableArray<IFieldValueRecordPropertyModel> Properties(bool includeInherited = true);
-
-    /// <summary>
-    /// Gets the constructor of the record.
-    /// </summary>
-    public abstract IFieldValueRecordConstructorModel Constructor { get; }
+    private static readonly ConcurrentDictionary<Type, IFieldValueRecordModel> _cache = new();
 
     /// <summary>
     /// Gets the model for the specified type.
     /// </summary>
     /// <typeparam name="T">The type.</typeparam>
     /// <returns>A <see cref="FieldValueRecordModel{T}"/> for <typeparamref name="T"/>.</returns>
-    public static FieldValueRecordModel<T> For<T>()
+    public static IFieldValueRecordModel<T> For<T>()
         where T : class
-        => (FieldValueRecordModel<T>)For(typeof(T));
+        => (IFieldValueRecordModel<T>)For(typeof(T));
 
     /// <summary>
     /// Gets the model for the specified type.
     /// </summary>
     /// <param name="type">The type.</param>
     /// <returns>A <see cref="FieldValueRecordModel"/> for <paramref name="type"/>.</returns>
-    public static FieldValueRecordModel For(Type type)
+    public static IFieldValueRecordModel For(Type type)
         => _cache.GetOrAdd(type, static t => CreateModel(t));
 
-    private static FieldValueRecordModel CreateModel(Type type)
+    private static IFieldValueRecordModel CreateModel(Type type)
     {
         var modelType = typeof(FieldValueRecordModel<>).MakeGenericType(type);
         var instanceProperty = modelType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
         Debug.Assert(instanceProperty is not null);
 
         var model = instanceProperty.GetValue(null);
-        Debug.Assert(model is FieldValueRecordModel);
+        Debug.Assert(model is IFieldValueRecordModel);
 
-        return (FieldValueRecordModel)model;
+        return (IFieldValueRecordModel)model;
     }
 }
 
@@ -70,8 +48,8 @@ public abstract class FieldValueRecordModel
 /// A model for a record type that consists of <see cref="FieldValue{T}"/>s.
 /// </summary>
 /// <typeparam name="T">The type of the record.</typeparam>
-public sealed class FieldValueRecordModel<T>
-    : FieldValueRecordModel
+internal sealed class FieldValueRecordModel<T>
+    : IFieldValueRecordModel<T>
     where T : class
 {
     /// <summary>
@@ -79,21 +57,21 @@ public sealed class FieldValueRecordModel<T>
     /// </summary>
     public static FieldValueRecordModel<T> Instance { get; } = new();
 
-    private readonly FieldValueRecordModel? _parent;
+    private readonly IFieldValueRecordModel? _parent;
     private readonly IFieldValueRecordConstructorModel<T> _constructor;
-    private readonly ImmutableArray<IFieldValueRecordPropertyModel> _declaredProperties;
-    private readonly ImmutableArray<IFieldValueRecordPropertyModel> _allProperties;
+    private readonly ImmutableArray<IFieldValueRecordPropertyModel<T>> _declaredProperties;
+    private readonly ImmutableArray<IFieldValueRecordPropertyModel<T>> _allProperties;
 
     private FieldValueRecordModel()
     {
         if (typeof(T).BaseType is { } baseType && baseType != typeof(object))
         {
-            _parent = For(baseType);
+            _parent = FieldValueRecordModel.For(baseType);
         }
 
         var ctor = FindConstructor();
         var declaredProperties = GetDeclaredProperties().ToImmutableArray();
-        var inheritedProperties = _parent is null ? [] : _parent.Properties(includeInherited: true);
+        var inheritedProperties = _parent is null ? [] : _parent.Properties(includeInherited: true).CastArray<IFieldValueRecordPropertyModel<T>>();
 
         _constructor = ctor;
         _declaredProperties = declaredProperties;
@@ -101,24 +79,24 @@ public sealed class FieldValueRecordModel<T>
     }
 
     /// <inheritdoc/>
-    public override Type Type
+    public Type Type
         => typeof(T);
 
     /// <inheritdoc/>
-    public override FieldValueRecordModel? Parent
+    public IFieldValueRecordModel? Parent
         => _parent;
 
     /// <inheritdoc/>
-    public override IFieldValueRecordConstructorModel<T> Constructor 
+    public IFieldValueRecordConstructorModel<T> Constructor 
         => _constructor;
 
     /// <inheritdoc/>
-    public override ImmutableArray<IFieldValueRecordPropertyModel> Properties(bool includeInherited = true)
+    public ImmutableArray<IFieldValueRecordPropertyModel<T>> Properties(bool includeInherited = true)
         => includeInherited
         ? _allProperties
         : _declaredProperties;
 
-    private static IEnumerable<IFieldValueRecordPropertyModel> GetDeclaredProperties()
+    private static IEnumerable<IFieldValueRecordPropertyModel<T>> GetDeclaredProperties()
     {
         var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
@@ -137,9 +115,9 @@ public sealed class FieldValueRecordModel<T>
             }
 
             var propertyModel = Activator.CreateInstance(modelType, property);
-            Debug.Assert(propertyModel is IFieldValueRecordPropertyModel);
+            Debug.Assert(propertyModel is IFieldValueRecordPropertyModel<T>);
 
-            yield return (IFieldValueRecordPropertyModel)propertyModel;
+            yield return (IFieldValueRecordPropertyModel<T>)propertyModel;
         }
     }
 

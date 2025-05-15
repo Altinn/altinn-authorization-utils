@@ -11,7 +11,7 @@ public interface IFieldValueRecordJsonConverter
     /// <summary>
     /// Gets the model for the field-value-record.
     /// </summary>
-    public FieldValueRecordModel Model { get; }
+    public IFieldValueRecordModel Model { get; }
 
     /// <summary>
     /// Attempts to locate a property model based on the provided name. Returns a boolean indicating success or failure.

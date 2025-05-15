@@ -2,7 +2,9 @@
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -15,15 +17,16 @@ namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 internal abstract class FieldValueRecordBaseConverter<T>
     : JsonConverter<T>
     , IFieldValueRecordJsonConverter
+    , IGenericJsonConverter
     where T : class
 {
     /// <summary>
     /// Gets the <see cref="FieldValueRecordModel{T}"/>.
     /// </summary>
-    protected FieldValueRecordModel<T> Model { get; }
+    protected IFieldValueRecordModel<T> Model { get; }
 
     protected FieldValueRecordBaseConverter(
-        FieldValueRecordModel<T> model)
+        IFieldValueRecordModel<T> model)
     {
         Model = model;
     }
@@ -41,10 +44,10 @@ internal abstract class FieldValueRecordBaseConverter<T>
     /// <summary>
     /// Gets the maximum length of the property names.
     /// </summary>
-    protected abstract int PropertyMaxLength { get; }
+    protected internal abstract int PropertyMaxLength { get; }
 
     /// <inheritdoc/>
-    FieldValueRecordModel IFieldValueRecordJsonConverter.Model
+    IFieldValueRecordModel IFieldValueRecordJsonConverter.Model
         => Model;
 
     /// <inheritdoc/>
@@ -174,10 +177,28 @@ internal abstract class FieldValueRecordBaseConverter<T>
     /// </summary>
     /// <param name="options">Specifies the settings that determine how property names are compared.</param>
     /// <returns>Returns a comparer that is either case-sensitive or case-insensitive.</returns>
-    protected static PropertyName.Comparer GetPropertyComparer(JsonSerializerOptions options)
+    protected internal static PropertyName.Comparer GetPropertyComparer(JsonSerializerOptions options)
         => options.PropertyNameCaseInsensitive
             ? PropertyName.Comparer.OrdinalIgnoreCase
             : PropertyName.Comparer.Ordinal;
+
+    /// <inheritdoc/>
+    void IGenericJsonConverter.WriteGeneric<T1>(Utf8JsonWriter writer, T1 value, JsonSerializerOptions options)
+        where T1 : class
+    {
+        Debug.Assert(value.GetType().IsAssignableTo(typeof(T)));
+
+        Write(writer, (T)(object)value, options);
+    }
+
+    /// <inheritdoc/>
+    T1? IGenericJsonConverter.ReadGeneric<T1>(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        where T1 : class
+    {
+        Debug.Assert(typeof(T).IsAssignableTo(typeof(T1)));
+
+        return (T1?)(object?)Read(ref reader, typeof(T1), options);
+    }
 
     protected class Property
     {
