@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.0.0...Altinn.Authorization.ServiceDefaults-v3.1.0) (2025-05-19)
+
+
+### Features
+
+* add service toggles for default service registration ([#268](https://github.com/Altinn/altinn-authorization-utils/issues/268)) ([de76383](https://github.com/Altinn/altinn-authorization-utils/commit/de763837d5a7b0e76f3a9dc5d719166626674452))
+
 ## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v2.11.0...Altinn.Authorization.ServiceDefaults-v3.0.0) (2025-04-29)
 
 
