@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.1.0...Altinn.Authorization.ServiceDefaults-v3.1.1) (2025-05-19)
+
+
+### Bug Fixes
+
+* rename WebApplicationBuilder to CreateWebApplicationBuilder ([#270](https://github.com/Altinn/altinn-authorization-utils/issues/270)) ([4900bcc](https://github.com/Altinn/altinn-authorization-utils/commit/4900bcc388e73a2c2407d07ac156806df8b78da8))
+
 ## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.0.0...Altinn.Authorization.ServiceDefaults-v3.1.0) (2025-05-19)
 
 
