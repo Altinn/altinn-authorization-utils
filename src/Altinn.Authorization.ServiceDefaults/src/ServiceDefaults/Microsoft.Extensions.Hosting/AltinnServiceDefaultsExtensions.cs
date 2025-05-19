@@ -14,7 +14,6 @@ using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,11 +41,18 @@ public static class AltinnServiceDefaultsExtensions
     /// </summary>
     /// <param name="builder">The <see cref="IHostApplicationBuilder"/>.</param>
     /// <param name="name">The service name.</param>
+    /// <param name="configureOptions">
+    /// An optional action to configure the default service options for the Altinn service.
+    /// Use this to customize which services (e.g., telemetry, health checks) are added or ignored.
+    /// </param>
     /// <returns><paramref name="builder"/>.</returns>
-    public static IHostApplicationBuilder AddAltinnServiceDefaults(this IHostApplicationBuilder builder, string name)
+    public static IHostApplicationBuilder AddAltinnServiceDefaults(this IHostApplicationBuilder builder, string name, Action<AltinnServiceDefaultOptions>? configureOptions = null)
     {
         Guard.IsNotNull(builder);
         Guard.IsNotNullOrEmpty(name);
+
+        var options = new AltinnServiceDefaultOptions();
+        configureOptions?.Invoke(options);
 
         if (builder.Services.TryFindAltinnServiceDescription(out var serviceDescription))
         {
@@ -79,11 +85,18 @@ public static class AltinnServiceDefaultsExtensions
         builder.Services.AddSingleton(serviceDescription);
         builder.Services.AddSingleton(env);
 
-        builder.AddAltinnConfiguration(serviceDescription, logger);
+        if (options.EnabledServices.AppConfiguration)
+        {
+            builder.AddAltinnConfiguration(serviceDescription, logger);
+        }
 
         // Note - this has to happen early due to a bug in Application Insights
         // See: https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
-        builder.AddApplicationInsights(logger); 
+
+        if (options.EnabledServices.ApplicationInsights)
+        {
+            builder.AddApplicationInsights(logger);
+        }
 
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
         builder.Services.Configure<AltinnClusterInfo>(builder.Configuration.GetSection("Altinn:ClusterInfo"));
@@ -100,8 +113,15 @@ public static class AltinnServiceDefaultsExtensions
                 }
             });
 
-        builder.ConfigureOpenTelemetry();
-        builder.AddDefaultHealthChecks();
+        if (options.EnabledServices.OpenTelemetry)
+        {
+            builder.ConfigureOpenTelemetry();
+        }
+
+        if (options.EnabledServices.HealthCheck)
+        {
+            builder.AddDefaultHealthChecks();
+        }
 
         builder.Services.AddServiceDiscovery();
         builder.Services.ConfigureHttpClientDefaults(http =>
@@ -120,7 +140,7 @@ public static class AltinnServiceDefaultsExtensions
     /// Adds default Altinn middleware.
     /// </summary>
     /// <remarks>
-    /// Requires that <see cref="AddAltinnServiceDefaults(IHostApplicationBuilder, string)"/> has been called.
+    /// Requires that <see cref="AddAltinnServiceDefaults(IHostApplicationBuilder, string, Action{AltinnServiceDefaultOptions})"/> has been called.
     /// </remarks>
     /// <param name="app">The <see cref="WebApplication"/>.</param>
     /// <param name="errorHandlingPath">The path to use for error handling in production environments.</param>
@@ -152,7 +172,7 @@ public static class AltinnServiceDefaultsExtensions
     /// Maps default Altinn endpoints.
     /// </summary>
     /// <remarks>
-    /// Requires that <see cref="AddAltinnServiceDefaults(IHostApplicationBuilder, string)"/> has been called.
+    /// Requires that <see cref="AddAltinnServiceDefaults(IHostApplicationBuilder, string, Action{AltinnServiceDefaultOptions})"/> has been called.
     /// </remarks>
     /// <param name="app">The <see cref="WebApplication"/>.</param>
     /// <returns><paramref name="app"/>.</returns>
@@ -297,8 +317,8 @@ public static class AltinnServiceDefaultsExtensions
                         TelemetryHelpers.EnrichFromRequest(new ActivityTags(activity), request.HttpContext);
                     };
                 });
-                
-                tracing.AddHttpClientInstrumentation(); 
+
+                tracing.AddHttpClientInstrumentation();
             });
 
         builder.AddOpenTelemetryExporters();
@@ -452,7 +472,7 @@ public static class AltinnServiceDefaultsExtensions
                 logger.Log("adding config from keyvault using environment credentials");
                 credentialList.Add(new EnvironmentCredential());
             }
-            
+
             if (enableWorkloadIdentityCredential)
             {
                 logger.Log("adding config from keyvault using workload identity credentials");
