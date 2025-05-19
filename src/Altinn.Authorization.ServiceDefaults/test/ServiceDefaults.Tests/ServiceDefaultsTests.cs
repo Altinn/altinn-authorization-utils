@@ -1,4 +1,5 @@
 using Altinn.Authorization.ServiceDefaults.Utils;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,7 @@ namespace Altinn.Authorization.ServiceDefaults.Tests;
 
 public class ServiceDefaultsTests
 {
-    private static readonly Microsoft.AspNetCore.HttpOverrides.IPNetwork TestNetwork 
+    private static readonly Microsoft.AspNetCore.HttpOverrides.IPNetwork TestNetwork
         = new Microsoft.AspNetCore.HttpOverrides.IPNetwork(new IPAddress([10, 50, 0, 15]), 16);
 
     [Fact]
@@ -58,7 +59,23 @@ public class ServiceDefaultsTests
         await act.Should().ThrowAsync<FormatException>();
     }
 
-    private static async Task<AppContext> CreateApp(ImmutableArray<KeyValuePair<string, string>> config)
+    [Fact]
+    public async Task EnableServices()
+    {
+        await using var app = await CreateApp(
+            [KeyValuePair.Create("ApplicationInsights:InstrumentationKey", Guid.NewGuid().ToString())],
+            opts => opts.ConfigureEnabledServices(services => services.DisableApplicationInsights()));
+
+        Action act = () =>
+        {
+            var _ = app.GetRequiredService<ITelemetryInitializer>();
+        };
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+
+    private static async Task<AppContext> CreateApp(ImmutableArray<KeyValuePair<string, string>> config, Action<AltinnServiceDefaultOptions>? configureOptions = null)
     {
         var configuration = new ConfigurationManager();
         configuration.AddInMemoryCollection(config);
@@ -72,7 +89,7 @@ public class ServiceDefaultsTests
             Configuration = configuration,
         });
 
-        hostAppBuilder.AddAltinnServiceDefaults("test");
+        hostAppBuilder.AddAltinnServiceDefaults("test", configureOptions);
 
         var app = hostAppBuilder.Build();
         try
