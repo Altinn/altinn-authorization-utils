@@ -19,7 +19,7 @@ public static class AltinnHost
     /// <returns>A <see cref="WebApplicationBuilder"/>.</returns>
     public static WebApplicationBuilder CreateWebApplicationBuilder(string name, string[] args)
     {
-        return WebApplicationBuilder(name, args, null);
+        return CreateWebApplicationBuilder(name, args, null);
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public static class AltinnHost
     /// An optional action to configure the default services for the Altinn.
     /// </param>
     /// <returns>A <see cref="WebApplicationBuilder"/>.</returns>
-    public static WebApplicationBuilder WebApplicationBuilder(string name, string[] args, Action<AltinnServiceDefaultOptions>? configureOptions)
+    public static WebApplicationBuilder CreateWebApplicationBuilder(string name, string[] args, Action<AltinnServiceDefaultOptions>? configureOptions)
     {
         var builder = WebApplication.CreateBuilder(args);
 
