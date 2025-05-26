@@ -10,6 +10,7 @@ namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 internal sealed class PolymorphicLeafFieldValueRecordConverter<T, TDiscriminator>
     : JsonConverter<T>
     , IPolymorphicFieldValueRecordJsonConverter
+    , IGenericJsonConverter
     where T : class
 {
     private readonly IPolymorphicFieldValueRecordModel _model;
@@ -45,4 +46,22 @@ internal sealed class PolymorphicLeafFieldValueRecordConverter<T, TDiscriminator
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         => _inner.Write(writer, value, options);
+
+    /// <inheritdoc/>
+    void IGenericJsonConverter.WriteGeneric<T1>(Utf8JsonWriter writer, T1 value, JsonSerializerOptions options)
+        where T1 : class
+    {
+        Debug.Assert(value.GetType().IsAssignableTo(typeof(T)));
+
+        Write(writer, (T)(object)value, options);
+    }
+
+    /// <inheritdoc/>
+    T1? IGenericJsonConverter.ReadGeneric<T1>(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        where T1 : class
+    {
+        Debug.Assert(typeof(T).IsAssignableTo(typeof(T1)));
+
+        return (T1?)(object?)Read(ref reader, typeof(T1), options);
+    }
 }
