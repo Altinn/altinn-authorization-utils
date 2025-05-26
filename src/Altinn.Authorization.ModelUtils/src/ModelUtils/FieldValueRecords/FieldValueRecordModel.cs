@@ -58,7 +58,7 @@ internal sealed class FieldValueRecordModel<T>
     public static FieldValueRecordModel<T> Instance { get; } = new();
 
     private readonly IFieldValueRecordModel? _parent;
-    private readonly IFieldValueRecordConstructorModel<T> _constructor;
+    private readonly IFieldValueRecordConstructorModel<T>? _constructor;
     private readonly ImmutableArray<IFieldValueRecordPropertyModel<T>> _declaredProperties;
     private readonly ImmutableArray<IFieldValueRecordPropertyModel<T>> _allProperties;
 
@@ -87,7 +87,7 @@ internal sealed class FieldValueRecordModel<T>
         => _parent;
 
     /// <inheritdoc/>
-    public IFieldValueRecordConstructorModel<T> Constructor 
+    public IFieldValueRecordConstructorModel<T>? Constructor 
         => _constructor;
 
     /// <inheritdoc/>
@@ -121,8 +121,13 @@ internal sealed class FieldValueRecordModel<T>
         }
     }
 
-    private static IFieldValueRecordConstructorModel<T> FindConstructor()
+    private static IFieldValueRecordConstructorModel<T>? FindConstructor()
     {
+        if (typeof(T).IsAbstract)
+        {
+            return null;
+        }
+
         var ctors = typeof(T).GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 
         // first, check if any of the constructors is decorated with JsonConstructorAttribute

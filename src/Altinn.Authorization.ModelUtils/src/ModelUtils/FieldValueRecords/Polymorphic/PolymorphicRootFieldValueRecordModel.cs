@@ -66,14 +66,14 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
             return (PolymorphicFieldValueRecordModel<T, TDiscriminator>)models[root.Type];
         }
 
-        static List<BuilderState> ResolveDiscriminators(IFieldValueRecordModel model)
+        static List<BuilderState> ResolveDiscriminators(IFieldValueRecordModel rootModel)
         {
             var builder = new Dictionary<Type, BuilderState>();
             var seenDiscriminators = new HashSet<TDiscriminator>();
 
-            builder.Add(model.Type, new(model));
+            builder.Add(rootModel.Type, new(rootModel));
 
-            foreach (var knownTypeAttr in model.Type.GetCustomAttributes<PolymorphicDerivedTypeAttribute>(inherit: false))
+            foreach (var knownTypeAttr in rootModel.Type.GetCustomAttributes<PolymorphicDerivedTypeAttribute>(inherit: false))
             {
                 var discriminatorValue = knownTypeAttr.TypeDiscriminator switch
                 {
@@ -82,28 +82,23 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
                 };
 
                 var type = knownTypeAttr.Type;
-                if (!type.IsAssignableTo(model.Type))
+                if (!type.IsAssignableTo(rootModel.Type))
                 {
-                    ThrowHelper.ThrowInvalidOperationException($"Known type '{type}' is not assignable to '{model.Type}'.");
+                    ThrowHelper.ThrowInvalidOperationException($"Known type '{type}' is not assignable to '{rootModel.Type}'.");
                 }
 
-                ref var builderEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(builder, type, out var exists);
-                if (!exists)
-                {
-                    builderEntry = new(FieldValueRecordModel.For(type));
-                }
-
-                builderEntry!.Discriminators.Add(discriminatorValue);
+                var builderEntry = AddHierarchy(builder, type, rootModel);
+                builderEntry.Discriminators.Add(discriminatorValue);
 
                 if (!seenDiscriminators.Add(discriminatorValue))
                 {
-                    ThrowHelper.ThrowInvalidOperationException($"The discriminator value '{discriminatorValue}' is already used by the type '{model.Type}'.");
+                    ThrowHelper.ThrowInvalidOperationException($"The discriminator value '{discriminatorValue}' is already used by the type '{rootModel.Type}'.");
                 }
             }
 
             foreach (var state in builder.Values)
             {
-                if (ReferenceEquals(state.RecordModel, model))
+                if (ReferenceEquals(state.RecordModel, rootModel))
                 {
                     continue;
                 }
@@ -120,12 +115,39 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
             }
 
             return [.. builder.Values];
+
+            static BuilderState AddHierarchy(Dictionary<Type, BuilderState> builder, Type variantType, IFieldValueRecordModel rootModel)
+            {
+                BuilderState? result = null;
+
+                bool existed;
+                Type type = variantType;
+
+                do
+                {
+                    ref var builderEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(builder, type, out existed);
+
+                    if (!existed)
+                    {
+                        var variantModel = FieldValueRecordModel.For(type);
+                        builderEntry = new(variantModel);
+                    }
+
+                    result ??= builderEntry!;
+                    type = type.BaseType!;
+                }
+                while (!existed);
+
+                return result;
+            }
         }
     }
 
     public IPolymorphicRootFieldValueRecordModel Root => this;
 
-    public IFieldValueRecordConstructorModel<T> Constructor => _root.Constructor;
+    public bool IsNonExhaustive => _root.IsNonExhaustive;
+
+    public IFieldValueRecordConstructorModel<T>? Constructor => _root.Constructor;
 
     public Type Type => _root.Type;
 

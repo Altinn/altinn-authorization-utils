@@ -67,10 +67,14 @@ public sealed class PolymorphicFieldValueRecordAttribute
         {
             Debug.Assert(typeToConvert == typeof(T));
 
-            var inner = FieldValueRecordAttribute.GetConverterForModel(_model, options);
+            var inner = _model.Constructor is not null
+                ? FieldValueRecordAttribute.GetConverterForModel(_model, options)
+                : null;
+
             return _model.Descendants.Length switch
             {
-                0 => inner,
+                0 when inner is null => ThrowHelper.ThrowInvalidOperationException<JsonConverter>($"Polymorphic field-value-record '{_model.Type}' does not have any descendants, nor a public constructor."),
+                0 => new PolymorphicLeafFieldValueRecordConverter<T, TDiscriminator>(_model, inner),
                 _ => new PolymorphicFieldValueRecordConverter<T, TDiscriminator>(_model, inner, options),
             };
         }

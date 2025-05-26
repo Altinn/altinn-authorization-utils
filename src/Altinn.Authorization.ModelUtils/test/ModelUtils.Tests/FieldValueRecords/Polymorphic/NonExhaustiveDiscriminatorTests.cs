@@ -202,11 +202,94 @@ public class NonExhaustiveDiscriminatorTests
                 """);
     }
 
+    [Fact]
+    public void ConcreteLeft_AsBase_RoundTrips()
+    {
+        Base sut = new ConcreteLeft
+        {
+            RequiredBaseProperty = "required-base",
+            OptionalBaseProperty = "optional-base",
+            RequiredAbstractMiddleProperty = "required-abstract-middle",
+            OptionalAbstractMiddleProperty = "optional-abstract-middle",
+            RequiredConcreteLeftProperty = "required-concrete-left",
+            OptionalConcreteLeftProperty = "optional-concrete-left",
+        };
+
+        sut.ShouldJsonRoundTripAs(
+            """
+            {
+              "type": "concrete-left",
+              "requiredBaseProperty": "required-base",
+              "optionalBaseProperty": "optional-base",
+              "requiredAbstractMiddleProperty": "required-abstract-middle",
+              "optionalAbstractMiddleProperty": "optional-abstract-middle",
+              "requiredConcreteLeftProperty": "required-concrete-left",
+              "optionalConcreteLeftProperty": "optional-concrete-left"
+            }
+            """);
+    }
+
+    [Fact]
+    public void ConcreteLeft_AsAbstractMiddle_RoundTrips()
+    {
+        AbstractMiddle sut = new ConcreteLeft
+        {
+            RequiredBaseProperty = "required-base",
+            OptionalBaseProperty = "optional-base",
+            RequiredAbstractMiddleProperty = "required-abstract-middle",
+            OptionalAbstractMiddleProperty = "optional-abstract-middle",
+            RequiredConcreteLeftProperty = "required-concrete-left",
+            OptionalConcreteLeftProperty = "optional-concrete-left",
+        };
+
+        sut.ShouldJsonRoundTripAs(
+            """
+            {
+              "type": "concrete-left",
+              "requiredBaseProperty": "required-base",
+              "optionalBaseProperty": "optional-base",
+              "requiredAbstractMiddleProperty": "required-abstract-middle",
+              "optionalAbstractMiddleProperty": "optional-abstract-middle",
+              "requiredConcreteLeftProperty": "required-concrete-left",
+              "optionalConcreteLeftProperty": "optional-concrete-left"
+            }
+            """);
+    }
+
+    [Fact]
+    public void ConcreteLeft_AsConcreteLeft_RoundTrips()
+    {
+        ConcreteLeft sut = new ConcreteLeft
+        {
+            RequiredBaseProperty = "required-base",
+            OptionalBaseProperty = "optional-base",
+            RequiredAbstractMiddleProperty = "required-abstract-middle",
+            OptionalAbstractMiddleProperty = "optional-abstract-middle",
+            RequiredConcreteLeftProperty = "required-concrete-left",
+            OptionalConcreteLeftProperty = "optional-concrete-left",
+        };
+
+        sut.ShouldJsonRoundTripAs(
+            """
+            {
+              "type": "concrete-left",
+              "requiredBaseProperty": "required-base",
+              "optionalBaseProperty": "optional-base",
+              "requiredAbstractMiddleProperty": "required-abstract-middle",
+              "optionalAbstractMiddleProperty": "optional-abstract-middle",
+              "requiredConcreteLeftProperty": "required-concrete-left",
+              "optionalConcreteLeftProperty": "optional-concrete-left"
+            }
+            """);
+    }
+
     [PolymorphicFieldValueRecord(IsRoot = true)]
     [PolymorphicDerivedType(typeof(LeftChild), VariantType.LeftChild)]
     [PolymorphicDerivedType(typeof(RightChild), VariantType.RightChild1)]
     [PolymorphicDerivedType(typeof(RightChild), VariantType.RightChild2)]
     [PolymorphicDerivedType(typeof(RightGrandChild), VariantType.RightGrandChild)]
+    [PolymorphicDerivedType(typeof(ConcreteLeft), VariantType.ConcreteLeft)]
+    [PolymorphicDerivedType(typeof(ConcreteRight), VariantType.ConcreteRight)]
     public record Base
     {
         public Base(NonExhaustiveEnum<VariantType> type)
@@ -252,5 +335,32 @@ public class NonExhaustiveDiscriminatorTests
         public required string RequiredRightGrandChildProperty { get; init; }
 
         public required FieldValue<string> OptionalRightGrandChildProperty { get; init; }
+    }
+
+    [PolymorphicFieldValueRecord]
+    public abstract record AbstractMiddle(NonExhaustiveEnum<VariantType> type)
+        : Base(type)
+    {
+        public required string RequiredAbstractMiddleProperty { get; init; }
+
+        public required FieldValue<string> OptionalAbstractMiddleProperty { get; init; }
+    }
+
+    [PolymorphicFieldValueRecord]
+    public record ConcreteLeft()
+        : AbstractMiddle(VariantType.ConcreteLeft)
+    {
+        public required string RequiredConcreteLeftProperty { get; init; }
+
+        public required FieldValue<string> OptionalConcreteLeftProperty { get; init; }
+    }
+
+    [PolymorphicFieldValueRecord]
+    public record ConcreteRight()
+        : AbstractMiddle(VariantType.ConcreteRight)
+    {
+        public required string RequiredConcreteRightProperty { get; init; }
+
+        public required FieldValue<string> OptionalConcreteRightProperty { get; init; }
     }
 }
