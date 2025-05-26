@@ -1,8 +1,11 @@
-﻿namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
 
 /// <summary>
 /// Sample field-value-records for serialization.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class FieldValueRecords
 {
     /// <summary>

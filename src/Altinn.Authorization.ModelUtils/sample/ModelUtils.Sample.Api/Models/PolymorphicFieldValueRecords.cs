@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
@@ -6,19 +7,49 @@ namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
 /// <summary>
 /// Polymorphic field value record models.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class PolymorphicFieldValueRecords
 {
+    /// <summary>
+    /// Variant types for the <see cref="Base"/> polymorphic field value record model.
+    /// </summary>
     [StringEnumConverter(JsonKnownNamingPolicy.KebabCaseLower)]
     public enum VariantType
     {
+        /// <summary>
+        /// Variant for the left child of the base record.
+        /// </summary>
         LeftChild,
+
+        /// <summary>
+        /// Variant for the right child of the base record.
+        /// </summary>
         RightChild1,
+
+        /// <summary>
+        /// Second variant for the right child of the base record.
+        /// </summary>
         RightChild2,
+
+        /// <summary>
+        /// Variant for the right grandchild of the base record.
+        /// </summary>
         RightGrandChild,
+
+        /// <summary>
+        /// Variant for the concrete left child of the base record.
+        /// </summary>
         ConcreteLeft,
+
+        /// <summary>
+        /// Variant for the concrete right child of the base record.
+        /// </summary>
         ConcreteRight,
     }
 
+    /// <summary>
+    /// Base polymorphic field value record model.
+    /// </summary>
     [PolymorphicFieldValueRecord(IsRoot = true)]
     [PolymorphicDerivedType(typeof(LeftChild), VariantType.LeftChild)]
     [PolymorphicDerivedType(typeof(RightChild), VariantType.RightChild1)]
@@ -28,75 +59,145 @@ public static class PolymorphicFieldValueRecords
     [PolymorphicDerivedType(typeof(ConcreteRight), VariantType.ConcreteRight)]
     public record Base
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Base"/> class.
+        /// </summary>
         public Base(NonExhaustiveEnum<VariantType> type)
         {
             Type = type;
         }
 
+        /// <summary>
+        /// Gets the type of the variant.
+        /// </summary>
         [PolymorphicDiscriminatorProperty]
         public NonExhaustiveEnum<VariantType> Type { get; }
 
+        /// <summary>
+        /// A required property.
+        /// </summary>
         public required string RequiredBaseProperty { get; init; }
 
+        /// <summary>
+        /// An optional property.
+        /// </summary>
         public required FieldValue<string> OptionalBaseProperty { get; init; }
     }
 
+    /// <summary>
+    /// Left child of <see cref="Base"/>.
+    /// </summary>
     [PolymorphicFieldValueRecord]
     public record LeftChild()
         : Base(VariantType.LeftChild)
     {
+        /// <summary>
+        /// A required property for the left child.
+        /// </summary>
         public required string RequiredLeftChildProperty { get; init; }
 
+        /// <summary>
+        /// An optional property for the left child.
+        /// </summary>
         public required FieldValue<string> OptionalLeftChildProperty { get; init; }
     }
 
+    /// <summary>
+    /// Right child of <see cref="Base"/>.
+    /// </summary>
     [PolymorphicFieldValueRecord]
     public record RightChild
         : Base
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RightChild"/> class.
+        /// </summary>
         public RightChild(NonExhaustiveEnum<VariantType> type)
             : base(type)
         {
         }
 
+        /// <summary>
+        /// Required property for the right child.
+        /// </summary>
         public required string RequiredRightChildProperty { get; init; }
 
+        /// <summary>
+        /// Optional property for the right child.
+        /// </summary>
         public required FieldValue<string> OptionalRightChildProperty { get; init; }
     }
 
+    /// <summary>
+    /// Grandchild of <see cref="RightChild"/>.
+    /// </summary>
+    /// <param name="type"></param>
     [PolymorphicFieldValueRecord]
     public record RightGrandChild(NonExhaustiveEnum<VariantType> type)
         : RightChild(type)
     {
+        /// <summary>
+        /// A required property for the right grandchild.
+        /// </summary>
         public required string RequiredRightGrandChildProperty { get; init; }
 
+        /// <summary>
+        /// An optional property for the right grandchild.
+        /// </summary>
         public required FieldValue<string> OptionalRightGrandChildProperty { get; init; }
     }
 
+    /// <summary>
+    /// An abstract middle in <see cref="Base"/>'s hierarchy.
+    /// </summary>
     [PolymorphicFieldValueRecord]
     public abstract record AbstractMiddle(NonExhaustiveEnum<VariantType> type)
         : Base(type)
     {
+        /// <summary>
+        /// A required abstract property for the middle record.
+        /// </summary>
         public required string RequiredAbstractMiddleProperty { get; init; }
 
+        /// <summary>
+        /// An optional abstract property for the middle record.
+        /// </summary>
         public required FieldValue<string> OptionalAbstractMiddleProperty { get; init; }
     }
 
+    /// <summary>
+    /// A concrete left child of <see cref="AbstractMiddle"/>.
+    /// </summary>
     [PolymorphicFieldValueRecord]
     public record ConcreteLeft()
         : AbstractMiddle(VariantType.ConcreteLeft)
     {
+        /// <summary>
+        /// A required property for the concrete left child.
+        /// </summary>
         public required string RequiredConcreteLeftProperty { get; init; }
 
+        /// <summary>
+        /// An optional property for the concrete left child.
+        /// </summary>
         public required FieldValue<string> OptionalConcreteLeftProperty { get; init; }
     }
 
+    /// <summary>
+    /// A concrete right child of <see cref="AbstractMiddle"/>.
+    /// </summary>
     [PolymorphicFieldValueRecord]
     public record ConcreteRight()
         : AbstractMiddle(VariantType.ConcreteRight)
     {
+        /// <summary>
+        /// A required property for the concrete right child.
+        /// </summary>
         public required string RequiredConcreteRightProperty { get; init; }
 
+        /// <summary>
+        /// An optional property for the concrete right child.
+        /// </summary>
         public required FieldValue<string> OptionalConcreteRightProperty { get; init; }
     }
 
