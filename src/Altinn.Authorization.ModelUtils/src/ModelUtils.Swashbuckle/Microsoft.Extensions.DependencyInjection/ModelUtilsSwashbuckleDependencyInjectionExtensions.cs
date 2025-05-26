@@ -20,6 +20,7 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     {
         services.AddExtensibleEnumSwaggerSupport();
         services.AddFieldValueRecordSwaggerSupport();
+        services.AddPolymorphicFieldValueRecordSwaggerSupport();
         
         return services;
     }
@@ -47,6 +48,19 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     {
         services.TryAddSingleton<FieldValueRecordSchemaFilter>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<FieldValueRecordSchemaFilter>>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds support for polymorphic field-value-records for Swagger/OpenAPI.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddPolymorphicFieldValueRecordSwaggerSupport(this IServiceCollection services)
+    {
+        services.TryAddSingleton<PolymorphicFieldValueRecordSchemaFilter>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<PolymorphicFieldValueRecordSchemaFilter>>());
 
         return services;
     }

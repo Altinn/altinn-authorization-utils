@@ -23,7 +23,7 @@ internal sealed class FieldValueRecordSchemaFilter
     private readonly Lazy<Func<SchemaGeneratorOptions>> _options;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NonExhaustiveEnumSchemaFilter"/> class.
+    /// Initializes a new instance of the <see cref="FieldValueRecordSchemaFilter"/> class.
     /// </summary>
     public FieldValueRecordSchemaFilter(IServiceProvider serviceProvider)
     {
@@ -45,12 +45,7 @@ internal sealed class FieldValueRecordSchemaFilter
                 return () => httpJsonOptions.CurrentValue.SerializerOptions;
             }
 
-#if NET9_0_OR_GREATER
             return () => JsonSerializerOptions.Web;
-#else
-            var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-            return () => options;
-#endif
         });
     }
 

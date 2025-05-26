@@ -9,4 +9,6 @@ public enum VariantType
     RightChild1,
     RightChild2,
     RightGrandChild,
+    ConcreteLeft,
+    ConcreteRight,
 }
