@@ -27,7 +27,7 @@ public interface IFieldValueRecordModel
     /// <summary>
     /// Gets the constructor of the record.
     /// </summary>
-    public IFieldValueRecordConstructorModel Constructor { get; }
+    public IFieldValueRecordConstructorModel? Constructor { get; }
 }
 
 /// <summary>
@@ -52,9 +52,9 @@ public interface IFieldValueRecordModel<T>
     /// <summary>
     /// Gets the constructor of the record.
     /// </summary>
-    public new IFieldValueRecordConstructorModel<T> Constructor { get; }
+    public new IFieldValueRecordConstructorModel<T>? Constructor { get; }
 
     /// <inheritdoc/>
-    IFieldValueRecordConstructorModel IFieldValueRecordModel.Constructor
+    IFieldValueRecordConstructorModel? IFieldValueRecordModel.Constructor
         => Constructor;
 }

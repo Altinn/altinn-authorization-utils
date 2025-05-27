@@ -10,9 +10,21 @@ public interface IPolymorphicFieldValueRecordModel
     : IFieldValueRecordModel
 {
     /// <summary>
+    /// Gets a value indicating whether this model is non-exhaustive.
+    /// </summary>
+    public bool IsNonExhaustive { get; }
+
+    /// <summary>
     /// Gets the type of the discriminator.
     /// </summary>
     public Type DiscriminatorType { get; }
+
+    /// <summary>
+    /// Gets discriminators valid for this model.
+    /// </summary>
+    /// <param name="includeDescendants">Whether or not to include discriminators for descendant models.</param>
+    /// <returns>An <see cref="IEnumerable{T}"/> of discriminator values, boxed as <see langword="object"/>s.</returns>
+    public IEnumerable<object> Discriminators(bool includeDescendants = true);
 
     /// <summary>
     /// Gets the discriminator property model.
@@ -56,7 +68,7 @@ public interface IPolymorphicFieldValueRecordModel<TDiscriminator>
     /// </summary>
     /// <param name="includeDescendants">Whether or not to include discriminators for descendant models.</param>
     /// <returns>An <see cref="ImmutableArray{T}"/> of <typeparamref name="TDiscriminator"/>.</returns>
-    public ImmutableArray<TDiscriminator> Discriminators(bool includeDescendants = true);
+    public new ImmutableArray<TDiscriminator> Discriminators(bool includeDescendants = true);
 
     /// <inheritdoc cref="IPolymorphicFieldValueRecordModel.Descendants"/>
     public new ImmutableArray<IPolymorphicFieldValueRecordModel<TDiscriminator>> Descendants { get; }
@@ -80,6 +92,10 @@ public interface IPolymorphicFieldValueRecordModel<TDiscriminator>
     /// <inheritdoc/>
     Type IPolymorphicFieldValueRecordModel.DiscriminatorType
         => typeof(TDiscriminator);
+
+    /// <inheritdoc/>
+    IEnumerable<object> IPolymorphicFieldValueRecordModel.Discriminators(bool includeDescendants)
+        => Discriminators(includeDescendants).Cast<object>();
 
     /// <inheritdoc/>
     ImmutableArray<IPolymorphicFieldValueRecordModel> IPolymorphicFieldValueRecordModel.Descendants

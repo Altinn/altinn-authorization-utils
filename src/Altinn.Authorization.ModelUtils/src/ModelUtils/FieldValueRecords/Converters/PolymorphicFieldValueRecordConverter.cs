@@ -3,6 +3,7 @@ using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -18,11 +19,11 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
     private readonly IPolymorphicFieldValueRecordModel<TDiscriminator, T> _model;
     private readonly IFieldValueRecordPropertyJsonModel<T, NonExhaustiveEnum<TDiscriminator>> _discriminatorPropertyModel;
     private readonly PropertyName.Comparer _propertyNameComparer;
-    private readonly FieldValueRecordBaseConverter<T> _inner;
+    private readonly FieldValueRecordBaseConverter<T>? _inner;
 
     public PolymorphicFieldValueRecordConverter(
         IPolymorphicFieldValueRecordModel<TDiscriminator, T> model,
-        FieldValueRecordBaseConverter<T> inner,
+        FieldValueRecordBaseConverter<T>? inner,
         JsonSerializerOptions options)
     {
         _model = model;
@@ -31,8 +32,29 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
         _discriminatorPropertyModel = FieldValueRecordPropertyJsonModel<T, NonExhaustiveEnum<TDiscriminator>>.Create(_model.DiscriminatorProperty, options);
     }
 
+    /// <inheritdoc/>
     public IPolymorphicFieldValueRecordModel Model
         => _model;
+
+    /// <inheritdoc/>
+    string IPolymorphicFieldValueRecordJsonConverter.DiscriminatorPropertyName
+        => _discriminatorPropertyModel.Name.Name;
+
+    /// <inheritdoc/>
+    bool IPolymorphicFieldValueRecordJsonConverter.TryFindPropertyModel(string name, [NotNullWhen(true)] out IFieldValueRecordPropertyModel? model)
+    {
+        if (_inner is null)
+        {
+            model = null;
+            return false;
+        }
+
+        return ((IFieldValueRecordJsonConverter)_inner).TryFindPropertyModel(name, out model);
+    }
+
+    /// <inheritdoc/>
+    bool IPolymorphicFieldValueRecordJsonConverter.IsDiscriminatorProperty(IFieldValueRecordPropertyModel model)
+        => model == _model.DiscriminatorProperty;
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -51,7 +73,7 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
         char[]? propertyScratch = null;
         try
         {
-            propertyScratch = ArrayPool<char>.Shared.Rent(_inner.PropertyMaxLength);
+            propertyScratch = ArrayPool<char>.Shared.Rent(_discriminatorPropertyModel.Name.Encoded.Value.Length);
             discriminator = FindDiscriminator(in reader, propertyScratch.AsSpan(), options);
         }
         finally
@@ -72,6 +94,11 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
 
         if (model.Type == _model.Type)
         {
+            if (_inner is null)
+            {
+                throw new JsonException($"Property '{_discriminatorPropertyModel.Name}' does not match any known subtype of the polymorphic model '{_model.Type}'.");
+            }
+
             // Not a subtype of the polymorphic model, so use the default converter
             return _inner.Read(ref reader, typeToConvert, options);
         }
@@ -93,6 +120,11 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
         var type = value.GetType();
         if (type == _model.Type)
         {
+            if (_inner is null)
+            {
+                ThrowHelper.ThrowInvalidOperationException($"Type {type} cannot be serialized itself, a configured subtype must be used instead.");
+            }
+
             // Not a subtype of the polymorphic model, so use the default converter
             _inner.Write(writer, value, options);
             return;
