@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.2.0...Altinn.Authorization.ModelUtils-v1.3.0) (2025-06-06)
+
+
+### Features
+
+* polymorphic field-value-record ([#267](https://github.com/Altinn/altinn-authorization-utils/issues/267)) ([f0d8d60](https://github.com/Altinn/altinn-authorization-utils/commit/f0d8d600bae21f97e302e71252cc817a48e7bea7))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.1.3...Altinn.Authorization.ModelUtils-v1.2.0) (2025-04-24)
 
 
