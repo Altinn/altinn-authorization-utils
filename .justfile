@@ -13,7 +13,7 @@ set windows-shell := ["pwsh.exe", "-NoLogo", "-CommandWithArgs"]
 
 [private]
 @default:
-  just --list
+  just --choose
 
 # Install node packages required to run scripts - uses pnpm to install the packages
 [private]
@@ -31,4 +31,9 @@ set windows-shell := ["pwsh.exe", "-NoLogo", "-CommandWithArgs"]
 # Run the script to update solution files
 @update-sln-files *ARGS: install-script-packages-frozen
   #!{{shebang}}
-  ./.github/scripts/node_modules/.bin/tsx ./.github/scripts/update-sln-files.mts -- {{ARGS}}
+  node ./.github/scripts/update-sln-files.mts -- {{ARGS}}
+
+# Print all projects metadata
+@get-metadata: install-script-packages-frozen
+  #!{{shebang}}
+  node ./.github/scripts/get-metadata.mts
