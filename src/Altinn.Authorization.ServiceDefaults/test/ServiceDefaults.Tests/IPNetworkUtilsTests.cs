@@ -19,7 +19,7 @@ public class IPNetworkUtilsTests
         Assert.True(IPNetworkUtils.TryParseIPNetwork(cidr, out var ipNetwork, out var address));
         var expected = IPNetwork.Parse(result);
 
-        ipNetwork.Should().Be(expected);
-        address.Should().Be(IPAddress.Parse(cidr.Split('/')[0]));
+        ipNetwork.ShouldBe(expected);
+        address.ShouldBe(IPAddress.Parse(cidr.Split('/')[0]));
     }
 }
