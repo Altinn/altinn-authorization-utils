@@ -1,12 +1,10 @@
 ﻿using CommunityToolkit.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Base class for fake request handlers.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public abstract class BaseFakeRequestHandler
     : IFakeRequestHandler
     , ISetFakeRequestHandler

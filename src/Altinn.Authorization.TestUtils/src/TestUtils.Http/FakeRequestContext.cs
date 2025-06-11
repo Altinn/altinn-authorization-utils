@@ -1,11 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Altinn.Authorization.TestUtils.Http;
+﻿namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Represents the context of a request.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class FakeRequestContext
 {
     internal static async Task<FakeRequestContext> Create(FakeHttpMessageHandler fakeHttpMessageHandler, HttpRequestMessage request, CancellationToken cancellationToken)

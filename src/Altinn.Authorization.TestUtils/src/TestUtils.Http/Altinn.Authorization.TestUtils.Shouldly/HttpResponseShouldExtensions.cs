@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
@@ -11,12 +10,24 @@ using System.Text.Json;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
+/// <summary>
+/// Extensions for <see cref="HttpResponseMessage"/> to provide Shouldly-like assertions.
+/// </summary>
 [ShouldlyMethods]
 [DebuggerStepThrough]
-[ExcludeFromCodeCoverage]
 [EditorBrowsable(EditorBrowsableState.Never)]
 public static class HttpResponseShouldExtensions
 {
+    /// <summary>
+    /// Asserts that the HTTP response has a successful status code (2xx).
+    /// </summary>
+    /// <remarks>This method checks the <see cref="HttpResponseMessage.IsSuccessStatusCode"/> property.  If
+    /// the status code is not successful, it reads the response content and throws a  <see
+    /// cref="ShouldAssertException"/> with detailed information about the failure.</remarks>
+    /// <param name="response">The <see cref="HttpResponseMessage"/> to validate.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <exception cref="ShouldAssertException">Thrown if the response does not have a successful status code (2xx).</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static async Task ShouldHaveSuccessStatusCode(this HttpResponseMessage response, string? customMessage = null)
     {
@@ -27,6 +38,18 @@ public static class HttpResponseShouldExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the HTTP response has the specified status code.
+    /// </summary>
+    /// <remarks>This method reads the response content to provide detailed information in the exception
+    /// message  if the assertion fails. Ensure the response content is accessible and not already disposed.</remarks>
+    /// <param name="response">The <see cref="HttpResponseMessage"/> to validate.</param>
+    /// <param name="expected">The expected <see cref="HttpStatusCode"/> to compare against the response's status code.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails.  If not provided, a default
+    /// message will be generated.</param>
+    /// <returns></returns>
+    /// <exception cref="ShouldAssertException">Thrown if the response's status code does not match the expected status code.  The exception message includes
+    /// details about the actual response and the expected status code.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static async Task ShouldHaveStatusCode(this HttpResponseMessage response, HttpStatusCode expected, string? customMessage = null)
     {
@@ -37,6 +60,22 @@ public static class HttpResponseShouldExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the HTTP response contains valid JSON content of the specified type.
+    /// </summary>
+    /// <remarks>This method reads and buffers the response content, then attempts to deserialize it into the
+    /// specified type <typeparamref name="T"/>.  If the deserialization fails or the content is invalid, a detailed
+    /// exception is thrown, including the response data and an optional custom message.</remarks>
+    /// <typeparam name="T">The type to which the JSON content should be deserialized.</typeparam>
+    /// <param name="response">The <see cref="HttpResponseMessage"/> to validate and deserialize.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails.  If not provided, a default
+    /// message will be used.</param>
+    /// <param name="options">Optional <see cref="JsonSerializerOptions"/> to customize the JSON deserialization process.  If not provided,
+    /// the default options will be used.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the deserialized object of type
+    /// <typeparamref name="T"/>.</returns>
+    /// <exception cref="ShouldAssertException">Thrown if the response content is not valid JSON, cannot be deserialized to the specified type,  or if the
+    /// deserialized content is <see langword="null"/>.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static async Task<T> ShouldHaveJsonContent<T>(this HttpResponseMessage response, string? customMessage = null, JsonSerializerOptions? options = null)
     {

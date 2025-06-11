@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -9,15 +8,26 @@ namespace Altinn.Authorization.TestUtils;
 /// <summary>
 /// General string helpers for tests.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public static partial class StringHelpers
 {
     [GeneratedRegex("([A-Z])")]
     private static partial Regex PascalCaseRegex();
 
+    /// <summary>
+    /// Converts a PascalCase string into a spaced string with lowercase words.
+    /// </summary>
+    /// <param name="input">The PascalCase string to convert. Cannot be null.</param>
+    /// <returns>A string where each word from the PascalCase input is separated by a space and converted to lowercase.</returns>
     public static string PascalToSpaced(string input)
         => PascalCaseRegex().Replace(input, static match => " " + match.Value.ToLower()).Trim();
 
+    /// <summary>
+    /// Converts the specified object to a string representation with additional formatting for certain types.
+    /// </summary>
+    /// <remarks>This method provides a consistent and human-readable string representation for a variety of
+    /// object types, making it useful for debugging or logging purposes.</remarks>
+    /// <param name="value">The object to convert to a string. Can be <see langword="null"/>.</param>
+    /// <returns>A string representation of the object.</returns>
     public static string? ToStringAwesomely(object? value)
     {
         if (value == null)

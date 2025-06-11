@@ -2,14 +2,12 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Extension methods for <see cref="IServiceCollection"/>.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public static class FakeHttpServiceCollectionExtensions
 {
     /// <summary>

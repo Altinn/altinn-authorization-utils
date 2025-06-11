@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Nerdbank.Streams;
 
@@ -8,7 +7,6 @@ namespace Altinn.Authorization.TestUtils.Http;
 /// <summary>
 /// Represents a <see cref="HttpContent"/> backed by a <see cref="ReadOnlySequence{T}"/> of bytes.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class SequenceHttpContent
     : HttpContent
 {

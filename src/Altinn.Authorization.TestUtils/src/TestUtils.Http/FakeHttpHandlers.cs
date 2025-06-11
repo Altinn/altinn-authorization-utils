@@ -1,12 +1,10 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// A collection of fake HTTP handlers.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public sealed class FakeHttpHandlers
     : IDisposable
 {

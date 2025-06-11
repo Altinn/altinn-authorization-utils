@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Nerdbank.Streams;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// A fake http request message.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class FakeHttpRequestMessage
     : HttpRequestMessage
 {

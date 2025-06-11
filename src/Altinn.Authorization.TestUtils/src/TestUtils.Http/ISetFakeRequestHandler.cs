@@ -1,12 +1,4 @@
-﻿using Nerdbank.Streams;
-using System.Buffers;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Headers;
-using System.Text;
-
-namespace Altinn.Authorization.TestUtils.Http;
+﻿namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Interface used to set a delegate that handles requests for this <see cref="IFakeRequestHandler"/>.

@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Xunit.Sdk;
 
@@ -9,7 +8,6 @@ namespace Altinn.Authorization.TestUtils.Http;
 /// <summary>
 /// A fake <see cref="HttpMessageHandler"/> that can be used for testing.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class FakeHttpMessageHandler
     : HttpMessageHandler
 {

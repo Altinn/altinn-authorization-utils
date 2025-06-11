@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http.Filters;
 
-[ExcludeFromCodeCoverage]
 internal sealed class RouteFilter
     : IFakeRequestFilter
 {

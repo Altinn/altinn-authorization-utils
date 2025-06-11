@@ -1,9 +1,7 @@
 ﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
-[ExcludeFromCodeCoverage]
 internal static class StreamExtensions
 {
     public static ValueTask WriteAsync(this Stream stream, ReadOnlySequence<byte> buffer, CancellationToken cancellationToken = default)

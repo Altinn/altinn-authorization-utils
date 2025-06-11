@@ -8,7 +8,6 @@ using System.Text.Json;
 
 namespace Altinn.Authorization.TestUtils.Http.Handlers;
 
-[ExcludeFromCodeCoverage]
 internal static class FakeRequestDelegateFactory
 {
     internal static FakeRequestDelegate Create(Delegate handler)

@@ -10,7 +10,6 @@ namespace Altinn.Authorization.TestUtils.Shouldly;
 
 [ShouldlyMethods]
 [DebuggerStepThrough]
-[ExcludeFromCodeCoverage]
 [EditorBrowsable(EditorBrowsableState.Never)]
 internal static class ShouldlyJsonExtensions
 {

@@ -1,13 +1,11 @@
 ﻿using Nerdbank.Streams;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// A fake http response message.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class FakeHttpResponseMessage
     : HttpResponseMessage
 {

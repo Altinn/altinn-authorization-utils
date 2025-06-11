@@ -9,7 +9,6 @@ namespace Altinn.Authorization.TestUtils.Http;
 /// <summary>
 /// Extension methods for <see cref="FakeHttpMessageHandler"/>.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public static class FakeHttpExtensions
 {
     /// <summary>

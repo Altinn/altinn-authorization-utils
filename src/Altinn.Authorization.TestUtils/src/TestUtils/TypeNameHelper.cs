@@ -4,7 +4,9 @@ using System.Text;
 namespace Altinn.Authorization.TestUtils;
 
 // copied from https://github.com/dotnet/runtime/blob/961257bf1b28c1cc3c111a84644f029481f958f0/src/libraries/Common/src/Extensions/TypeNameHelper/TypeNameHelper.cs
-[ExcludeFromCodeCoverage]
+/// <summary>
+/// Helper class for pretty printing type names.
+/// </summary>
 public static class TypeNameHelper
 {
     private const char DefaultNestedTypeDelimiter = '+';
@@ -29,6 +31,14 @@ public static class TypeNameHelper
             { typeof(ushort), "ushort" }
         };
 
+    /// <summary>
+    /// Retrieves the display name of the type of the specified object.
+    /// </summary>
+    /// <param name="item">The object whose type display name is to be retrieved. Can be <see langword="null"/>.</param>
+    /// <param name="fullName">A value indicating whether to return the full name of the type, including the namespace.  <see langword="true"/>
+    /// to return the full name; <see langword="false"/> to return only the type name.</param>
+    /// <returns>The display name of the type of the specified object, or <see langword="null"/> if <paramref name="item"/> is
+    /// <see langword="null"/>.</returns>
     [return: NotNullIfNotNull(nameof(item))]
     public static string? GetTypeDisplayName(object? item, bool fullName = true)
     {

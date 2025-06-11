@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Altinn.Authorization.TestUtils.Http;
@@ -7,7 +6,6 @@ namespace Altinn.Authorization.TestUtils.Http;
 /// <summary>
 /// A base class for fake request handlers that can configure request filtering.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public sealed class FakeRequestHandler
     : BaseFakeRequestHandler
     , IFilterFakeRequest
