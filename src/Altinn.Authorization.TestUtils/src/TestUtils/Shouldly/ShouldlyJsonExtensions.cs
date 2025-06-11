@@ -8,11 +8,27 @@ using System.Text.Json;
 
 namespace Altinn.Authorization.TestUtils.Shouldly;
 
+/// <summary>
+/// Extensions for Shouldly to compare JSON structures and perform round-trip serialization checks.
+/// </summary>
 [ShouldlyMethods]
 [DebuggerStepThrough]
 [EditorBrowsable(EditorBrowsableState.Never)]
-internal static class ShouldlyJsonExtensions
+public static class ShouldlyJsonExtensions
 {
+    /// <summary>
+    /// Verifies that the specified object can be serialized to JSON and deserialized back, producing a result that
+    /// matches the provided expected JSON string.
+    /// </summary>
+    /// <remarks>This method performs a structural comparison of the JSON representations to ensure they are
+    /// equivalent, and also verifies that deserializing the expected JSON produces an object equal to the
+    /// original.</remarks>
+    /// <typeparam name="T">The type of the object being tested for JSON round-tripping.</typeparam>
+    /// <param name="actual">The object to be serialized and compared against the expected JSON.</param>
+    /// <param name="expected">The JSON string representing the expected serialized form of the object.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the serialized form of <paramref name="actual"/> does not match <paramref name="expected"/>, or if
+    /// deserializing <paramref name="expected"/> does not produce an object equal to <paramref name="actual"/>.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldJsonRoundTripAs<T>(
         this T actual,
@@ -34,6 +50,21 @@ internal static class ShouldlyJsonExtensions
         }
     }
 
+    /// <summary>
+    /// Compares the JSON serialization of the specified object to an expected JSON string and throws an exception if
+    /// they are not structurally equivalent.
+    /// </summary>
+    /// <remarks>This method performs a structural comparison of the JSON representation of the object and the
+    /// expected JSON string. The comparison is case-sensitive and considers both the structure and values of the JSON
+    /// elements.</remarks>
+    /// <typeparam name="T">The type of the object to serialize and compare.</typeparam>
+    /// <param name="actual">The object to serialize and compare against the expected JSON string.</param>
+    /// <param name="expected">A JSON-formatted string representing the expected structure and values.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the comparison fails. If <see langword="null"/>, a
+    /// default message will be used.</param>
+    /// <returns>A <see cref="JsonDocument"/> representing the serialized JSON structure of the <paramref name="actual"/> object.</returns>
+    /// <exception cref="ShouldAssertException">Thrown if the serialized JSON structure of <paramref name="actual"/> does not match the structure and values of
+    /// the <paramref name="expected"/> JSON string.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static JsonDocument ShouldJsonSerializeAs<T>(
         this T actual,
@@ -51,6 +82,16 @@ internal static class ShouldlyJsonExtensions
         return actualDoc;
     }
 
+    /// <summary>
+    /// Asserts that the specified <see cref="JsonDocument"/> instances are structurally equivalent.
+    /// </summary>
+    /// <remarks>Structural equivalence compares the JSON structure, including keys and values, but may not
+    /// account for differences in formatting or ordering of properties unless they affect the structure.</remarks>
+    /// <param name="actual">The actual <see cref="JsonDocument"/> to compare.</param>
+    /// <param name="expected">The expected <see cref="JsonDocument"/> to compare against.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails. If not provided, a default
+    /// message will be used.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the <paramref name="actual"/> and <paramref name="expected"/> documents are not structurally equivalent.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonDocument actual,
@@ -63,6 +104,18 @@ internal static class ShouldlyJsonExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the specified <see cref="JsonDocument"/> is structurally equivalent to the given <see
+    /// cref="JsonElement"/>.
+    /// </summary>
+    /// <remarks>Structural equivalence means that the JSON structure, including keys, values, and their
+    /// hierarchy, matches between the <paramref name="actual"/> and <paramref name="expected"/>.</remarks>
+    /// <param name="actual">The <see cref="JsonDocument"/> to be compared.</param>
+    /// <param name="expected">The <see cref="JsonElement"/> to compare against.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails. If null, a default message will
+    /// be used.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the <paramref name="actual"/> document is not structurally equivalent to the <paramref
+    /// name="expected"/> element.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonDocument actual,
@@ -75,6 +128,18 @@ internal static class ShouldlyJsonExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the specified <see cref="JsonDocument"/> is structurally equivalent to the provided JSON string.
+    /// </summary>
+    /// <remarks>Structural equivalence checks ensure that the JSON structure, including keys and value types,
+    /// matches between the actual and expected JSON. Differences in formatting, such as whitespace or property order, 
+    /// are ignored.</remarks>
+    /// <param name="actual">The <see cref="JsonDocument"/> to compare.</param>
+    /// <param name="expected">A JSON string representing the expected structure.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails.  If not provided, a default
+    /// message will be used.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the structure of <paramref name="actual"/> does not match the structure of <paramref
+    /// name="expected"/>.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonDocument actual,
@@ -88,6 +153,19 @@ internal static class ShouldlyJsonExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the specified <see cref="JsonElement"/> is structurally equivalent to the root element of the given
+    /// <see cref="JsonDocument"/>.
+    /// </summary>
+    /// <remarks>Structural equivalence means that the JSON structure, including keys, values, and their
+    /// hierarchy, matches between the two elements. This method is typically used in testing scenarios to validate JSON
+    /// content.</remarks>
+    /// <param name="actual">The <see cref="JsonElement"/> to compare.</param>
+    /// <param name="expected">The <see cref="JsonDocument"/> containing the root element to compare against.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails. If not provided, a default
+    /// message will be used.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the <paramref name="actual"/> <see cref="JsonElement"/> is not structurally equivalent to the root
+    /// element of <paramref name="expected"/>.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonElement actual,
@@ -100,6 +178,17 @@ internal static class ShouldlyJsonExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the specified <see cref="JsonElement"/> instances are structurally equivalent.
+    /// </summary>
+    /// <remarks>Structural equivalence means that the JSON structure, including keys, values, and their
+    /// types, matches between the two elements. Differences in formatting, such as whitespace or property order, are
+    /// ignored.</remarks>
+    /// <param name="actual">The actual <see cref="JsonElement"/> to compare.</param>
+    /// <param name="expected">The expected <see cref="JsonElement"/> to compare against.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the <paramref name="actual"/> and <paramref name="expected"/> <see cref="JsonElement"/> instances are
+    /// not structurally equivalent.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonElement actual,
@@ -112,6 +201,16 @@ internal static class ShouldlyJsonExtensions
         }
     }
 
+    /// <summary>
+    /// Asserts that the specified <see cref="JsonElement"/> is structurally equivalent to the provided JSON string.
+    /// </summary>
+    /// <remarks>Structural equivalence checks ensure that the JSON structures are the same, including
+    /// property names, value types, and array contents, but do not consider formatting or property order.</remarks>
+    /// <param name="actual">The <see cref="JsonElement"/> to compare.</param>
+    /// <param name="expected">A JSON string representing the expected structure.</param>
+    /// <param name="customMessage">An optional custom message to include in the exception if the assertion fails. If null, a default message will
+    /// be used.</param>
+    /// <exception cref="ShouldAssertException">Thrown if the <paramref name="actual"/> JSON structure does not match the <paramref name="expected"/> structure.</exception>
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShouldBeStructurallyEquivalentTo(
         this JsonElement actual,
