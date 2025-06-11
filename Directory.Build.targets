@@ -104,8 +104,7 @@
   <Import Project="$(VersionFilePath)" Condition="Exists('$(VersionFilePath)')" />
 
   <Target Name="_CheckVersion">
-    <Error Condition="!Exists('$(VersionFilePath)')"
-      Text="Version file not found at '$(VersionFilePath)'" />
+    <Error Condition="!Exists('$(VersionFilePath)')" Text="Version file not found" />
     <Error Condition="'$(Version)' == ''" Text="Version not defined in '$(VersionFilePath)'" />
   </Target>
 
