@@ -62,6 +62,16 @@
           "xpath": "//Project/PropertyGroup/Version"
         }
       ]
+    },
+    "src/Altinn.Authorization.TestUtils": {
+      "component": "Altinn.Authorization.TestUtils",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
     }
   }
 }
