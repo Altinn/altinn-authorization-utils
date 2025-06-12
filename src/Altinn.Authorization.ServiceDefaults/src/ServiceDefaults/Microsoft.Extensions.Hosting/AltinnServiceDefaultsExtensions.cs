@@ -18,12 +18,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.Metrics;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -99,6 +102,8 @@ public static class AltinnServiceDefaultsExtensions
         }
 
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
+        builder.Services.AddSingleton<ServiceDefaultsMeter>();
+        builder.Services.AddSingleton<HttpStandardResilienceTelemetry>();
         builder.Services.Configure<AltinnClusterInfo>(builder.Configuration.GetSection("Altinn:ClusterInfo"));
         builder.Services.AddSingleton<IConfigureOptions<AltinnClusterInfo>, ConfigureAltinnClusterInfo>();
         builder.Services.AddOptions<ForwardedHeadersOptions>()
@@ -126,11 +131,36 @@ public static class AltinnServiceDefaultsExtensions
         builder.Services.AddServiceDiscovery();
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
+            var clientName = http.Name;
+
             // Turn on resilience by default
             http.AddStandardResilienceHandler();
 
             // Turn on service discovery by default
             http.AddServiceDiscovery();
+
+            // Configure some logging for the circuit breaker
+            http.Services.AddOptions<HttpStandardResilienceOptions>()
+                .Configure((HttpStandardResilienceOptions options, HttpStandardResilienceTelemetry telemetry) =>
+                {
+                    options.CircuitBreaker.OnOpened = (context) => 
+                    {
+                        telemetry.CircuitBreakerOpened(clientName, in context);
+                        return ValueTask.CompletedTask;
+                    };
+
+                    options.CircuitBreaker.OnHalfOpened = (context) =>
+                    {
+                        telemetry.CircuitBreakerHalfOpen(clientName, in context);
+                        return ValueTask.CompletedTask;
+                    };
+
+                    options.CircuitBreaker.OnClosed = (context) =>
+                    {
+                        telemetry.CircuitBreakerClosed(clientName, in context);
+                        return ValueTask.CompletedTask;
+                    };
+                });
         });
 
         return builder;

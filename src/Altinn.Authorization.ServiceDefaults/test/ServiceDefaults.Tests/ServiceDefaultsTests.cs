@@ -16,6 +16,9 @@ public class ServiceDefaultsTests
     private static readonly Microsoft.AspNetCore.HttpOverrides.IPNetwork TestNetwork
         = new Microsoft.AspNetCore.HttpOverrides.IPNetwork(new IPAddress([10, 50, 0, 15]), 16);
 
+    private static readonly IPNetwork TestNetworkConverted
+        = IPNetworkUtils.From(TestNetwork);
+
     [Fact]
     public async Task NoClusterInfo()
     {
@@ -25,8 +28,8 @@ public class ServiceDefaultsTests
         var forwardedHeadersOptions = app.GetRequiredService<IOptionsMonitor<ForwardedHeadersOptions>>().CurrentValue;
         Assert.NotNull(altinnClusterInfo);
 
-        altinnClusterInfo.ClusterNetwork.Should().BeNull();
-        forwardedHeadersOptions.KnownNetworks.Should().NotContain(TestNetwork);
+        altinnClusterInfo.ClusterNetwork.ShouldBeNull();
+        forwardedHeadersOptions.KnownNetworks.ShouldNotContain(TestNetwork);
     }
 
     [Fact]
@@ -40,23 +43,21 @@ public class ServiceDefaultsTests
         var forwardedHeadersOptions = app.GetRequiredService<IOptionsMonitor<ForwardedHeadersOptions>>().CurrentValue;
         Assert.NotNull(altinnClusterInfo);
 
-        altinnClusterInfo.ClusterNetwork.Should().BeEquivalentTo(IPNetworkUtils.From(TestNetwork));
-        forwardedHeadersOptions.KnownNetworks.Should().ContainEquivalentOf(altinnClusterInfo.ClusterNetwork);
+        altinnClusterInfo.ClusterNetwork.ShouldBe(TestNetworkConverted);
+        forwardedHeadersOptions.KnownNetworks.ShouldContain(static x => x.Prefix.Equals(TestNetworkConverted.BaseAddress) && x.PrefixLength == TestNetworkConverted.PrefixLength);
     }
 
     [Fact]
     public async Task InvalidCidrInClusterInfo()
     {
-        Func<Task> act = async () =>
+        await Should.ThrowAsync<FormatException>(async () =>
         {
             await using var app = await CreateApp([
                 KeyValuePair.Create("Altinn:ClusterInfo:ClusterNetwork", "text"),
             ]);
 
             var _altinnClusterInfo = app.GetRequiredService<IOptionsMonitor<AltinnClusterInfo>>().CurrentValue;
-        };
-
-        await act.Should().ThrowAsync<FormatException>();
+        });
     }
 
     [Fact]
@@ -66,12 +67,10 @@ public class ServiceDefaultsTests
             [KeyValuePair.Create("ApplicationInsights:InstrumentationKey", Guid.NewGuid().ToString())],
             opts => opts.ConfigureEnabledServices(services => services.DisableApplicationInsights()));
 
-        Action act = () =>
+        Should.Throw<InvalidOperationException>(() =>
         {
             var _ = app.GetRequiredService<ITelemetryInitializer>();
-        };
-
-        act.Should().Throw<InvalidOperationException>();
+        });
     }
 
 

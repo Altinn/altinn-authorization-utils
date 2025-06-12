@@ -58,23 +58,23 @@ public class ActivityHelperTests
         var started = startedActivities.ToList();
         var stopped = Volatile.Read(ref stoppedActivities);
 
-        threadMap.Should().HaveCount(count);
-        started.Should().HaveCount(count * 4);
-        stopped.Should().Be(started.Count);
+        threadMap.Count.ShouldBe(count);
+        started.Count.ShouldBe(count * 4);
+        stopped.ShouldBe(started.Count);
 
         foreach (var activity in started)
         {
-            activity.Duration.Should().BeGreaterThan(TimeSpan.Zero);
+            activity.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
             var testIteration = (int)activity.TagObjects.Single(tag => tag.Key == "test.iteration").Value!;
             var threadId = (int)activity.TagObjects.Single(tag => tag.Key == "thread.id").Value!;
 
             if (activity.OperationName.EndsWith("-outer"))
             {
-                activity.Links.Should().HaveCount(1);
-                activity.Links.First().Context.Should().Be(linkContext);
+                activity.Links.Count().ShouldBe(1);
+                activity.Links.First().Context.ShouldBe(linkContext);
             }
 
-            threadMap[testIteration].ThreadId.Should().Be(threadId);
+            threadMap[testIteration].ThreadId.ShouldBe(threadId);
         }
 
         static void RunOuterActivity(string name, ActivitySource source, ReadOnlySpan<KeyValuePair<string, object?>> tags, ReadOnlySpan<ActivityLink> links)
@@ -104,7 +104,7 @@ public class ActivityHelperTests
     [Fact]
     public void UnsetTagValue_IsNotNull()
     {
-        ActivityHelper.UnsetTagValue.Should().NotBeNull();
+        ActivityHelper.UnsetTagValue.ShouldNotBeNull();
     }
 
     [Fact]
@@ -131,9 +131,9 @@ public class ActivityHelperTests
         using var activity = source.StartActivity(ActivityKind.Internal, tags: state.Tags, name: "test");
 
         Assert.NotNull(activity);
-        activity.TagObjects.Should().HaveCount(2);
-        activity.TagObjects.Should().Contain(new KeyValuePair<string, object?>("tag.before", "before"));
-        activity.TagObjects.Should().Contain(new KeyValuePair<string, object?>("tag.after", "after"));
+        activity.TagObjects.Count().ShouldBe(2);
+        activity.TagObjects.ShouldContain(new KeyValuePair<string, object?>("tag.before", "before"));
+        activity.TagObjects.ShouldContain(new KeyValuePair<string, object?>("tag.after", "after"));
     }
 
     private sealed record ThreadInfo(int ThreadId);

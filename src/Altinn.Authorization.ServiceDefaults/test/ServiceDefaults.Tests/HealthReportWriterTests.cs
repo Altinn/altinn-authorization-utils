@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ServiceDefaults.HealthChecks;
+using Altinn.Authorization.TestUtils.Shouldly;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text;
@@ -38,8 +39,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = Encoding.GetString(responseStream.ToArray());
-        ctx.Response.ContentType.Should().Be(PlainTextHealthReportFormatter.ContentType);
-        doc.Should().Be("Healthy");
+        ctx.Response.ContentType.ShouldBe(PlainTextHealthReportFormatter.ContentType);
+        doc.ShouldBe("Healthy");
     }
 
     [Fact]
@@ -76,8 +77,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = Encoding.GetString(responseStream.ToArray());
-        ctx.Response.ContentType.Should().Be("text/plain");
-        doc.Should().Be("Healthy");
+        ctx.Response.ContentType.ShouldBe("text/plain");
+        doc.ShouldBe("Healthy");
     }
 
     [Fact]
@@ -113,9 +114,9 @@ public class HealthReportWriterTests
         await writer.WriteHealthCheckReport(ctx, report);
 
         // Assert
-        ctx.Response.ContentType.Should().Be("application/json");
+        ctx.Response.ContentType.ShouldBe("application/json");
         var doc = ParseDoc(responseStream);
-        doc.Should().BeEquivalentTo(
+        doc.ShouldBeStructurallyEquivalentTo(
             """
             {
                 "status": "healthy",
@@ -164,9 +165,9 @@ public class HealthReportWriterTests
         await writer.WriteHealthCheckReport(ctx, report);
 
         // Assert
-        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
+        ctx.Response.ContentType.ShouldBe(JsonV1HealthReportFormatter.ContentType);
         var doc = ParseDoc(responseStream);
-        doc.Should().BeEquivalentTo(
+        doc.ShouldBeStructurallyEquivalentTo(
             """
             {
                 "status": "healthy",
@@ -209,8 +210,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = Encoding.GetString(responseStream.ToArray());
-        ctx.Response.ContentType.Should().Be(PlainTextHealthReportFormatter.ContentType);
-        doc.Should().Be("Healthy");
+        ctx.Response.ContentType.ShouldBe(PlainTextHealthReportFormatter.ContentType);
+        doc.ShouldBe("Healthy");
     }
 
     [Fact]
@@ -240,8 +241,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
-        doc.Should().BeEquivalentTo(
+        ctx.Response.ContentType.ShouldBe(JsonV1HealthReportFormatter.ContentType);
+        doc.ShouldBeStructurallyEquivalentTo(
             """
             {
                 "status": "healthy",
@@ -285,8 +286,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
-        doc.Should().BeEquivalentTo(
+        ctx.Response.ContentType.ShouldBe(JsonV1HealthReportFormatter.ContentType);
+        doc.ShouldBeStructurallyEquivalentTo(
             """
             {
                 "status": "healthy",
@@ -330,8 +331,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
-        doc.Should().BeEquivalentTo(
+        ctx.Response.ContentType.ShouldBe(JsonV1HealthReportFormatter.ContentType);
+        doc.ShouldBeStructurallyEquivalentTo(
             """
             {
                 "status": "healthy",
@@ -383,8 +384,8 @@ public class HealthReportWriterTests
 
         // Assert
         var doc = ParseDoc(responseStream);
-        ctx.Response.ContentType.Should().Be(JsonV1HealthReportFormatter.ContentType);
-        doc.Should().BeEquivalentTo(
+        ctx.Response.ContentType.ShouldBe(JsonV1HealthReportFormatter.ContentType);
+        doc.ShouldBeStructurallyEquivalentTo(
             $$"""
             {
                 "status": "healthy",
