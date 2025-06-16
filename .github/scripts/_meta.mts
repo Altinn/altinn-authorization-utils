@@ -180,7 +180,7 @@ export type VerticalProjects = Readonly<
   Record<ProjectType, readonly Project[]>
 >;
 
-export type ProjectType = "src" | "test";
+export type ProjectType = "src" | "test" | "sample";
 
 export type Project = {
   readonly name: string;
@@ -231,6 +231,7 @@ const readVertical = async (
   const projects = {
     src: await readProjects(verticalPath, dirPath, "src"),
     test: await readProjects(verticalPath, dirPath, "test"),
+    sample: await readProjects(verticalPath, dirPath, "sample"),
   };
 
   let parsed: any = {};
