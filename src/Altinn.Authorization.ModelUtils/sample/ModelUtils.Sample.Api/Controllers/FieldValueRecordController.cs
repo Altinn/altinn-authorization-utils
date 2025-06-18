@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
 
@@ -7,6 +8,7 @@ namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[ExcludeFromCodeCoverage]
 public class FieldValueRecordController
     : ControllerBase
 {

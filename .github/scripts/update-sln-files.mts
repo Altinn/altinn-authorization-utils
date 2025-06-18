@@ -36,6 +36,7 @@ type ProjectTreeDirType =
   | VerticalType
   | "src"
   | "test"
+  | "sample"
   | `${VerticalType}-type`
   | "deps:libs-dir"
   | "deps:pkgs-dir"
@@ -124,6 +125,14 @@ for (const vertical of verticals) {
   };
   verticalDir.children.push(testDir);
 
+  const sampleDir: ProjectTreeDir = {
+    type: "dir",
+    dirType: "sample",
+    name: "sample",
+    children: [],
+  };
+  verticalDir.children.push(sampleDir);
+
   for (const srcProjects of vertical.projects.src) {
     verticalSln.hasProjects = true;
     srcDir.children.push({
@@ -136,6 +145,15 @@ for (const vertical of verticals) {
   for (const testProjects of vertical.projects.test) {
     verticalSln.hasProjects = true;
     testDir.children.push({
+      type: "item",
+      name: testProjects.name,
+      diskPath: testProjects.path,
+    });
+  }
+
+  for (const testProjects of vertical.projects.sample) {
+    verticalSln.hasProjects = true;
+    sampleDir.children.push({
       type: "item",
       name: testProjects.name,
       diskPath: testProjects.path,

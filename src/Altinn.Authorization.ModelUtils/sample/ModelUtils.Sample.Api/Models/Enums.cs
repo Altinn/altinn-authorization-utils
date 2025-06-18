@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
@@ -6,6 +7,7 @@ namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
 /// <summary>
 /// Sample enums for JSON serialization.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class Enums
 {
     private class LowerCaseNamingPolicy

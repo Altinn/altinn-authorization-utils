@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 
@@ -57,7 +58,21 @@ public static class PolymorphicFieldValueRecordModel
         }
 
         var rootModelType = typeof(PolymorphicRootFieldValueRecordModel<,>).MakeGenericType(type, discriminatorInnerType);
-        var rootModelUntyped = Activator.CreateInstance(rootModelType, model, discriminator)!;
+        object? rootModelUntyped;
+        try
+        {
+            rootModelUntyped = Activator.CreateInstance(rootModelType, model, discriminator)!;
+        }
+        catch (TargetInvocationException e)
+        {
+            if (e.InnerException is { } inner)
+            {
+                ExceptionDispatchInfo.Throw(inner);
+            }
+
+            throw;
+        }
+
         Debug.Assert(rootModelUntyped is IPolymorphicRootFieldValueRecordModel);
 
         var rootModel = (IPolymorphicRootFieldValueRecordModel)rootModelUntyped;
@@ -147,11 +162,15 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
 
         _selfProperties = SortDiscriminatorFirst(recordModel.Properties(includeInherited: false), _discriminatorProperty);
         _allProperties = SortDiscriminatorFirst(recordModel.Properties(includeInherited: true), _discriminatorProperty);
+
+        IsNonExhaustive = NonExhaustiveEnum.IsNonExhaustiveEnumType(discriminatorProperty.PropertyInfo.PropertyType, out _);
     }
+
+    public bool IsNonExhaustive { get; }
 
     public IPolymorphicRootFieldValueRecordModel Root => _root;
 
-    public IFieldValueRecordConstructorModel<T> Constructor => _recordModel.Constructor;
+    public IFieldValueRecordConstructorModel<T>? Constructor => _recordModel.Constructor;
 
     public Type Type => _recordModel.Type;
 
