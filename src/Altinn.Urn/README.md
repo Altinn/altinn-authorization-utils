@@ -25,14 +25,14 @@ To get started with Altinn.Urn, follow these steps:
 2. **Define Custom URN Types**: Define your custom URN types by creating a partial record and adding the `Urn` attributes provided by Altinn.Urn. Specify the desired URN prefix and implement any additional logic specific to your URN type.
 
    ```csharp
-   [Urn]
+   [KeyValueUrn]
    public partial record MyCustomUrn
    {
-       [UrnType("book")]
+       [UrnKey("book")]
        public partial bool IsBook(out BookIdentifier bookId);
 
-       [UrnType("cd")]
-       [UrnType("record")]
+       [UrnKey("cd")]
+       [UrnKey("record")]
        public partial bool IsSoundMedium(out int id);
    }
    ```
@@ -57,14 +57,14 @@ Here's a quick example demonstrating the usage of Altinn.Urn:
 
 ```csharp
 // Define custom URN type
-[Urn]
+[KeyValueUrn]
 public partial record MyCustomUrn
 {
-    [UrnType("book")]
+    [UrnKey("book")]
     public partial bool IsBook(out BookIdentifier bookId);
 
-    [UrnType("cd")]
-    [UrnType("record")]
+    [UrnKey("cd")]
+    [UrnKey("record")]
     public partial bool IsSoundMedium(out int id);
 }
 
