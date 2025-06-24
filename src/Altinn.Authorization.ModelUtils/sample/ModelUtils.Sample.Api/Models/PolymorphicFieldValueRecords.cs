@@ -202,6 +202,73 @@ public static class PolymorphicFieldValueRecords
     }
 
     /// <summary>
+    /// Type for <see cref="ExhaustiveRoot"/>.
+    /// </summary>
+    [StringEnumConverter(JsonKnownNamingPolicy.KebabCaseLower)]
+    public enum ExhaustiveType
+    {
+        /// <summary>
+        /// Type for <see cref="ExhaustiveLeft"/>.
+        /// </summary>
+        Left,
+
+        /// <summary>
+        /// Type for <see cref="ExhaustiveRight"/>.
+        /// </summary>
+        Right,
+    }
+
+    /// <summary>
+    /// Exhaustive type hierarchy root record.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    [PolymorphicFieldValueRecord(IsRoot = true)]
+    [PolymorphicDerivedType(typeof(ExhaustiveLeft), ExhaustiveType.Left)]
+    [PolymorphicDerivedType(typeof(ExhaustiveRight), ExhaustiveType.Right)]
+    public abstract record ExhaustiveRoot(ExhaustiveType type)
+    {
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [PolymorphicDiscriminatorProperty]
+        public ExhaustiveType Type { get; } = type;
+    }
+
+    /// <summary>
+    /// Exhaustive left record.
+    /// </summary>
+    [PolymorphicFieldValueRecord]
+    public sealed record ExhaustiveLeft()
+        : ExhaustiveRoot(ExhaustiveType.Left)
+    {
+        /// <summary>
+        /// Gets the required property for the left record.
+        /// </summary>
+        public required string RequiredLeftProperty { get; init; }
+        /// <summary>
+        /// Gets the optional property for the left record.
+        /// </summary>
+        public required FieldValue<string> OptionalLeftProperty { get; init; }
+    }
+
+    /// <summary>
+    /// Exhaustive right record.
+    /// </summary>
+    [PolymorphicFieldValueRecord]
+    public sealed record ExhaustiveRight()
+        : ExhaustiveRoot(ExhaustiveType.Right)
+    {
+        /// <summary>
+        /// Gets the required property for the right record.
+        /// </summary>
+        public required string RequiredRightProperty { get; init; }
+        /// <summary>
+        /// Gets the optional property for the right record.
+        /// </summary>
+        public required FieldValue<string> OptionalRightProperty { get; init; }
+    }
+
+    /// <summary>
     /// Represents a party type.
     /// </summary>
     [StringEnumConverter]

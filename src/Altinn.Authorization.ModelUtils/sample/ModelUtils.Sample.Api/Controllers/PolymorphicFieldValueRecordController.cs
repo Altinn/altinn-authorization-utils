@@ -60,4 +60,13 @@ public class PolymorphicFieldValueRecordController
     {
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Gets the set of exhaustive records.
+    /// </summary>
+    [HttpGet("exhaustive")]
+    public ActionResult<IEnumerable<Models.PolymorphicFieldValueRecords.ExhaustiveRoot>> Exhaustive()
+    {
+        throw new NotImplementedException();
+    }
 }
