@@ -130,27 +130,27 @@ public sealed class FlagsEnumModel<TEnum>
     /// <summary>
     /// Tries to parse a <see cref="ReadOnlySpan{T}"/> of characters to an enum value.
     /// </summary>
-    /// <param name="name">The name to match.</param>
+    /// <param name="input">The input to parse.</param>
     /// <param name="value">Output value. Set to <see langword="default"/> if name is not found.</param>
     /// <returns><see langword="true"/> if the parsing was successful, otherwise <see langword="false"/>.</returns>
-    public bool TryParse(ReadOnlySpan<char> name, out TEnum value)
+    public bool TryParse(ReadOnlySpan<char> input, out TEnum value)
     {
-        if (name.Length == 0)
+        if (input.Length == 0)
         {
             value = default;
             return true;
         }
 
         var lookup = _byString.GetAlternateLookup<ReadOnlySpan<char>>();
-        if (lookup.TryGetValue(name, out value))
+        if (lookup.TryGetValue(input, out value))
         {
             return true;
         }
 
         value = default; // none
-        foreach (var range in name.Split(','))
+        foreach (var range in input.Split(','))
         {
-            var item = name[range].Trim();
+            var item = input[range].Trim();
             if (item.Length == 0)
             {
                 continue;
