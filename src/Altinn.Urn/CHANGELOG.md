@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.2...Altinn.Urn-v2.7.0) (2025-06-24)
+
+
+### Features
+
+* add swagger support for polymorphic field-value-records ([#277](https://github.com/Altinn/altinn-authorization-utils/issues/277)) ([389bdfe](https://github.com/Altinn/altinn-authorization-utils/commit/389bdfef6f716861e9aefbf2e50b362a9708c30c))
+
 ## [2.6.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.1...Altinn.Urn-v2.6.2) (2025-03-14)
 
 
