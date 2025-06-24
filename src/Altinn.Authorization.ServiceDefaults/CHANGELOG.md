@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.1.1...Altinn.Authorization.ServiceDefaults-v3.2.0) (2025-06-24)
+
+
+### Features
+
+* http standard resillience telemetry ([#284](https://github.com/Altinn/altinn-authorization-utils/issues/284)) ([f627fe8](https://github.com/Altinn/altinn-authorization-utils/commit/f627fe8b6418fd203606bb593e8e168d0d26ef0d))
+
 ## [3.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.1.0...Altinn.Authorization.ServiceDefaults-v3.1.1) (2025-05-19)
 
 
