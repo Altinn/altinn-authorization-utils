@@ -123,6 +123,12 @@ internal abstract class FieldValueRecordBaseConverter<T>
                 var propLength = reader.CopyString(propertyScratch);
                 var propName = propertyScratch[..propLength];
 
+                if (!reader.Read())
+                {
+                    // Unexpected end of JSON data
+                    throw new JsonException("Unexpected end of JSON data while reading property value.");
+                }
+
                 if (!lookup.TryGetValue(propName, out var prop))
                 {
                     // Skip unknown property
