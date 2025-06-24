@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.3.0...Altinn.Authorization.ModelUtils-v1.3.1) (2025-06-24)
+
+
+### Bug Fixes
+
+* exhaustive polymorphic swagger ([#295](https://github.com/Altinn/altinn-authorization-utils/issues/295)) ([d60c2b5](https://github.com/Altinn/altinn-authorization-utils/commit/d60c2b5c923435ad2d805ffb74ece8b17adae160))
+* field-value-record null property bug ([#296](https://github.com/Altinn/altinn-authorization-utils/issues/296)) ([f9d74c4](https://github.com/Altinn/altinn-authorization-utils/commit/f9d74c49cf534718db4ba076e8b2554958cd8516))
+
 ## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.2.0...Altinn.Authorization.ModelUtils-v1.3.0) (2025-06-24)
 
 
