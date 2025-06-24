@@ -192,7 +192,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
 
             if (!reader.Read())
             {
-                throw new JsonException($"Expected property value but got '{reader.TokenType}'");
+                throw new JsonException("Unexpected end of JSON while reading property value");
             }
 
             if (!lookup.TryGetValue(propName, out var prop))

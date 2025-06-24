@@ -731,6 +731,51 @@ public class PartyModelTests
         Json.Deserialize<SelfIdentifiedUserRecord>("""{}""").ShouldNotBeNull();
     }
 
+    // previous bug
+    [Fact]
+    public void Person_DateOfDeath_Null()
+    {
+        var json =
+            """
+            {
+              "partyType": "person",
+              "firstName": "Test",
+              "middleName": "Mid",
+              "lastName": "Testson",
+              "shortName": "Testson Test Mid",
+              "address": {
+                "municipalNumber": "0001",
+                "municipalName": "Test",
+                "streetName": "Testveien",
+                "houseNumber": "1",
+                "houseLetter": null,
+                "postalCode": "0001",
+                "city": "Testby"
+              },
+              "mailingAddress": {
+                "address": "Testveien 1",
+                "postalCode": "0001",
+                "city": "Testby"
+              },
+              "dateOfBirth": "1944-09-03",
+              "dateOfDeath": null,
+              "partyUuid": "88504754-b266-4a09-aca0-09a39f66601f",
+              "partyId": 2,
+              "displayName": "Testson Test Mid",
+              "personIdentifier": "03094431319",
+              "organizationIdentifier": null,
+              "createdAt": "2000-01-01T00:00:00+00:00",
+              "modifiedAt": "2000-01-01T00:00:00+00:00",
+              "isDeleted": false,
+              "versionId": 429
+            }
+            """;
+
+        var party = Json.Deserialize<PartyRecord>(json);
+        var person = party.ShouldBeOfType<PersonRecord>();
+        person.DateOfDeath.ShouldBeNull();
+    }
+
     #region Models
 
     /// <summary>
