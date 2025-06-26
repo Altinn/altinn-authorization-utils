@@ -37,8 +37,8 @@ internal sealed class FieldModel<TOwner, TValue>
         }
 
         _field = field;
-        _read = CreateGetter(_field); // _field.GetGetMethod(true)?.CreateDelegate<Func<TOwner, TValue?>>();
-        _write = CreateSetter(_field); // _field.GetSetMethod(true)?.CreateDelegate<Action<TOwner, TValue?>>();
+        _read = CreateGetter(_field);
+        _write = CreateSetter(_field);
 
         _isNullable = _nullabilityInfoContext.Create(_field).WriteState != NullabilityState.NotNull;
         _isRequired = _field.GetCustomAttribute<JsonRequiredAttribute>() is not null

@@ -1,6 +1,7 @@
 ﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 using CommunityToolkit.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -846,8 +847,10 @@ public class PartyModelTests
     [PolymorphicDerivedType(typeof(SelfIdentifiedUserRecord), PartyModelTests.PartyType.SelfIdentifiedUser)]
     public record PartyRecord
     {
+        #pragma warning disable 0169 // unused field
         [JsonExtensionData]
         private readonly JsonElement _extensionData;
+        #pragma warning restore 0169
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.
