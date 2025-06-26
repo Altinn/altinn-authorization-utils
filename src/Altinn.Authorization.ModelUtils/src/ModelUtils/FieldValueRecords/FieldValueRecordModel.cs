@@ -151,7 +151,7 @@ internal sealed class FieldValueRecordModel<T>
                         $"Property '{property.Name}' of type '{property.MemberInfo.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
                 }
 
-                declaredProperties.RemoveAt(i);
+                declaredProperties = declaredProperties.RemoveAt(i);
                 return (IFieldValueRecordPropertyModel<T, JsonElement>)property;
             }
         }
