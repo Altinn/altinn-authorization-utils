@@ -13,9 +13,9 @@ public interface IFieldValueRecordPropertyModel
     public string Name { get; }
 
     /// <summary>
-    /// Gets the <see cref="PropertyInfo"/>.
+    /// Gets the <see cref="MemberInfo"/>.
     /// </summary>
-    public PropertyInfo PropertyInfo { get; }
+    public MemberInfo MemberInfo { get; }
 
     /// <summary>
     /// Gets the type of the property.

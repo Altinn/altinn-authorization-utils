@@ -1,8 +1,11 @@
 ﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Tests.FieldValueRecords;
 
@@ -26,7 +29,7 @@ public class FieldValueRecordModelTests
         model.Properties(includeInherited: true).Length.ShouldBe(6);
         model.Properties(includeInherited: true).ShouldAllBe(static p => p.Type == typeof(string));
 
-        model.Constructor.Parameters.Length.ShouldBe(0);
+        model.Constructor!.Parameters.Length.ShouldBe(0);
     }
 
     [Fact]
@@ -420,6 +423,68 @@ public class FieldValueRecordModelTests
             """));
     }
 
+    [Fact]
+    public void ExtensionData_NoExtraProperties()
+    {
+        CheckRoundTrip(
+            new WithExtensionData { OptionalString = "optional-string", RequiredString = "required-string" },
+            """
+            {
+                "optionalString": "optional-string",
+                "requiredString": "required-string"
+            }
+            """);
+    }
+
+    [Fact]
+    public void ExtensionData()
+    {
+        var sourceJson = 
+            """
+            {
+                "optionalString": "optional-string",
+                "requiredString": "required-string",
+                "extraString": "extra-value",
+                "extraNumber": 42,
+                "extraTrue": true,
+                "extraFalse": false,
+                "extraNull": null,
+                "extraArray": [1, "2", { "index": 3 }],
+                "extraObject": { "key\" åø": "value\" åø" }
+            }
+            """;
+        
+        var value = Json.Deserialize<WithExtensionData>(sourceJson);
+        var serialized = Json.SerializeToDocument(value);
+
+        serialized.ShouldBeStructurallyEquivalentTo(sourceJson);
+    }
+
+    [Fact]
+    public void ExtensionData_AllSequenced()
+    {
+        var sourceJson =
+            """
+            {
+                "optionalString": "optional-string",
+                "requiredString": "required-string",
+                "extraString": "extra-value",
+                "extraNumber": 42,
+                "extraTrue": true,
+                "extraFalse": false,
+                "extraNull": null,
+                "extraArray": [1, "2", { "index": 3 }],
+                "extraObject": { "key\" åø": "value\" åø" }
+            }
+            """;
+        var sequence = Sequence.CreateFullSegmented(Encoding.UTF8.GetBytes(sourceJson));
+
+        var value = Json.Deserialize<WithExtensionData>(sequence);
+        var serialized = Json.SerializeToDocument(value);
+
+        serialized.ShouldBeStructurallyEquivalentTo(sourceJson);
+    }
+
     private void CheckRoundTrip<T>(T value, [StringSyntax(StringSyntaxAttribute.Json)] string json)
     {
         var serialized = Json.SerializeToDocument(value);
@@ -594,5 +659,20 @@ public class FieldValueRecordModelTests
     public record Inner
     {
         public required FieldValue<string> Value { get; init; }
+    }
+
+    [FieldValueRecord]
+    public record WithExtensionData
+    {
+        [JsonExtensionData]
+        private readonly JsonElement _extensionData;
+
+        public required FieldValue<string> OptionalString { get; init; }
+
+        public required string RequiredString { get; init; }
+
+        // to be able to read it in the test
+        [JsonIgnore]
+        public JsonElement ExtensionData => _extensionData;
     }
 }

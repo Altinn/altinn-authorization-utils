@@ -731,6 +731,40 @@ public class PartyModelTests
         Json.Deserialize<SelfIdentifiedUserRecord>("""{}""").ShouldNotBeNull();
     }
 
+    [Fact]
+    public void Unknown_PartyType()
+    {
+        var json =
+            """
+            {
+                "partyType": "unknown-party-type",
+                "partyUuid":"00000000-0000-0000-0000-000000000001",
+                "partyId":1,
+                "displayName":"1",
+                "personIdentifier":"25871999336",
+                "createdAt":"2000-01-01T00:00:00+00:00",
+                "modifiedAt":"2000-01-01T00:00:00+00:00",
+                "isDeleted":false,
+                "user": {
+                    "userId": 1,
+                    "userIds": [1]
+                },
+                "versionId":42,
+                "newField": "with-value",
+                "otherNewField": { "prop": "value" }
+            }
+            """;
+
+        var party = Json.Deserialize<PartyRecord>(json);
+        party.ShouldBeOfType<PartyRecord>();
+        party.PartyType.HasValue.ShouldBeTrue();
+        party.PartyType.Value.IsUnknown.ShouldBeTrue();
+        party.PartyType.Value.UnknownValue.ShouldBe("unknown-party-type");
+
+        var serialized = Json.SerializeToDocument(party);
+        serialized.ShouldBeStructurallyEquivalentTo(json);
+    }
+
     // previous bug
     [Fact]
     public void Person_DateOfDeath_Null()
@@ -812,6 +846,9 @@ public class PartyModelTests
     [PolymorphicDerivedType(typeof(SelfIdentifiedUserRecord), PartyModelTests.PartyType.SelfIdentifiedUser)]
     public record PartyRecord
     {
+        [JsonExtensionData]
+        private readonly JsonElement _extensionData;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.
         /// </summary>

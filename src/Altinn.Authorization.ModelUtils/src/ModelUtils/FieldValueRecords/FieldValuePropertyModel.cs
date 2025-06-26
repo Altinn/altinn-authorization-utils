@@ -33,7 +33,7 @@ internal sealed class FieldValuePropertyModel<TOwner, TValue>
     }
 
     /// <inheritdoc/>
-    public PropertyInfo PropertyInfo => _property;
+    public MemberInfo MemberInfo => _property;
 
     /// <inheritdoc/>
     public string Name => _property.Name;

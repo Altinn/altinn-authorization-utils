@@ -17,7 +17,7 @@ internal class NonExhaustiveDiscriminatorPropertyModelWrapper<TOwner, TValue>
 
     public string Name => _innerModel.Name;
 
-    public PropertyInfo PropertyInfo => _innerModel.PropertyInfo;
+    public MemberInfo MemberInfo => _innerModel.MemberInfo;
 
     public bool CanRead => _innerModel.CanRead;
 

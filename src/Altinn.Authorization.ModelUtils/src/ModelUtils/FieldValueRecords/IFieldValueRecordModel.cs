@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 
@@ -28,6 +29,11 @@ public interface IFieldValueRecordModel
     /// Gets the constructor of the record.
     /// </summary>
     public IFieldValueRecordConstructorModel? Constructor { get; }
+
+    /// <summary>
+    /// Gets the property that holds JSON extension data, if any.
+    /// </summary>
+    public IFieldValueRecordPropertyModel? JsonExtensionDataProperty { get; }
 }
 
 /// <summary>
@@ -57,4 +63,13 @@ public interface IFieldValueRecordModel<T>
     /// <inheritdoc/>
     IFieldValueRecordConstructorModel? IFieldValueRecordModel.Constructor
         => Constructor;
+
+    /// <summary>
+    /// Gets the property that holds JSON extension data, if any.
+    /// </summary>
+    public new IFieldValueRecordPropertyModel<T, JsonElement>? JsonExtensionDataProperty { get; }
+
+    /// <inheritdoc/>
+    IFieldValueRecordPropertyModel? IFieldValueRecordModel.JsonExtensionDataProperty
+        => JsonExtensionDataProperty;
 }

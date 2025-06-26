@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
@@ -61,6 +62,7 @@ internal sealed class FieldValueRecordModel<T>
     private readonly IFieldValueRecordConstructorModel<T>? _constructor;
     private readonly ImmutableArray<IFieldValueRecordPropertyModel<T>> _declaredProperties;
     private readonly ImmutableArray<IFieldValueRecordPropertyModel<T>> _allProperties;
+    private readonly IFieldValueRecordPropertyModel<T, JsonElement>? _extensionDataProperty;
 
     private FieldValueRecordModel()
     {
@@ -72,10 +74,12 @@ internal sealed class FieldValueRecordModel<T>
         var ctor = FindConstructor();
         var declaredProperties = GetDeclaredProperties().ToImmutableArray();
         var inheritedProperties = _parent is null ? [] : _parent.Properties(includeInherited: true).CastArray<IFieldValueRecordPropertyModel<T>>();
-
+        var extensionDataProperty = GetExtensionDataProperty(ref declaredProperties, _parent);
+        
         _constructor = ctor;
         _declaredProperties = declaredProperties;
         _allProperties = [.. declaredProperties, .. inheritedProperties];
+        _extensionDataProperty = extensionDataProperty;
     }
 
     /// <inheritdoc/>
@@ -95,6 +99,10 @@ internal sealed class FieldValueRecordModel<T>
         => includeInherited
         ? _allProperties
         : _declaredProperties;
+
+    /// <inheritdoc/>
+    public IFieldValueRecordPropertyModel<T, JsonElement>? JsonExtensionDataProperty
+        => _extensionDataProperty;
 
     private static IEnumerable<IFieldValueRecordPropertyModel<T>> GetDeclaredProperties()
     {
@@ -119,6 +127,80 @@ internal sealed class FieldValueRecordModel<T>
 
             yield return (IFieldValueRecordPropertyModel<T>)propertyModel;
         }
+    }
+
+    private static IFieldValueRecordPropertyModel<T, JsonElement>? GetExtensionDataProperty(
+        ref ImmutableArray<IFieldValueRecordPropertyModel<T>> declaredProperties,
+        IFieldValueRecordModel? parent)
+    {
+        // first, check if any of the discovered properties is an extension-data property (and remove it from the set of properties if so)
+        for (var i = 0; i < declaredProperties.Length; i++)
+        {
+            var property = declaredProperties[i];
+            if (property.GetCustomAttribute<JsonExtensionDataAttribute>(inherit: true) is { } extensionAttribute)
+            {
+                if (property.IsUnsettable)
+                {
+                    ThrowHelper.ThrowInvalidOperationException(
+                        $"Property '{property.Name}' of type '{property.MemberInfo.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is a FieldValue.");
+                }
+
+                if (property.Type != typeof(JsonElement))
+                {
+                    ThrowHelper.ThrowInvalidOperationException(
+                        $"Property '{property.Name}' of type '{property.MemberInfo.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
+                }
+
+                declaredProperties.RemoveAt(i);
+                return (IFieldValueRecordPropertyModel<T, JsonElement>)property;
+            }
+        }
+
+        // next, check if there are any private properties that are marked with JsonExtensionDataAttribute
+        foreach (var property in typeof(T).GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+        {
+            if (property.GetCustomAttribute<JsonExtensionDataAttribute>(inherit: true) is { } extensionAttribute)
+            {
+                if (property.PropertyType != typeof(JsonElement))
+                {
+                    ThrowHelper.ThrowInvalidOperationException(
+                        $"Property '{property.Name}' of type '{property.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
+                }
+
+                var modelType = typeof(PropertyModel<,>).MakeGenericType([typeof(T), property.PropertyType]);
+                var propertyModel = Activator.CreateInstance(modelType, property);
+                Debug.Assert(propertyModel is IFieldValueRecordPropertyModel<T, JsonElement>);
+
+                return (IFieldValueRecordPropertyModel<T, JsonElement>)propertyModel;
+            }
+        }
+
+        // next, check if there are any declared fields or private properties that are marked with JsonExtensionDataAttribute
+        foreach (var field in typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+        {
+            if (field.GetCustomAttribute<JsonExtensionDataAttribute>(inherit: true) is { } extensionAttribute)
+            {
+                if (field.FieldType != typeof(JsonElement))
+                {
+                    ThrowHelper.ThrowInvalidOperationException(
+                        $"Field '{field.Name}' of type '{field.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
+                }
+
+                var modelType = typeof(FieldModel<,>).MakeGenericType([typeof(T), field.FieldType]);
+                var fieldModel = Activator.CreateInstance(modelType, field);
+                Debug.Assert(fieldModel is IFieldValueRecordPropertyModel<T, JsonElement>);
+
+                return (IFieldValueRecordPropertyModel<T, JsonElement>)fieldModel;
+            }
+        }
+
+        // lastly, check the parent model (if any)
+        if (parent?.JsonExtensionDataProperty is { } parentProp)
+        {
+            return (IFieldValueRecordPropertyModel<T, JsonElement>)parentProp;
+        }
+
+        return null;
     }
 
     private static IFieldValueRecordConstructorModel<T>? FindConstructor()
