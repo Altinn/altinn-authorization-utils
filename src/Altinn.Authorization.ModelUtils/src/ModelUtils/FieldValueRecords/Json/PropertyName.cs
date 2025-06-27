@@ -31,6 +31,12 @@ internal class PropertyName
         return new PropertyName(name, encoded);
     }
 
+    internal static PropertyName CreateCustom(string name)
+    {
+        var encoded = JsonEncodedText.Encode(name);
+        return new PropertyName(name, encoded);
+    }
+
     private PropertyName(string name, JsonEncodedText encoded)
     {
         _name = name;

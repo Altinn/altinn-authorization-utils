@@ -157,7 +157,11 @@ internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
     {
         _inner = inner;
         _ignoreCondition = inner.GetCustomAttribute<JsonIgnoreAttribute>(inherit: true)?.Condition ?? options.DefaultIgnoreCondition;
-        _name = PropertyName.Create(inner.Name, options.PropertyNamingPolicy);
+
+        var customName = inner.GetCustomAttribute<JsonPropertyNameAttribute>(inherit: true)?.Name;
+        _name = string.IsNullOrEmpty(customName)
+            ? PropertyName.Create(inner.Name, options.PropertyNamingPolicy)
+            : PropertyName.CreateCustom(customName);
     }
 
     /// <inheritdoc/>

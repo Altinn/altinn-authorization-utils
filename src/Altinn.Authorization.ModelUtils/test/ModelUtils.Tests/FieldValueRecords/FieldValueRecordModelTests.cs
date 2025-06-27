@@ -439,7 +439,7 @@ public class FieldValueRecordModelTests
     [Fact]
     public void ExtensionData()
     {
-        var sourceJson = 
+        var sourceJson =
             """
             {
                 "optionalString": "optional-string",
@@ -453,7 +453,6 @@ public class FieldValueRecordModelTests
                 "extraObject": { "key\" åø": "value\" åø" }
             }
             """;
-        
         var value = Json.Deserialize<WithExtensionData>(sourceJson);
         var serialized = Json.SerializeToDocument(value);
 
@@ -483,6 +482,19 @@ public class FieldValueRecordModelTests
         var serialized = Json.SerializeToDocument(value);
 
         serialized.ShouldBeStructurallyEquivalentTo(sourceJson);
+    }
+
+    [Fact]
+    public void CustomPropertyNames()
+    {
+        CheckRoundTrip(
+            new WithCustomPropertyNames { Prop1 = "prop1", Prop2 = "prop2" },
+            """
+            {
+                "CustomName1": "prop1",
+                "custom-name-2": "prop2"
+            }
+            """);
     }
 
     private void CheckRoundTrip<T>(T value, [StringSyntax(StringSyntaxAttribute.Json)] string json)
@@ -674,5 +686,15 @@ public class FieldValueRecordModelTests
         // to be able to read it in the test
         [JsonIgnore]
         public JsonElement ExtensionData => _extensionData;
+    }
+
+    [FieldValueRecord]
+    public record WithCustomPropertyNames
+    {
+        [JsonPropertyName("CustomName1")]
+        public required FieldValue<string> Prop1 { get; init; }
+
+        [JsonPropertyName("custom-name-2")]
+        public required string Prop2 { get; init; }
     }
 }
