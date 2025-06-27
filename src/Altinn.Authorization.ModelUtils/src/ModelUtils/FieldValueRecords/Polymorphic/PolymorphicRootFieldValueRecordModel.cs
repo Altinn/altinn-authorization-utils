@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 
@@ -167,6 +168,9 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
 
     public ImmutableArray<IFieldValueRecordPropertyModel<T>> Properties(bool includeInherited = true)
         => _root.Properties(includeInherited);
+
+    public IFieldValueRecordPropertyModel<T, JsonElement>? JsonExtensionDataProperty
+        => _root.JsonExtensionDataProperty;
 
     public bool TryGetDescendantModel(Type type, [NotNullWhen(true)] out IPolymorphicFieldValueRecordModel<TDiscriminator>? model)
         => _root.TryGetDescendantModel(type, out model);

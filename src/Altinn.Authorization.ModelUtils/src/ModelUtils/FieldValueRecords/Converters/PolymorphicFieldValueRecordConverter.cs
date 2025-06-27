@@ -54,7 +54,7 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
 
     /// <inheritdoc/>
     bool IPolymorphicFieldValueRecordJsonConverter.IsDiscriminatorProperty(IFieldValueRecordPropertyModel model)
-        => model.PropertyInfo == _model.DiscriminatorProperty.PropertyInfo;
+        => model.MemberInfo == _model.DiscriminatorProperty.MemberInfo;
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 
@@ -163,7 +164,7 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
         _selfProperties = SortDiscriminatorFirst(recordModel.Properties(includeInherited: false), _discriminatorProperty);
         _allProperties = SortDiscriminatorFirst(recordModel.Properties(includeInherited: true), _discriminatorProperty);
 
-        IsNonExhaustive = NonExhaustiveEnum.IsNonExhaustiveEnumType(discriminatorProperty.PropertyInfo.PropertyType, out _);
+        IsNonExhaustive = discriminatorProperty.MemberInfo is PropertyInfo pi && NonExhaustiveEnum.IsNonExhaustiveEnumType(pi.PropertyType, out _);
     }
 
     public bool IsNonExhaustive { get; }
@@ -196,6 +197,9 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
         ? _allProperties
         : _selfProperties;
 
+    public IFieldValueRecordPropertyModel<T, JsonElement>? JsonExtensionDataProperty
+        => _recordModel.JsonExtensionDataProperty;
+
     private static ImmutableArray<IFieldValueRecordPropertyModel<T>> SortDiscriminatorFirst(
         ImmutableArray<IFieldValueRecordPropertyModel<T>> properties,
         IFieldValueRecordPropertyModel<T> discriminatorProperty)
@@ -203,7 +207,7 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
         var index = -1;
         for (var i = 0; i < properties.Length; i++)
         {
-            if (properties[i].PropertyInfo == discriminatorProperty.PropertyInfo)
+            if (properties[i].MemberInfo == discriminatorProperty.MemberInfo)
             {
                 index = i;
                 break;

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Buffers;
+using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.Tests.Utils;
 
@@ -35,4 +36,16 @@ public static class Json
 
     public static object? Deserialize(string document, Type type)
         => JsonSerializer.Deserialize(document, type, _options);
+
+    public static T? Deserialize<T>(ReadOnlySequence<byte> document)
+    {
+        var reader = new Utf8JsonReader(document);
+        return JsonSerializer.Deserialize<T>(ref reader, _options);
+    }
+
+    public static object? Deserialize(ReadOnlySequence<byte> document, Type type)
+    {
+        var reader = new Utf8JsonReader(document);
+        return JsonSerializer.Deserialize(ref reader, type, _options);
+    }
 }

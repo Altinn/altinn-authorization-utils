@@ -76,6 +76,17 @@ internal abstract class FieldValueRecordBaseConverter<T>
 
             prop.WriteFrom(writer, value, options);
         }
+
+        if (Model.JsonExtensionDataProperty is { CanRead: true } extensionDataProperty
+            && extensionDataProperty.Read(value) is { HasValue: true } extensionDataFieldValue
+            && extensionDataFieldValue.Value.ValueKind == JsonValueKind.Object)
+        {
+            var extensionData = extensionDataFieldValue.Value;
+            foreach (var prop in extensionData.EnumerateObject())
+            {
+                prop.WriteTo(writer);
+            }
+        }
         writer.WriteEndObject();
     }
     
@@ -90,6 +101,8 @@ internal abstract class FieldValueRecordBaseConverter<T>
     {
         char[]? propertyScratchArray = null;
         bool[]? propertiesSetArray = null;
+        JsonExtensionDataBuilder? extensionData = null;
+        bool canHaveExtensionData = Model.JsonExtensionDataProperty is { CanWrite: true };
 
         try
         {
@@ -115,14 +128,14 @@ internal abstract class FieldValueRecordBaseConverter<T>
 
                 if (length > propertyScratch.Length)
                 {
-                    // Skip unknown property
-                    reader.Skip();
+                    HandleUnknownProperty(ref reader, ref extensionData, canHaveExtensionData);
                     continue;
                 }
 
                 var propLength = reader.CopyString(propertyScratch);
                 var propName = propertyScratch[..propLength];
 
+                var propNameReader = reader;
                 if (!reader.Read())
                 {
                     // Unexpected end of JSON data
@@ -131,8 +144,8 @@ internal abstract class FieldValueRecordBaseConverter<T>
 
                 if (!lookup.TryGetValue(propName, out var prop))
                 {
-                    // Skip unknown property
-                    reader.Skip();
+                    HandleUnknownProperty(ref propNameReader, ref extensionData, canHaveExtensionData);
+                    reader = propNameReader;
                     continue;
                 }
 
@@ -162,6 +175,12 @@ internal abstract class FieldValueRecordBaseConverter<T>
                 var message = $"Missing required properties: {string.Join(", ", missingProperties)}";
                 throw new JsonException(message);
             }
+
+            if (extensionData is not null)
+            {
+                var extensionValue = extensionData.Build();
+                Model.JsonExtensionDataProperty!.Write(instance, extensionValue);
+            }
         }
         finally
         {
@@ -175,6 +194,22 @@ internal abstract class FieldValueRecordBaseConverter<T>
             {
                 ArrayPool<bool>.Shared.Return(propertiesSetArray);
             }
+        }
+
+        static void HandleUnknownProperty(
+            ref Utf8JsonReader reader,
+            ref JsonExtensionDataBuilder? extensionData,
+            bool canHaveExtensionData)
+        {
+            if (!canHaveExtensionData)
+            {
+                // Skip unknown property
+                reader.Skip();
+                return;
+            }
+
+            extensionData ??= new();
+            extensionData.AddProperty(ref reader);
         }
     }
 
