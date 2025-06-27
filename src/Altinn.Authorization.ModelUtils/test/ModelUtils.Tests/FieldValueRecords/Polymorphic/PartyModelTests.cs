@@ -765,6 +765,50 @@ public class PartyModelTests
         var serialized = Json.SerializeToDocument(party);
         serialized.ShouldBeStructurallyEquivalentTo(json);
     }
+    
+    [Fact]
+    public void CustomPropertyNames()
+    {
+        PartyRecord record = new TestPartyRecord
+        {
+            PartyUuid = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            PartyId = 1,
+            DisplayName = "1",
+            PersonIdentifier = FieldValue.Unset,
+            OrganizationIdentifier = FieldValue.Unset,
+            CreatedAt = ConstTime,
+            ModifiedAt = ConstTime,
+            IsDeleted = false,
+            User = FieldValue.Null,
+            VersionId = 42,
+            RenamedProperty1 = "RenamedValue1",
+            RenamedProperty2 = "RenamedValue2",
+            RenamedProperty3 = "RenamedValue3",
+        };
+
+        using var json = Json.SerializeToDocument(record);
+        json.ShouldBeStructurallyEquivalentTo(
+            """
+            {
+                "partyType": "test",
+                "partyUuid": "00000000-0000-0000-0000-000000000001",
+                "partyId": 1,
+                "displayName": "1",
+                "createdAt": "2000-01-01T00:00:00+00:00",
+                "modifiedAt": "2000-01-01T00:00:00+00:00",
+                "isDeleted": false,
+                "user": null,
+                "versionId": 42,
+                "new-property-name-1": "RenamedValue1",
+                "CAPS_NEW_PROPERTY": "RenamedValue2",
+                "CustomCasingProperty": "RenamedValue3"
+            }
+            """);
+
+        var deserialized = Json.Deserialize<PartyRecord>(json);
+        deserialized.ShouldBeOfType<TestPartyRecord>();
+        deserialized.ShouldBeEquivalentTo(record);
+    }
 
     // previous bug
     [Fact]
@@ -836,6 +880,12 @@ public class PartyModelTests
         /// </summary>
         [JsonStringEnumMemberName("self-identified-user")]
         SelfIdentifiedUser,
+
+        /// <summary>
+        /// Test party type, used for testing purposes.
+        /// </summary>
+        [JsonStringEnumMemberName("test")]
+        Test,
     }
 
     /// <summary>
@@ -845,6 +895,7 @@ public class PartyModelTests
     [PolymorphicDerivedType(typeof(PersonRecord), PartyModelTests.PartyType.Person)]
     [PolymorphicDerivedType(typeof(OrganizationRecord), PartyModelTests.PartyType.Organization)]
     [PolymorphicDerivedType(typeof(SelfIdentifiedUserRecord), PartyModelTests.PartyType.SelfIdentifiedUser)]
+    [PolymorphicDerivedType(typeof(TestPartyRecord), PartyModelTests.PartyType.Test)]
     public record PartyRecord
         : IHasExtensionData
     {
@@ -1086,6 +1137,31 @@ public class PartyModelTests
         /// </summary>
         [JsonIgnore]
         public FieldValue<Guid> ParentOrganizationUuid { get; init; }
+    }
+
+    /// <summary>
+    /// A database record for an organization.
+    /// </summary>
+    [PolymorphicFieldValueRecord]
+    public sealed record TestPartyRecord
+        : PartyRecord
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrganizationRecord"/> class.
+        /// </summary>
+        public TestPartyRecord()
+            : base(PartyModelTests.PartyType.Test)
+        {
+        }
+
+        [JsonPropertyName("new-property-name-1")]
+        public required FieldValue<string> RenamedProperty1 { get; init; }
+
+        [JsonPropertyName("CAPS_NEW_PROPERTY")]
+        public required FieldValue<string> RenamedProperty2 { get; init; }
+
+        [JsonPropertyName("CustomCasingProperty")]
+        public required string RenamedProperty3 { get; init; }
     }
 
     /// <summary>
