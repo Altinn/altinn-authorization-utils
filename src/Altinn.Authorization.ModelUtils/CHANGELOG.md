@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.3.1...Altinn.Authorization.ModelUtils-v1.4.0) (2025-06-27)
+
+
+### Features
+
+* add extension data interface ([#300](https://github.com/Altinn/altinn-authorization-utils/issues/300)) ([110fa0e](https://github.com/Altinn/altinn-authorization-utils/commit/110fa0e5910a9184d169545ab0b98aa22b03e081))
+* add support for custom json property names ([#301](https://github.com/Altinn/altinn-authorization-utils/issues/301)) ([e2c1f81](https://github.com/Altinn/altinn-authorization-utils/commit/e2c1f8165d99cd031eb004b848bec5d9bc7310f1))
+* json extension data ([#299](https://github.com/Altinn/altinn-authorization-utils/issues/299)) ([d8aee6a](https://github.com/Altinn/altinn-authorization-utils/commit/d8aee6a8f1853d11c6041930708df8269f267f7c))
+
 ## [1.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.3.0...Altinn.Authorization.ModelUtils-v1.3.1) (2025-06-24)
 
 
