@@ -846,11 +846,10 @@ public class PartyModelTests
     [PolymorphicDerivedType(typeof(OrganizationRecord), PartyModelTests.PartyType.Organization)]
     [PolymorphicDerivedType(typeof(SelfIdentifiedUserRecord), PartyModelTests.PartyType.SelfIdentifiedUser)]
     public record PartyRecord
+        : IHasExtensionData
     {
-        #pragma warning disable 0169 // unused field
         [JsonExtensionData]
         private readonly JsonElement _extensionData;
-        #pragma warning restore 0169
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.
@@ -921,6 +920,9 @@ public class PartyModelTests
         /// Gets the version ID of the party.
         /// </summary>
         public required FieldValue<ulong> VersionId { get; init; }
+
+        JsonElement IHasExtensionData.JsonExtensionData
+            => _extensionData;
     }
 
     /// <summary>
