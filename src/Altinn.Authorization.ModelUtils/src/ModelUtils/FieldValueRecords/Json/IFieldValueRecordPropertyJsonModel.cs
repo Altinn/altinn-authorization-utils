@@ -223,7 +223,7 @@ internal sealed class FieldValueRecordPropertyJsonModel<TOwner, TValue>
     {
         if (_ignoreCondition == JsonIgnoreCondition.Always)
         {
-            reader.Skip();
+            reader.SafeSkip();
             return;
         }
 

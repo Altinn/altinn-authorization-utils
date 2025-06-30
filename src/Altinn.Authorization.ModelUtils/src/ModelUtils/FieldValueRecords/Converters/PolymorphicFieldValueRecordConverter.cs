@@ -162,7 +162,7 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
             if (length > propertyScratch.Length)
             {
                 // Skip unknown property
-                reader.Skip();
+                reader.SafeSkip();
                 continue;
             }
 
@@ -177,7 +177,7 @@ internal sealed class PolymorphicFieldValueRecordConverter<T, TDiscriminator>
             if (!_propertyNameComparer.Equals(propName, _discriminatorPropertyModel.Name))
             {
                 // Skip non-discriminator property
-                reader.Skip();
+                reader.SafeSkip();
                 continue;
             }
 
