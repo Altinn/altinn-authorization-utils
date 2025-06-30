@@ -23,6 +23,12 @@
       "commandLineArgs": "--store ./test-keys export key br --base64",
       "workingDirectory": "obj",
       "hotReloadEnabled": false
+    },
+    "help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help",
+      "workingDirectory": "obj",
+      "hotReloadEnabled": false
     }
   }
 }

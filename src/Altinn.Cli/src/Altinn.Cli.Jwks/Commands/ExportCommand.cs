@@ -9,7 +9,7 @@ internal class ExportCommand
     public ExportCommand()
         : base("export", "Export key sets")
     {
-        AddCommand(new ExportKeyCommand());
-        AddCommand(new ExportMaskinportenCommand());
+        Subcommands.Add(new ExportKeyCommand());
+        Subcommands.Add(new ExportMaskinportenCommand());
     }
 }

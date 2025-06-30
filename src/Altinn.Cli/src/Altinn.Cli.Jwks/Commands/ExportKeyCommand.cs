@@ -1,10 +1,10 @@
-﻿using Altinn.Cli.Jwks.Stores;
+﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Stores;
 using Nerdbank.Streams;
+using Spectre.Console;
 using System.Buffers;
 using System.CommandLine;
-using System.CommandLine.IO;
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography;
 
 namespace Altinn.Cli.Jwks.Commands;
 
@@ -13,26 +13,48 @@ internal class ExportKeyCommand
     : BaseCommand
 {
     public static Argument<string> NameArg { get; }
-        = new Argument<string>("name", "Name of the integration to generate JWKs for.");
+        = new Argument<string>("name")
+        {
+            Description = "Name of the integration to generate JWKs for.",
+        };
 
     public static Option<bool> ProdOption { get; }
         = new Option<bool>(
-            aliases: ["--prod", "-p"],
-            description: "Export PROD keys.");
+            name: "--prod",
+            aliases: ["--prod", "-p"])
+        {
+            Description = "Export PROD keys.",
+            DefaultValueFactory = _ => false,
+        };
 
     public static Option<bool> Base64Option { get; }
         = new Option<bool>(
-            aliases: ["--base64", "-b"],
-            description: "Output the base64 version of the key.");
+            name: "--base64",
+            aliases: ["--base64", "-b"])
+        {
+            Description = "Output the base64 version of the key.",
+            DefaultValueFactory = _ => false,
+        };
 
     public ExportKeyCommand()
         : base("key", "Export the current private key")
     {
-        AddArgument(NameArg);
-        AddOption(ProdOption);
-        AddOption(Base64Option);
+        Arguments.Add(NameArg);
+        Options.Add(ProdOption);
+        Options.Add(Base64Option);
 
-        this.SetHandler(ExecuteAsync, Console, StoreOption, NameArg, ProdOption, Base64Option, CancellationToken);
+        SetAction(ExecuteAsync);
+    }
+
+    private Task<int> ExecuteAsync(ParseResult result, CancellationToken cancellationToken)
+    {
+        var console = result.GetRequiredService<IConsole>();
+        var store = result.GetRequiredValue(StoreOption);
+        var name = result.GetRequiredValue(NameArg);
+        var prod = result.GetRequiredValue(ProdOption);
+        var base64 = result.GetRequiredValue(Base64Option);
+
+        return ExecuteAsync(console, store, name, prod, base64, cancellationToken);
     }
 
     private async Task<int> ExecuteAsync(
@@ -47,17 +69,17 @@ internal class ExportKeyCommand
         using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
         if (!await store.GetCurrentPrivateKey(data, name, environment, cancellationToken))
         {
-            console.Error.WriteLine($"Key-set {name} not found.");
+            console.StdErr.WriteLine($"Key-set {name} not found.");
             return 1;
         }
 
         if (base64)
         {
-            await OutBase64Stream(data.AsReadOnlySequence, cancellationToken);
+            await console.RunExclusive(() => OutBase64Stream(data.AsReadOnlySequence, cancellationToken));
         }
         else
         {
-            await OutStream(data.AsReadOnlySequence, cancellationToken);
+            await console.RunExclusive(() => OutStream(data.AsReadOnlySequence, cancellationToken));
         }
 
         return 0;

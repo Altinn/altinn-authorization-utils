@@ -18,6 +18,9 @@ internal class KeyVaultJsonWebKeySetStore
         _client = client;
     }
 
+    public override string ToString()
+        => _client.VaultUri.ToString();
+
     public override Task<bool> GetCurrentPrivateKey(
         IBufferWriter<byte> writer,
         string name,
