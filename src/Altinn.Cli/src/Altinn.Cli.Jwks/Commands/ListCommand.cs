@@ -1,6 +1,7 @@
-﻿using Altinn.Cli.Jwks.Stores;
+﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Stores;
+using Spectre.Console;
 using System.CommandLine;
-using System.CommandLine.IO;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Cli.Jwks.Commands;
@@ -12,7 +13,15 @@ internal class ListCommand
     public ListCommand()
         : base("list", "List all keys sets")
     {
-        this.SetHandler(ExecuteAsync, Console, StoreOption, CancellationToken);
+        SetAction(ExecuteAsync);
+    }
+
+    private Task<int> ExecuteAsync(ParseResult result, CancellationToken cancellationToken)
+    {
+        var console = result.GetRequiredService<IConsole>();
+        var store = result.GetRequiredValue(StoreOption);
+
+        return ExecuteAsync(console, store, cancellationToken);
     }
 
     private async Task<int> ExecuteAsync(IConsole console, JsonWebKeySetStore store, CancellationToken cancellationToken)
@@ -39,7 +48,7 @@ internal class ListCommand
 
         if (count == 0)
         {
-            console.Error.WriteLine("No keys found.");
+            console.StdErr.WriteLine("No keys found.");
         }
 
         return 0;

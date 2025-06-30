@@ -17,6 +17,9 @@ internal class DirectoryJsonWebKeySetStore
         _dir = dir;
     }
 
+    public override string ToString()
+        => Path.GetRelativePath(Directory.GetCurrentDirectory(), _dir.FullName).Replace('\\', '/');
+
     protected override async IAsyncEnumerable<string> ListNames([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (!_dir.Exists)

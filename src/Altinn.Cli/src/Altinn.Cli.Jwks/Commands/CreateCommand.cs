@@ -1,8 +1,9 @@
-﻿using Altinn.Cli.Jwks.Stores;
+﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Stores;
 using Microsoft.IdentityModel.Tokens;
+using Spectre.Console;
 using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.IO;
+using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Security.Cryptography;
@@ -14,64 +15,94 @@ internal class CreateCommand
     : BaseCommand
 {
     public static Argument<string> NameArg { get; }
-        = new Argument<string>("name", "Name of the integration to generate JWKs for.");
+        = new Argument<string>("name")
+        {
+            Description = "Name of the integration to generate JWKs for.",
+        };
 
     public static Option<bool> TestOption { get; }
         = new Option<bool>(
-            aliases: ["--test", "-t", "--dev", "-d"],
-            description: "Generate TEST keys. Defaults to true unless --prod is specified.");
+            name: "--test",
+            aliases: ["--test", "-t", "--dev", "-d"])
+        {
+            Description = "Generate TEST keys. Defaults to true unless --prod is specified.",
+            DefaultValueFactory = r =>
+            {
+                var prodOptionResult = r.GetResult(ProdOption!);
+                
+                return prodOptionResult is null or { Implicit: true };
+            },
+        };
 
     public static Option<bool> ProdOption { get; }
         = new Option<bool>(
-            aliases: ["--prod", "-p"],
-            description: "Generate PROD keys. Defaults to true unless --test is specified.");
+            name: "--prod",
+            aliases: ["--prod", "-p"])
+        {
+            Description = "Generate PROD keys. Defaults to true unless --test is specified.",
+            DefaultValueFactory = r => 
+            {
+                var testOptionResult = r.GetResult(TestOption!);
+                
+                return testOptionResult is null or { Implicit: true };
+            },
+        };
 
     public static Option<int?> SizeOption { get; }
         = new Option<int?>(
-            aliases: ["--size", "-s"],
-            description: "Key size in bits.");
+            name: "--size",
+            aliases: ["--size", "-s"])
+        {
+            Description = "Key size in bits.",
+            DefaultValueFactory = _ => null,
+        };
 
     public static Option<JsonWebKeyAlgorithm> AlgOption { get; }
         = new Option<JsonWebKeyAlgorithm>(
-            aliases: ["--algorithm", "--alg", "-a"],
-            description: "The algorithm to use for the key.",
-            getDefaultValue: () => JsonWebKeyAlgorithm.RS256);
+            name: "--algorithm",
+            aliases: ["--algorithm", "--alg", "-a"])
+        {
+            Description = "The algorithm to use for the key.",
+            DefaultValueFactory = _ => JsonWebKeyAlgorithm.RS256,
+        };
 
     public static Option<JsonWebKeyUse> UseOption { get; }
         = new Option<JsonWebKeyUse>(
-            aliases: ["--use", "-u"],
-            description: "Use for the JWK.",
-            getDefaultValue: () => JsonWebKeyUse.sig);
+            name: "--use",
+            aliases: ["--use", "-u"])
+        {
+            Description = "Use for the JWK.",
+            DefaultValueFactory = _ => JsonWebKeyUse.sig,
+        };
 
     public CreateCommand()
         : base("create", "List all keys sets")
     {
-        AddArgument(NameArg);
-        AddOption(TestOption);
-        AddOption(ProdOption);
-        AddOption(SizeOption);
-        AddOption(AlgOption);
-        AddOption(UseOption);
+        Arguments.Add(NameArg);
+        Options.Add(TestOption);
+        Options.Add(ProdOption);
+        Options.Add(SizeOption);
+        Options.Add(AlgOption);
+        Options.Add(UseOption);
 
-        this.SetHandler(ExecuteAsync);
+        SetAction(ExecuteAsync);
     }
 
-    private Task<int> ExecuteAsync(InvocationContext context)
+    private Task<int> ExecuteAsync(ParseResult result, CancellationToken cancellationToken)
     {
-        var console = GetValueForHandlerParameter(Console, context);
-        var store = GetValueForHandlerParameter(StoreOption, context);
-        var name = GetValueForHandlerParameter(NameArg, context);
-        var test = GetValueForHandlerParameter(TestOption, context);
-        var prod = GetValueForHandlerParameter(ProdOption, context);
-        var size = GetValueForHandlerParameter(SizeOption, context);
-        var alg = GetValueForHandlerParameter(AlgOption, context);
-        var use = GetValueForHandlerParameter(UseOption, context);
-        var cancellationToken = GetValueForHandlerParameter(CancellationToken, context);
+        var console = result.GetRequiredService<IConsole>();
+        var store = result.GetRequiredValue(StoreOption);
+        var name = result.GetRequiredValue(NameArg);
+        var test = result.GetRequiredValue(TestOption);
+        var prod = result.GetRequiredValue(ProdOption);
+        var size = result.GetRequiredValue(SizeOption);
+        var alg = result.GetRequiredValue(AlgOption);
+        var use = result.GetRequiredValue(UseOption);
 
         return ExecuteAsync(
-            console ?? throw new InvalidOperationException("console was null"),
-            store ?? throw new InvalidOperationException("store was null"),
-            name ?? throw new InvalidOperationException("name was null"),
+            console,
+            store,
+            name,
             test,
             prod,
             size,
@@ -91,12 +122,6 @@ internal class CreateCommand
         JsonWebKeyUse use,
         CancellationToken cancellationToken)
     {
-        if (!test && !prod)
-        {
-            test = true;
-            prod = true;
-        }
-
         var today = DateOnly.FromDateTime(DateTime.Now);
         var keySuffix = string.Create(CultureInfo.InvariantCulture, $"{today:o}");
 

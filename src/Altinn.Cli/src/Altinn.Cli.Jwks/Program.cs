@@ -1,8 +1,8 @@
 ﻿using Altinn.Cli.Jwks.Commands;
+using Altinn.Cli.Jwks.Console;
+using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
-using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Cli.Jwks;
@@ -12,22 +12,29 @@ static class Program
 {
     static async Task<int> Main(string[] args)
     {
+        using var cancellationSignalHandler = new CancellationSignalHandler();
+
         var rootCommand = new RootCommand("Console app for creating Json Web Keys");
-        rootCommand.AddGlobalOption(BaseCommand.StoreOption);
+        rootCommand.Options.Add(BaseCommand.StoreOption);
 
-        rootCommand.AddCommand(new CreateCommand());
-        rootCommand.AddCommand(new ExportCommand());
-        rootCommand.AddCommand(new ListCommand());
+        rootCommand.Subcommands.Add(new CreateCommand());
+        rootCommand.Subcommands.Add(new ExportCommand());
+        rootCommand.Subcommands.Add(new ListCommand());
 
-        var parser = new CommandLineBuilder(rootCommand)
-            .UseDefaults()
-            .UseHost()
-            .UseHelp(ctx =>
+        var config = new CommandLineConfiguration(rootCommand)
+            .UseHost(builder =>
             {
-                BaseCommand.StoreOption.UpdateHelp(ctx);
-            })
-            .Build();
+                builder.ConfigureServices((ctx, services) =>
+                {
+                    services.AddSingleton<IConsole, Console.Console>();
+                    services.AddSingleton(s => s.GetRequiredService<IConsole>().StdOut);
+                    services.AddKeyedSingleton(ConsoleTarget.StdOut, (s, _) => s.GetRequiredService<IConsole>().StdOut);
+                    services.AddKeyedSingleton(ConsoleTarget.StdErr, (s, _) => s.GetRequiredService<IConsole>().StdErr);
+                });
+            });
 
-        return await parser.InvokeAsync(args);
+        config.ThrowIfInvalid();
+
+        return await config.InvokeAsync(args, cancellationSignalHandler.Token);
     }
 }

@@ -13,6 +13,7 @@
     <PackageReference Include="CommunityToolkit.Diagnostics" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" />
     <PackageReference Include="Nerdbank.Streams" />
+    <PackageReference Include="Spectre.Console" />
     <PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.CommandLine.Hosting" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
