@@ -20,7 +20,7 @@ namespace Altinn.Authorization.ModelUtils.Swashbuckle;
 internal sealed class PolymorphicFieldValueRecordSchemaFilter
     : ISchemaFilter
 {
-    private const string PROPS_SCHEMA_SUFFIX = "$";
+    private const string PROPS_SCHEMA_SUFFIX = "-BaseType";
 
     private readonly Lazy<Func<JsonSerializerOptions>> _jsonSerializerOptions;
     private readonly Lazy<Func<SchemaGeneratorOptions>> _options;
