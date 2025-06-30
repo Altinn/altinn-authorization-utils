@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.0...Altinn.Authorization.ModelUtils-v1.4.1) (2025-06-30)
+
+
+### Bug Fixes
+
+* change schema suffix ([#303](https://github.com/Altinn/altinn-authorization-utils/issues/303)) ([b3b6301](https://github.com/Altinn/altinn-authorization-utils/commit/b3b6301fa8fdf34daa013342b9f184feed5b3e2f))
+
 ## [1.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.3.1...Altinn.Authorization.ModelUtils-v1.4.0) (2025-06-27)
 
 
