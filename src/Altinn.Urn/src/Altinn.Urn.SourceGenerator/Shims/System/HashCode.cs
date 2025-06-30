@@ -69,6 +69,7 @@ public struct HashCode
     private uint _queue1, _queue2, _queue3;
     private uint _length;
 
+    [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1035:Do not use APIs banned for analyzers", Justification = "This is a shim for generating HashCodes, they should not affect source generator output")]
     private static uint GenerateGlobalSeed()
     {
         var value = new Random().Next();
