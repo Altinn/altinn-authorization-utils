@@ -4,7 +4,7 @@ namespace Altinn.Authorization.ModelUtils.Tests.Utils;
 
 internal static class Sequence
 {
-    public static ReadOnlySequence<byte> CreateFullSegmented(Memory<byte> data)
+    public static ReadOnlySequence<byte> CreateFullSegmented(ReadOnlyMemory<byte> data)
     {
         SimpleSegment start = new(Array.Empty<byte>(), 0);
         SimpleSegment current = start;
@@ -22,7 +22,7 @@ internal static class Sequence
     private sealed class SimpleSegment
         : ReadOnlySequenceSegment<byte>
     {
-        public SimpleSegment(Memory<byte> memory, int offset)
+        public SimpleSegment(ReadOnlyMemory<byte> memory, int offset)
         {
             Memory = memory;
             RunningIndex = offset;

@@ -132,9 +132,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void BaseWithCtorPropJsonRoundtrip()
+    public async Task BaseWithCtorPropJsonRoundtripAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new BaseWithCtorProp("parameter") { OptionalStringInBase = default },
             """
             {
@@ -142,7 +142,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new BaseWithCtorProp("parameter") { OptionalStringInBase = "optional" },
             """
             {
@@ -153,9 +153,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void DerivedWithSetBaseCtorPropJsonRoundtrip()
+    public async Task DerivedWithSetBaseCtorPropJsonRoundtripAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new DerivedWithSetBaseCtorProp
             {
                 RequiredStringInDerived = "required-string-in-derived",
@@ -171,7 +171,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new DerivedWithSetBaseCtorProp
             {
                 RequiredStringInDerived = "required-string-in-derived",
@@ -185,7 +185,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new DerivedWithSetBaseCtorProp
             {
                 RequiredStringInDerived = "required-string-in-derived",
@@ -202,9 +202,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void DerivedWithCtorPropJsonRoundtrip()
+    public async Task DerivedWithCtorPropJsonRoundtripAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new DerivedWithCtorProp("required-string-in-base", "required-string-in-derived")
             {
                 OptionalStringInBase = "optional-string-in-base",
@@ -219,7 +219,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new DerivedWithCtorProp("required-string-in-base", "required-string-in-derived")
             {
                 OptionalStringInBase = default,
@@ -234,9 +234,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void ChildJsonRoundtrip()
+    public async Task ChildJsonRoundtripAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Child
             {
                 RequiredStringInChild = "required-string-in-child",
@@ -257,7 +257,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Child
             {
                 RequiredStringInChild = "required-string-in-child",
@@ -277,9 +277,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void CtorWithOptionalParameterJsonRoundtrips()
+    public async Task CtorWithOptionalParameterJsonRoundtripsAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new CtorWithOptionalParameter()
             {
                 OptionalProperty = "optional-property"
@@ -291,7 +291,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new CtorWithOptionalParameter()
             {
                 OptionalProperty = default
@@ -302,7 +302,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckParses(
+        await Json.CheckParsesAsync(
             """
             {
                 "optionalProperty": "optional-property"
@@ -315,15 +315,15 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void FieldValueCtorArgumentJsonRoundtrips()
+    public async Task FieldValueCtorArgumentJsonRoundtripsAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new FieldValueCtorArgument(FieldValue.Unset),
             """
             {}
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new FieldValueCtorArgument(FieldValue.Null),
             """
             {
@@ -331,7 +331,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new FieldValueCtorArgument("value"),
             """
             {
@@ -341,15 +341,15 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void NestedFieldValueJsonRoundtrips()
+    public async Task NestedFieldValueJsonRoundtripsAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Outer { Inner = FieldValue.Unset },
             """
             {}
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Outer { Inner = FieldValue.Null },
             """
             {
@@ -357,7 +357,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Outer { Inner = new Inner { Value = FieldValue.Unset } },
             """
             {
@@ -365,7 +365,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Outer { Inner = new Inner { Value = FieldValue.Null } },
             """
             {
@@ -375,7 +375,7 @@ public class FieldValueRecordModelTests
             }
             """);
 
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new Outer { Inner = new Inner { Value = "some value" } },
             """
             {
@@ -387,9 +387,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void MissingRequiredParameter()
+    public async Task MissingRequiredParameterAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new BaseWithCtorProp("required-string-in-base") { OptionalStringInBase = default },
             """
             {
@@ -406,9 +406,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void MissingRequiredProperty()
+    public async Task MissingRequiredPropertyAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new RequiredProp { RequiredString = "required-string" },
             """
             {
@@ -424,9 +424,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void ExtensionData_NoExtraProperties()
+    public async Task ExtensionData_NoExtraPropertiesAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new WithExtensionData { OptionalString = "optional-string", RequiredString = "required-string" },
             """
             {
@@ -485,9 +485,9 @@ public class FieldValueRecordModelTests
     }
 
     [Fact]
-    public void CustomPropertyNames()
+    public async Task CustomPropertyNamesAsync()
     {
-        CheckRoundTrip(
+        await Json.CheckRoundTripAsync(
             new WithCustomPropertyNames { Prop1 = "prop1", Prop2 = "prop2" },
             """
             {
@@ -495,23 +495,6 @@ public class FieldValueRecordModelTests
                 "custom-name-2": "prop2"
             }
             """);
-    }
-
-    private void CheckRoundTrip<T>(T value, [StringSyntax(StringSyntaxAttribute.Json)] string json)
-    {
-        var serialized = Json.SerializeToDocument(value);
-
-        serialized.ShouldNotBeNull();
-        serialized.ShouldBeStructurallyEquivalentTo(json);
-
-        var deserialized = Json.Deserialize<T>(serialized);
-        deserialized.ShouldBe(value);
-    }
-
-    private void CheckParses<T>([StringSyntax(StringSyntaxAttribute.Json)] string json, T value)
-    {
-        var deserialized = Json.Deserialize<T>(json);
-        deserialized.ShouldBe(value);
     }
 
     [FieldValueRecord]

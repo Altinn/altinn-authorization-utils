@@ -152,7 +152,7 @@ internal abstract class FieldValueRecordBaseConverter<T>
                 if (prop.IsConstructorParameter || !prop.CanWrite)
                 {
                     // Skip constructor parameters and non-writable properties
-                    reader.Skip();
+                    reader.SafeSkip();
                     continue;
                 }
 
@@ -204,7 +204,7 @@ internal abstract class FieldValueRecordBaseConverter<T>
             if (!canHaveExtensionData)
             {
                 // Skip unknown property
-                reader.Skip();
+                reader.SafeSkip();
                 return;
             }
 

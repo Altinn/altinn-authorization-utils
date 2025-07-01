@@ -183,7 +183,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
             if (length > propertyScratch.Length)
             {
                 // Skip unknown property
-                reader.Skip();
+                reader.SafeSkip();
                 continue;
             }
 
@@ -198,14 +198,14 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
             if (!lookup.TryGetValue(propName, out var prop))
             {
                 // Skip unknown property
-                reader.Skip();
+                reader.SafeSkip();
                 continue;
             }
 
             if (!prop.IsConstructorParameter)
             {
                 // Skip normal properties
-                reader.Skip();
+                reader.SafeSkip();
                 continue;
             }
 
