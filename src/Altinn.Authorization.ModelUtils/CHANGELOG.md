@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.1...Altinn.Authorization.ModelUtils-v1.4.2) (2025-07-01)
+
+
+### Bug Fixes
+
+* partial JSON safety ([#306](https://github.com/Altinn/altinn-authorization-utils/issues/306)) ([d26906f](https://github.com/Altinn/altinn-authorization-utils/commit/d26906f3c835257e892b76e511e83542a0206f22))
+
 ## [1.4.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.0...Altinn.Authorization.ModelUtils-v1.4.1) (2025-06-30)
 
 
