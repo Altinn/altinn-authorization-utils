@@ -94,6 +94,7 @@ public readonly struct JsonExtensionData
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     public override string ToString()
         => _jsonElement.ToString();
 
@@ -109,10 +110,12 @@ public readonly struct JsonExtensionData
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     IEnumerator<JsonProperty> IEnumerable<JsonProperty>.GetEnumerator()
         => GetEnumerator();
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 
