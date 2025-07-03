@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.3...Altinn.Authorization.ModelUtils-v1.5.0) (2025-07-03)
+
+
+### Features
+
+* add json-extension-data type ([#313](https://github.com/Altinn/altinn-authorization-utils/issues/313)) ([9496466](https://github.com/Altinn/altinn-authorization-utils/commit/9496466cf34c28f9f622e2abcf5024af829a7ad3))
+
 ## [1.4.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.2...Altinn.Authorization.ModelUtils-v1.4.3) (2025-07-03)
 
 
