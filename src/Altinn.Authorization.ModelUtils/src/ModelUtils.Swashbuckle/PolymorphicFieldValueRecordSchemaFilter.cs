@@ -249,11 +249,18 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
             });
         }
 
-        return new OpenApiSchema
+        var schema = new OpenApiSchema
         {
             Type = "string",
             OneOf = oneOf,
         };
+
+        if (model.IsRoot && model.IsNonExhaustive)
+        {
+            schema.Example = new OpenApiString("other value");
+        }
+
+        return schema;
     }
 
     private string GetDiscriminatorStringValue(object discriminatorValue)
