@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 
 namespace Altinn.Authorization.ModelUtils.Tests.FieldValueRecords.Polymorphic;
@@ -281,6 +282,28 @@ public class NonExhaustiveDiscriminatorTests
               "optionalConcreteLeftProperty": "optional-concrete-left"
             }
             """);
+    }
+
+    [Theory]
+    [InlineData(typeof(Base))]
+    [InlineData(typeof(FieldValueNonExhaustiveBase))]
+    public void IsNonExhaustive(Type type)
+    {
+        var model = PolymorphicFieldValueRecordModel.For(type);
+
+        model.IsNonExhaustive.ShouldBeTrue();
+    }
+
+    [PolymorphicFieldValueRecord(IsRoot = true)]
+    public record FieldValueNonExhaustiveBase
+    {
+        public FieldValueNonExhaustiveBase(FieldValue<NonExhaustiveEnum<VariantType>> type)
+        {
+            Type = type;
+        }
+
+        [PolymorphicDiscriminatorProperty]
+        public FieldValue<NonExhaustiveEnum<VariantType>> Type { get; }
     }
 
     [PolymorphicFieldValueRecord(IsRoot = true)]

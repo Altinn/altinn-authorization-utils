@@ -164,7 +164,23 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
         _selfProperties = SortDiscriminatorFirst(recordModel.Properties(includeInherited: false), _discriminatorProperty);
         _allProperties = SortDiscriminatorFirst(recordModel.Properties(includeInherited: true), _discriminatorProperty);
 
-        IsNonExhaustive = discriminatorProperty.MemberInfo is PropertyInfo pi && NonExhaustiveEnum.IsNonExhaustiveEnumType(pi.PropertyType, out _);
+        IsNonExhaustive = discriminatorProperty.MemberInfo is PropertyInfo pi && IsNonExhaustiveType(pi.PropertyType);
+
+        static bool IsNonExhaustiveType(Type type)
+        {
+            if (NonExhaustiveEnum.IsNonExhaustiveEnumType(type, out _))
+            {
+                return true;
+            }
+
+            if (FieldValue.IsFieldValueType(type, out var innerType)
+                && NonExhaustiveEnum.IsNonExhaustiveEnumType(innerType, out _))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public bool IsNonExhaustive { get; }
