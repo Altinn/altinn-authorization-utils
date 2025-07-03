@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.2...Altinn.Authorization.ModelUtils-v1.4.3) (2025-07-03)
+
+
+### Bug Fixes
+
+* mark extension-types with additional properties in swagger ([#311](https://github.com/Altinn/altinn-authorization-utils/issues/311)) ([0ac0316](https://github.com/Altinn/altinn-authorization-utils/commit/0ac0316cd7bfb80c886e1d1923c3546e130acf3f))
+* non-exhaustive was false for field-values ([#310](https://github.com/Altinn/altinn-authorization-utils/issues/310)) ([54de43e](https://github.com/Altinn/altinn-authorization-utils/commit/54de43e37653e68d8dc5d63269ac1200725896ca))
+
 ## [1.4.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.4.1...Altinn.Authorization.ModelUtils-v1.4.2) (2025-07-01)
 
 
