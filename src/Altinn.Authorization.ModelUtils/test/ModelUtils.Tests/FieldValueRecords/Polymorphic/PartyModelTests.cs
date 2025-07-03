@@ -1,7 +1,6 @@
 ﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 using CommunityToolkit.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -900,7 +899,7 @@ public class PartyModelTests
         : IHasExtensionData
     {
         [JsonExtensionData]
-        private readonly JsonElement _extensionData;
+        private readonly JsonExtensionData _extensionData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.

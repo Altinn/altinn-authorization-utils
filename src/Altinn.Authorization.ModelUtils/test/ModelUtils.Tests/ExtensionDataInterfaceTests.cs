@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.Tests;
 
-public class JsonExtensionDataTests
+public class ExtensionDataInterfaceTests
 {
     [Fact]
     public void HasExtensionData_Unset_ReturnsFalse()
