@@ -219,6 +219,11 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
                 }
             }
         }
+
+        if (converter.Model.JsonExtensionDataProperty is not null)
+        {
+            schema.AdditionalPropertiesAllowed = true;
+        }
     }
 
     private OpenApiSchema CreateDiscriminatorSubset(
