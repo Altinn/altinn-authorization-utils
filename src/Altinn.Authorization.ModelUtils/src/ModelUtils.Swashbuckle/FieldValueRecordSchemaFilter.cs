@@ -105,6 +105,11 @@ internal sealed class FieldValueRecordSchemaFilter
                 }
             }
         }
+
+        if (converter.Model.JsonExtensionDataProperty is not null)
+        {
+            schema.AdditionalPropertiesAllowed = true;
+        }
     }
 
     private OpenApiSchema GetSchema(IFieldValueRecordPropertyModel model, SchemaFilterContext context, SchemaGeneratorOptions options)

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
@@ -301,7 +302,11 @@ public static class PolymorphicFieldValueRecords
     [PolymorphicDerivedType(typeof(OrganizationRecord), PolymorphicFieldValueRecords.PartyType.Organization)]
     [PolymorphicDerivedType(typeof(SelfIdentifiedUserRecord), PolymorphicFieldValueRecords.PartyType.SelfIdentifiedUser)]
     public record PartyRecord
+        : IHasExtensionData
     {
+        [JsonExtensionData]
+        private readonly JsonElement _extensionData;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.
         /// </summary>
@@ -311,6 +316,9 @@ public static class PolymorphicFieldValueRecords
             PartyType = partyType;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PartyRecord"/> class.
+        /// </summary>
         public PartyRecord(NonExhaustiveEnum<PartyType> partyType)
             : this(FieldValue.Create(partyType))
         {
@@ -371,6 +379,10 @@ public static class PolymorphicFieldValueRecords
         /// Gets the version ID of the party.
         /// </summary>
         public required FieldValue<ulong> VersionId { get; init; }
+
+        /// <inheritdoc/>
+        JsonElement IHasExtensionData.JsonExtensionData
+            => _extensionData;
     }
 
     /// <summary>
