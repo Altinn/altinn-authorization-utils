@@ -145,10 +145,15 @@ internal sealed class FieldValueRecordModel<T>
                         $"Property '{property.Name}' of type '{property.MemberInfo.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is a FieldValue.");
                 }
 
-                if (property.Type != typeof(JsonElement))
+                if (property.Type != typeof(JsonElement) && property.Type != typeof(JsonExtensionData))
                 {
                     ThrowHelper.ThrowInvalidOperationException(
-                        $"Property '{property.Name}' of type '{property.MemberInfo.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
+                        $"Property '{property.Name}' of type '{property.MemberInfo.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}' or '{nameof(JsonExtensionData)}'.");
+                }
+
+                if (property.Type == typeof(JsonExtensionData))
+                {
+                    property = new JsonExtensionDataPropertyWrapper((IFieldValueRecordPropertyModel<T, JsonExtensionData>)property);
                 }
 
                 declaredProperties = declaredProperties.RemoveAt(i);
@@ -161,16 +166,22 @@ internal sealed class FieldValueRecordModel<T>
         {
             if (property.GetCustomAttribute<JsonExtensionDataAttribute>(inherit: true) is { } extensionAttribute)
             {
-                if (property.PropertyType != typeof(JsonElement))
+                if (property.PropertyType != typeof(JsonElement) && property.PropertyType != typeof(JsonExtensionData))
                 {
                     ThrowHelper.ThrowInvalidOperationException(
-                        $"Property '{property.Name}' of type '{property.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
+                        $"Property '{property.Name}' of type '{property.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}' or '{nameof(JsonExtensionData)}'.");
                 }
 
                 var modelType = typeof(PropertyModel<,>).MakeGenericType([typeof(T), property.PropertyType]);
                 var propertyModel = Activator.CreateInstance(modelType, property);
-                Debug.Assert(propertyModel is IFieldValueRecordPropertyModel<T, JsonElement>);
 
+                if (property.PropertyType == typeof(JsonExtensionData))
+                {
+                    Debug.Assert(propertyModel is IFieldValueRecordPropertyModel<T, JsonExtensionData>);
+                    propertyModel = new JsonExtensionDataPropertyWrapper((IFieldValueRecordPropertyModel<T, JsonExtensionData>)propertyModel);
+                }
+
+                Debug.Assert(propertyModel is IFieldValueRecordPropertyModel<T, JsonElement>);
                 return (IFieldValueRecordPropertyModel<T, JsonElement>)propertyModel;
             }
         }
@@ -180,16 +191,22 @@ internal sealed class FieldValueRecordModel<T>
         {
             if (field.GetCustomAttribute<JsonExtensionDataAttribute>(inherit: true) is { } extensionAttribute)
             {
-                if (field.FieldType != typeof(JsonElement))
+                if (field.FieldType != typeof(JsonElement) && field.FieldType != typeof(JsonExtensionData))
                 {
                     ThrowHelper.ThrowInvalidOperationException(
-                        $"Field '{field.Name}' of type '{field.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}'.");
+                        $"Field '{field.Name}' of type '{field.DeclaringType}' is marked with {nameof(JsonExtensionDataAttribute)} but is not of type '{nameof(JsonElement)}' or '{nameof(JsonExtensionData)}'.");
                 }
 
                 var modelType = typeof(FieldModel<,>).MakeGenericType([typeof(T), field.FieldType]);
                 var fieldModel = Activator.CreateInstance(modelType, field);
-                Debug.Assert(fieldModel is IFieldValueRecordPropertyModel<T, JsonElement>);
 
+                if (field.FieldType == typeof(JsonExtensionData))
+                {
+                    Debug.Assert(fieldModel is IFieldValueRecordPropertyModel<T, JsonExtensionData>);
+                    fieldModel = new JsonExtensionDataPropertyWrapper((IFieldValueRecordPropertyModel<T, JsonExtensionData>)fieldModel);
+                }
+
+                Debug.Assert(fieldModel is IFieldValueRecordPropertyModel<T, JsonElement>);
                 return (IFieldValueRecordPropertyModel<T, JsonElement>)fieldModel;
             }
         }
@@ -267,5 +284,36 @@ internal sealed class FieldValueRecordModel<T>
 
             return new ConstructorModel<T>(ctor, parameters);
         }
+    }
+
+    private sealed class JsonExtensionDataPropertyWrapper(IFieldValueRecordPropertyModel<T, JsonExtensionData> inner)
+        : IFieldValueRecordPropertyModel<T, JsonElement>
+    {
+        public string Name => inner.Name;
+
+        public MemberInfo MemberInfo => inner.MemberInfo;
+
+        public bool CanRead => inner.CanRead;
+
+        public bool CanWrite => inner.CanWrite;
+
+        public bool IsRequired => inner.IsRequired;
+
+        public bool IsNullable => inner.IsNullable;
+
+        public bool IsUnsettable => inner.IsUnsettable;
+
+        public T1? GetCustomAttribute<T1>(bool inherit) 
+            where T1 : Attribute
+            => inner.GetCustomAttribute<T1>(inherit);
+
+        public FieldValue<JsonElement> Read(T owner)
+            => inner.Read(owner).Select(static e => (JsonElement)e);
+
+        public void Write(T owner, FieldValue<JsonElement> value)
+            => inner.Write(owner, value.Select(static e => (JsonExtensionData)e));
+
+        public void WriteSlot(ref object? slot, FieldValue<JsonElement> value)
+            => inner.WriteSlot(ref slot, value.Select(static e => (JsonExtensionData)e));
     }
 }
