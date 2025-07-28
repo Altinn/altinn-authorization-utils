@@ -11,7 +11,7 @@ internal class ListCommand
     : BaseCommand
 {
     public ListCommand()
-        : base("list", "List all keys sets")
+        : base("list", "Lists all keys")
     {
         SetAction(ExecuteAsync);
     }

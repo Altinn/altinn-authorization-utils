@@ -13,7 +13,7 @@ internal class KeyVaultJsonWebKeySetStore
     private readonly SecretClient _client;
 
     public KeyVaultJsonWebKeySetStore(SecretClient client)
-        : base("--key", "--priv", "--pub")
+        : base("--key", "--pub")
     {
         _client = client;
     }
@@ -21,32 +21,25 @@ internal class KeyVaultJsonWebKeySetStore
     public override string ToString()
         => _client.VaultUri.ToString();
 
-    public override Task<bool> GetCurrentPrivateKey(
-        IBufferWriter<byte> writer,
+    public override async Task<bool> KeyExists(
         string name,
-        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
+        JsonWebKeySetEnvironment environment,
+        JsonWebKeyVariant variant,
         CancellationToken cancellationToken = default)
     {
-        var secretName = PrivateKeyName(name, environment);
-
-        return GetSecretValue(writer, secretName, cancellationToken);
+        var secretName = GetSecretName(name, environment, variant);
+        return await GetSecretValue(secretName, cancellationToken) is not null;
     }
-
-    protected override Task<bool> GetKeySet(
+    
+    public override async Task<bool> GetKey(
         IBufferWriter<byte> writer,
         string name,
-        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
-        JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public,
+        JsonWebKeySetEnvironment environment,
+        JsonWebKeyVariant variant,
         CancellationToken cancellationToken = default)
     {
-        var secretName = variant switch
-        {
-            JsonWebKeySetVariant.Public => PublicKeySetName(name, environment),
-            JsonWebKeySetVariant.Private => PrivateKeySetName(name, environment),
-            _ => throw new ArgumentOutOfRangeException(nameof(variant))
-        };
-
-        return GetSecretValue(writer, secretName, cancellationToken);
+        var secretName = GetSecretName(name, environment, variant);
+        return await GetSecretValue(writer, secretName, cancellationToken);
     }
 
     protected override async IAsyncEnumerable<string> ListNames([EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -60,24 +53,28 @@ internal class KeyVaultJsonWebKeySetStore
     protected override async Task WriteNewKey(
         string name,
         JsonWebKeySetEnvironment environment,
-        ReadOnlySequence<byte> privateKeySet,
-        ReadOnlySequence<byte> publicKeySet,
-        ReadOnlySequence<byte> currentKey,
+        ReadOnlySequence<byte> privateKey,
+        ReadOnlySequence<byte> publicKey,
         CancellationToken cancellationToken)
     {
-        var privSecretName = PrivateKeySetName(name, environment);
-        var pubSecretName = PublicKeySetName(name, environment);
-        var keySecretName = PrivateKeyName(name, environment);
+        var privSecretName = PrivateKeyName(name, environment);
+        var pubSecretName = PublicKeyName(name, environment);
 
-        var privValue = Base64Helper.Encode(privateKeySet);
-        var pubValue = Base64Helper.Encode(publicKeySet);
-        var keyValue = Base64Helper.Encode(currentKey);
+        var privValue = Base64Helper.Encode(privateKey);
+        var pubValue = Base64Helper.Encode(publicKey);
 
         await _client.SetSecretAsync(privSecretName, privValue, CancellationToken.None);
         await _client.SetSecretAsync(pubSecretName, pubValue, CancellationToken.None);
-        await _client.SetSecretAsync(keySecretName, keyValue, CancellationToken.None);
     }
 
+    private string GetSecretName(string name, JsonWebKeySetEnvironment environment, JsonWebKeyVariant variant) =>
+        variant switch
+        {
+            JsonWebKeyVariant.Public => PublicKeyName(name, environment),
+            JsonWebKeyVariant.Private => PrivateKeyName(name, environment),
+            _ => throw new ArgumentOutOfRangeException(nameof(variant))
+        };
+    
     private async Task<bool> GetSecretValue(IBufferWriter<byte> writer, string secretName, CancellationToken cancellationToken)
     {
         try
@@ -92,6 +89,19 @@ internal class KeyVaultJsonWebKeySetStore
         catch (RequestFailedException ex) when (ex.Status == 404)
         {
             return false;
+        }
+    }
+    
+    private async Task<KeyVaultSecret?> GetSecretValue(string secretName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var secret = await _client.GetSecretAsync(secretName, cancellationToken: cancellationToken);
+            return secret.Value;
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            return null;
         }
     }
 }

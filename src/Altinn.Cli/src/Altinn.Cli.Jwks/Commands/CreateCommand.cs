@@ -3,9 +3,8 @@ using Altinn.Cli.Jwks.Stores;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Security.Cryptography;
 
 namespace Altinn.Cli.Jwks.Commands;
@@ -14,51 +13,53 @@ namespace Altinn.Cli.Jwks.Commands;
 internal class CreateCommand
     : BaseCommand
 {
+    
+    
     public static Argument<string> NameArg { get; }
-        = new Argument<string>("name")
+        = new("name")
         {
             Description = "Name of the integration to generate JWKs for.",
         };
 
     public static Option<bool> TestOption { get; }
-        = new Option<bool>(
+        = new(
             name: "--test",
             aliases: ["--test", "-t", "--dev", "-d"])
         {
             Description = "Generate TEST keys. Defaults to true unless --prod is specified.",
             DefaultValueFactory = r =>
             {
-                var prodOptionResult = r.GetResult(ProdOption!);
+                var prodOptionResult = r.TryGetResult(ProdOption);
                 
                 return prodOptionResult is null or { Implicit: true };
             },
         };
 
     public static Option<bool> ProdOption { get; }
-        = new Option<bool>(
+        = new(
             name: "--prod",
             aliases: ["--prod", "-p"])
         {
             Description = "Generate PROD keys. Defaults to true unless --test is specified.",
             DefaultValueFactory = r => 
             {
-                var testOptionResult = r.GetResult(TestOption!);
+                var testOptionResult = r.TryGetResult(TestOption);
                 
                 return testOptionResult is null or { Implicit: true };
             },
         };
 
-    public static Option<int?> SizeOption { get; }
-        = new Option<int?>(
+    public static Option<int> SizeOption { get; }
+        = new(
             name: "--size",
             aliases: ["--size", "-s"])
         {
             Description = "Key size in bits.",
-            DefaultValueFactory = _ => null,
+            DefaultValueFactory = _ => 2048,
         };
 
     public static Option<JsonWebKeyAlgorithm> AlgOption { get; }
-        = new Option<JsonWebKeyAlgorithm>(
+        = new(
             name: "--algorithm",
             aliases: ["--algorithm", "--alg", "-a"])
         {
@@ -67,7 +68,7 @@ internal class CreateCommand
         };
 
     public static Option<JsonWebKeyUse> UseOption { get; }
-        = new Option<JsonWebKeyUse>(
+        = new(
             name: "--use",
             aliases: ["--use", "-u"])
         {
@@ -76,7 +77,7 @@ internal class CreateCommand
         };
 
     public CreateCommand()
-        : base("create", "List all keys sets")
+        : base("create", "Creates a new key with the provided name and options")
     {
         Arguments.Add(NameArg);
         Options.Add(TestOption);
@@ -117,34 +118,31 @@ internal class CreateCommand
         string name,
         bool test,
         bool prod,
-        int? size,
+        int size,
         JsonWebKeyAlgorithm algorithm,
         JsonWebKeyUse use,
         CancellationToken cancellationToken)
     {
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var keySuffix = string.Create(CultureInfo.InvariantCulture, $"{today:o}");
-
         if (test)
         {
-            await UpdateKeySet(keySuffix, JsonWebKeySetEnvironment.Test);
+            await CreateNewKeyPair(JsonWebKeySetEnvironment.Test);
         }
 
         if (prod)
         {
-            await UpdateKeySet(keySuffix, JsonWebKeySetEnvironment.Prod);
+            await CreateNewKeyPair(JsonWebKeySetEnvironment.Prod);
         }
 
         return 0;
 
-        async Task UpdateKeySet(string suffix, JsonWebKeySetEnvironment environment)
+        async Task CreateNewKeyPair(JsonWebKeySetEnvironment environment)
         {
-            var keyId = store.KeyId(name, environment, suffix);
+            var keyName = store.KeyNamePrefix(name, environment);
 
-            console.WriteLine($"Generating key {keyId}");
-            var (privateKey, publicKey) = GenerateKeyPair(keyId);
+            console.WriteLine($"Generating key {keyName}");
+            var (privateKey, publicKey) = GenerateKeyPair(keyName);
 
-            await store.AddKeyToKeySet(name, environment, privateKey, publicKey, cancellationToken);
+            await store.SerializeAndStoreKeys(name, environment, privateKey, publicKey, cancellationToken);
         }
 
         (JsonWebKey privateKey, JsonWebKey publicKey) GenerateKeyPair(string keyId)
@@ -157,7 +155,7 @@ internal class CreateCommand
 
         (JsonWebKey privateKey, JsonWebKey publicKey) GenerateRsaKeyPair(string keyId)
         {
-            var rsa = RSA.Create(size ?? 2048);
+            var rsa = RSA.Create(size);
             var privRsa = new RsaSecurityKey(rsa.ExportParameters(true)) { KeyId = keyId };
             var pubRsa = new RsaSecurityKey(rsa.ExportParameters(false)) { KeyId = keyId };
 

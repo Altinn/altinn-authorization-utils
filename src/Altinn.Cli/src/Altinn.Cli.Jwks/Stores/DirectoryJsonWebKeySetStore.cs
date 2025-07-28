@@ -12,7 +12,7 @@ internal class DirectoryJsonWebKeySetStore
     private readonly DirectoryInfo _dir;
 
     public DirectoryJsonWebKeySetStore(DirectoryInfo dir)
-        : base(".key.json", ".json", ".pub.json")
+        : base(".key.json", ".pub.json")
     {
         _dir = dir;
     }
@@ -36,43 +36,32 @@ internal class DirectoryJsonWebKeySetStore
         }
     }
 
-    protected override async Task<bool> GetKeySet(
-        IBufferWriter<byte> writer,
-        string name,
-        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
-        JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public,
-        CancellationToken cancellationToken = default)
-    {
-        var path = Path.Combine(_dir.FullName, variant switch
+    private string GetKeyPath(string name, JsonWebKeySetEnvironment environment, JsonWebKeyVariant variant) =>
+        Path.Combine(_dir.FullName, variant switch
         {
-            JsonWebKeySetVariant.Public => PublicKeySetName(name, environment),
-            JsonWebKeySetVariant.Private => PrivateKeySetName(name, environment),
+            JsonWebKeyVariant.Public => PublicKeyName(name, environment),
+            JsonWebKeyVariant.Private => PrivateKeyName(name, environment),
             _ => throw new ArgumentOutOfRangeException(nameof(variant))
         });
-
-        try
-        {
-            await using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            await fs.CopyToAsync(writer.AsStream(), cancellationToken);
-            return true;
-        }
-        catch (FileNotFoundException)
-        {
-            return false;
-        }
-        catch (DirectoryNotFoundException)
-        {
-            return false;
-        }
-    }
-
-    public override async Task<bool> GetCurrentPrivateKey(
-        IBufferWriter<byte> writer,
+    
+    public override Task<bool> KeyExists(
         string name,
-        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
+        JsonWebKeySetEnvironment environment,
+        JsonWebKeyVariant variant,
         CancellationToken cancellationToken = default)
     {
-        var path = Path.Combine(_dir.FullName, PrivateKeyName(name, environment));
+        var path = GetKeyPath(name, environment, variant);
+        return Task.FromResult(Path.Exists(path));
+    }
+    
+    public override async Task<bool> GetKey(
+        IBufferWriter<byte> writer,
+        string name,
+        JsonWebKeySetEnvironment environment,
+        JsonWebKeyVariant variant,
+        CancellationToken cancellationToken = default)
+    {
+        var path = GetKeyPath(name, environment, variant);
 
         try
         {
@@ -89,13 +78,12 @@ internal class DirectoryJsonWebKeySetStore
             return false;
         }
     }
-
+  
     protected override async Task WriteNewKey(
         string name,
         JsonWebKeySetEnvironment environment,
         ReadOnlySequence<byte> privateKeySet,
         ReadOnlySequence<byte> publicKeySet,
-        ReadOnlySequence<byte> currentKey,
         CancellationToken cancellationToken)
     {
         if (!_dir.Exists)
@@ -103,17 +91,14 @@ internal class DirectoryJsonWebKeySetStore
             _dir.Create();
         }
 
-        await using var privTemp = await TempFile.Create(Path.Combine(_dir.FullName, PrivateKeySetName(name, environment)));
-        await using var pubTemp = await TempFile.Create(Path.Combine(_dir.FullName, PublicKeySetName(name, environment)));
-        await using var keyTemp = await TempFile.Create(Path.Combine(_dir.FullName, PrivateKeyName(name, environment)));
+        await using var privTemp = await TempFile.Create(Path.Combine(_dir.FullName, PrivateKeyName(name, environment)));
+        await using var pubTemp = await TempFile.Create(Path.Combine(_dir.FullName, PublicKeyName(name, environment)));
 
         await privTemp.Stream.WriteAsync(privateKeySet, cancellationToken);
         await pubTemp.Stream.WriteAsync(publicKeySet, cancellationToken);
-        await keyTemp.Stream.WriteAsync(currentKey, cancellationToken);
 
         await privTemp.Commit();
         await pubTemp.Commit();
-        await keyTemp.Commit();
     }
 
     private sealed class TempFile

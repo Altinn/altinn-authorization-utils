@@ -7,23 +7,28 @@ namespace Altinn.Cli.Jwks;
 [ExcludeFromCodeCoverage]
 internal static class JsonUtils
 {
-    public static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web)
+    public static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web)
     {
-#if DEBUG
         WriteIndented = true,
-#endif
     };
+    
+    public static readonly JsonWriterOptions JsonWriterOptions = new()
+    {
+        Indented = true
+    };
+    
+    public static readonly JsonReaderOptions JsonReaderOptions = default;
 
     public static T? Deserialize<T>(in ReadOnlySequence<byte> json)
     {
-        var reader = new Utf8JsonReader(json);
-        return JsonSerializer.Deserialize<T>(ref reader, Options);
+        var reader = new Utf8JsonReader(json, JsonReaderOptions);
+        return JsonSerializer.Deserialize<T>(ref reader, JsonSerializerOptions);
     }
 
     public static void Serialize<T>(IBufferWriter<byte> writer, T value)
     {
-        using var jsonWriter = new Utf8JsonWriter(writer);
-        JsonSerializer.Serialize(jsonWriter, value, Options);
+        using var jsonWriter = new Utf8JsonWriter(writer, JsonWriterOptions);
+        JsonSerializer.Serialize(jsonWriter, value, JsonSerializerOptions);
     }
 }
 

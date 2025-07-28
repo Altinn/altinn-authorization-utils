@@ -18,7 +18,7 @@ internal class StoreOption
             name: "--store",
             aliases: ["-s"])
     {
-        Description = "The JWKS store to use";
+        Description = "The JWKs store to use";
         CustomParser = ParseStore;
         DefaultValueFactory = GetDefaultStore;
     }

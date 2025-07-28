@@ -1,6 +1,6 @@
 ﻿namespace Altinn.Cli.Jwks;
 
-internal enum JsonWebKeySetVariant
+internal enum JsonWebKeyVariant
 {
     Private,
     Public,

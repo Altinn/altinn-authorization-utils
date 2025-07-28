@@ -1,16 +1,36 @@
-# Altinn.Cli Console App
+TODO: Update output and commands with latest changes
 
+
+
+# Altinn.Cli Console App
 The `Altinn.JwkGenerator` console application provides a convenient way to generate Json Web Keys.
 
 ## Installation
-
 Install using `dotnet tool install -g altinn-jwks`.
 
 ## Usage
+After installation, the `altinn-jwks` tool is available to use in your favorite terminal. You can execute `altinn-jwks --help` to get started:
 
-Use your favorite terminal and execute the `altinn-jwks`.
+```
+Description:
+  Console app for creating Json Web Keys
 
-Here's an example of the `altinn-jwks` console application's built in help page:
+Usage:
+  altinn-jwks [command] [options]
+
+Options:
+  -s, --store <store>  The JWKS store to use [default: $ALTINN_JWK_STORE || $PATH]
+  --version            Show version information
+  -?, -h, --help       Show help and usage information
+
+Commands:
+  create <name>  List all keys sets
+  export         Export key sets
+  list           List all keys sets
+```
+
+### Create command
+The `create` command lets you create new JWKs, using a range of available options described below:
 
 ```
 Description:
@@ -32,33 +52,45 @@ Options:
   -?, -h, --help                                                Show help and usage information
 ```
 
-### Create command
-
-To create a JWK using the default values simply execute the app with the `create` command:
-
-```pwsh
-.\altinn-jwks create br
-```
-
-Output:
+#### Example
+Executing the `create` command with default settings will produce two keys, intended for use in _test_ and _prod_ environments respectively.
 
 ```
-Generating key br-TEST.2024-06-21 for key-set br-TEST
-Generating key br-PROD.2024-06-21 for key-set br-PROD
+> altinn-jwks create my-app-key
+  Generating key my-app-key.TEST
+  Generating key my-app-key.PROD
+
+> ls -l
+  my-app-key.PROD.key.json
+  my-app-key.PROD.pub.json
+  my-app-key.TEST.key.json
+  my-app-key.TEST.pub.json
 ```
 
-Any of the `options` can be used to override defaults when executing the`create` command:
+If you wish to modify the default behavior, you can override the relevant options as required. For instance, the following command outputs a single rs512 key, with a larger size, to a subfolder called _"keys"_:
+```
+> altinn-jwks create my-app-key --size 4096 --alg RS512 --prod --store ./keys
+  Generating key my-app-key.PROD
 
-```powershell
-.\altinn-jwks create br --size 4096 --alg RS512 --use sig --out ./keys
+> ls -l keys/
+  my-app-key.PROD.key.json
+  my-app-key.PROD.pub.json
 ```
 
-Output:
+### Export command
 
-```powershell
-Generating key br-TEST.2024-06-21 for key-set br-TEST
-Generating key br-PROD.2024-06-21 for key-set br-PROD
+
+### List command
+The `list` command simply lists all key sets found in the given store (current directory if omitted).
+
 ```
+> altinn-jwks list         
+  my-app-key (TEST, PROD)
+
+> altinn-jwks list --store keys/                                             
+  my-app-key (PROD)
+```
+
 
 ## Contributing
 
