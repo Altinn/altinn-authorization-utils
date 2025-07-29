@@ -7,44 +7,25 @@ namespace Altinn.Cli.Jwks;
 [ExcludeFromCodeCoverage]
 internal static class JsonUtils
 {
-    public static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web)
+    public static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
     {
-#if DEBUG
         WriteIndented = true,
-#endif
+    };
+
+    public static readonly JsonWriterOptions WriterOptions = new()
+    {
+        Indented = true,
     };
 
     public static T? Deserialize<T>(in ReadOnlySequence<byte> json)
     {
         var reader = new Utf8JsonReader(json);
-        return JsonSerializer.Deserialize<T>(ref reader, Options);
+        return JsonSerializer.Deserialize<T>(ref reader, SerializerOptions);
     }
 
     public static void Serialize<T>(IBufferWriter<byte> writer, T value)
     {
-        using var jsonWriter = new Utf8JsonWriter(writer);
-        JsonSerializer.Serialize(jsonWriter, value, Options);
-    }
-}
-
-[ExcludeFromCodeCoverage]
-internal static class StreamExtensions
-{
-    public static ValueTask WriteAsync(this Stream stream, ReadOnlySequence<byte> data, CancellationToken cancellationToken = default)
-    {
-        if (data.IsSingleSegment)
-        {
-            return stream.WriteAsync(data.First, cancellationToken);
-        }
-
-        return WriteMany(stream, data, cancellationToken);
-
-        static async ValueTask WriteMany(Stream stream, ReadOnlySequence<byte> data, CancellationToken cancellationToken)
-        {
-            foreach (var segment in data)
-            {
-                await stream.WriteAsync(segment, cancellationToken);
-            }
-        }
+        using var jsonWriter = new Utf8JsonWriter(writer, WriterOptions);
+        JsonSerializer.Serialize(jsonWriter, value, SerializerOptions);
     }
 }

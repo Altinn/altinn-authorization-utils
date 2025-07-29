@@ -10,6 +10,5 @@ internal class ExportCommand
         : base("export", "Export key sets")
     {
         Subcommands.Add(new ExportKeyCommand());
-        Subcommands.Add(new ExportMaskinportenCommand());
     }
 }
