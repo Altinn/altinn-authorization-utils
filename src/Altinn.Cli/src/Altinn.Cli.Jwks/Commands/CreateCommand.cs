@@ -14,11 +14,10 @@ internal class CreateCommand
     : BaseCommand
 {
     
-    
     public static Argument<string> NameArg { get; }
         = new("name")
         {
-            Description = "Name of the integration to generate JWKs for.",
+            Description = "Name of the generated key",
         };
 
     public static Option<bool> TestOption { get; }
@@ -26,7 +25,7 @@ internal class CreateCommand
             name: "--test",
             aliases: ["--test", "-t", "--dev", "-d"])
         {
-            Description = "Generate TEST keys. Defaults to true unless --prod is specified.",
+            Description = "Generate TEST keys. Defaults to true unless --prod is specified",
             DefaultValueFactory = r =>
             {
                 var prodOptionResult = r.TryGetResult(ProdOption);
@@ -40,7 +39,7 @@ internal class CreateCommand
             name: "--prod",
             aliases: ["--prod", "-p"])
         {
-            Description = "Generate PROD keys. Defaults to true unless --test is specified.",
+            Description = "Generate PROD keys. Defaults to true unless --test is specified",
             DefaultValueFactory = r => 
             {
                 var testOptionResult = r.TryGetResult(TestOption);
@@ -54,7 +53,7 @@ internal class CreateCommand
             name: "--size",
             aliases: ["--size", "-s"])
         {
-            Description = "Key size in bits.",
+            Description = "Key size in bits",
             DefaultValueFactory = _ => 2048,
         };
 
@@ -63,7 +62,7 @@ internal class CreateCommand
             name: "--algorithm",
             aliases: ["--algorithm", "--alg", "-a"])
         {
-            Description = "The algorithm to use for the key.",
+            Description = "The algorithm to use for the key",
             DefaultValueFactory = _ => JsonWebKeyAlgorithm.RS256,
         };
 
@@ -72,7 +71,7 @@ internal class CreateCommand
             name: "--use",
             aliases: ["--use", "-u"])
         {
-            Description = "Use for the JWK.",
+            Description = "Use for the JWK",
             DefaultValueFactory = _ => JsonWebKeyUse.sig,
         };
 

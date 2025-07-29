@@ -18,7 +18,8 @@ internal class StoreOption
             name: "--store",
             aliases: ["-s"])
     {
-        Description = "The JWKs store to use";
+        Description = "The JWKs store to use. Either a directory or an Azure Key Vault URI";
+        Recursive = true;
         CustomParser = ParseStore;
         DefaultValueFactory = GetDefaultStore;
     }
@@ -63,9 +64,7 @@ internal class StoreOption
 
     private static JsonWebKeySetStore ParseStore(ArgumentResult result, string arg)
     {
-        var uriOptions = new UriCreationOptions
-        {
-        };
+        var uriOptions = new UriCreationOptions();
 
         if (!Uri.TryCreate(arg, in uriOptions, out var uri))
         {

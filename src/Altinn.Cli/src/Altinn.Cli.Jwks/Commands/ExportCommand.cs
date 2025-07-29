@@ -15,7 +15,7 @@ internal class ExportCommand
     public static Argument<string> NameArg { get; }
         = new("name")
         {
-            Description = "Name of the key to export.",
+            Description = "Name of the key to export",
         };
     
     public static Option<JsonWebKeySetEnvironment> EnvironmentOption { get; }
@@ -23,7 +23,7 @@ internal class ExportCommand
             name: "--environment",
             aliases: ["--environment", "--env"])
         {
-            Description = "Decides whether to export the TEST or PROD key.",
+            Description = "Decides whether to export the TEST or PROD key",
             DefaultValueFactory = _ => JsonWebKeySetEnvironment.Test,
         };
 
@@ -32,7 +32,7 @@ internal class ExportCommand
             name: "--variant",
             aliases: ["--variant", "-role"])
         {
-            Description = "Decides whether to export the private or the public key.",
+            Description = "Decides whether to export the private or the public key",
             DefaultValueFactory = _ => JsonWebKeyVariant.Private,
         };
     
@@ -41,7 +41,7 @@ internal class ExportCommand
             name: "--base64",
             aliases: ["--base64", "-b"])
         {
-            Description = "Outputs the base64 version of the key.",
+            Description = "Outputs the base64 version of the key",
             DefaultValueFactory = _ => false,
         };
 
