@@ -2,6 +2,7 @@
 using Altinn.Cli.Jwks.Console;
 using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine;
+using System.CommandLine.Help;
 using System.CommandLine.Hosting;
 using System.Diagnostics.CodeAnalysis;
 
@@ -14,9 +15,10 @@ static class Program
     {
         using var cancellationSignalHandler = new CancellationSignalHandler();
 
-        var rootCommand = new RootCommand("Console app for creating Json Web Keys");
-        rootCommand.Options.Add(BaseCommand.StoreOption);
+        var rootCommand = new RootCommand("Console app for creating Json Web Keys")
+            .AddOptionMiddleware<HelpOption>(x => new CustomHelpRenderer((HelpAction)x.Action!));
 
+        rootCommand.Options.Add(BaseCommand.StoreOption);
         rootCommand.Subcommands.Add(new CreateCommand());
         rootCommand.Subcommands.Add(new ExportCommand());
         rootCommand.Subcommands.Add(new ListCommand());
