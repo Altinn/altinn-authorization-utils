@@ -1,8 +1,10 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Cli.Jwks;
 
+[ExcludeFromCodeCoverage]
 internal static class ArgumentResultExtensions
 {
     // TODO: Resolve the underlying issue (or usage pattern) that requires this extension method?
