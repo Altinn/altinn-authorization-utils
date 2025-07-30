@@ -18,6 +18,8 @@ static class Program
         var rootCommand = new RootCommand("Console app for creating Json Web Keys")
             .AddOptionMiddleware<HelpOption>(x => new CustomHelpRenderer((HelpAction)x.Action!));
 
+        rootCommand.TreatUnmatchedTokensAsErrors = true;
+
         rootCommand.Options.Add(BaseCommand.StoreOption);
         rootCommand.Subcommands.Add(new CreateCommand());
         rootCommand.Subcommands.Add(new ExportCommand());

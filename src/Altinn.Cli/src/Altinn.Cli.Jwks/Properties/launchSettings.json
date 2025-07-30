@@ -26,7 +26,7 @@
     },
     "help": {
       "commandName": "Project",
-      "commandLineArgs": "export key --help",
+      "commandLineArgs": "export",
       "workingDirectory": "obj",
       "hotReloadEnabled": false
     }
