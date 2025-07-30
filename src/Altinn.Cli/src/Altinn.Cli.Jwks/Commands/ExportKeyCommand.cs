@@ -1,4 +1,5 @@
 ﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Options;
 using Altinn.Cli.Jwks.Stores;
 using Nerdbank.Streams;
 using Spectre.Console;
@@ -13,34 +14,38 @@ internal class ExportKeyCommand
     : BaseCommand
 {
     public static Argument<string> NameArg { get; }
-        = new Argument<string>("name")
+        = new("name")
         {
-            Description = "Name of the integration to generate JWKs for.",
+            Description = "Name of the key to export",
         };
 
-    public static Option<bool> ProdOption { get; }
-        = new Option<bool>(
-            name: "--prod",
-            aliases: ["--prod", "-p"])
+    public static Option<JsonWebKeySetEnvironment> EnvironmentOption { get; }
+        = EnvOptions.Single;
+
+    public static Option<JsonWebKeySetVariant> KeyVariantOption { get; }
+        = new(
+            name: "--variant",
+            aliases: ["--variant", "-r"])
         {
-            Description = "Export PROD keys.",
-            DefaultValueFactory = _ => false,
+            Description = "Decides whether to export the private or the public key",
+            DefaultValueFactory = _ => JsonWebKeySetVariant.Private,
         };
 
     public static Option<bool> Base64Option { get; }
-        = new Option<bool>(
+        = new(
             name: "--base64",
             aliases: ["--base64", "-b"])
         {
-            Description = "Output the base64 version of the key.",
+            Description = "Outputs the base64 version of the key",
             DefaultValueFactory = _ => false,
         };
 
     public ExportKeyCommand()
-        : base("key", "Export the current private key")
+        : base("key", "Export the current private or public key")
     {
         Arguments.Add(NameArg);
-        Options.Add(ProdOption);
+        Options.Add(EnvironmentOption);
+        Options.Add(KeyVariantOption);
         Options.Add(Base64Option);
 
         SetAction(ExecuteAsync);
@@ -51,27 +56,25 @@ internal class ExportKeyCommand
         var console = result.GetRequiredService<IConsole>();
         var store = result.GetRequiredValue(StoreOption);
         var name = result.GetRequiredValue(NameArg);
-        var prod = result.GetRequiredValue(ProdOption);
+        var env = result.GetRequiredValue(EnvironmentOption);
+        var variant = result.GetValue(KeyVariantOption);
         var base64 = result.GetRequiredValue(Base64Option);
 
-        return ExecuteAsync(console, store, name, prod, base64, cancellationToken);
+        return ExecuteAsync(console, store, name, env, variant, base64, cancellationToken);
     }
 
     private async Task<int> ExecuteAsync(
         IConsole console,
         JsonWebKeySetStore store,
         string name,
-        bool prod,
+        JsonWebKeySetEnvironment environment,
+        JsonWebKeySetVariant variant,
         bool base64,
         CancellationToken cancellationToken)
     {
-        var environment = prod ? JsonWebKeySetEnvironment.Prod : JsonWebKeySetEnvironment.Test;
+        var key = await store.GetCurrentKey(name, environment, variant, cancellationToken);
         using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
-        if (!await store.GetCurrentPrivateKey(data, name, environment, cancellationToken))
-        {
-            console.StdErr.WriteLine($"Key-set {name} not found.");
-            return 1;
-        }
+        JsonUtils.Serialize(data, key);
 
         if (base64)
         {

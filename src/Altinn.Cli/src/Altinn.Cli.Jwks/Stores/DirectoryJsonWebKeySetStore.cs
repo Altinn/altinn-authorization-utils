@@ -12,7 +12,7 @@ internal class DirectoryJsonWebKeySetStore
     private readonly DirectoryInfo _dir;
 
     public DirectoryJsonWebKeySetStore(DirectoryInfo dir)
-        : base(".key.json", ".json", ".pub.json")
+        : base(suffix: ".jwks.json")
     {
         _dir = dir;
     }
@@ -27,7 +27,7 @@ internal class DirectoryJsonWebKeySetStore
             yield break;
         }
 
-        foreach (var file in _dir.EnumerateFiles("*.pub.json", SearchOption.TopDirectoryOnly))
+        foreach (var file in _dir.EnumerateFiles("*.jwks.json", SearchOption.TopDirectoryOnly))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -40,15 +40,9 @@ internal class DirectoryJsonWebKeySetStore
         IBufferWriter<byte> writer,
         string name,
         JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
-        JsonWebKeySetVariant variant = JsonWebKeySetVariant.Public,
         CancellationToken cancellationToken = default)
     {
-        var path = Path.Combine(_dir.FullName, variant switch
-        {
-            JsonWebKeySetVariant.Public => PublicKeySetName(name, environment),
-            JsonWebKeySetVariant.Private => PrivateKeySetName(name, environment),
-            _ => throw new ArgumentOutOfRangeException(nameof(variant))
-        });
+        var path = Path.Combine(_dir.FullName, KeySetName(name, environment));
 
         try
         {
@@ -66,36 +60,10 @@ internal class DirectoryJsonWebKeySetStore
         }
     }
 
-    public override async Task<bool> GetCurrentPrivateKey(
-        IBufferWriter<byte> writer,
-        string name,
-        JsonWebKeySetEnvironment environment = JsonWebKeySetEnvironment.Test,
-        CancellationToken cancellationToken = default)
-    {
-        var path = Path.Combine(_dir.FullName, PrivateKeyName(name, environment));
-
-        try
-        {
-            await using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            await fs.CopyToAsync(writer.AsStream(), cancellationToken);
-            return true;
-        }
-        catch (FileNotFoundException)
-        {
-            return false;
-        }
-        catch (DirectoryNotFoundException)
-        {
-            return false;
-        }
-    }
-
-    protected override async Task WriteNewKey(
+    protected override async Task UpdateKeySets(
         string name,
         JsonWebKeySetEnvironment environment,
-        ReadOnlySequence<byte> privateKeySet,
-        ReadOnlySequence<byte> publicKeySet,
-        ReadOnlySequence<byte> currentKey,
+        ReadOnlySequence<byte> keySet,
         CancellationToken cancellationToken)
     {
         if (!_dir.Exists)
@@ -103,17 +71,11 @@ internal class DirectoryJsonWebKeySetStore
             _dir.Create();
         }
 
-        await using var privTemp = await TempFile.Create(Path.Combine(_dir.FullName, PrivateKeySetName(name, environment)));
-        await using var pubTemp = await TempFile.Create(Path.Combine(_dir.FullName, PublicKeySetName(name, environment)));
-        await using var keyTemp = await TempFile.Create(Path.Combine(_dir.FullName, PrivateKeyName(name, environment)));
+        await using var temp = await TempFile.Create(Path.Combine(_dir.FullName, KeySetName(name, environment)));
 
-        await privTemp.Stream.WriteAsync(privateKeySet, cancellationToken);
-        await pubTemp.Stream.WriteAsync(publicKeySet, cancellationToken);
-        await keyTemp.Stream.WriteAsync(currentKey, cancellationToken);
+        await temp.Stream.WriteAsync(keySet, cancellationToken);
 
-        await privTemp.Commit();
-        await pubTemp.Commit();
-        await keyTemp.Commit();
+        await temp.Commit();
     }
 
     private sealed class TempFile
