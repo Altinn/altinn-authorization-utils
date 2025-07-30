@@ -29,18 +29,19 @@ public enum JsonWebKeyAlgorithm
     /// </remarks>
     RS512,
 
-    /// <summary>
-    /// ECDSA using P-256 and SHA-256
-    /// </summary>
-    ES256,
+    // TODO: ECDSA isn't really working at the moment, so it's disabled
+    ///// <summary>
+    ///// ECDSA using P-256 and SHA-256
+    ///// </summary>
+    //ES256,
 
-    /// <summary>
-    /// ECDSA using P-384 and SHA-384
-    /// </summary>
-    ES384,
+    ///// <summary>
+    ///// ECDSA using P-384 and SHA-384
+    ///// </summary>
+    //ES384,
 
-    /// <summary>
-    /// ECDSA using P-521 and SHA-512
-    /// </summary>
-    ES512,
+    ///// <summary>
+    ///// ECDSA using P-521 and SHA-512
+    ///// </summary>
+    //ES512,
 }

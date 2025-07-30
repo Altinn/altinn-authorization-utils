@@ -1,6 +1,7 @@
 ﻿using Altinn.Cli.Jwks.Stores;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using System.Collections.Immutable;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
@@ -18,7 +19,8 @@ internal class StoreOption
             name: "--store",
             aliases: ["-s"])
     {
-        Description = "The JWKS store to use";
+        Description = "The JWKs store to use. Either a directory or an Azure Key Vault URI";
+        Recursive = true;
         CustomParser = ParseStore;
         DefaultValueFactory = GetDefaultStore;
     }

@@ -1,11 +1,10 @@
 ﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Options;
 using Altinn.Cli.Jwks.Stores;
 using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Security.Cryptography;
 
 namespace Altinn.Cli.Jwks.Commands;
@@ -15,75 +14,59 @@ internal class CreateCommand
     : BaseCommand
 {
     public static Argument<string> NameArg { get; }
-        = new Argument<string>("name")
+        = new("name")
         {
-            Description = "Name of the integration to generate JWKs for.",
+            Description = "Name of the integration to generate a new key for",
         };
 
-    public static Option<bool> TestOption { get; }
-        = new Option<bool>(
-            name: "--test",
-            aliases: ["--test", "-t", "--dev", "-d"])
-        {
-            Description = "Generate TEST keys. Defaults to true unless --prod is specified.",
-            DefaultValueFactory = r =>
-            {
-                var prodOptionResult = r.GetResult(ProdOption!);
-                
-                return prodOptionResult is null or { Implicit: true };
-            },
-        };
-
-    public static Option<bool> ProdOption { get; }
-        = new Option<bool>(
-            name: "--prod",
-            aliases: ["--prod", "-p"])
-        {
-            Description = "Generate PROD keys. Defaults to true unless --test is specified.",
-            DefaultValueFactory = r => 
-            {
-                var testOptionResult = r.GetResult(TestOption!);
-                
-                return testOptionResult is null or { Implicit: true };
-            },
-        };
+    public static Option<JsonWebKeySetEnvironments> EnvOption { get; }
+        = EnvOptions.Multiple;
 
     public static Option<int?> SizeOption { get; }
-        = new Option<int?>(
+        = new(
             name: "--size",
             aliases: ["--size", "-s"])
         {
-            Description = "Key size in bits.",
+            Description = "Key size in bits",
             DefaultValueFactory = _ => null,
         };
 
     public static Option<JsonWebKeyAlgorithm> AlgOption { get; }
-        = new Option<JsonWebKeyAlgorithm>(
+        = new(
             name: "--algorithm",
             aliases: ["--algorithm", "--alg", "-a"])
         {
-            Description = "The algorithm to use for the key.",
+            Description = "The algorithm to use for the key",
             DefaultValueFactory = _ => JsonWebKeyAlgorithm.RS256,
         };
 
     public static Option<JsonWebKeyUse> UseOption { get; }
-        = new Option<JsonWebKeyUse>(
+        = new(
             name: "--use",
             aliases: ["--use", "-u"])
         {
-            Description = "Use for the JWK.",
+            Description = "Use for the JWK",
             DefaultValueFactory = _ => JsonWebKeyUse.sig,
         };
 
+    public static Option<string> SuffixOption { get; }
+        = new(
+            name: "--suffix",
+            aliases: ["--suffix"])
+        {
+            Description = "Optional suffix to append to the key ID",
+            DefaultValueFactory = _ => GetDateSuffix(),
+        };
+
     public CreateCommand()
-        : base("create", "List all keys sets")
+        : base("create", "Create a new key and add it to a keyset")
     {
         Arguments.Add(NameArg);
-        Options.Add(TestOption);
-        Options.Add(ProdOption);
+        Options.Add(EnvOption);
         Options.Add(SizeOption);
         Options.Add(AlgOption);
         Options.Add(UseOption);
+        Options.Add(SuffixOption);
 
         SetAction(ExecuteAsync);
     }
@@ -93,21 +76,21 @@ internal class CreateCommand
         var console = result.GetRequiredService<IConsole>();
         var store = result.GetRequiredValue(StoreOption);
         var name = result.GetRequiredValue(NameArg);
-        var test = result.GetRequiredValue(TestOption);
-        var prod = result.GetRequiredValue(ProdOption);
+        var envs = result.GetRequiredValue(EnvOption);
         var size = result.GetRequiredValue(SizeOption);
         var alg = result.GetRequiredValue(AlgOption);
         var use = result.GetRequiredValue(UseOption);
+        var suffix = result.GetRequiredValue(SuffixOption);
 
         return ExecuteAsync(
             console,
             store,
             name,
-            test,
-            prod,
+            envs,
             size,
             alg,
             use,
+            suffix,
             cancellationToken);
     }
 
@@ -115,22 +98,19 @@ internal class CreateCommand
         IConsole console,
         JsonWebKeySetStore store,
         string name,
-        bool test,
-        bool prod,
+        JsonWebKeySetEnvironments envs,
         int? size,
         JsonWebKeyAlgorithm algorithm,
         JsonWebKeyUse use,
+        string keySuffix,
         CancellationToken cancellationToken)
     {
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var keySuffix = string.Create(CultureInfo.InvariantCulture, $"{today:o}");
-
-        if (test)
+        if (envs.HasFlag(JsonWebKeySetEnvironments.Test))
         {
             await UpdateKeySet(keySuffix, JsonWebKeySetEnvironment.Test);
         }
 
-        if (prod)
+        if (envs.HasFlag(JsonWebKeySetEnvironments.Prod))
         {
             await UpdateKeySet(keySuffix, JsonWebKeySetEnvironment.Prod);
         }
@@ -142,50 +122,57 @@ internal class CreateCommand
             var keyId = store.KeyId(name, environment, suffix);
 
             console.WriteLine($"Generating key {keyId}");
-            var (privateKey, publicKey) = GenerateKeyPair(keyId);
+            var newKey = GenerateKeyPair(keyId);
 
-            await store.AddKeyToKeySet(name, environment, privateKey, publicKey, cancellationToken);
+            await store.AddKeyToKeySet(name, environment, newKey, cancellationToken);
         }
 
-        (JsonWebKey privateKey, JsonWebKey publicKey) GenerateKeyPair(string keyId)
+        JsonWebKey GenerateKeyPair(string keyId)
             => algorithm switch
             {
                 JsonWebKeyAlgorithm.RS256 or JsonWebKeyAlgorithm.RS384 or JsonWebKeyAlgorithm.RS512 => GenerateRsaKeyPair(keyId),
-                JsonWebKeyAlgorithm.ES256 or JsonWebKeyAlgorithm.ES384 or JsonWebKeyAlgorithm.ES512 => GenerateEcKeyPair(keyId),
+                //JsonWebKeyAlgorithm.ES256 or JsonWebKeyAlgorithm.ES384 or JsonWebKeyAlgorithm.ES512 => GenerateEcKeyPair(keyId),
                 _ => throw new NotImplementedException($"Algorithm {algorithm} not implemented.")
             };
 
-        (JsonWebKey privateKey, JsonWebKey publicKey) GenerateRsaKeyPair(string keyId)
+        JsonWebKey GenerateRsaKeyPair(string keyId)
         {
             var rsa = RSA.Create(size ?? 2048);
             var privRsa = new RsaSecurityKey(rsa.ExportParameters(true)) { KeyId = keyId };
-            var pubRsa = new RsaSecurityKey(rsa.ExportParameters(false)) { KeyId = keyId };
-
             var privJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(privRsa);
-            var pubJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(pubRsa);
 
-            privJwk.Alg = pubJwk.Alg = algorithm.ToJwkString();
-            privJwk.Use = pubJwk.Use = use.ToJwkString();
+            privJwk.Alg = algorithm.ToJwkString();
+            privJwk.Use =  use.ToJwkString();
 
-            return (privJwk, pubJwk);
+            return privJwk;
         }
 
-        (JsonWebKey privateKey, JsonWebKey publicKey) GenerateEcKeyPair(string keyId)
+        //JsonWebKey GenerateEcKeyPair(string keyId)
+        //{
+        //    var pair = ECDsa.Create(algorithm.ToECDsaCurve());
+        //    var privKey = ECDsa.Create(pair.ExportParameters(true));
+        //    var privEc = new ECDsaSecurityKey(privKey) { KeyId = keyId };
+        //    var privJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(privEc);
+
+        //    privJwk.Alg = algorithm.ToJwkString();
+        //    privJwk.Use = use.ToJwkString();
+
+        //    return privJwk;
+        //}
+    }
+
+    private static string GetDateSuffix()
+    {
+        // get the number of minutes since 2025-01-01 (this fits in a 3-byte unsigned integer, and will do til past 2050)
+        var totalMinutes = (uint)(DateTime.Now - new DateTime(2025, 1, 1)).TotalMinutes;
+        var bytes = BitConverter.GetBytes(totalMinutes);
+        if (BitConverter.IsLittleEndian)
         {
-            var pair = ECDsa.Create(algorithm.ToECDsaCurve());
-            var privKey = ECDsa.Create(pair.ExportParameters(true));
-            var pubKey = ECDsa.Create(pair.ExportParameters(false));
-
-            var privEc = new ECDsaSecurityKey(privKey) { KeyId = keyId };
-            var pubEc = new ECDsaSecurityKey(pubKey) { KeyId = keyId };
-
-            var privJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(privEc);
-            var pubJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(pubEc);
-
-            privJwk.Alg = pubJwk.Alg = algorithm.ToJwkString();
-            privJwk.Use = pubJwk.Use = use.ToJwkString();
-
-            return (privJwk, pubJwk);
+            Array.Reverse(bytes);
         }
+
+        return Convert.ToBase64String(bytes.AsSpan(1, 3))
+            .Replace("+", "-")
+            .Replace("/", "_");
     }
 }
