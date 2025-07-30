@@ -25,7 +25,7 @@ internal class ExportKeyCommand
     public static Option<JsonWebKeySetVariant> KeyVariantOption { get; }
         = new(
             name: "--variant",
-            aliases: ["--variant", "-role"])
+            aliases: ["--variant", "-r"])
         {
             Description = "Decides whether to export the private or the public key",
             DefaultValueFactory = _ => JsonWebKeySetVariant.Private,
@@ -57,9 +57,10 @@ internal class ExportKeyCommand
         var store = result.GetRequiredValue(StoreOption);
         var name = result.GetRequiredValue(NameArg);
         var env = result.GetRequiredValue(EnvironmentOption);
+        var variant = result.GetValue(KeyVariantOption);
         var base64 = result.GetRequiredValue(Base64Option);
 
-        return ExecuteAsync(console, store, name, env, base64, cancellationToken);
+        return ExecuteAsync(console, store, name, env, variant, base64, cancellationToken);
     }
 
     private async Task<int> ExecuteAsync(
@@ -67,15 +68,13 @@ internal class ExportKeyCommand
         JsonWebKeySetStore store,
         string name,
         JsonWebKeySetEnvironment environment,
+        JsonWebKeySetVariant variant,
         bool base64,
         CancellationToken cancellationToken)
     {
+        var key = await store.GetCurrentKey(name, environment, variant, cancellationToken);
         using var data = new Sequence<byte>(ArrayPool<byte>.Shared);
-        if (!await store.GetCurrentPrivateKey(data, name, environment, cancellationToken))
-        {
-            console.StdErr.WriteLine($"Key-set {name} not found.");
-            return 1;
-        }
+        JsonUtils.Serialize(data, key);
 
         if (base64)
         {

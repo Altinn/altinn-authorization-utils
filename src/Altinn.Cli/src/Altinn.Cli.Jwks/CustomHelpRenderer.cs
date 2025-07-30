@@ -29,7 +29,7 @@ internal class CustomHelpRenderer(HelpAction action)
             BaseCommand.StoreOption.Hidden = false;
 
             System.Console.WriteLine("Sample usage:");
-            System.Console.WriteLine("  altinn-jwks create my-app-key");
+            System.Console.WriteLine("  altinn-jwks create my-app");
 
             return result;
         }

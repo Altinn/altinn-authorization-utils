@@ -1,6 +1,6 @@
 # Altinn.Cli Console App
 
-The `Altinn.JwkGenerator` console application provides a convenient way to generate Json Web Keys.
+The `Altinn.Cli.Jwks` console application provides a convenient and secure way to generate Json Web Keys.
 
 ## Installation
 
@@ -8,56 +8,141 @@ Install using `dotnet tool install -g altinn-jwks`.
 
 ## Usage
 
-Use your favorite terminal and execute the `altinn-jwks`.
-
-Here's an example of the `altinn-jwks` console application's built in help page:
+After installation, the `altinn-jwks` tool is available to use in your favorite terminal. You can execute `altinn-jwks --help` to get started:
 
 ```
-Description:
-  Creates a new JWK
+> altinn-jwks --help
 
-Usage:
-  altinn-jwks create <name> [options]
+  Description:
+    Console app for creating Json Web Keys
 
-Arguments:
-  <name>  Name of the integration to generate JWKs for.
+  Usage:
+    altinn-jwks [command] [options] [[--] <additional arguments>...]]
 
-Options:
-  -d, -t, --dev, --test                                         Generate TEST keys. Defaults to true unless --prod is specified.
-  -p, --prod                                                    Generate PROD keys. Defaults to true unless --test is specified.
-  -s, --size <size>                                             Key size in bits.
-  -a, --alg, --algorithm <ES256|ES384|ES512|RS256|RS384|RS512>  The algorithm to use for the key. [default: RS256]
-  -u, --use <enc|sig>                                           Use for the JWK. [default: sig]
-  -o, --out <DIR>                                               Output directory for the generated JWKs. [default: $PATH]
-  -?, -h, --help                                                Show help and usage information
+  Options:
+    -?, -h, --help  Show help and usage information
+    --version       Show version information
+
+  Commands:
+    create <name>  Create a new key and add it to a keyset
+    export         Export key sets
+    list           List all keys sets
+
+  Additional Arguments:
+    Arguments passed to the application that is being run.
+
+  Sample usage:
+    altinn-jwks create my-app
 ```
 
-### Create command
+### Key store location
 
-To create a JWK using the default values simply execute the app with the `create` command:
+By default, the tool will create and use JWKs in the current directory. You can specify a different store location using the `--store` option,
+which is available for all commands. The environment variable `ALTINN_JWK_STORE` can also be used to set a default store location.
 
-```pwsh
-.\altinn-jwks create br
+A store location can point to a local directory or a remote Azure Key Vault. In order to use a Key Vault location,
+you must have the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) installed and be
+[logged in](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-interactively?view=azure-cli-latest) to your Azure account.
+The Key Vault location should be specified in the format `https://<key-vault-name>.vault.azure.net/`.
+
+> [!NOTE]
+> The structure of the JWK store is an undocumented implementation detail, and should not be relied uppon.
+> It can be changed arbitrarily, without this being considered a breaking change. Use the CLI to get keys/key-sets in the different formats.
+
+#### Example
+
+The following example shows how to create a key in a local subdirectory called `keys`:
+
+```
+> altinn-jwks create my-app --store keys/
+  Generating key my-app-TEST.AAAA
+  Generating key my-app-PROD.AAAA
+
+> altinn-jwks export key my-app --store keys/ | jq
+  {
+    "alg": "RS256",
+    "e": "AQAB",
+    ...
+  }
 ```
 
-Output:
+The following example shows how to create a key in a remote Key Vault:
 
 ```
-Generating key br-TEST.2024-06-21 for key-set br-TEST
-Generating key br-PROD.2024-06-21 for key-set br-PROD
+> altinn-jwks create my-app --store https://example.vault.azure.net/
+  Generating key my-app-TEST.AAAA
+  Generating key my-app-PROD.AAAA
+
+> altinn-jwks export key my-app --store https://example.vault.azure.net/ | jq
+  {
+    "alg": "RS256",
+    "e": "AQAB",
+    ...
+  }
 ```
 
-Any of the `options` can be used to override defaults when executing the`create` command:
+### Listing key-sets
 
-```powershell
-.\altinn-jwks create br --size 4096 --alg RS512 --use sig --out ./keys
+The `list` command will list all key-sets available in the current store:
+
+```
+> altinn-jwks list
+
+  app1 (TEST, PROD)
+  app2 (TEST, PROD)
 ```
 
-Output:
+### Creating keys
 
-```powershell
-Generating key br-TEST.2024-06-21 for key-set br-TEST
-Generating key br-PROD.2024-06-21 for key-set br-PROD
+The `create` command lets you create new JWKs, using a range of available options.
+
+```
+> altinn-jwks create --help
+
+  Description:
+    Create a new key and add it to a keyset
+
+  Usage:
+    altinn-jwks create <name> [options] [[--] <additional arguments>...]]
+
+  Arguments:
+    <name>  Name of the integration to generate a new key for
+
+  Options:
+    -e, --env, --environment <None|Prod|Test>  Comma-separated list of Json Web Key Set environments to use [default:
+                                              Test, Prod]
+    -s, --size                                 Key size in bits []
+    -a, --alg, --algorithm                     The algorithm to use for the key [default: RS256]
+    <ES256|ES384|ES512|RS256|RS384|RS512>
+    -u, --use <enc|sig>                        Use for the JWK [default: sig]
+    --suffix                                   Optional suffix to append to the key ID [default: BKBQ]
+    -?, -h, --help                             Show help and usage information
+    -s, --store                                The JWKs store to use. Either a directory or an Azure Key Vault URI
+                                              [default: .]
+```
+
+### Exporting keys
+
+The `export key` command allows you to export a specific key in your required format.
+
+```
+> altinn-jwks export key --help
+
+  Description:
+    Export the current private or public key
+
+  Usage:
+    altinn-jwks export key <name> [options] [[--] <additional arguments>...]]
+
+  Arguments:
+    <name>  Name of the key to export
+
+  Options:
+    -e, --env, --environment <Prod|Test>  Json Web Key Set environment to use [default: Test]
+    -r, --variant <Private|Public>        Decides whether to export the private or the public key [default: Private]
+    -b, --base64                          Outputs the base64 version of the key [default: False]
+    -?, -h, --help                        Show help and usage information
+    -s, --store                           The JWKs store to use. Either a directory or an Azure Key Vault URI [default: .]
 ```
 
 ## Contributing

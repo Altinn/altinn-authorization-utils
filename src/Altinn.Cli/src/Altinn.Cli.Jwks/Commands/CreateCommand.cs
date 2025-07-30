@@ -122,51 +122,43 @@ internal class CreateCommand
             var keyId = store.KeyId(name, environment, suffix);
 
             console.WriteLine($"Generating key {keyId}");
-            var (privateKey, publicKey) = GenerateKeyPair(keyId);
+            var newKey = GenerateKeyPair(keyId);
 
-            await store.AddKeyToKeySet(name, environment, privateKey, publicKey, cancellationToken);
+            await store.AddKeyToKeySet(name, environment, newKey, cancellationToken);
         }
 
-        (JsonWebKey privateKey, JsonWebKey publicKey) GenerateKeyPair(string keyId)
+        JsonWebKey GenerateKeyPair(string keyId)
             => algorithm switch
             {
                 JsonWebKeyAlgorithm.RS256 or JsonWebKeyAlgorithm.RS384 or JsonWebKeyAlgorithm.RS512 => GenerateRsaKeyPair(keyId),
-                JsonWebKeyAlgorithm.ES256 or JsonWebKeyAlgorithm.ES384 or JsonWebKeyAlgorithm.ES512 => GenerateEcKeyPair(keyId),
+                //JsonWebKeyAlgorithm.ES256 or JsonWebKeyAlgorithm.ES384 or JsonWebKeyAlgorithm.ES512 => GenerateEcKeyPair(keyId),
                 _ => throw new NotImplementedException($"Algorithm {algorithm} not implemented.")
             };
 
-        (JsonWebKey privateKey, JsonWebKey publicKey) GenerateRsaKeyPair(string keyId)
+        JsonWebKey GenerateRsaKeyPair(string keyId)
         {
             var rsa = RSA.Create(size ?? 2048);
             var privRsa = new RsaSecurityKey(rsa.ExportParameters(true)) { KeyId = keyId };
-            var pubRsa = new RsaSecurityKey(rsa.ExportParameters(false)) { KeyId = keyId };
-
             var privJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(privRsa);
-            var pubJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(pubRsa);
 
-            privJwk.Alg = pubJwk.Alg = algorithm.ToJwkString();
-            privJwk.Use = pubJwk.Use = use.ToJwkString();
+            privJwk.Alg = algorithm.ToJwkString();
+            privJwk.Use =  use.ToJwkString();
 
-            return (privJwk, pubJwk);
+            return privJwk;
         }
 
-        (JsonWebKey privateKey, JsonWebKey publicKey) GenerateEcKeyPair(string keyId)
-        {
-            var pair = ECDsa.Create(algorithm.ToECDsaCurve());
-            var privKey = ECDsa.Create(pair.ExportParameters(true));
-            var pubKey = ECDsa.Create(pair.ExportParameters(false));
+        //JsonWebKey GenerateEcKeyPair(string keyId)
+        //{
+        //    var pair = ECDsa.Create(algorithm.ToECDsaCurve());
+        //    var privKey = ECDsa.Create(pair.ExportParameters(true));
+        //    var privEc = new ECDsaSecurityKey(privKey) { KeyId = keyId };
+        //    var privJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(privEc);
 
-            var privEc = new ECDsaSecurityKey(privKey) { KeyId = keyId };
-            var pubEc = new ECDsaSecurityKey(pubKey) { KeyId = keyId };
+        //    privJwk.Alg = algorithm.ToJwkString();
+        //    privJwk.Use = use.ToJwkString();
 
-            var privJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(privEc);
-            var pubJwk = JsonWebKeyConverter.ConvertFromECDsaSecurityKey(pubEc);
-
-            privJwk.Alg = pubJwk.Alg = algorithm.ToJwkString();
-            privJwk.Use = pubJwk.Use = use.ToJwkString();
-
-            return (privJwk, pubJwk);
-        }
+        //    return privJwk;
+        //}
     }
 
     private static string GetDateSuffix()
