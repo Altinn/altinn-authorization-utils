@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.3.0...Altinn.Cli-v2.0.0) (2025-07-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* Modifies arguments to the CLI. Uses a new file structure for storing the JWKS. Old JWKS will not be recognized without manual intervention (rename the file from `.json` to `.jwks.json` or the key from `--priv` to `--jwks`).
+
+### Features
+
+* update jwks cli ([#321](https://github.com/Altinn/altinn-authorization-utils/issues/321)) ([b9d4a45](https://github.com/Altinn/altinn-authorization-utils/commit/b9d4a455822d7cc1c4d671525188a11ad71341bd))
+
 ## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.2.0...Altinn.Cli-v1.3.0) (2025-03-06)
 
 
