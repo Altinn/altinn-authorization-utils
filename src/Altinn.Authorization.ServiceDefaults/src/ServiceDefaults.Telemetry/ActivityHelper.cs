@@ -60,6 +60,11 @@ internal static class ActivityHelper
         public void AddTags(ReadOnlySpan<KeyValuePair<string, object?>> tags)
             => _inner.AddTags(tags);
 
+        /// <inheritdoc cref="StateInner.AddTags(in System.Diagnostics.TagList)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddTags(in System.Diagnostics.TagList tags)
+            => _inner.AddTags(in tags);
+
         /// <inheritdoc cref="StateInner.AddLinks(ReadOnlySpan{ActivityLink})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddLinks(ReadOnlySpan<ActivityLink> links)
@@ -96,6 +101,15 @@ internal static class ActivityHelper
         public void AddTags(ReadOnlySpan<KeyValuePair<string, object?>> tags)
         {
             _tags.AddRange(tags);
+        }
+
+        /// <summary>
+        /// Adds a tag to the list of tags.
+        /// </summary>
+        /// <param name="tags">The tags to add.</param>
+        public void AddTags(in System.Diagnostics.TagList tags)
+        {
+            _tags.AddRange(in tags);
         }
 
         /// <summary>
@@ -150,7 +164,8 @@ internal static class ActivityHelper
         /// <param name="tags">The tags to add.</param>
         public void AddRange(ReadOnlySpan<KeyValuePair<string, object?>> tags)
         {
-            if (tags.Length == 0)
+            var count = tags.Length;
+            if (count == 0)
             {
                 return;
             }
@@ -161,9 +176,9 @@ internal static class ActivityHelper
                 return;
             }
             
-            Reserve(tags.Length);
+            Reserve(count);
             tags.CopyTo(_values.AsSpan(_count));
-            _count += tags.Length;
+            _count += count;
 
             static bool HasUnsetTagValue(ReadOnlySpan<KeyValuePair<string, object?>> tags)
             {
@@ -177,6 +192,23 @@ internal static class ActivityHelper
 
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Adds tags to the list.
+        /// </summary>
+        /// <param name="tags">The tags to add.</param>
+        public void AddRange(in System.Diagnostics.TagList tags)
+        {
+            var count = tags.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            Reserve(count);
+            tags.CopyTo(_values.AsSpan(_count));
+            _count += count;
         }
 
         private void AddRangeSlow(ReadOnlySpan<KeyValuePair<string, object?>> tags)
