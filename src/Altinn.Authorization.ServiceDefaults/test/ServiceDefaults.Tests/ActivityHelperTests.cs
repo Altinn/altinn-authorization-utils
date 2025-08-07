@@ -166,5 +166,28 @@ public class ActivityHelperTests
         activity.TagObjects.ShouldContain(new KeyValuePair<string, object?>("tag.bar", "bar"));
     }
 
+    // Note: This test just ensures that the code compiles and runs without exceptions.
+    // It's mostly to test that the overloads are not ambiguous for any of the common
+    // set of arguments.
+    [Fact]
+    public void NonAmbiguous()
+    {
+        var list = new TagList([
+            new("tag.foo", "foo"),
+            new("tag.bar", "bar"),
+        ]);
+
+        using var source = new ActivitySource("test");
+        source.StartActivity("test")?.Dispose();
+        source.StartActivity("test", ActivityKind.Internal)?.Dispose();
+        source.StartActivity("test", in list)?.Dispose();
+        source.StartActivity("test", [])?.Dispose();
+        source.StartActivity("test", ActivityKind.Internal, tags: in list)?.Dispose();
+        source.StartActivity("test", tags: in list)?.Dispose();
+        source.StartActivity("test", tags: [])?.Dispose();
+        source.StartActivity("test", ActivityKind.Internal, tags: in list)?.Dispose();
+        source.StartActivity("test", ActivityKind.Internal, tags: [])?.Dispose();
+    }
+
     private sealed record ThreadInfo(int ThreadId);
 }
