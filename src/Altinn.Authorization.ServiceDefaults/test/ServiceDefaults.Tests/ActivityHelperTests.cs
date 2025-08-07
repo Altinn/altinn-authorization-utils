@@ -136,5 +136,35 @@ public class ActivityHelperTests
         activity.TagObjects.ShouldContain(new KeyValuePair<string, object?>("tag.after", "after"));
     }
 
+    [Fact]
+    public void TagList_CanBeUsed()
+    {
+        using var source = new ActivitySource("test");
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = activitySource => ReferenceEquals(activitySource, source),
+            Sample = (ref ActivityCreationOptions<ActivityContext> options) => ActivitySamplingResult.AllData,
+            ActivityStarted = static _ => { },
+            ActivityStopped = static _ => { },
+        };
+
+        ActivitySource.AddActivityListener(listener);
+
+        var list = new TagList([
+            new("tag.foo", "foo"),
+            new("tag.bar", "bar"),
+        ]);
+
+        using var activity = source.StartActivity(
+            "test",
+            ActivityKind.Internal,
+            tags: in list);
+
+        Assert.NotNull(activity);
+        activity.TagObjects.Count().ShouldBe(2);
+        activity.TagObjects.ShouldContain(new KeyValuePair<string, object?>("tag.foo", "foo"));
+        activity.TagObjects.ShouldContain(new KeyValuePair<string, object?>("tag.bar", "bar"));
+    }
+
     private sealed record ThreadInfo(int ThreadId);
 }
