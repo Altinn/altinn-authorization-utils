@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.2.0...Altinn.Authorization.ServiceDefaults-v3.3.0) (2025-08-07)
+
+
+### Features
+
+* allow taglist ([#326](https://github.com/Altinn/altinn-authorization-utils/issues/326)) ([769bef2](https://github.com/Altinn/altinn-authorization-utils/commit/769bef2b6f243deb7a332c4b6a47909adcc1749d))
+
 ## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.1.1...Altinn.Authorization.ServiceDefaults-v3.2.0) (2025-06-24)
 
 
