@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.3.0...Altinn.Authorization.ServiceDefaults-v3.3.1) (2025-08-07)
+
+
+### Bug Fixes
+
+* remove StartActivity ambiguity ([#328](https://github.com/Altinn/altinn-authorization-utils/issues/328)) ([4b041f6](https://github.com/Altinn/altinn-authorization-utils/commit/4b041f676e598cdfaa1f28c8e5dcb7ad57bb20de))
+
 ## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.2.0...Altinn.Authorization.ServiceDefaults-v3.3.0) (2025-08-07)
 
 
