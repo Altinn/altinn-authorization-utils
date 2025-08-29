@@ -1,7 +1,7 @@
 ﻿using Altinn.Cli.Jwks.Console;
 using CommunityToolkit.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
-using System;
 using System.CommandLine;
 using System.CommandLine.Help;
 using System.CommandLine.Invocation;
@@ -13,10 +13,13 @@ namespace Altinn.Cli.Jwks.Commands;
 internal class ExportCommand
     : BaseCommand
 {
-    public ExportCommand()
-        : base("export", "Export key sets")
+    public ExportCommand(IConsole console, IServiceProvider services)
+        : base(console, "export", "Export key sets")
     {
-        Subcommands.Add(new ExportKeyCommand());
+        foreach (var cmd in services.GetRequiredKeyedService<IEnumerable<Command>>(typeof(ExportCommand)))
+        {
+            Subcommands.Add(cmd);
+        }
 
         SetAction(ExecuteAsync);
     }
@@ -31,9 +34,8 @@ internal class ExportCommand
             ThrowHelper.ThrowInvalidOperationException("Missing subcommand");
         }
 
-        var console = result.GetRequiredService<IConsole>();
-        console.StdErr.WriteLine("Missing required subcommand.", new Style(foreground: Color.Red));
-        console.StdErr.WriteLine();
+        Console.StdErr.WriteLine("Missing required subcommand.", new Style(foreground: Color.Red));
+        Console.StdErr.WriteLine();
 
         switch (helpOption.Action)
         {

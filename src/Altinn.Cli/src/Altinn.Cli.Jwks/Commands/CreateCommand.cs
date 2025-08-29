@@ -58,8 +58,8 @@ internal class CreateCommand
             DefaultValueFactory = _ => GetDateSuffix(),
         };
 
-    public CreateCommand()
-        : base("create", "Create a new key and add it to a keyset")
+    public CreateCommand(IConsole console)
+        : base(console, "create", "Create a new key and add it to a keyset")
     {
         Arguments.Add(NameArg);
         Options.Add(EnvOption);
@@ -73,7 +73,6 @@ internal class CreateCommand
 
     private Task<int> ExecuteAsync(ParseResult result, CancellationToken cancellationToken)
     {
-        var console = result.GetRequiredService<IConsole>();
         var store = result.GetRequiredValue(StoreOption);
         var name = result.GetRequiredValue(NameArg);
         var envs = result.GetRequiredValue(EnvOption);
@@ -83,7 +82,6 @@ internal class CreateCommand
         var suffix = result.GetRequiredValue(SuffixOption);
 
         return ExecuteAsync(
-            console,
             store,
             name,
             envs,
@@ -95,7 +93,6 @@ internal class CreateCommand
     }
 
     private async Task<int> ExecuteAsync(
-        IConsole console,
         JsonWebKeySetStore store,
         string name,
         JsonWebKeySetEnvironments envs,
@@ -121,7 +118,7 @@ internal class CreateCommand
         {
             var keyId = store.KeyId(name, environment, suffix);
 
-            console.WriteLine($"Generating key {keyId}");
+            Console.WriteLine($"Generating key {keyId}");
             var newKey = GenerateKeyPair(keyId);
 
             await store.AddKeyToKeySet(name, environment, newKey, cancellationToken);

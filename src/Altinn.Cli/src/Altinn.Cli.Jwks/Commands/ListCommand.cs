@@ -10,21 +10,20 @@ namespace Altinn.Cli.Jwks.Commands;
 internal class ListCommand
     : BaseCommand
 {
-    public ListCommand()
-        : base("list", "List all keys sets")
+    public ListCommand(IConsole console)
+        : base(console, "list", "List all keys sets")
     {
         SetAction(ExecuteAsync);
     }
 
     private Task<int> ExecuteAsync(ParseResult result, CancellationToken cancellationToken)
     {
-        var console = result.GetRequiredService<IConsole>();
         var store = result.GetRequiredValue(StoreOption);
 
-        return ExecuteAsync(console, store, cancellationToken);
+        return ExecuteAsync(store, cancellationToken);
     }
 
-    private async Task<int> ExecuteAsync(IConsole console, JsonWebKeySetStore store, CancellationToken cancellationToken)
+    private async Task<int> ExecuteAsync(JsonWebKeySetStore store, CancellationToken cancellationToken)
     {
         var count = 0;
         await foreach (var (name, envs) in store.List(cancellationToken: cancellationToken))
@@ -42,13 +41,13 @@ internal class ListCommand
                 continue;
             }
 
-            console.WriteLine($"{name} ({variantsString})");
+            Console.WriteLine($"{name} ({variantsString})");
             count++;
         }
 
         if (count == 0)
         {
-            console.StdErr.WriteLine("No keys found.");
+            Console.StdErr.WriteLine("No keys found.");
         }
 
         return 0;
