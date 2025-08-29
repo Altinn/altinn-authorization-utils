@@ -40,8 +40,8 @@ internal class ExportKeyCommand
             DefaultValueFactory = _ => false,
         };
 
-    public ExportKeyCommand()
-        : base("key", "Export the current private or public key")
+    public ExportKeyCommand(IConsole console)
+        : base(console, "key", "Export the current private or public key")
     {
         Arguments.Add(NameArg);
         Options.Add(EnvironmentOption);
@@ -53,18 +53,16 @@ internal class ExportKeyCommand
 
     private Task<int> ExecuteAsync(ParseResult result, CancellationToken cancellationToken)
     {
-        var console = result.GetRequiredService<IConsole>();
         var store = result.GetRequiredValue(StoreOption);
         var name = result.GetRequiredValue(NameArg);
         var env = result.GetRequiredValue(EnvironmentOption);
         var variant = result.GetValue(KeyVariantOption);
         var base64 = result.GetRequiredValue(Base64Option);
 
-        return ExecuteAsync(console, store, name, env, variant, base64, cancellationToken);
+        return ExecuteAsync(store, name, env, variant, base64, cancellationToken);
     }
 
     private async Task<int> ExecuteAsync(
-        IConsole console,
         JsonWebKeySetStore store,
         string name,
         JsonWebKeySetEnvironment environment,
@@ -78,11 +76,11 @@ internal class ExportKeyCommand
 
         if (base64)
         {
-            await console.RunExclusive(() => OutBase64Stream(data.AsReadOnlySequence, cancellationToken));
+            await Console.RunExclusive(() => OutBase64Stream(data.AsReadOnlySequence, cancellationToken));
         }
         else
         {
-            await console.RunExclusive(() => OutStream(data.AsReadOnlySequence, cancellationToken));
+            await Console.RunExclusive(() => OutStream(data.AsReadOnlySequence, cancellationToken));
         }
 
         return 0;

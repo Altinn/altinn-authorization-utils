@@ -1,7 +1,6 @@
 ﻿using Altinn.Cli.Jwks.Stores;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using System.Collections.Immutable;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
