@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.7.0...Altinn.Urn-v3.0.0) (2025-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Drops .NET 8 support
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#338](https://github.com/Altinn/altinn-authorization-utils/issues/338)) ([9bf6ba9](https://github.com/Altinn/altinn-authorization-utils/commit/9bf6ba91a57f9520cedd9611cb4a15b130903df3))
+
 ## [2.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.6.2...Altinn.Urn-v2.7.0) (2025-06-24)
 
 
