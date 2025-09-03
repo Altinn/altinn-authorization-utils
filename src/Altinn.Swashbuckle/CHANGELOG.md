@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.4.1...Altinn.Swashbuckle-v3.0.0) (2025-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Drops .NET 8 support
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#338](https://github.com/Altinn/altinn-authorization-utils/issues/338)) ([9bf6ba9](https://github.com/Altinn/altinn-authorization-utils/commit/9bf6ba91a57f9520cedd9611cb4a15b130903df3))
+
 ## [2.4.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.4.0...Altinn.Swashbuckle-v2.4.1) (2025-04-22)
 
 
