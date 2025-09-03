@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.3.0...Altinn.Authorization.ProblemDetails-v4.0.0) (2025-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Drops .NET 8 support
+
+### Features
+
+* unit result type ([#345](https://github.com/Altinn/altinn-authorization-utils/issues/345)) ([4b8dc2e](https://github.com/Altinn/altinn-authorization-utils/commit/4b8dc2e537297bed084daaeef878bbc9f89bd8bd))
+
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#338](https://github.com/Altinn/altinn-authorization-utils/issues/338)) ([9bf6ba9](https://github.com/Altinn/altinn-authorization-utils/commit/9bf6ba91a57f9520cedd9611cb4a15b130903df3))
+
 ## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v3.2.2...Altinn.Authorization.ProblemDetails-v3.3.0) (2025-05-12)
 
 
