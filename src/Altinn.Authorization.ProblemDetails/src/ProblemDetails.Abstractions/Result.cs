@@ -155,8 +155,137 @@ public readonly struct Result<T>
     public static bool operator !=(Result<T> left, Result<T> right)
         => !left.Equals(right);
 
-    private string DebuggerDisplay
+    internal string DebuggerDisplay
         => _problem is not null
         ? $"Problem: {_problem.ErrorCode}"
         : string.Create(CultureInfo.InvariantCulture, $"Value: {_result}");
+}
+
+/// <summary>
+/// A (potentially failed) result of an operation.
+/// </summary>
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public readonly struct Result
+    : IEquatable<Result>
+    , IEqualityOperators<Result, Result, bool>
+{
+    /// <summary>
+    /// Gets a value representing a successfully completed operation.
+    /// </summary>
+    public static readonly Result Success = default;
+
+    private readonly Result<Unit> _inner;
+
+    /// <summary>
+    /// Gets a value indicating whether the operation failed.
+    /// </summary>
+    [MemberNotNullWhen(true, nameof(Problem))]
+    public bool IsProblem
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => _inner.IsProblem;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the operation succeeded.
+    /// </summary>
+    [MemberNotNullWhen(false, nameof(Problem))]
+    public bool IsSuccess
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => _inner.IsSuccess;
+    }
+
+    /// <summary>
+    /// Ensures that the operation succeeded.
+    /// </summary>
+    /// <exception cref="ProblemInstanceException">Thrown if the operation failed.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EnsureSuccess()
+    {
+        _inner.EnsureSuccess();
+    }
+
+    /// <summary>
+    /// Gets the problem instance if the operation failed, otherwise <see langword="null"/>.
+    /// </summary>
+    public ProblemInstance? Problem
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => _inner.Problem;
+    }
+
+    // An instance created with the default ctor (a zero init'd struct) represents a successfully completed operation.
+
+    /// <summary>
+    /// Initializes the <see cref="Result{T}"/> with a <see cref="ProblemInstance"/>.
+    /// </summary>
+    /// <param name="problemInstance">The <see cref="ProblemInstance"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Result(ProblemInstance problemInstance)
+    {
+        Guard.IsNotNull(problemInstance);
+
+        _inner = new(problemInstance);
+    }
+
+    private Result(Result<Unit> inner)
+    {
+        _inner = inner;
+    }
+
+    /// <summary>
+    /// Implicitly converts a <see cref="ProblemInstance"/> to a <see cref="Result{T}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result(ProblemInstance value)
+        => new(value);
+
+    /// <summary>
+    /// Implicitly converts a <see cref="ProblemDescriptor"/> to a <see cref="Result{T}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result(ProblemDescriptor value)
+        => new(value);
+
+    /// <summary>
+    /// Implicitly converts a <see cref="Result{T}"/> with type <see cref="Unit"/> to a <see cref="Result"/>.
+    /// </summary>
+    /// <param name="value">The <see cref="Result{T}"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result(Result<Unit> value)
+        => new(value);
+
+    /// <summary>
+    /// Implicitly converts a <see cref="Result"/> to a <see cref="Result{T}"/> with type <see cref="Unit"/>.
+    /// </summary>
+    /// <param name="value">The <see cref="Result"/>.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result<Unit>(Result value)
+        => value._inner;
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+        => _inner.GetHashCode();
+
+    /// <inheritdoc/>
+    public override bool Equals([NotNullWhen(true)] object? obj)
+        => obj is Result other && Equals(other);
+
+    /// <inheritdoc/>
+    public bool Equals(Result other)
+        => _inner.Equals(other._inner);
+
+    /// <inheritdoc/>
+    public static bool operator ==(Result left, Result right)
+        => left.Equals(right);
+
+    /// <inheritdoc/>
+    public static bool operator !=(Result left, Result right)
+        => !left.Equals(right);
+
+    private string DebuggerDisplay
+        => _inner.DebuggerDisplay;
 }

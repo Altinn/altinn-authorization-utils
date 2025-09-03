@@ -97,7 +97,7 @@ public class ResultTests
     [Fact]
     public void EnsureSuccess_ThrowsIfProblem()
     {
-        Result<int> result = StdProblemDescriptors.ValidationError;
+        Result result = StdProblemDescriptors.ValidationError;
         Action action = () => result.EnsureSuccess();
         action.ShouldThrow<ProblemInstanceException>()
             .Problem.ErrorCode.ShouldBe(StdProblemDescriptors.ErrorCodes.ValidationError);
@@ -108,5 +108,19 @@ public class ResultTests
     {
         Result<int> result = 42;
         result.EnsureSuccess();
+    }
+
+    [Fact]
+    public void NonGeneric_EnsureSuccess_DoesNotThrowIfSuccess()
+    {
+        Result result = Result.Success;
+        result.EnsureSuccess();
+    }
+
+    [Fact]
+    public void Success_IsSuccessful()
+    {
+        Result result = Result.Success;
+        result.IsSuccess.ShouldBeTrue();
     }
 }
