@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.3.1...Altinn.Authorization.ServiceDefaults-v4.0.0) (2025-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Drops .NET 8 support
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#338](https://github.com/Altinn/altinn-authorization-utils/issues/338)) ([9bf6ba9](https://github.com/Altinn/altinn-authorization-utils/commit/9bf6ba91a57f9520cedd9611cb4a15b130903df3))
+
 ## [3.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.3.0...Altinn.Authorization.ServiceDefaults-v3.3.1) (2025-08-07)
 
 
