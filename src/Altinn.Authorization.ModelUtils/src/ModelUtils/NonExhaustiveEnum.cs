@@ -24,6 +24,32 @@ public static class NonExhaustiveEnum
         => value;
 
     /// <summary>
+    /// Maps a <see cref="NonExhaustiveEnum{TSource}"/> to a <see cref="NonExhaustiveEnum{TResult}"/> using the specified selector.
+    /// </summary>
+    /// <typeparam name="TSource">The source enum type.</typeparam>
+    /// <typeparam name="TResult">The result enum type.</typeparam>
+    /// <param name="source">The source enum.</param>
+    /// <param name="selector">The selector.</param>
+    /// <returns>The mapped <see cref="NonExhaustiveEnum{T}"/>.</returns>
+    /// <remarks>
+    /// No validation is done to make sure that any unknown value in <typeparamref name="TSource"/> is not a well-known value in
+    /// <typeparamref name="TResult"/>. Any unknown value in <paramref name="source"/> will be mapped to an unknown value in the result.
+    /// </remarks>
+    public static NonExhaustiveEnum<TResult> Select<TSource, TResult>(this NonExhaustiveEnum<TSource> source, Func<TSource, TResult> selector)
+        where TSource : struct, Enum
+        where TResult : struct, Enum
+    {
+        if (source.IsWellKnown)
+        {
+            return selector(source.Value);
+        }
+        else
+        {
+            return NonExhaustiveEnum<TResult>.Unknown(source.UnknownValue);
+        }
+    }
+
+    /// <summary>
     /// Checks if a type is a <see cref="NonExhaustiveEnum{T}"/> and returns the field type.
     /// </summary>
     /// <param name="type">The type to check.</param>
@@ -107,6 +133,15 @@ public readonly struct NonExhaustiveEnum<T>
     , IEquatable<T>
     where T : struct, Enum
 {
+    /// <summary>
+    /// Creates a new <see cref="NonExhaustiveEnum{T}"/> representing an unknown value.
+    /// </summary>
+    /// <param name="value">The unknown value.</param>
+    /// <returns>A <see cref="NonExhaustiveEnum{T}"/> in the unknown state.</returns>
+    /// <remarks>No validation is done to make sure the value is actually unknown.</remarks>
+    internal static NonExhaustiveEnum<T> Unknown(string value)
+        => new(value);
+
     private readonly T _value;
     private readonly string? _string;
 

@@ -99,6 +99,25 @@ public class NonExhaustiveEnumTests
         nonExhaustive.IsUnknown.ShouldBeFalse();
     }
 
+    [Fact]
+    public void WellKnown_Select_ReturnsWellKnown()
+    {
+        NonExhaustiveEnum<Enums.Default> nonExhaustive = Enums.Default.OtherValue3;
+
+        var mapped = nonExhaustive.Select(static _ => Enums.KebabCaseLower.OtherValue3);
+        mapped.ShouldBe(Enums.KebabCaseLower.OtherValue3);
+    }
+
+    [Fact]
+    public void Unknown_Select_ReturnsUnknown()
+    {
+        NonExhaustiveEnum<Enums.Default> nonExhaustive = Json.Deserialize<NonExhaustiveEnum<Enums.Default>>(@"""other-value-3""");
+
+        var mapped = nonExhaustive.Select(static _ => Enums.KebabCaseLower.OtherValue3);
+        mapped.IsUnknown.ShouldBeTrue();
+        mapped.UnknownValue.ShouldBe("other-value-3");
+    }
+
 #pragma warning disable CS1718 // Comparison made to same variable
     [Fact]
     public void Equality()
