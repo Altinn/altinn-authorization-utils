@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v2.0.0...Altinn.Authorization.ModelUtils-v2.1.0) (2025-09-10)
+
+
+### Features
+
+* non-exhaustive select ([#348](https://github.com/Altinn/altinn-authorization-utils/issues/348)) ([0c51c11](https://github.com/Altinn/altinn-authorization-utils/commit/0c51c11387c492c6ddf9e9c4c4e4fe7ffa50124f))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v1.5.0...Altinn.Authorization.ModelUtils-v2.0.0) (2025-09-03)
 
 
