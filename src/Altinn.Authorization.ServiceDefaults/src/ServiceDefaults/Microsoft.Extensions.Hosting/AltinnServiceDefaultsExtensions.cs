@@ -587,7 +587,7 @@ public static class AltinnServiceDefaultsExtensions
             {
                 options.ConfigureRefresh(refresh =>
                 {
-                    refresh.Register("Sentinel", refreshAll: true);
+                    refresh.RegisterAll();
                 });
 
                 if (!string.IsNullOrEmpty(appConfigurationLabel))
