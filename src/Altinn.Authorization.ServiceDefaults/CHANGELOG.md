@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.0.0...Altinn.Authorization.ServiceDefaults-v4.0.1) (2025-09-22)
+
+
+### Bug Fixes
+
+* update appconfiguration ([#353](https://github.com/Altinn/altinn-authorization-utils/issues/353)) ([828a5f9](https://github.com/Altinn/altinn-authorization-utils/commit/828a5f9dbc7677f95542ef2c674c4ec1f0a828c6))
+
 ## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v3.3.1...Altinn.Authorization.ServiceDefaults-v4.0.0) (2025-09-03)
 
 
