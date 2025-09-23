@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.0.1...Altinn.Authorization.ServiceDefaults-v4.1.0) (2025-09-23)
+
+
+### Features
+
+* add access-token generator based token-provider ([#362](https://github.com/Altinn/altinn-authorization-utils/issues/362)) ([a47ccaa](https://github.com/Altinn/altinn-authorization-utils/commit/a47ccaa8e6cbcd297e90966e9e197c0c4758d3ff))
+* add http-client package ([#355](https://github.com/Altinn/altinn-authorization-utils/issues/355)) ([ce05bd2](https://github.com/Altinn/altinn-authorization-utils/commit/ce05bd23751b02970c3a447b8512b74102767b98))
+* add PlatformAccessTokenHandler ([#358](https://github.com/Altinn/altinn-authorization-utils/issues/358)) ([63b97ad](https://github.com/Altinn/altinn-authorization-utils/commit/63b97add4e4f712e3dae34fb89882c3320d702b1))
+* add test-token-generator provider ([#361](https://github.com/Altinn/altinn-authorization-utils/issues/361)) ([2ab028d](https://github.com/Altinn/altinn-authorization-utils/commit/2ab028d3894337f87c218009695f8c93a954984a))
+* add Url utility ([#356](https://github.com/Altinn/altinn-authorization-utils/issues/356)) ([68d870e](https://github.com/Altinn/altinn-authorization-utils/commit/68d870e398d5dde7d189eda749b5e5803a601d50))
+* create AsyncOnlyDelegatingHandler ([#357](https://github.com/Altinn/altinn-authorization-utils/issues/357)) ([6b602d3](https://github.com/Altinn/altinn-authorization-utils/commit/6b602d360da6bac2470ae84f3097d4ebbdf2b0f9))
+* platform env ([#359](https://github.com/Altinn/altinn-authorization-utils/issues/359)) ([60afe30](https://github.com/Altinn/altinn-authorization-utils/commit/60afe3036ea5b8e7399bd51fcce7ad35040b6893))
+
 ## [4.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.0.0...Altinn.Authorization.ServiceDefaults-v4.0.1) (2025-09-22)
 
 
