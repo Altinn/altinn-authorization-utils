@@ -1,5 +1,7 @@
 ﻿using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -90,5 +92,46 @@ public static class ServiceDefaultsHttpClientDependencyInjectionExtensions
         builder.Services.TryAddTransient<PlatformAccessTokenHandler>();
 
         return builder.AddHttpMessageHandler<PlatformAccessTokenHandler>();
+    }
+
+    /// <summary>
+    /// Adds a test platform access token provider for local development to the service collection.
+    /// </summary>
+    /// <remarks>This method is intended for use only in local development environments. It throws an
+    /// exception if called outside of a local development context. The test token generator provider enables the
+    /// generation of platform access tokens for testing purposes.</remarks>
+    /// <param name="services">The service collection to which the test token generator provider will be added.</param>
+    /// <param name="environmentName">The name of the environment to associate with the test token generator settings. This value is used to configure
+    /// the generated tokens.</param>
+    /// <returns>The same service collection instance, to support method chaining.</returns>
+    public static IServiceCollection TryAddTestPlatformTokenGeneratorProvider(
+        this IServiceCollection services,
+        string environmentName)
+    {
+        var serviceDescriptor = services.GetAltinnServiceDescriptor();
+        if (!serviceDescriptor.IsLocalDev)
+        {
+            ThrowHelper.ThrowInvalidOperationException("Test token generator can only be used during local-dev");
+        }
+
+        var descriptor = ServiceDescriptor.Transient<IPlatformAccessTokenProvider>(s => s.GetRequiredService<TestTokenGeneratorPlatformAccessTokenProvider>());
+        services.TryAdd(descriptor);
+        if (!services.Contains(descriptor))
+        {
+            // Already contains a provider for IPlatformAccessTokenProvider
+            return services;
+        }
+
+        services.AddOptions<AltinnTestTokenGeneratorSettings>()
+            .Configure(settings => settings.EnvName = environmentName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<IConfigureOptions<AltinnTestTokenGeneratorSettings>, ConfigureAltinnTestTokenGeneratorSettingsFromConfiguration>();
+
+        services.AddHttpClient<TestTokenGeneratorPlatformAccessTokenProvider>()
+            .ConfigureBaseAddressFromOptions((AltinnTestTokenGeneratorSettings settings) => settings.Url!);
+
+        return services;
     }
 }
