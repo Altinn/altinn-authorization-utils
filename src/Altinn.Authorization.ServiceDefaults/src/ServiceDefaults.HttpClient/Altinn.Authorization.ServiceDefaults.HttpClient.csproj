@@ -5,4 +5,12 @@
     <PackageReference Include="CommunityToolkit.Diagnostics" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults.Tests" />
+  </ItemGroup>
+
 </Project>
