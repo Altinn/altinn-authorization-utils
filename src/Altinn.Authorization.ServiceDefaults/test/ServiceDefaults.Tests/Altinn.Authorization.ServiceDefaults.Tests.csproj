@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils\Altinn.Authorization.TestUtils.csproj" />
+    <ProjectReference Include="..\..\src\ServiceDefaults.HttpClient\Altinn.Authorization.ServiceDefaults.HttpClient.csproj" />
     <ProjectReference Include="..\..\src\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
   </ItemGroup>
 
