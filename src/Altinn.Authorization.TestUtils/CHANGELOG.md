@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.0.0...Altinn.Authorization.TestUtils-v2.1.0) (2025-09-23)
+
+
+### Features
+
+* add authentication filter ([#360](https://github.com/Altinn/altinn-authorization-utils/issues/360)) ([714658f](https://github.com/Altinn/altinn-authorization-utils/commit/714658f33219678f5d45050a3e7629469881084b))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v1.0.0...Altinn.Authorization.TestUtils-v2.0.0) (2025-09-03)
 
 
