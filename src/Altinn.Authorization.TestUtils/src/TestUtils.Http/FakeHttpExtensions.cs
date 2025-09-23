@@ -63,6 +63,22 @@ public static class FakeHttpExtensions
     }
 
     /// <summary>
+    /// Adds a route value filter to the request.
+    /// </summary>
+    /// <typeparam name="T">The request builder type.</typeparam>
+    /// <param name="builder">The builder.</param>
+    /// <param name="scheme">The authentication scheme.</param>
+    /// <param name="value">The authentication value.</param>
+    /// <returns><paramref name="builder"/>.</returns>
+    public static T WithAuthentication<T>(this T builder, string scheme, string value)
+        where T : IFilterFakeRequest
+    {
+        builder.AddFilter(ConstAuthenticationFilter.Create(scheme, value));
+
+        return builder;
+    }
+
+    /// <summary>
     /// Sets the response for the request.
     /// </summary>
     /// <typeparam name="T">The request builder type.</typeparam>

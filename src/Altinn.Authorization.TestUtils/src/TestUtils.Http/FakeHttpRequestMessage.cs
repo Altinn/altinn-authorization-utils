@@ -74,7 +74,16 @@ public class FakeHttpRequestMessage
     /// </summary>
     public RouteData RouteData
     {
-        get => Options.TryGetValue(_routeDataKey, out var routeData) ? routeData : throw new InvalidOperationException("Route data not set.");
+        get
+        {
+            if (!Options.TryGetValue(_routeDataKey, out var routeData))
+            {
+                routeData = new();
+                Options.Set(_routeDataKey, routeData);
+            }
+
+            return routeData;
+        }
         set => Options.Set(_routeDataKey, value);
     }
 }
