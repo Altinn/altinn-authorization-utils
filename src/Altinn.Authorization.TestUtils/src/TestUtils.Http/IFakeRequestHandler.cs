@@ -15,7 +15,7 @@ public interface IFakeRequestHandler
     /// </summary>
     /// <param name="context">The request context.</param>
     /// <returns><see langword="true"/>, if this handler can handle <paramref name="context"/>, otherwise <see langword="false"/>.</returns>
-    bool CanHandle(FakeRequestContext context);
+    FakeRequestMatchResult CanHandle(FakeRequestContext context);
 
     /// <summary>
     /// Handles the request.

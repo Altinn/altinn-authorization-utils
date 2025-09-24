@@ -23,10 +23,10 @@ public abstract class BaseFakeRequestHandler
         => Description;
 
     /// <inheritdoc cref="IFakeRequestHandler.CanHandle(FakeRequestContext)"/>
-    protected abstract bool CanHandle(FakeRequestContext context);
+    protected abstract FakeRequestMatchResult CanHandle(FakeRequestContext context);
 
     /// <inheritdoc/>
-    bool IFakeRequestHandler.CanHandle(FakeRequestContext context)
+    FakeRequestMatchResult IFakeRequestHandler.CanHandle(FakeRequestContext context)
         => CanHandle(context);
 
     /// <inheritdoc/>

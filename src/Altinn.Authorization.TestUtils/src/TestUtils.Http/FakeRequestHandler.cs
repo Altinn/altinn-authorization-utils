@@ -14,20 +14,21 @@ public sealed class FakeRequestHandler
     private ImmutableList<IFakeRequestFilter> _filters = [];
 
     /// <inheritdoc/>
-    protected override bool CanHandle(FakeRequestContext context)
+    protected override FakeRequestMatchResult CanHandle(FakeRequestContext context)
     {
         var filters = _filters;
         var request = context.Request;
 
+        var result = FakeRequestMatchResult.Success;
         foreach (var filter in filters)
         {
             if (!filter.Matches(request))
             {
-                return false;
+                result += filter.Description;
             }
         }
 
-        return true;
+        return result;
     }
 
     /// <inheritdoc/>
