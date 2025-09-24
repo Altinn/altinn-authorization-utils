@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ServiceDefaults;
 

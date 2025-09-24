@@ -10,7 +10,7 @@ public class ConfigureAltinnTestTokenGeneratorSettingsFromConfigurationTests
     public void DoesNot_Overwrite()
     {
         var config = Config([
-            new("Platform:Token:TestTool:Endpoint", FakeHttpMessageHandler.FakeBasePath.OriginalString),
+            new("Platform:Token:TestTool:Endpoint", FakeHttpEndpoint.HttpsUri.OriginalString),
             new("Platform:Token:TestTool:Username", "test-user"),
             new("Platform:Token:TestTool:Password", "test-pass"),
         ]);
@@ -39,7 +39,7 @@ public class ConfigureAltinnTestTokenGeneratorSettingsFromConfigurationTests
     public void Sets_Values()
     {
         var config = Config([
-            new("Platform:Token:TestTool:Endpoint", FakeHttpMessageHandler.FakeBasePath.OriginalString),
+            new("Platform:Token:TestTool:Endpoint", FakeHttpEndpoint.HttpsUri.OriginalString),
             new("Platform:Token:TestTool:Username", "test-user"),
             new("Platform:Token:TestTool:Password", "test-pass"),
         ]);
@@ -54,7 +54,7 @@ public class ConfigureAltinnTestTokenGeneratorSettingsFromConfigurationTests
 
         options.AppName.ShouldBe("test-app");
         options.EnvName.ShouldBe("test");
-        options.Url.ShouldBe(FakeHttpMessageHandler.FakeBasePath.OriginalString);
+        options.Url.ShouldBe(FakeHttpEndpoint.HttpsUri.OriginalString);
         options.Authentication.ShouldNotBeNull();
         options.Authentication.Scheme.ShouldBe("Basic");
         options.Authentication.Parameter.ShouldBe("dGVzdC11c2VyOnRlc3QtcGFzcw==");

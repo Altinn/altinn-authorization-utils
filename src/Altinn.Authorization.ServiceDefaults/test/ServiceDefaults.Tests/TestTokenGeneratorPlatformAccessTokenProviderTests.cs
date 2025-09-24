@@ -11,7 +11,7 @@ public class TestTokenGeneratorPlatformAccessTokenProviderTests
     {
         var options = Microsoft.Extensions.Options.Options.Create(new AltinnTestTokenGeneratorSettings
         {
-            Url = FakeHttpMessageHandler.FakeBasePath.OriginalString,
+            Url = FakeHttpEndpoint.HttpsUri.OriginalString,
             AppName = "test-app",
             EnvName = "test-env",
             Authentication = new("Fake", "auth"),
