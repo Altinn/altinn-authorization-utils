@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.2.0...Altinn.Authorization.TestUtils-v2.2.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* disable service-discovery ([#368](https://github.com/Altinn/altinn-authorization-utils/issues/368)) ([282ec5b](https://github.com/Altinn/altinn-authorization-utils/commit/282ec5be7b789c4df14c182201ae56586366001f))
+
 ## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.1.0...Altinn.Authorization.TestUtils-v2.2.0) (2025-09-24)
 
 
