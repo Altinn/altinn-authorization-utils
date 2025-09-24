@@ -112,4 +112,26 @@ public static class FakeHttpExtensions
     public static void Respond<T>(this T builder, string contentType, string content)
         where T : ISetFakeRequestHandler
         => Respond(builder, () => new StringContent(content, Encoding.UTF8, new MediaTypeHeaderValue(contentType, "utf-8")));
+
+    /// <summary>
+    /// Gets the fake base path for the request.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <returns>A <see cref="Uri"/>. Defaults to <see cref="FakeHttpEndpoint.HttpUri"/> for http requests, and <see cref="FakeHttpEndpoint.HttpsUri"/> for https requests.</returns>
+    public static Uri GetFakeBasePath(this HttpRequestMessage request)
+    {
+        if (request.Headers.TryGetValues("X-Fake-Base-Path", out var values)
+            && values.FirstOrDefault() is { } fakeBasePathString
+            && Uri.TryCreate(fakeBasePathString, UriKind.Absolute, out var fakeBasePathUri))
+        {
+            return fakeBasePathUri;
+        }
+
+        if (request.RequestUri is { Scheme: "http" })
+        {
+            return FakeHttpEndpoint.HttpUri;
+        }
+
+        return FakeHttpEndpoint.HttpsUri;
+    }
 }

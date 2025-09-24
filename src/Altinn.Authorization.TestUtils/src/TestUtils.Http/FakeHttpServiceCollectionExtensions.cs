@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.ServiceDiscovery;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
@@ -10,6 +11,8 @@ namespace Altinn.Authorization.TestUtils.Http;
 /// </summary>
 public static class FakeHttpServiceCollectionExtensions
 {
+    private static ServiceDescriptor _endpointProviderFactory = ServiceDescriptor.Singleton<IServiceEndpointProviderFactory, FakeHttpHandlerServiceEndpointProviderFactory>();
+
     /// <summary>
     /// Configures the <see cref="IHttpClientFactory"/> to use <paramref name="handlers"/> for all clients.
     /// </summary>
@@ -20,6 +23,11 @@ public static class FakeHttpServiceCollectionExtensions
     {
         services.AddSingleton(handlers ?? new());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<HttpClientFactoryOptions>, ConfigureFakeHandlers>());
+
+        if (!services.Contains(_endpointProviderFactory))
+        {
+            services.Add(_endpointProviderFactory);
+        }
 
         return services;
     }
@@ -39,7 +47,7 @@ public static class FakeHttpServiceCollectionExtensions
             var handler = _handlers.For(name ?? Options.DefaultName);
 
             options.HttpMessageHandlerBuilderActions.Insert(0, b => b.PrimaryHandler = handler);
-            options.HttpClientActions.Insert(0, c => c.BaseAddress = FakeHttpMessageHandler.FakeBasePath);
+            options.HttpClientActions.Insert(0, c => c.BaseAddress = FakeHttpEndpoint.HttpsUri);
         }
 
         public void Configure(HttpClientFactoryOptions options)
