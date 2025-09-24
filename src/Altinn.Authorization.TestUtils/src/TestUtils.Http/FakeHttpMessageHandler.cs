@@ -104,9 +104,10 @@ public class FakeHttpMessageHandler
 
             if (_expectations.TryPeek(out var expectation))
             {
-                if (!expectation.CanHandle(context))
+                var matchResult = expectation.CanHandle(context);
+                if (!matchResult.IsSuccess)
                 {
-                    throw new UnexpectedRequestException(context, expectation);
+                    throw new UnexpectedRequestException(context, expectation, matchResult);
                 }
 
                 _expectations.Dequeue();
@@ -115,7 +116,7 @@ public class FakeHttpMessageHandler
 
             foreach (var handler in _handlers)
             {
-                if (handler.CanHandle(context))
+                if (handler.CanHandle(context).IsSuccess)
                 {
                     return handler;
                 }
@@ -171,8 +172,8 @@ public class FakeHttpMessageHandler
         {
         }
 
-        protected override bool CanHandle(FakeRequestContext context)
-            => true;
+        protected override FakeRequestMatchResult CanHandle(FakeRequestContext context)
+            => FakeRequestMatchResult.Success;
 
         protected override string Description
             => $"Fallback handler for requests that do not match any other handler.";

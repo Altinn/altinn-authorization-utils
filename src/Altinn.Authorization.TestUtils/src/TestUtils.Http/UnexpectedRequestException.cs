@@ -14,8 +14,9 @@ public class UnexpectedRequestException
     /// </summary>
     /// <param name="context">The <see cref="FakeRequestContext"/>.</param>
     /// <param name="expectation">The expected <see cref="IFakeRequestHandler"/>.</param>
-    public UnexpectedRequestException(FakeRequestContext context, IFakeRequestHandler expectation)
-        : base(CreateMessage(context, expectation))
+    /// <param name="matchResult">The <see cref="FakeRequestMatchResult"/>.</param>
+    public UnexpectedRequestException(FakeRequestContext context, IFakeRequestHandler expectation, FakeRequestMatchResult matchResult)
+        : base(CreateMessage(context, expectation, matchResult))
     {
         _context = context;
         _expectation = expectation;
@@ -33,10 +34,11 @@ public class UnexpectedRequestException
     public IFakeRequestHandler Expectation
         => _expectation;
 
-    private static string CreateMessage(FakeRequestContext context, IFakeRequestHandler expectation)
+    private static string CreateMessage(FakeRequestContext context, IFakeRequestHandler expectation, FakeRequestMatchResult matchResult)
     {
         return $"""
             Unexpected request: {context.Request.Method} {context.Request.RequestUri}.
+            Unmet expectation: {matchResult}
             Expected: {expectation.Description}
             """;
     }
