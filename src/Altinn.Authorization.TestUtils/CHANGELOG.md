@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.2.1...Altinn.Authorization.TestUtils-v3.0.0) (2025-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Modified the IFakeRequestHandler interface
+
+### Features
+
+* unmet expectations ([#370](https://github.com/Altinn/altinn-authorization-utils/issues/370)) ([e6ac66a](https://github.com/Altinn/altinn-authorization-utils/commit/e6ac66ad3e0a647fc73ca94cb5b694425320494d))
+
 ## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.2.0...Altinn.Authorization.TestUtils-v2.2.1) (2025-09-24)
 
 
