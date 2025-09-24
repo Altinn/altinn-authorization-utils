@@ -16,7 +16,8 @@ public class FakeHttpMessageHandler
     /// the fake message handler will have to be relative to this path in order to match any
     /// routes.
     /// </summary>
-    public static readonly Uri FakeBasePath = new Uri("https://fake.example.com/fake/root/");
+    [Obsolete($"Use {nameof(FakeHttpEndpoint)}.{nameof(FakeHttpEndpoint.HttpsUri)} instead.")]
+    public static readonly Uri FakeBasePath = FakeHttpEndpoint.HttpsUri;
 
     private readonly Lock _lock = new();
 
@@ -65,8 +66,8 @@ public class FakeHttpMessageHandler
     public HttpClient CreateClient()
     {
         var client = new HttpClient(this);
-        client.BaseAddress = FakeBasePath;
-        client.DefaultRequestHeaders.Add("X-Fake-Base-Path", FakeBasePath.ToString());
+        client.BaseAddress = FakeHttpEndpoint.HttpsUri;
+        client.DefaultRequestHeaders.Add("X-Fake-Base-Path", FakeHttpEndpoint.HttpsUri.ToString());
 
         return client;
     }

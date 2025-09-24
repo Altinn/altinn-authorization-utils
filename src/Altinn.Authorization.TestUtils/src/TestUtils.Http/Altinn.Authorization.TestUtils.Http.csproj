@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Routing" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
     <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Abstractions" />
     <PackageReference Include="Nerdbank.Streams" />
   </ItemGroup>
 

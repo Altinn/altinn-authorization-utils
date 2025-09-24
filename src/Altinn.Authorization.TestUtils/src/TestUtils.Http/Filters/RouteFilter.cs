@@ -29,7 +29,7 @@ internal sealed class RouteFilter
             return false;
         }
 
-        var baseUrl = FakeHttpMessageHandler.FakeBasePath;
+        var baseUrl = request.GetFakeBasePath();
         var relativeUrl = baseUrl.MakeRelativeUri(request.RequestUri);
         if (relativeUrl.IsAbsoluteUri)
         {
