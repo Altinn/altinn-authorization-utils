@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.1.0...Altinn.Authorization.TestUtils-v2.2.0) (2025-09-24)
+
+
+### Features
+
+* handle service-discovery ([#365](https://github.com/Altinn/altinn-authorization-utils/issues/365)) ([59ba0c8](https://github.com/Altinn/altinn-authorization-utils/commit/59ba0c844e2e09dda5d6489e6b455cf1d9e84b97))
+
 ## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.0.0...Altinn.Authorization.TestUtils-v2.1.0) (2025-09-23)
 
 
