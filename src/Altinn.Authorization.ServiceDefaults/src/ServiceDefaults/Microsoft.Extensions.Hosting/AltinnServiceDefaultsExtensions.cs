@@ -89,6 +89,11 @@ public static class AltinnServiceDefaultsExtensions
             flags |= AltinnServiceFlags.RunInitOnly;
         }
 
+        if (builder.Configuration.GetValue<bool>("Altinn:IsTest"))
+        {
+            flags |= AltinnServiceFlags.IsTest;
+        }
+
         var env = AltinnEnvironment.Create(envName);
         serviceDescription = new AltinnServiceDescriptor(name, env, flags);
         logger.Log($"Service: {serviceDescription.Name}, Environment: {serviceDescription.Environment}");
