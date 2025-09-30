@@ -28,10 +28,11 @@ public sealed record AltinnServiceDescriptor
     /// </summary>
     public AltinnEnvironment Environment { get; }
 
-    /// <summary>
-    /// Gets a value indicating whether only initialization routines should be executed.
-    /// </summary>
+    /// <inheritdoc cref="AltinnServiceFlags.RunInitOnly"/>
     public bool RunInitOnly => _flags.HasFlag(AltinnServiceFlags.RunInitOnly);
+
+    /// <inheritdoc cref="AltinnServiceFlags.IsTest"/>
+    public bool IsTest => _flags.HasFlag(AltinnServiceFlags.IsTest);
 
     internal AltinnServiceDescriptor(string name, AltinnEnvironment environment, AltinnServiceFlags flags)
     {
