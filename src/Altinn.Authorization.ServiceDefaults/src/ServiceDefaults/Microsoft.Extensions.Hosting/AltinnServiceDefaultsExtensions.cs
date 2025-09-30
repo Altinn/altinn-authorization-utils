@@ -83,8 +83,14 @@ public static class AltinnServiceDefaultsExtensions
             }
         }
 
+        var flags = AltinnServiceFlags.None;
+        if (builder.Configuration.GetValue<bool>("Altinn:RunInitOnly"))
+        {
+            flags |= AltinnServiceFlags.RunInitOnly;
+        }
+
         var env = AltinnEnvironment.Create(envName);
-        serviceDescription = new AltinnServiceDescriptor(name, env);
+        serviceDescription = new AltinnServiceDescriptor(name, env, flags);
         logger.Log($"Service: {serviceDescription.Name}, Environment: {serviceDescription.Environment}");
         builder.Services.AddSingleton(serviceDescription);
         builder.Services.AddSingleton(env);

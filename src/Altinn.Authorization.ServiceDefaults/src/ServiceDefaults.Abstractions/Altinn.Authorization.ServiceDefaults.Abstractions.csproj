@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Altinn.Authorization.ServiceDefaults</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Diagnostics" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults" />
+    <InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults.Tests" />
+  </ItemGroup>
+
+</Project>

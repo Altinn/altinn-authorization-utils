@@ -11,6 +11,7 @@ namespace Altinn.Authorization.ServiceDefaults;
 [DebuggerDisplay("Name = {Name}, IsLocalDev = {IsLocalDev}")]
 public sealed record AltinnServiceDescriptor
 {
+    private readonly AltinnServiceFlags _flags;
 
     /// <summary>
     /// Gets the name of the service.
@@ -27,7 +28,12 @@ public sealed record AltinnServiceDescriptor
     /// </summary>
     public AltinnEnvironment Environment { get; }
 
-    internal AltinnServiceDescriptor(string name, AltinnEnvironment environment)
+    /// <summary>
+    /// Gets a value indicating whether only initialization routines should be executed.
+    /// </summary>
+    public bool RunInitOnly => _flags.HasFlag(AltinnServiceFlags.RunInitOnly);
+
+    internal AltinnServiceDescriptor(string name, AltinnEnvironment environment, AltinnServiceFlags flags)
     {
         Guard.IsNotNullOrWhiteSpace(name);
         if (name != name.ToLowerInvariant())
@@ -35,6 +41,7 @@ public sealed record AltinnServiceDescriptor
             ThrowHelper.ThrowArgumentException("Service name must be in lowercase.", nameof(name));
         }
 
+        _flags = flags;
         Name = name;
         Environment = environment;
     }
