@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.0.0...Altinn.Authorization.TestUtils-v3.0.1) (2025-09-30)
+
+
+### Bug Fixes
+
+* release sha handling ([#376](https://github.com/Altinn/altinn-authorization-utils/issues/376)) ([9899481](https://github.com/Altinn/altinn-authorization-utils/commit/9899481a22fe932f383c2b0b6a664218d2402ed8))
+
 ## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v2.2.1...Altinn.Authorization.TestUtils-v3.0.0) (2025-09-24)
 
 
