@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ServiceDefaults;
+using Altinn.Authorization.ServiceDefaults.AppConfiguration;
 using Altinn.Authorization.ServiceDefaults.ApplicationInsights;
 using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
@@ -442,7 +443,7 @@ public static class AltinnServiceDefaultsExtensions
     {
         builder.Configuration.AddAltinnDbSecretsJson(logger);
         builder.Configuration.AddAltinnKeyVault(logger);
-        builder.Configuration.AddAltinnAppConfiguration(serviceDescriptor, logger);
+        builder.AddAltinnAppConfiguration(serviceDescriptor, logger);
 
         return builder;
     }
@@ -533,8 +534,13 @@ public static class AltinnServiceDefaultsExtensions
         return manager;
     }
 
-    private static IConfigurationBuilder AddAltinnAppConfiguration(this IConfigurationManager manager, AltinnServiceDescriptor serviceDescriptor, AltinnPreStartLogger logger)
+    private static IConfigurationBuilder AddAltinnAppConfiguration(
+        this IHostApplicationBuilder builder,
+        AltinnServiceDescriptor serviceDescriptor,
+        AltinnPreStartLogger logger)
     {
+        var manager = builder.Configuration;
+
         var appConfigurationEndpoint = manager.GetValue<string>("Altinn:AppConfiguration:Endpoint");
         var appConfigurationLabel = manager.GetValue<string>("Altinn:AppConfiguration:Label");
         var enableEnvironmentCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:Environment:Enable", defaultValue: false);
@@ -604,6 +610,9 @@ public static class AltinnServiceDefaultsExtensions
                 options.ConfigureKeyVault(kvOptions => kvOptions.SetCredential(credential));
                 options.Connect(appConfigurationEndpointUri, credential);
             });
+
+            builder.Services.AddAzureAppConfiguration();
+            builder.Services.AddSingleton<IHostedService, RefreshAppConfigurationHostedService>();
         }
         else
         {
