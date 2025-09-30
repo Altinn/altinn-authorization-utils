@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.1.1...Altinn.Authorization.ServiceDefaults-v4.2.0) (2025-09-30)
+
+
+### Features
+
+* add service flags ([#378](https://github.com/Altinn/altinn-authorization-utils/issues/378)) ([ef134ca](https://github.com/Altinn/altinn-authorization-utils/commit/ef134ca00df69891f173551cb4eeb8f67b70c3ae))
+
 ## [4.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.1.0...Altinn.Authorization.ServiceDefaults-v4.1.1) (2025-09-30)
 
 
