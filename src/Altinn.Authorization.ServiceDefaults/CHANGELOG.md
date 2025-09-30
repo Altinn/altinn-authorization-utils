@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.2.0...Altinn.Authorization.ServiceDefaults-v4.3.0) (2025-09-30)
+
+
+### Features
+
+* add IsTest to service descriptor ([#380](https://github.com/Altinn/altinn-authorization-utils/issues/380)) ([dcdf196](https://github.com/Altinn/altinn-authorization-utils/commit/dcdf19624065b62bccaf9c1c94dac6c4b2505a14))
+
 ## [4.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.1.1...Altinn.Authorization.ServiceDefaults-v4.2.0) (2025-09-30)
 
 
