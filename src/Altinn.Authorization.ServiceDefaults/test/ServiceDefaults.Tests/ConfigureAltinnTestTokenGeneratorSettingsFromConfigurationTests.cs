@@ -15,7 +15,7 @@ public class ConfigureAltinnTestTokenGeneratorSettingsFromConfigurationTests
             new("Platform:Token:TestTool:Password", "test-pass"),
         ]);
 
-        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"));
+        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"), flags: default);
         var options = new AltinnTestTokenGeneratorSettings
         {
             AppName = "custom-app",
@@ -44,7 +44,7 @@ public class ConfigureAltinnTestTokenGeneratorSettingsFromConfigurationTests
             new("Platform:Token:TestTool:Password", "test-pass"),
         ]);
 
-        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"));
+        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"), flags: default);
         var options = new AltinnTestTokenGeneratorSettings
         {
         };

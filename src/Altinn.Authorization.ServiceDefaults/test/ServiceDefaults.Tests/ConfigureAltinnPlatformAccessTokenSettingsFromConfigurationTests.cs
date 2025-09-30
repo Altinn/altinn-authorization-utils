@@ -12,7 +12,7 @@ public class ConfigureAltinnPlatformAccessTokenSettingsFromConfigurationTests
             new("Platform:Token:Generator:Issuer", "test-issuer"),
         ]);
 
-        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"));
+        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"), flags: default);
         var options = new AltinnPlatformAccessTokenSettings
         {
             AppName = "custom-app",
@@ -33,7 +33,7 @@ public class ConfigureAltinnPlatformAccessTokenSettingsFromConfigurationTests
             new("Platform:Token:Generator:Issuer", "test-issuer"),
         ]);
 
-        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"));
+        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"), flags: default);
         var options = new AltinnPlatformAccessTokenSettings
         {
         };
@@ -51,7 +51,7 @@ public class ConfigureAltinnPlatformAccessTokenSettingsFromConfigurationTests
         var config = Config([
         ]);
 
-        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"));
+        var descriptor = new AltinnServiceDescriptor("test-app", AltinnEnvironment.Create("TEST"), flags: default);
         var options = new AltinnPlatformAccessTokenSettings
         {
         };
