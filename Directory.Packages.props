@@ -37,7 +37,7 @@
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Abstractions" Version="9.4.2" />
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.9.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.13.16" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="9.0.3" />
     <PackageVersion Include="Npgsql" Version="9.0.3" />
