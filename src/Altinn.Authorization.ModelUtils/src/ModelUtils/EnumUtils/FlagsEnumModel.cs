@@ -2,7 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.EnumUtils;
 
@@ -15,11 +18,31 @@ public static class FlagsEnumModel
     /// Creates a new <see cref="FlagsEnumModel{TEnum}"/>.
     /// </summary>
     /// <typeparam name="T">The enum type.</typeparam>
-    /// <param name="options">The JSON serializer options to use. Defaults to <see cref="JsonSerializerOptions.Web"/>.</param>
+    /// <param name="namingPolicy">Optional naming policy.</param>
     /// <returns>A new model.</returns>
-    public static FlagsEnumModel<T> Create<T>(JsonSerializerOptions? options = null)
+    /// <exception cref="ArgumentOutOfRangeException">The provided <paramref name="namingPolicy"/> is not supported.</exception>
+    public static FlagsEnumModel<T> Create<T>(JsonKnownNamingPolicy namingPolicy = JsonKnownNamingPolicy.KebabCaseLower)
         where T : struct, Enum
-        => FlagsEnumModel<T>.Create(options ?? JsonSerializerOptions.Web);
+        => Create<T>(namingPolicy switch
+        {
+            JsonKnownNamingPolicy.Unspecified => null,
+            JsonKnownNamingPolicy.CamelCase => JsonNamingPolicy.CamelCase,
+            JsonKnownNamingPolicy.SnakeCaseLower => JsonNamingPolicy.SnakeCaseLower,
+            JsonKnownNamingPolicy.SnakeCaseUpper => JsonNamingPolicy.SnakeCaseUpper,
+            JsonKnownNamingPolicy.KebabCaseLower => JsonNamingPolicy.KebabCaseLower,
+            JsonKnownNamingPolicy.KebabCaseUpper => JsonNamingPolicy.KebabCaseUpper,
+            _ => ThrowHelper.ThrowArgumentOutOfRangeException<JsonNamingPolicy?>(nameof(namingPolicy), namingPolicy, "Unexpected known naming policy."),
+        });
+
+    /// <summary>
+    /// Creates a new <see cref="FlagsEnumModel{TEnum}"/>.
+    /// </summary>
+    /// <typeparam name="T">The enum type.</typeparam>
+    /// <param name="namingPolicy">Optional naming policy.</param>
+    /// <returns>A new model.</returns>
+    public static FlagsEnumModel<T> Create<T>(JsonNamingPolicy? namingPolicy)
+        where T : struct, Enum
+        => FlagsEnumModel<T>.Create(namingPolicy);
 }
 
 /// <summary>
@@ -32,12 +55,25 @@ public sealed class FlagsEnumModel<TEnum>
     /// <summary>
     /// Creates a new <see cref="FlagsEnumModel{TEnum}"/>.
     /// </summary>
-    /// <param name="options">The JSON serializer options to use.</param>
+    /// <param name="namingPolicy">Optional naming policy.</param>
     /// <returns>A new model.</returns>
-    public static FlagsEnumModel<TEnum> Create(JsonSerializerOptions options)
+    internal static FlagsEnumModel<TEnum> Create(
+        JsonNamingPolicy? namingPolicy)
     {
         var values = Enum.GetValues<TEnum>();
         var names = Enum.GetNames<TEnum>();
+        Debug.Assert(values.Length == names.Length);
+
+        Dictionary<string, string>? enumMemberAttributes = null;
+        foreach (FieldInfo field in typeof(TEnum).GetFields(BindingFlags.Public | BindingFlags.Static))
+        {
+            if (field.GetCustomAttribute<JsonStringEnumMemberNameAttribute>() is { } attribute
+                && !string.IsNullOrEmpty(attribute.Name))
+            {
+                enumMemberAttributes ??= new(StringComparer.Ordinal);
+                enumMemberAttributes.Add(field.Name, attribute.Name);
+            }
+        }
         
         var noneFound = false;
         var builder = ImmutableArray.CreateBuilder<Item>(values.Length - 1);
@@ -57,7 +93,7 @@ public sealed class FlagsEnumModel<TEnum>
                 continue;
             }
 
-            var name = GetString(value, fieldName, options);
+            var name = GetString(value, fieldName, namingPolicy, enumMemberAttributes);
             builder.Add(new Item(value, name));
         }
 
@@ -66,42 +102,54 @@ public sealed class FlagsEnumModel<TEnum>
             ThrowHelper.ThrowInvalidOperationException("Flags enum must have a default value called 'None'");
         }
 
-        // Sort by number of bits set, greatest number of bits set first, then by absolute value of the enum value.
+        // Sort by number of bits set, greatest number of bits set first, then by absolute value of the enum value, and last by length of the name.
         builder.Sort(static (a, b) =>
         {
             var aBits = a.Value.NumBitsSet();
             var bBits = b.Value.NumBitsSet();
 
-            return bBits.CompareTo(aBits);
+            var result = bBits.CompareTo(aBits);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            result = a.Value.CompareTo(b.Value);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return a.Name.Length.CompareTo(b.Name.Length);
         });
 
         var items = builder.DrainToImmutable();
         var byStringBuilder = new Dictionary<string, TEnum>(items.Length, StringComparer.Ordinal);
+        var byValueBuilder = new Dictionary<TEnum, string>(items.Length);
         foreach (ref readonly var item in items.AsSpan())
         {
             byStringBuilder.TryAdd(item.Name, item.Value);
+            byValueBuilder.TryAdd(item.Value, item.Name);
         }
 
         var byString = byStringBuilder.ToFrozenDictionary();
-        var byValue = items.Select(static i => KeyValuePair.Create(i.Value, i.Name)).ToFrozenDictionary();
+        var byValue = byValueBuilder.ToFrozenDictionary();
         return new(items, byString, byValue);
     }
 
-    private static string GetString(TEnum value, string fieldName, JsonSerializerOptions options)
+    private static string GetString(TEnum value, string fieldName, JsonNamingPolicy? namingPolicy, Dictionary<string, string>? enumMemberAttributes)
     {
-        using var doc = JsonSerializer.SerializeToDocument(value, options);
-        if (doc.RootElement.ValueKind == JsonValueKind.Number)
+        if (enumMemberAttributes is not null && enumMemberAttributes.TryGetValue(fieldName, out var result))
         {
-            // if the serializer serializes to numbers, we default to using kebab-case for the name
-            return JsonNamingPolicy.KebabCaseLower.ConvertName(fieldName);
+            return result;
         }
 
-        if (doc.RootElement.ValueKind != JsonValueKind.String)
+        if (namingPolicy is not null)
         {
-            ThrowHelper.ThrowInvalidOperationException("Flags enum must serialize to a string or number");
+            return namingPolicy.ConvertName(fieldName);
         }
 
-        return doc.RootElement.GetString()!;
+        return fieldName;
     }
 
     private readonly FrozenDictionary<string, TEnum> _byString;
