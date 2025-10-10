@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v2.1.0...Altinn.Authorization.ModelUtils-v3.0.0) (2025-10-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* Removes json options support from `FlagsEnumModel` and replaces it with `JsonNamingPolicy`.
+
+### Bug Fixes
+
+* `FlagsEnumModel` handles multiple enum cases with same value ([#385](https://github.com/Altinn/altinn-authorization-utils/issues/385)) ([dcef52e](https://github.com/Altinn/altinn-authorization-utils/commit/dcef52edad8ac13e9d1b8af8d90673f6419165f0))
+
 ## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v2.0.0...Altinn.Authorization.ModelUtils-v2.1.0) (2025-09-10)
 
 
