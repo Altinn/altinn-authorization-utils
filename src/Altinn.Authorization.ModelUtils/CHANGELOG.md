@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.0.0...Altinn.Authorization.ModelUtils-v3.1.0) (2025-10-18)
+
+
+### Features
+
+* add flags-enum model helper ([#392](https://github.com/Altinn/altinn-authorization-utils/issues/392)) ([9f9f3ea](https://github.com/Altinn/altinn-authorization-utils/commit/9f9f3ea3760c890f6dfd826b91befbdf30e915e9))
+
 ## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v2.1.0...Altinn.Authorization.ModelUtils-v3.0.0) (2025-10-10)
 
 
