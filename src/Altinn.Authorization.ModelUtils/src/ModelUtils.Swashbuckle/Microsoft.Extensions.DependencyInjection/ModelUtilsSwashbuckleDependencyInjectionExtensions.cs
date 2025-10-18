@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ModelUtils;
+using Altinn.Authorization.ModelUtils.AspNet;
 using Altinn.Authorization.ModelUtils.Swashbuckle;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,7 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
         services.AddExtensibleEnumSwaggerSupport();
         services.AddFieldValueRecordSwaggerSupport();
         services.AddPolymorphicFieldValueRecordSwaggerSupport();
+        services.AddFlagsEnumModelSupport();
         
         return services;
     }
@@ -61,6 +63,19 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     {
         services.TryAddSingleton<PolymorphicFieldValueRecordSchemaFilter>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<PolymorphicFieldValueRecordSchemaFilter>>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds support for <see cref="FlagsEnum{TEnum}"/> for Swagger/OpenAPI.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddFlagsEnumModelSupport(this IServiceCollection services)
+    {
+        services.TryAddSingleton<FlagsEnumModelSchemaFilter>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<FlagsEnumModelSchemaFilter>>());
 
         return services;
     }

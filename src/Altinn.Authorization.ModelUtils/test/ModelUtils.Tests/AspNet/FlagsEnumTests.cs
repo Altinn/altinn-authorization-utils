@@ -1,237 +1,147 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Altinn.Authorization.ModelUtils.AspNet;
+using Altinn.Authorization.ModelUtils.EnumUtils;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
+using Altinn.Authorization.TestUtils.AspNetCore;
+using Altinn.Authorization.TestUtils.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static Altinn.Authorization.ModelUtils.Sample.Api.Models.PolymorphicFieldValueRecords;
+using System.Threading.Tasks;
 
-namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
+namespace Altinn.Authorization.ModelUtils.Tests.AspNet;
 
-/// <summary>
-/// Sample enums for JSON serialization.
-/// </summary>
-[ExcludeFromCodeCoverage]
-public static class Enums
+public class FlagsEnumTests
 {
-    private class LowerCaseNamingPolicy
-        : JsonNamingPolicy
+    private static FlagsEnumModel<PartyFieldIncludes> _model = FlagsEnumModel.Create<PartyFieldIncludes>();
+
+    [Theory]
+    [MemberData(nameof(AllVariants))]
+    public void Equals_Self(PartyFieldIncludes value)
     {
-        public override string ConvertName(string name)
-            => name.ToLowerInvariant();
+        FlagsEnum<PartyFieldIncludes> sut = value;
+        sut.Equals(sut).ShouldBeTrue();
+        sut.Equals(value).ShouldBeTrue();
+        sut.GetHashCode().ShouldBe(value.GetHashCode());
     }
 
-    [AttributeUsage(AttributeTargets.Enum, AllowMultiple = false, Inherited = false)]
-    private class LowerCaseStringEnumConverterAttribute()
-        : StringEnumConverterAttribute(new LowerCaseNamingPolicy())
+    [Theory]
+    [MemberData(nameof(AllVariants))]
+    public void Value(PartyFieldIncludes value)
     {
+        FlagsEnum<PartyFieldIncludes> sut = value;
+        sut.Value.ShouldBe(value);
     }
 
-    /// <summary>
-    /// Test enum with default naming policy.
-    /// </summary>
-    [StringEnumConverter]
-    public enum Default
+    [Theory]
+    [MemberData(nameof(AllVariants))]
+    public void RoundTrip(PartyFieldIncludes value)
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        FlagsEnum<PartyFieldIncludes> sut = value;
+        
+        var formatted = sut.ToString();
+        formatted.ShouldBe(_model.Format(value));
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
+        var parsed = FlagsEnum<PartyFieldIncludes>.Parse(formatted);
+        parsed.Value.ShouldBe(value);
 
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
+        parsed = FlagsEnum<PartyFieldIncludes>.Parse(formatted.AsSpan());
+        parsed.Value.ShouldBe(value);
 
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+        FlagsEnum<PartyFieldIncludes>.TryParse(formatted, out parsed).ShouldBeTrue();
+        parsed.Value.ShouldBe(value);
+
+        FlagsEnum<PartyFieldIncludes>.TryParse(formatted.AsSpan(), out parsed).ShouldBeTrue();
+        parsed.Value.ShouldBe(value);
     }
 
-    /// <summary>
-    /// Test enum with camel case naming policy.
-    /// </summary>
-    [StringEnumConverter(JsonKnownNamingPolicy.CamelCase)]
-    public enum CamelCase
+    [Theory]
+    [MemberData(nameof(AllVariants))]
+    public void JsonDeserialize_FromString(PartyFieldIncludes value)
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        FlagsEnum<PartyFieldIncludes> sut = value;
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
+        var formatted = sut.ToString();
+        var json = Json.SerializeToString(formatted);
 
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+        var parsed = Json.Deserialize<FlagsEnum<PartyFieldIncludes>>(json);
+        parsed.Value.ShouldBe(value);
     }
 
-    /// <summary>
-    /// Test enum with pascal case naming policy.
-    /// </summary>
-    [StringEnumConverter(JsonKnownNamingPolicy.KebabCaseLower)]
-    public enum KebabCaseLower
+    [Theory]
+    [MemberData(nameof(AllVariants))]
+    public void JsonRoundTrip_AsArray(PartyFieldIncludes value)
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        FlagsEnum<PartyFieldIncludes> sut = value;
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
+        using var doc = Json.SerializeToDocument(sut);
+        doc.RootElement.ValueKind.ShouldBe(JsonValueKind.Array);
 
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+        var parsed = Json.Deserialize<FlagsEnum<PartyFieldIncludes>>(doc);
+        parsed.Value.ShouldBe(value);
     }
 
-    /// <summary>
-    /// Test enum with pascal case naming policy.
-    /// </summary>
-    [StringEnumConverter(JsonKnownNamingPolicy.KebabCaseUpper)]
-    public enum KebabCaseUpper
+    [Theory]
+    [MemberData(nameof(AllVariants))]
+    public async Task QueryString_Single(PartyFieldIncludes value)
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        FlagsEnum<PartyFieldIncludes> sut = value;
+        var formatted = sut.ToString();
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
+        await using var client = await CreateClientAsync();
+        using var response = await client.GetAsync($"/test/query?value={Uri.EscapeDataString(formatted)}", TestContext.Current.CancellationToken);
 
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+        await response.ShouldHaveSuccessStatusCode();
+        var resturned = await response.ShouldHaveJsonContent<FlagsEnum<PartyFieldIncludes>>();
+        resturned.Value.ShouldBe(value);
     }
 
-    /// <summary>
-    /// Test enum with snake case naming policy.
-    /// </summary>
-    [StringEnumConverter(JsonKnownNamingPolicy.SnakeCaseLower)]
-    public enum SnakeCaseLower
+    [Fact]
+    public async Task QueryString_Multiple()
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        await using var client = await CreateClientAsync();
+        using var response = await client.GetAsync($"/test/query?value=party&value=person&value=org.type", TestContext.Current.CancellationToken);
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
-
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+        await response.ShouldHaveSuccessStatusCode();
+        var resturned = await response.ShouldHaveJsonContent<FlagsEnum<PartyFieldIncludes>>();
+        resturned.Value.ShouldBe(PartyFieldIncludes.Party | PartyFieldIncludes.Person | PartyFieldIncludes.OrganizationUnitType);
     }
 
-    /// <summary>
-    /// Test enum with snake case naming policy.
-    /// </summary>
-    [StringEnumConverter(JsonKnownNamingPolicy.SnakeCaseUpper)]
-    public enum SnakeCaseUpper
+    public static TheoryData<PartyFieldIncludes> AllVariants => GetAllVariants();
+
+    private static TheoryData<PartyFieldIncludes> GetAllVariants()
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        var set = new HashSet<PartyFieldIncludes>(Enum.GetValues<PartyFieldIncludes>());
+        var all = default(PartyFieldIncludes);
+        foreach (var flag in set)
+        {
+            all |= flag;
+        }
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
+        set.Add(all);
 
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+        return [.. set];
     }
 
-    /// <summary>
-    /// Test enum with lower case naming policy.
-    /// </summary>
-    [LowerCaseStringEnumConverter]
-    public enum LowerCase
+    private Task<TestClient> CreateClientAsync()
     {
-        /// <summary>
-        /// Some value 1.
-        /// </summary>
-        SomeValue1,
+        return TestClient.CreateControllerClient<TestController>(
+            configureMvc: builder =>
+            {
+                builder.AddAuthorizationModelUtilsBinders();
+            });
+    }
 
-        /// <summary>
-        /// Second value 2.
-        /// </summary>
-        SecondValue2,
-
-        /// <summary>
-        /// Other value 3.
-        /// </summary>
-        OtherValue3,
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Custom value 4.
-        /// </summary>
-        [JsonStringEnumMemberName("custom")]
-        CustomValue4,
-#endif
+    [ApiController]
+    [Route("test")]
+    private class TestController
+        : ControllerBase
+    {
+        [HttpGet("query")]
+        public ActionResult<FlagsEnum<PartyFieldIncludes>> Get([FromQuery] FlagsEnum<PartyFieldIncludes> value)
+        {
+            return value;
+        }
     }
 
     /// <summary>
