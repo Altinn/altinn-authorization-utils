@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.3.0...Altinn.Authorization.ServiceDefaults-v4.4.0) (2025-10-18)
+
+
+### Features
+
+* aspnet testing utils ([#389](https://github.com/Altinn/altinn-authorization-utils/issues/389)) ([fa86525](https://github.com/Altinn/altinn-authorization-utils/commit/fa86525f1648afa684a4778c49b421435dc3df8b))
+
 ## [4.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.2.0...Altinn.Authorization.ServiceDefaults-v4.3.0) (2025-09-30)
 
 
