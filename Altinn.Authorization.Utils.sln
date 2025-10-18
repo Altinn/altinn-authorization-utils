@@ -107,6 +107,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.TestUtils.AspNetCore", "src\Altinn.Authorization.TestUtils\src\TestUtils.AspNetCore\Altinn.Authorization.TestUtils.AspNetCore.csproj", "{128AFB5F-C94E-47B2-A3C0-4DF631296ADA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ModelUtils.AspNet", "src\Altinn.Authorization.ModelUtils\src\ModelUtils.AspNet\Altinn.Authorization.ModelUtils.AspNet.csproj", "{AF3B231B-DAF6-4D61-8DEB-757492182E52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -489,6 +491,18 @@ Global
 		{128AFB5F-C94E-47B2-A3C0-4DF631296ADA}.Release|x64.Build.0 = Release|Any CPU
 		{128AFB5F-C94E-47B2-A3C0-4DF631296ADA}.Release|x86.ActiveCfg = Release|Any CPU
 		{128AFB5F-C94E-47B2-A3C0-4DF631296ADA}.Release|x86.Build.0 = Release|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Debug|x64.Build.0 = Debug|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Debug|x86.Build.0 = Debug|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Release|x64.ActiveCfg = Release|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Release|x64.Build.0 = Release|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Release|x86.ActiveCfg = Release|Any CPU
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -539,6 +553,7 @@ Global
 		{ECBEF03C-D29B-45B3-AF3C-98665F864BCE} = {73FC86DF-ABEB-B5B7-2E65-11FA347832F9}
 		{6A7E1B10-A028-4360-9AC5-22BEB273FD86} = {73FC86DF-ABEB-B5B7-2E65-11FA347832F9}
 		{128AFB5F-C94E-47B2-A3C0-4DF631296ADA} = {24568455-0574-DECF-E7D3-CBFAEBD89F97}
+		{AF3B231B-DAF6-4D61-8DEB-757492182E52} = {8280278A-98F2-E206-A079-E506139BE16C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD1F9C4B-7DD4-49B6-8DC2-881E80966634}

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
@@ -156,6 +157,7 @@ public sealed class FlagsEnumModel<TEnum>
     private readonly FrozenDictionary<TEnum, string> _byValue;
     private readonly ImmutableArray<Item> _items;
     private readonly ConcurrentDictionary<TEnum, string> _formatted = new();
+    private readonly ConcurrentDictionary<TEnum, ImmutableArray<TEnum>> _components = new();
 
     private FlagsEnumModel(
         ImmutableArray<Item> items,
@@ -225,11 +227,56 @@ public sealed class FlagsEnumModel<TEnum>
         ? formatted
         : _formatted.GetOrAdd(value, FormatCore);
 
+    /// <summary>
+    /// Attempts to format a <typeparamref name="TEnum"/> into a <see cref="Span{T}"/> of characters.
+    /// </summary>
+    /// <param name="value">The enum-value to format.</param>
+    /// <param name="destination">The destination span.</param>
+    /// <param name="charsWritten">Number of characters written, if the method returns <see langword="true"/>.</param>
+    /// <returns>Whether or not the formatting succeeded.</returns>
+    public bool TryFormat(TEnum value, Span<char> destination, out int charsWritten)
+    {
+        var formatted = Format(value);
+        
+        if (formatted.Length <= destination.Length)
+        {
+            formatted.AsSpan().CopyTo(destination);
+            charsWritten = formatted.Length;
+            return true;
+        }
+        
+        charsWritten = 0;
+        return false;
+    }
+
     private string FormatCore(TEnum value)
+    {
+        var components = GetComponentStrings(value);
+
+        return string.Join(',', components);
+    }
+
+    /// <summary>
+    /// Gets the component strings that make up a <typeparamref name="TEnum"/> value.
+    /// </summary>
+    /// <param name="value">The enum value.</param>
+    /// <returns>An <see cref="ImmutableArray{T}"/> of the components of <paramref name="value"/>.</returns>
+    public ComponentStringEnumerable GetComponentStrings(TEnum value)
+        => new(this, GetComponents(value));
+
+    private ImmutableArray<TEnum> GetComponents(TEnum value)
+        => _components.GetOrAdd(value, GetComponentsCore);
+
+    private ImmutableArray<TEnum> GetComponentsCore(TEnum value)
     {
         if (value.IsDefault())
         {
-            return string.Empty;
+            return [];
+        }
+
+        if (_byValue.ContainsKey(value))
+        {
+            return [value];
         }
 
         var items = new List<Item>();
@@ -255,7 +302,7 @@ public sealed class FlagsEnumModel<TEnum>
 
         items.Sort(static (a, b) => Comparer<TEnum>.Default.Compare(a.Value, b.Value));
 
-        return string.Join(',', items.Select(static i => i.Name));
+        return items.Select(static i => i.Value).ToImmutableArray();
     }
 
     /// <summary>
@@ -264,4 +311,77 @@ public sealed class FlagsEnumModel<TEnum>
     /// <param name="Value">The value of the item.</param>
     /// <param name="Name">The name of the item.</param>
     public readonly record struct Item(TEnum Value, string Name);
+
+    /// <summary>
+    /// Enumerable for string components.
+    /// </summary>
+    public struct ComponentStringEnumerable
+        : IEnumerable<string>
+    {
+        private readonly FlagsEnumModel<TEnum> _model;
+        private ImmutableArray<TEnum> _inner;
+
+        internal ComponentStringEnumerable(
+            FlagsEnumModel<TEnum> model,
+            ImmutableArray<TEnum> inner)
+        {
+            _model = model;
+            _inner = inner;
+        }
+
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
+        public ComponentStringEnumerator GetEnumerator()
+            => new(_model, _inner.GetEnumerator());
+
+        /// <inheritdoc/>
+        IEnumerator<string> IEnumerable<string>.GetEnumerator()
+            => GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    /// <summary>
+    /// Enumerator for string components.
+    /// </summary>
+    public struct ComponentStringEnumerator
+        : IEnumerator<string>
+    {
+        private readonly FlagsEnumModel<TEnum> _model;
+        private ImmutableArray<TEnum>.Enumerator _inner;
+
+        internal ComponentStringEnumerator(
+            FlagsEnumModel<TEnum> model,
+            ImmutableArray<TEnum>.Enumerator inner)
+        {
+            _model = model;
+            _inner = inner;
+        }
+
+        /// <inheritdoc/>
+        public readonly string Current
+            => _model._byValue[_inner.Current];
+
+        /// <inheritdoc/>
+        readonly object IEnumerator.Current
+            => Current;
+
+        /// <inheritdoc/>
+        readonly void IDisposable.Dispose()
+        {
+        }
+
+        /// <inheritdoc/>
+        public bool MoveNext()
+            => _inner.MoveNext();
+
+        /// <inheritdoc/>
+        readonly void IEnumerator.Reset()
+        {
+            ThrowHelper.ThrowNotSupportedException();
+        }
+    }
 }

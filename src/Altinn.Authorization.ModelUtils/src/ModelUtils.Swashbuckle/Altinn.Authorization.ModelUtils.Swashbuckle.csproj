@@ -10,6 +10,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Altinn.Swashbuckle\src\Altinn.Swashbuckle\Altinn.Swashbuckle.csproj" />
+		<ProjectReference Include="..\ModelUtils.AspNet\Altinn.Authorization.ModelUtils.AspNet.csproj" />
 		<ProjectReference Include="..\ModelUtils\Altinn.Authorization.ModelUtils.csproj" />
 	</ItemGroup>
 
@@ -20,7 +21,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Altinn.Authorization.ModelUtils.Tests"/>
+    <InternalsVisibleTo Include="Altinn.Authorization.ModelUtils.Tests" />
   </ItemGroup>
 
 </Project>

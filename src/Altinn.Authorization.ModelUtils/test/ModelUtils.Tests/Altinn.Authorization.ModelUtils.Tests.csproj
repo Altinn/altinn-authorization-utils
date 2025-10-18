@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils.AspNetCore\Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils.Http\Altinn.Authorization.TestUtils.Http.csproj" />
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils\Altinn.Authorization.TestUtils.csproj" />
+    <ProjectReference Include="..\..\src\ModelUtils.AspNet\Altinn.Authorization.ModelUtils.AspNet.csproj" />
     <ProjectReference Include="..\..\src\ModelUtils.Swashbuckle\Altinn.Authorization.ModelUtils.Swashbuckle.csproj" />
     <ProjectReference Include="..\..\src\ModelUtils\Altinn.Authorization.ModelUtils.csproj" />
   </ItemGroup>
