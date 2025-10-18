@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.0.1...Altinn.Authorization.TestUtils-v3.1.0) (2025-10-18)
+
+
+### Features
+
+* aspnet testing utils ([#389](https://github.com/Altinn/altinn-authorization-utils/issues/389)) ([fa86525](https://github.com/Altinn/altinn-authorization-utils/commit/fa86525f1648afa684a4778c49b421435dc3df8b))
+
 ## [3.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.0.0...Altinn.Authorization.TestUtils-v3.0.1) (2025-09-30)
 
 
