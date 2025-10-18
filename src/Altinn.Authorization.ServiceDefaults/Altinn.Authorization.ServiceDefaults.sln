@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Abstractions", "src\ServiceDefaults.Abstractions\Altinn.Authorization.ServiceDefaults.Abstractions.csproj", "{D003E4F6-B2EE-41F2-BD5C-7A1550C00342}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.TestUtils.AspNetCore", "..\Altinn.Authorization.TestUtils\src\TestUtils.AspNetCore\Altinn.Authorization.TestUtils.AspNetCore.csproj", "{242F076F-F7A2-4EB5-984B-A7F019D4BB21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,18 @@ Global
 		{D003E4F6-B2EE-41F2-BD5C-7A1550C00342}.Release|x64.Build.0 = Release|Any CPU
 		{D003E4F6-B2EE-41F2-BD5C-7A1550C00342}.Release|x86.ActiveCfg = Release|Any CPU
 		{D003E4F6-B2EE-41F2-BD5C-7A1550C00342}.Release|x86.Build.0 = Release|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Debug|x64.Build.0 = Debug|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Debug|x86.Build.0 = Debug|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Release|x64.ActiveCfg = Release|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Release|x64.Build.0 = Release|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Release|x86.ActiveCfg = Release|Any CPU
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -192,5 +206,6 @@ Global
 		{A457E689-1B83-464F-A927-2F8FED5E4D07} = {00E22EFA-B251-4832-5267-0E375C381169}
 		{9CBEDDDA-10B5-4261-8748-DD8AA4617B81} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{D003E4F6-B2EE-41F2-BD5C-7A1550C00342} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{242F076F-F7A2-4EB5-984B-A7F019D4BB21} = {00E22EFA-B251-4832-5267-0E375C381169}
 	EndGlobalSection
 EndGlobal
