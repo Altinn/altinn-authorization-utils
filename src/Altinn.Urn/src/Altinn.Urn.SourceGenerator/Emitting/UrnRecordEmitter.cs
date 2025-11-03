@@ -1,4 +1,6 @@
 ﻿using Altinn.Urn.SourceGenerator.Parsing;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Altinn.Urn.SourceGenerator.Emitting;
 
@@ -270,6 +272,10 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("{");
         builder_lv1.AppendLine("switch (format.AsSpan())");
         builder_lv1.AppendLine("{");
+        builder_lv2.AppendLine("case ['v']:");
+        builder_lv3.AppendLine("return new string(ValueSpan);");
+        builder_lv2.AppendLine("case ['k']:");
+        builder_lv3.AppendLine("return new string(KeySpan);");
         builder_lv2.AppendLine("case ['V', ..var valueFormatSpan]:");
         builder_lv3.AppendLine("var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);");
         builder_lv3.AppendLine("return _type switch");
@@ -293,20 +299,19 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine("{");
         builder_lv1.AppendLine("switch (format)");
         builder_lv1.AppendLine("{");
+        builder_lv2.AppendLine("case ['v']:");
+        builder_lv3.AppendLine("charsWritten = ValueSpan.Length;");
+        builder_lv3.AppendLine("return ValueSpan.TryCopyTo(destination);");
+        builder_lv2.AppendLine("case ['k']:");
+        builder_lv3.AppendLine("charsWritten = KeySpan.Length;");
+        builder_lv3.AppendLine("return KeySpan.TryCopyTo(destination);");
         builder_lv2.AppendLine("case ['V', ..var valueFormatSpan]:");
         builder_lv3.AppendLine("charsWritten = 0;");
         builder_lv3.AppendLine("return _type switch");
         builder_lv3.AppendLine("{");
         foreach (var member in members)
         {
-            if (member.FormatMode.TryFormatSupport)
-            {
-                builder_lv4.AppendLine($"Type.{member.Name} => TryFormat{member.Name}((({member.Name})this).Value, destination, out charsWritten, valueFormatSpan, provider),");
-            }
-            else
-            {
-                builder_lv4.AppendLine($"Type.{member.Name} => false,");
-            }
+            builder_lv4.AppendLine($"Type.{member.Name} => TryFormat{member.Name}((({member.Name})this).Value, destination, out charsWritten, valueFormatSpan, provider),");
         }
         builder_lv4.AppendLine("_ => Unreachable<bool>(),");
         builder_lv3.AppendLine("};");
@@ -374,6 +379,7 @@ internal ref struct UrnRecordEmitter
     private void EmitTypeParsers(in UrnRecordInfo record, CodeBuilder builder, CancellationToken ct)
     {
         var builder_lv1 = builder.Indent();
+        var builder_lv2 = builder_lv1.Indent();
 
         foreach (var type in record.Members)
         {
@@ -384,8 +390,32 @@ internal ref struct UrnRecordEmitter
 
             builder.AppendLine();
             builder.AppendLine("[CompilerGenerated]");
-            builder.AppendLine($"private static bool TryParse{type.Name}(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out {type.ValueType} value)"); 
-            builder_lv1.AppendLine($"=> {type.ValueType}.TryParse(segment, provider, out value);");
+            builder.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
+            builder.AppendLine($"private static bool TryParse{type.Name}(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out {type.ValueType} value)");
+            builder.AppendLine("{");
+            builder_lv1.AppendLine($"return Impl<{type.ValueType}>(segment, provider, out value);");
+
+            builder_lv1.AppendLine();
+            builder_lv1.AppendLine("[CompilerGenerated]");
+            builder_lv1.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
+            builder_lv1.AppendLine("static bool Impl<T>(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out T value)");
+            if (type.TryParseMode.UseUrnParsable)
+            {
+                builder_lv2.AppendLine("where T : IUrnParsable<T>");
+                builder_lv2.AppendLine("=> T.TryParseUrnValue(segment, out value);");
+            }
+            else if (type.TryParseMode.UseSpanParsable)
+            {
+                builder_lv2.AppendLine("where T : ISpanParsable<T>");
+                builder_lv2.AppendLine("=> T.TryParse(segment, provider, out value);");
+            }
+            else
+            {
+                builder_lv2.AppendLine("where T : IParsable<T>");
+                builder_lv2.AppendLine("=> T.TryParse(new string(segment), provider, out value);");
+            }
+
+            builder.AppendLine("}");
         }
     }
 
@@ -393,28 +423,84 @@ internal ref struct UrnRecordEmitter
     {
         ct.ThrowIfCancellationRequested();
         var builder_lv1 = builder.Indent();
+        var builder_lv2 = builder_lv1.Indent();
 
         foreach (var type in record.Members)
         {
-            if (!type.FormatMode.Generate)
+            if (!type.FormatMode.GenerateFormat)
             {
-                continue;
+                goto TryFormat;
             }
 
             builder.AppendLine();
             builder.AppendLine("[CompilerGenerated]");
+            builder.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
             builder.AppendLine($"private static string Format{type.Name}({type.ValueType} value, string? format, IFormatProvider? provider)");
-            builder_lv1.AppendLine($"=> (value as IFormattable).ToString(format, provider);");
+            builder.AppendLine("{");
+            builder_lv1.AppendLine($"return Impl<{type.ValueType}>(value, format, provider);");
 
-            if (!type.FormatMode.TryFormatSupport)
+            builder_lv1.AppendLine();
+            builder_lv1.AppendLine("[CompilerGenerated]");
+            builder_lv1.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
+            builder_lv1.AppendLine("static string Impl<T>(T value, string? format, IFormatProvider? provider)");
+            if (type.FormatMode.UseUrnFormattable)
+            {
+                builder_lv2.AppendLine("where T : IUrnFormattable");
+                builder_lv2.AppendLine("=> value.UrnFormat();");
+            }
+            else
+            {
+                builder_lv2.AppendLine("where T : IFormattable");
+                builder_lv2.AppendLine("=> value.ToString(format, provider);");
+            }
+            builder.AppendLine("}");
+
+        TryFormat:
+            if (!type.FormatMode.GenerateTryFormat)
             {
                 continue;
             }
 
             builder.AppendLine();
             builder.AppendLine("[CompilerGenerated]");
+            if (!type.FormatMode.TryFormatUsingFormat)
+            {
+                builder.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
+            }
             builder.AppendLine($"private static bool TryFormat{type.Name}({type.ValueType} value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)");
-            builder_lv1.AppendLine($"=> (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);");
+            builder.AppendLine("{");
+            if (!type.FormatMode.TryFormatUsingFormat)
+            {
+                builder_lv1.AppendLine($"return Impl<{type.ValueType}>(value, destination, out charsWritten, format, provider);");
+
+                builder_lv1.AppendLine();
+                builder_lv1.AppendLine("[CompilerGenerated]");
+                if (!type.FormatMode.TryFormatUsingFormat)
+                {
+                    builder_lv1.AppendLine("[MethodImpl(MethodImplOptions.AggressiveInlining)]");
+                }
+                builder_lv1.AppendLine("static bool Impl<T>(T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)");
+                if (type.FormatMode.UseUrnFormattable)
+                {
+                    builder_lv2.AppendLine("where T : IUrnFormattable");
+                    builder_lv2.AppendLine("=> value.TryUrnFormat(destination);");
+                }
+                else
+                {
+                    Debug.Assert(type.FormatMode.UseSpanFormattable);
+                    builder_lv2.AppendLine("where T : ISpanFormattable");
+                    builder_lv2.AppendLine("=> value.TryFormat(destination, out charsWritten, format, provider);");
+                }
+            }
+            else
+            {
+                // we synthesize TryFormat using Format
+                builder_lv1.AppendLine("string? formatString = format.Length == 0 ? null : new string(format);");
+                builder_lv1.AppendLine($"string formatted = Format{type.Name}(value, formatString, provider);");
+                builder_lv1.AppendLine("charsWritten = formatted.Length;");
+                builder_lv1.AppendLine("return formatted.TryCopyTo(destination);");
+            }
+            builder.AppendLine("}");
         }
     }
 
@@ -740,22 +826,16 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("[EditorBrowsable(EditorBrowsableState.Never)]");
         builder_lv1.AppendLine("private readonly struct _FormatHelper");
         builder_lv2.AppendLine(": IFormattable");
-        if (member.FormatMode.TryFormatSupport)
-        {
-            builder_lv2.AppendLine(", ISpanFormattable");
-        }
+        builder_lv2.AppendLine(", ISpanFormattable");
         builder_lv1.AppendLine("{");
         builder_lv2.AppendLine($"private readonly {member.ValueType} _value;");
 
         builder_lv2.AppendLine();
         builder_lv2.AppendLine($"public _FormatHelper({member.ValueType} value) => _value = value;");
 
-        if (member.FormatMode.TryFormatSupport)
-        {
-            builder_lv2.AppendLine();
-            builder_lv2.AppendLine("public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)");
-            builder_lv3.AppendLine($"=> TryFormat{member.Name}(_value, destination, out charsWritten, format, provider);");
-        }
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine("public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)");
+        builder_lv3.AppendLine($"=> TryFormat{member.Name}(_value, destination, out charsWritten, format, provider);");
 
         builder_lv2.AppendLine();
         builder_lv2.AppendLine("public string ToString(string? format, IFormatProvider? provider)");

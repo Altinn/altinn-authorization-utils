@@ -1,0 +1,30 @@
+﻿{
+  Diagnostics: [
+    {
+      Location: : (24,0)-(25,77),
+      Message: Urn type-method has TryFormat but no Format,
+      Severity: Error,
+      Descriptor: {
+        Id: AURN0018,
+        Title: Urn type-method has TryFormat but no Format,
+        MessageFormat: Urn type-method has TryFormat but no Format,
+        Category: UrnGenerator,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
+    },
+    {
+      Location: : (13,0)-(14,47),
+      Message: Urn value must be formattable,
+      Severity: Error,
+      Descriptor: {
+        Id: AURN0021,
+        Title: Urn value must be formattable,
+        MessageFormat: Urn value must be formattable,
+        Category: UrnGenerator,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
+    }
+  ]
+}
