@@ -23,12 +23,13 @@ partial record TestUrn
     , IVisitableKeyValueUrn
 {
     private static readonly ImmutableArray<Type> _variants = [
-        Type.Test1,
+        Type.PartyId,
+        Type.PartyUuid,
     ];
 
     private static readonly ImmutableArray<string> _validPrefixes = [
-        "urn:altinn:test1",
-        "urn:altinn:test2",
+        "urn:altinn:party:id",
+        "urn:altinn:party:uuid",
     ];
 
     /// <inheritdoc/>
@@ -43,7 +44,8 @@ partial record TestUrn
     [CompilerGenerated]
     public static ReadOnlySpan<string> PrefixesFor(Type type)
         => type switch {
-            Type.Test1 => Test1.Prefixes,
+            Type.PartyId => PartyId.Prefixes,
+            Type.PartyUuid => PartyUuid.Prefixes,
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -51,7 +53,8 @@ partial record TestUrn
     [CompilerGenerated]
     public static string CanonicalPrefixFor(Type type)
         => type switch {
-            Type.Test1 => Test1.CanonicalPrefix,
+            Type.PartyId => PartyId.CanonicalPrefix,
+            Type.PartyUuid => PartyUuid.CanonicalPrefix,
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -59,7 +62,8 @@ partial record TestUrn
     [CompilerGenerated]
     public static System.Type ValueTypeFor(Type type)
         => type switch {
-            Type.Test1 => typeof(System.Guid),
+            Type.PartyId => typeof(int),
+            Type.PartyUuid => typeof(System.Guid),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
             };
 
@@ -67,7 +71,8 @@ partial record TestUrn
     [CompilerGenerated]
     public static System.Type VariantTypeFor(Type type)
         => type switch {
-            Type.Test1 => typeof(Test1),
+            Type.PartyId => typeof(PartyId),
+            Type.PartyUuid => typeof(PartyUuid),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -75,7 +80,8 @@ partial record TestUrn
     [CompilerGenerated]
     public static string NameFor(Type type)
         => type switch {
-            Type.Test1 => nameof(Test1),
+            Type.PartyId => nameof(PartyId),
+            Type.PartyUuid => nameof(PartyUuid),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -139,7 +145,8 @@ partial record TestUrn
                 var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);
                 return _type switch
                 {
-                    Type.Test1 => FormatTest1(((Test1)this).Value, valueFormat, provider),
+                    Type.PartyId => FormatPartyId(((PartyId)this).Value, valueFormat, provider),
+                    Type.PartyUuid => FormatPartyUuid(((PartyUuid)this).Value, valueFormat, provider),
                     _ => Unreachable<string>(),
                 };
 
@@ -164,7 +171,8 @@ partial record TestUrn
                 charsWritten = 0;
                 return _type switch
                 {
-                    Type.Test1 => TryFormatTest1(((Test1)this).Value, destination, out charsWritten, valueFormatSpan, provider),
+                    Type.PartyId => TryFormatPartyId(((PartyId)this).Value, destination, out charsWritten, valueFormatSpan, provider),
+                    Type.PartyUuid => TryFormatPartyUuid(((PartyUuid)this).Value, destination, out charsWritten, valueFormatSpan, provider),
                     _ => Unreachable<bool>(),
                 };
 
@@ -183,12 +191,27 @@ partial record TestUrn
 
     #pragma warning disable CS8826
     [CompilerGenerated]
-    public partial bool IsTest1([MaybeNullWhen(false)] out System.Guid value)
+    public partial bool IsPartyId([MaybeNullWhen(false)] out int value)
     #pragma warning restore CS8826
     {
-        if (_type == Type.Test1)
+        if (_type == Type.PartyId)
         {
-            value = ((Test1)this).Value;
+            value = ((PartyId)this).Value;
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    #pragma warning disable CS8826
+    [CompilerGenerated]
+    public partial bool IsPartyUuid([MaybeNullWhen(false)] out System.Guid value)
+    #pragma warning restore CS8826
+    {
+        if (_type == Type.PartyUuid)
+        {
+            value = ((PartyUuid)this).Value;
             return true;
         }
 
@@ -214,7 +237,20 @@ partial record TestUrn
 
     [CompilerGenerated]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool TryParseTest1(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out System.Guid value)
+    private static bool TryParsePartyId(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out int value)
+    {
+        return Impl<int>(segment, provider, out value);
+
+        [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool Impl<T>(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out T value)
+            where T : ISpanParsable<T>
+            => T.TryParse(segment, provider, out value);
+    }
+
+    [CompilerGenerated]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool TryParsePartyUuid(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out System.Guid value)
     {
         return Impl<System.Guid>(segment, provider, out value);
 
@@ -226,8 +262,17 @@ partial record TestUrn
     }
 
     [CompilerGenerated]
+    private static bool TryFormatPartyId(int value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        string? formatString = format.Length == 0 ? null : new string(format);
+        string formatted = FormatPartyId(value, formatString, provider);
+        charsWritten = formatted.Length;
+        return formatted.TryCopyTo(destination);
+    }
+
+    [CompilerGenerated]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static string FormatTest1(System.Guid value, string? format, IFormatProvider? provider)
+    private static string FormatPartyUuid(System.Guid value, string? format, IFormatProvider? provider)
     {
         return Impl<System.Guid>(value, format, provider);
 
@@ -240,7 +285,7 @@ partial record TestUrn
 
     [CompilerGenerated]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool TryFormatTest1(System.Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    private static bool TryFormatPartyUuid(System.Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
         return Impl<System.Guid>(value, destination, out charsWritten, format, provider);
 
@@ -256,16 +301,16 @@ partial record TestUrn
     public static bool TryGetVariant(ReadOnlySpan<char> prefix, [MaybeNullWhen(returnValue: false)] out Type variant)
     {
         ReadOnlySpan<char> s = prefix;
-        if (s.StartsWith("urn:altinn:test"))
+        if (s.StartsWith("urn:altinn:party:"))
         {
-            var s_0 = s.Slice(15);
-            if (s_0.StartsWith("1"))
+            var s_0 = s.Slice(17);
+            if (s_0.StartsWith("id"))
             {
-                var s_0_0 = s_0.Slice(1);
+                var s_0_0 = s_0.Slice(2);
 
                 if (s_0_0.Length == 0)
                 {
-                    variant = Type.Test1;
+                    variant = Type.PartyId;
                     return true;
                 }
 
@@ -273,13 +318,13 @@ partial record TestUrn
                 return false;
             }
 
-            if (s_0.StartsWith("2"))
+            if (s_0.StartsWith("uuid"))
             {
-                var s_0_1 = s_0.Slice(1);
+                var s_0_1 = s_0.Slice(4);
 
                 if (s_0_1.Length == 0)
                 {
-                    variant = Type.Test1;
+                    variant = Type.PartyUuid;
                     return true;
                 }
 
@@ -303,16 +348,16 @@ partial record TestUrn
     [CompilerGenerated]
     private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out TestUrn result)
     {
-        if (s.StartsWith("urn:altinn:test"))
+        if (s.StartsWith("urn:altinn:party:"))
         {
-            var s_0 = s.Slice(15);
-            if (s_0.StartsWith("1"))
+            var s_0 = s.Slice(17);
+            if (s_0.StartsWith("id"))
             {
-                var s_0_0 = s_0.Slice(1);
+                var s_0_0 = s_0.Slice(2);
 
-                if (s_0_0.Length > 1 && s_0_0[0] == ':' && TryParseTest1(s_0_0.Slice(1), provider, out System.Guid s_0_0_value))
+                if (s_0_0.Length > 1 && s_0_0[0] == ':' && TryParsePartyId(s_0_0.Slice(1), provider, out int s_0_0_value))
                 {
-                    result = Test1.FromParsed(original ?? new string(s), 17, s_0_0_value);
+                    result = PartyId.FromParsed(original ?? new string(s), 20, s_0_0_value);
                     return true;
                 }
 
@@ -320,13 +365,13 @@ partial record TestUrn
                 return false;
             }
 
-            if (s_0.StartsWith("2"))
+            if (s_0.StartsWith("uuid"))
             {
-                var s_0_1 = s_0.Slice(1);
+                var s_0_1 = s_0.Slice(4);
 
-                if (s_0_1.Length > 1 && s_0_1[0] == ':' && TryParseTest1(s_0_1.Slice(1), provider, out System.Guid s_0_1_value))
+                if (s_0_1.Length > 1 && s_0_1[0] == ':' && TryParsePartyUuid(s_0_1.Slice(1), provider, out System.Guid s_0_1_value))
                 {
-                    result = Test1.FromParsed(original ?? new string(s), 17, s_0_1_value);
+                    result = PartyUuid.FromParsed(original ?? new string(s), 22, s_0_1_value);
                     return true;
                 }
 
@@ -421,29 +466,111 @@ partial record TestUrn
     [CompilerGenerated]
     public enum Type
     {
-        /// <summary>Urn is a <see cref="TestUrn.Test1" />.</summary>
-        Test1 = 1,
+        /// <summary>Urn is a <see cref="TestUrn.PartyId" />.</summary>
+        PartyId = 1,
+        /// <summary>Urn is a <see cref="TestUrn.PartyUuid" />.</summary>
+        PartyUuid = 2,
     }
 
-    /// <summary>A Test1 variant of <see cref="TestUrn"/>.</summary>
+    /// <summary>A PartyId variant of <see cref="TestUrn"/>.</summary>
     [CompilerGenerated]
     [DebuggerDisplay("{DebuggerDisplay}")]
     [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
-    public sealed partial record Test1
+    public sealed partial record PartyId
         : TestUrn
-        , IKeyValueUrnVariant<Test1, TestUrn, Type, System.Guid>
+        , IKeyValueUrnVariant<PartyId, TestUrn, Type, int>
     {
         /// <inheritdoc/>
         [CompilerGenerated]
-        public const string CanonicalPrefix = "urn:altinn:test2";
+        public const string CanonicalPrefix = "urn:altinn:party:id";
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static Type Variant => Type.Test1;
+        public static Type Variant => Type.PartyId;
 
         private static readonly new ImmutableArray<string> _validPrefixes = [
-            "urn:altinn:test1",
-            "urn:altinn:test2",
+            "urn:altinn:party:id",
+        ];
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
+
+        private readonly int _value;
+
+        [CompilerGenerated]
+        private PartyId(string urn, int valueIndex, int value) : base(urn, valueIndex, Type.PartyId) => (_value) = (value);
+
+        /// <summary>Constructs a <see cref="PartyId"/> from parsed components.</summary>
+        /// <param name="urn">The raw URN.</param>
+        /// <param name="valueIndex">The index of the value in the URN.</param>
+        /// <param name="value">The parsed value.</param>
+        /// <returns>A <see cref="PartyId"/> constructed from it's parts.</returns>
+        [CompilerGenerated]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        internal static PartyId FromParsed(string urn, int valueIndex, int value) => new(urn, valueIndex, value);
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public int Value => _value;
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public override string ToString() => _urn.Urn;
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public bool Equals(PartyId? other) => other is not null && _urn == other._urn;
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public override int GetHashCode() => _urn.GetHashCode();
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static PartyId Create(int value)
+            => new($"""urn:altinn:party:id:{new _FormatHelper(value)}""", 20, value);
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        protected override void Accept(IKeyValueUrnVisitor visitor)
+            => visitor.Visit<TestUrn, Type, int>(this, _type, _value);
+
+        [CompilerGenerated]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private readonly struct _FormatHelper
+            : IFormattable
+            , ISpanFormattable
+        {
+            private readonly int _value;
+
+            public _FormatHelper(int value) => _value = value;
+
+            public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                => TryFormatPartyId(_value, destination, out charsWritten, format, provider);
+
+            public string ToString(string? format, IFormatProvider? provider)
+                => FormatPartyId(_value, format, provider);
+        }
+    }
+
+    /// <summary>A PartyUuid variant of <see cref="TestUrn"/>.</summary>
+    [CompilerGenerated]
+    [DebuggerDisplay("{DebuggerDisplay}")]
+    [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
+    public sealed partial record PartyUuid
+        : TestUrn
+        , IKeyValueUrnVariant<PartyUuid, TestUrn, Type, System.Guid>
+    {
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public const string CanonicalPrefix = "urn:altinn:party:uuid";
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static Type Variant => Type.PartyUuid;
+
+        private static readonly new ImmutableArray<string> _validPrefixes = [
+            "urn:altinn:party:uuid",
         ];
 
         /// <inheritdoc/>
@@ -453,16 +580,16 @@ partial record TestUrn
         private readonly System.Guid _value;
 
         [CompilerGenerated]
-        private Test1(string urn, int valueIndex, System.Guid value) : base(urn, valueIndex, Type.Test1) => (_value) = (value);
+        private PartyUuid(string urn, int valueIndex, System.Guid value) : base(urn, valueIndex, Type.PartyUuid) => (_value) = (value);
 
-        /// <summary>Constructs a <see cref="Test1"/> from parsed components.</summary>
+        /// <summary>Constructs a <see cref="PartyUuid"/> from parsed components.</summary>
         /// <param name="urn">The raw URN.</param>
         /// <param name="valueIndex">The index of the value in the URN.</param>
         /// <param name="value">The parsed value.</param>
-        /// <returns>A <see cref="Test1"/> constructed from it's parts.</returns>
+        /// <returns>A <see cref="PartyUuid"/> constructed from it's parts.</returns>
         [CompilerGenerated]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static Test1 FromParsed(string urn, int valueIndex, System.Guid value) => new(urn, valueIndex, value);
+        internal static PartyUuid FromParsed(string urn, int valueIndex, System.Guid value) => new(urn, valueIndex, value);
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -473,7 +600,7 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public bool Equals(Test1? other) => other is not null && _urn == other._urn;
+        public bool Equals(PartyUuid? other) => other is not null && _urn == other._urn;
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -481,8 +608,8 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static Test1 Create(System.Guid value)
-            => new($"""urn:altinn:test2:{new _FormatHelper(value)}""", 17, value);
+        public static PartyUuid Create(System.Guid value)
+            => new($"""urn:altinn:party:uuid:{new _FormatHelper(value)}""", 22, value);
 
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -500,10 +627,10 @@ partial record TestUrn
             public _FormatHelper(System.Guid value) => _value = value;
 
             public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-                => TryFormatTest1(_value, destination, out charsWritten, format, provider);
+                => TryFormatPartyUuid(_value, destination, out charsWritten, format, provider);
 
             public string ToString(string? format, IFormatProvider? provider)
-                => FormatTest1(_value, format, provider);
+                => FormatPartyUuid(_value, format, provider);
         }
     }
 }

@@ -139,6 +139,10 @@ partial class PersonUrnTests
         {
             switch (format.AsSpan())
             {
+                case ['v']:
+                    return new string(ValueSpan);
+                case ['k']:
+                    return new string(KeySpan);
                 case ['V', ..var valueFormatSpan]:
                     var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);
                     return _type switch
@@ -159,6 +163,12 @@ partial class PersonUrnTests
         {
             switch (format)
             {
+                case ['v']:
+                    charsWritten = ValueSpan.Length;
+                    return ValueSpan.TryCopyTo(destination);
+                case ['k']:
+                    charsWritten = KeySpan.Length;
+                    return KeySpan.TryCopyTo(destination);
                 case ['V', ..var valueFormatSpan]:
                     charsWritten = 0;
                     return _type switch
@@ -228,28 +238,82 @@ partial class PersonUrnTests
         public override int GetHashCode() => _urn.GetHashCode();
 
         [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryParsePartyId(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out int value)
-            => int.TryParse(segment, provider, out value);
+        {
+            return Impl<int>(segment, provider, out value);
+
+            [CompilerGenerated]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static bool Impl<T>(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out T value)
+                where T : ISpanParsable<T>
+                => T.TryParse(segment, provider, out value);
+        }
 
         [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryParsePartyUuid(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out System.Guid value)
-            => System.Guid.TryParse(segment, provider, out value);
+        {
+            return Impl<System.Guid>(segment, provider, out value);
+
+            [CompilerGenerated]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static bool Impl<T>(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out T value)
+                where T : ISpanParsable<T>
+                => T.TryParse(segment, provider, out value);
+        }
 
         [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string FormatPartyId(int value, string? format, IFormatProvider? provider)
-            => (value as IFormattable).ToString(format, provider);
+        {
+            return Impl<int>(value, format, provider);
+
+            [CompilerGenerated]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static string Impl<T>(T value, string? format, IFormatProvider? provider)
+                where T : IFormattable
+                => value.ToString(format, provider);
+        }
 
         [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryFormatPartyId(int value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-            => (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);
+        {
+            return Impl<int>(value, destination, out charsWritten, format, provider);
+
+            [CompilerGenerated]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static bool Impl<T>(T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                where T : ISpanFormattable
+                => value.TryFormat(destination, out charsWritten, format, provider);
+        }
 
         [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string FormatPartyUuid(System.Guid value, string? format, IFormatProvider? provider)
-            => (value as IFormattable).ToString(format, provider);
+        {
+            return Impl<System.Guid>(value, format, provider);
+
+            [CompilerGenerated]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static string Impl<T>(T value, string? format, IFormatProvider? provider)
+                where T : IFormattable
+                => value.ToString(format, provider);
+        }
 
         [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryFormatPartyUuid(System.Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-            => (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);
+        {
+            return Impl<System.Guid>(value, destination, out charsWritten, format, provider);
+
+            [CompilerGenerated]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static bool Impl<T>(T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                where T : ISpanFormattable
+                => value.TryFormat(destination, out charsWritten, format, provider);
+        }
 
         /// <inheritdoc/>
         [CompilerGenerated]

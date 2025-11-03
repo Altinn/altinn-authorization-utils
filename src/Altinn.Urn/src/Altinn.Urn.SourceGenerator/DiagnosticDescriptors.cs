@@ -179,4 +179,22 @@ public static class DiagnosticDescriptors
         category: DiagnosticCategory,
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);
+
+    /// <summary>Gets the diagnostic descriptor.</summary>
+    public static DiagnosticDescriptor UrnValueMustBeParsable { get; } = new(
+        id: "AURN0020",
+        title: "Urn value must be parsable",
+        messageFormat: "Urn value must be parsable",
+        category: DiagnosticCategory,
+        DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    /// <summary>Gets the diagnostic descriptor.</summary>
+    public static DiagnosticDescriptor UrnValueMustBeFormattable { get; } = new(
+        id: "AURN0021",
+        title: "Urn value must be formattable",
+        messageFormat: "Urn value must be formattable",
+        category: DiagnosticCategory,
+        DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
 }

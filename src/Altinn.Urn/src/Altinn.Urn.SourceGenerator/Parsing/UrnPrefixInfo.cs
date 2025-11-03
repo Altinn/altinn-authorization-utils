@@ -19,37 +19,89 @@ internal readonly record struct UrnPrefixInfo
     public required bool ValueTypeIsValueType { get; init; }
 }
 
+// Priority list:
+// 1. TryParseXXX method defined on the URN type itself
+// 2. IUrnParsable implemented by the value type
+// 3. ISpanParsable implemented by the value type
+// 4. IParsable implemented by the value type
 internal readonly record struct TryParseMode
 {
-    private readonly bool _existing;
+    public static TryParseMode None => new(Mode.None);
+    public static TryParseMode ExplicitlyDefined => new(Mode.ExplicitlyDefined);
+    public static TryParseMode UrnParsable => new(Mode.UrnParsable);
+    public static TryParseMode SpanParsable => new(Mode.SpanParsable);
+    public static TryParseMode Parsable => new(Mode.Parsable);
 
-    public TryParseMode(bool existing)
+    private readonly Mode _value;
+
+    private TryParseMode(Mode mode)
     {
-        _existing = existing;
+        _value = mode;
     }
 
-    public bool Existing => _existing;
-    public bool Generate => !Existing;
+    public bool IsValid => _value != Mode.None;
+
+    public bool Generate => _value > Mode.ExplicitlyDefined;
+
+    public bool UseUrnParsable => _value == Mode.UrnParsable;
+
+    public bool UseSpanParsable => _value == Mode.SpanParsable;
+
+    public bool UseParsable => _value == Mode.Parsable;
+
+    private enum Mode
+        : byte
+    {
+        None,
+        ExplicitlyDefined,
+        UrnParsable,
+        SpanParsable,
+        Parsable,
+    }
 }
 
+// Priority list:
+// 1. Existing TryFormatXXX & FormatXXX defined on the URN type itself
+// 2. Existing FormatXXX defined on the URN type itself
+// 3. IUrnFormattable implemented by the value type
+// 4. ISpanFormattable implemented by the value type
+// 5. IFormattable implemented by the value type
 internal readonly record struct FormatMode
 {
-    private const byte EXISTING_MASK = 1 << 0;
-    private const byte FORMAT_ONLY_MASK = 1 << 1;
+    public static FormatMode None => new(Mode.None);
+    public static FormatMode ExplicitlyDefinedBoth => new(Mode.ExplicitlyDefinedBoth);
+    public static FormatMode ExplicitlyDefinedFormatOnly => new(Mode.ExplicitlyDefinedFormatOnly);
+    public static FormatMode UrnFormattable => new(Mode.UrnFormattable);
+    public static FormatMode SpanFormattable => new(Mode.SpanFormattable);
+    public static FormatMode Formattable => new(Mode.Formattable);
 
-    // first bit = existing, second bit = format-only
-    private readonly byte _value;
+    private readonly Mode _value;
 
-    public FormatMode(bool existing, bool formatOnly)
+    private FormatMode(Mode mode)
     {
-        _value = (byte)((existing ? EXISTING_MASK : 0) | (formatOnly ? FORMAT_ONLY_MASK : 0));
+        _value = mode;
     }
 
-    public bool Existing => (_value & EXISTING_MASK) != 0;
+    public bool IsValid => _value != Mode.None;
 
-    public bool Generate => !Existing;
+    public bool GenerateFormat => _value > Mode.ExplicitlyDefinedFormatOnly;
 
-    public bool FormatOnly => (_value & FORMAT_ONLY_MASK) != 0;
+    public bool GenerateTryFormat => _value > Mode.ExplicitlyDefinedBoth;
 
-    public bool TryFormatSupport => !FormatOnly;
+    public bool TryFormatUsingFormat => _value is Mode.ExplicitlyDefinedFormatOnly or Mode.Formattable;
+
+    public bool UseUrnFormattable => _value == Mode.UrnFormattable;
+
+    public bool UseSpanFormattable => _value == Mode.SpanFormattable;
+
+    private enum Mode
+        : byte
+    {
+        None,
+        ExplicitlyDefinedBoth,
+        ExplicitlyDefinedFormatOnly,
+        UrnFormattable,
+        SpanFormattable,
+        Formattable,
+    }
 }

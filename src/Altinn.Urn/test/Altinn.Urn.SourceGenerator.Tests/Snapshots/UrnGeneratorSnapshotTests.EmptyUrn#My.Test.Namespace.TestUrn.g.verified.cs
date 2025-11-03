@@ -123,6 +123,10 @@ partial record TestUrn
     {
         switch (format.AsSpan())
         {
+            case ['v']:
+                return new string(ValueSpan);
+            case ['k']:
+                return new string(KeySpan);
             case ['V', ..var valueFormatSpan]:
                 var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);
                 return _type switch
@@ -141,6 +145,12 @@ partial record TestUrn
     {
         switch (format)
         {
+            case ['v']:
+                charsWritten = ValueSpan.Length;
+                return ValueSpan.TryCopyTo(destination);
+            case ['k']:
+                charsWritten = KeySpan.Length;
+                return KeySpan.TryCopyTo(destination);
             case ['V', ..var valueFormatSpan]:
                 charsWritten = 0;
                 return _type switch

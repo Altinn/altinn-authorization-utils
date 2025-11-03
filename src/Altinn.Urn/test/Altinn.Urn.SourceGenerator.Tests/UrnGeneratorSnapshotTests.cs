@@ -247,17 +247,96 @@ public class UrnGeneratorSnapshotTests
             [UrnKey("altinn:party:uuid")]
             public partial bool IsPartyUuid(out Guid partyUuid);
 
-            /// <summary>
-            /// Try to get the urn as an organization number.
-            /// </summary>
-            /// <param name="organizationNumber">The resulting organization number.</param>
-            /// <returns><see langword="true"/> if this party reference is an organization number, otherwise <see langword="false"/>.</returns>
-            [UrnKey("altinn:organization:identifier-no")]
-            public partial bool IsOrganizationIdentifier(out OrganizationNumber organizationNumber);
-
             // Manually overridden to disallow negative party ids
             private static bool TryParsePartyId(ReadOnlySpan<char> segment, IFormatProvider? provider, out int value)
                 => int.TryParse(segment, NumberStyles.None, provider, out value);
+            """;
+
+        await TestKeyValueUrn(source);
+    }
+
+    [Fact]
+    public async Task Urn_Allows_Custom_Format_For_Variant__FormatOnly()
+    {
+        // The source code to test
+        var source = """
+            /// <summary>
+            /// Try to get the urn as a party id.
+            /// </summary>
+            /// <param name="partyId">The resulting party id.</param>
+            /// <returns><see langword="true"/> if this party reference is a party id, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:party:id")]
+            public partial bool IsPartyId(out int partyId);
+
+            /// <summary>
+            /// Try to get the urn as a party uuid.
+            /// </summary>
+            /// <param name="partyUuid">The resulting party uuid.</param>
+            /// <returns><see langword="true"/> if this party reference is a party uuid, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:party:uuid")]
+            public partial bool IsPartyUuid(out Guid partyUuid);
+
+            private static string FormatPartyId(int value, string? format, IFormatProvider? provider)
+                => partyId.ToString();
+            """;
+
+        await TestKeyValueUrn(source);
+    }
+
+    [Fact]
+    public async Task Urn_Allows_Custom_Format_For_Variant__TryFormatOnly()
+    {
+        // The source code to test
+        var source = """
+            /// <summary>
+            /// Try to get the urn as a party id.
+            /// </summary>
+            /// <param name="partyId">The resulting party id.</param>
+            /// <returns><see langword="true"/> if this party reference is a party id, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:party:id")]
+            public partial bool IsPartyId(out int partyId);
+
+            /// <summary>
+            /// Try to get the urn as a party uuid.
+            /// </summary>
+            /// <param name="partyUuid">The resulting party uuid.</param>
+            /// <returns><see langword="true"/> if this party reference is a party uuid, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:party:uuid")]
+            public partial bool IsPartyUuid(out Guid partyUuid);
+
+            private static bool TryFormatPartyId(int value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                => partyId.TryFormat(value, destination, charsWritten, format, provider);
+            """;
+
+        await TestKeyValueUrn(source, [DiagnosticDescriptors.UrnTypeMethodHasTryFormatButNoFormat, DiagnosticDescriptors.UrnValueMustBeFormattable]);
+    }
+
+    [Fact]
+    public async Task Urn_Allows_Custom_Format_For_Variant__FormatAndTryFormat()
+    {
+        // The source code to test
+        var source = """
+            /// <summary>
+            /// Try to get the urn as a party id.
+            /// </summary>
+            /// <param name="partyId">The resulting party id.</param>
+            /// <returns><see langword="true"/> if this party reference is a party id, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:party:id")]
+            public partial bool IsPartyId(out int partyId);
+
+            /// <summary>
+            /// Try to get the urn as a party uuid.
+            /// </summary>
+            /// <param name="partyUuid">The resulting party uuid.</param>
+            /// <returns><see langword="true"/> if this party reference is a party uuid, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:party:uuid")]
+            public partial bool IsPartyUuid(out Guid partyUuid);
+
+            private static string FormatPartyId(int value, string? format, IFormatProvider? provider)
+                => partyId.ToString();
+
+            private static bool TryFormatPartyId(int value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                => partyId.TryFormat(value, destination, charsWritten, format, provider);
             """;
 
         await TestKeyValueUrn(source);

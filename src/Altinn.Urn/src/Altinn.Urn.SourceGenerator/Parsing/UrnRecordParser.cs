@@ -401,14 +401,31 @@ internal ref struct UrnRecordParser
             prefixName = name.Substring(2);
         }
 
-        if (!keepMethod)
+        var type = parameter.Type;
+        if (!keepMethod || type.TypeKind == TypeKind.Error)
         {
             return;
         }
 
-        var type = parameter.Type;
         var tryParseMode = GetTryParseMode(prefixName!, type);
         var formatMode = GetFormatMode(prefixName!, type, ct);
+
+        if (!tryParseMode.IsValid)
+        {
+            AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnValueMustBeParsable, method));
+            keepMethod = false;
+        }
+
+        if (!formatMode.IsValid)
+        {
+            AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnValueMustBeFormattable, method));
+            keepMethod = false;
+        }
+
+        if (!keepMethod)
+        {
+            return;
+        }
 
         var prefixInfo = new UrnPrefixInfo
         {
@@ -458,16 +475,31 @@ internal ref struct UrnRecordParser
                 continue;
             }
 
-            if (!param3.Type.Equals(argumentType, SymbolEqualityComparer.Default))
+            if (!param3.Type.Equals(argumentType, SymbolEqualityComparer.Default) || param3.RefKind != RefKind.Out)
             {
                 continue;
             }
 
             // we have a match - check diagnostics later
-            return new TryParseMode(existing: true);
+            return TryParseMode.ExplicitlyDefined;
         }
 
-        return new TryParseMode(existing: false);
+        if (argumentType.Implements(_symbols.IUrnParsable.Construct(argumentType)))
+        {
+            return TryParseMode.UrnParsable;
+        }
+
+        if (argumentType.Implements(_symbols.ISpanParsable.Construct(argumentType)))
+        {
+            return TryParseMode.SpanParsable;
+        }
+
+        if (argumentType.Implements(_symbols.IParsable.Construct(argumentType)))
+        {
+            return TryParseMode.Parsable;
+        }
+
+        return TryParseMode.None;
     }
 
     private FormatMode GetFormatMode(string prefixName, ITypeSymbol argumentType, CancellationToken ct)
@@ -510,7 +542,7 @@ internal ref struct UrnRecordParser
                 continue;
             }
 
-            if (!param3.Type.Equals(_symbols.Int, SymbolEqualityComparer.Default))
+            if (!param3.Type.Equals(_symbols.Int, SymbolEqualityComparer.Default) || param3.RefKind != RefKind.Out)
             {
                 continue;
             }
@@ -542,7 +574,7 @@ internal ref struct UrnRecordParser
                 continue;
             }
 
-            if (methodSymbol.Parameters.Length != 5)
+            if (methodSymbol.Parameters.Length != 3)
             {
                 continue;
             }
@@ -573,13 +605,6 @@ internal ref struct UrnRecordParser
 
         switch (formatMethod, tryFormatMethod)
         {
-            case (null, null):
-                // if we have neither, then we should generate one of both of them
-                var spanFormattable = _symbols.ISpanFormattable;
-                var supportsTryFormat = argumentType.AllInterfaces.Any(iface => iface.Equals(spanFormattable, SymbolEqualityComparer.Default));
-
-                return new FormatMode(existing: false, formatOnly: !supportsTryFormat);
-
             case (null, { } tryFormat):
                 // we require a format method if we have a try-format method
                 LocationInfo? location = null;
@@ -593,15 +618,32 @@ internal ref struct UrnRecordParser
                 }
 
                 AddDiagnostic(DiagnosticInfo.Create(DiagnosticDescriptors.UrnTypeMethodHasTryFormatButNoFormat, location));
-                return new FormatMode(existing: true, formatOnly: false);
+                return FormatMode.None;
 
             case (not null, null):
                 // we have a format method, but no try-format method
-                return new FormatMode(existing: true, formatOnly: true);
+                return FormatMode.ExplicitlyDefinedFormatOnly;
 
             case (not null, not null):
                 // we have both
-                return new FormatMode(existing: true, formatOnly: false);
+                return FormatMode.ExplicitlyDefinedBoth;
         }
+
+        if (argumentType.Implements(_symbols.IUrnFormattable))
+        {
+            return FormatMode.UrnFormattable;
+        }
+
+        if (argumentType.Implements(_symbols.ISpanFormattable))
+        {
+            return FormatMode.SpanFormattable;
+        }
+
+        if (argumentType.Implements(_symbols.IFormattable))
+        {
+            return FormatMode.Formattable;
+        }
+
+        return FormatMode.None;
     }
 }

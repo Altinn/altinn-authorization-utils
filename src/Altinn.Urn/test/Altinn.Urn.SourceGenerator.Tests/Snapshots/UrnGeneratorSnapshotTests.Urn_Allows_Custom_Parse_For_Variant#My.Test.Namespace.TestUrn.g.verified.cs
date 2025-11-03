@@ -25,13 +25,11 @@ partial record TestUrn
     private static readonly ImmutableArray<Type> _variants = [
         Type.PartyId,
         Type.PartyUuid,
-        Type.OrganizationIdentifier,
     ];
 
     private static readonly ImmutableArray<string> _validPrefixes = [
         "urn:altinn:party:id",
         "urn:altinn:party:uuid",
-        "urn:altinn:organization:identifier-no",
     ];
 
     /// <inheritdoc/>
@@ -48,7 +46,6 @@ partial record TestUrn
         => type switch {
             Type.PartyId => PartyId.Prefixes,
             Type.PartyUuid => PartyUuid.Prefixes,
-            Type.OrganizationIdentifier => OrganizationIdentifier.Prefixes,
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -58,7 +55,6 @@ partial record TestUrn
         => type switch {
             Type.PartyId => PartyId.CanonicalPrefix,
             Type.PartyUuid => PartyUuid.CanonicalPrefix,
-            Type.OrganizationIdentifier => OrganizationIdentifier.CanonicalPrefix,
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -68,7 +64,6 @@ partial record TestUrn
         => type switch {
             Type.PartyId => typeof(int),
             Type.PartyUuid => typeof(System.Guid),
-            Type.OrganizationIdentifier => typeof(OrganizationNumber),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
             };
 
@@ -78,7 +73,6 @@ partial record TestUrn
         => type switch {
             Type.PartyId => typeof(PartyId),
             Type.PartyUuid => typeof(PartyUuid),
-            Type.OrganizationIdentifier => typeof(OrganizationIdentifier),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -88,7 +82,6 @@ partial record TestUrn
         => type switch {
             Type.PartyId => nameof(PartyId),
             Type.PartyUuid => nameof(PartyUuid),
-            Type.OrganizationIdentifier => nameof(OrganizationIdentifier),
             _ => throw new ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -144,13 +137,16 @@ partial record TestUrn
     {
         switch (format.AsSpan())
         {
+            case ['v']:
+                return new string(ValueSpan);
+            case ['k']:
+                return new string(KeySpan);
             case ['V', ..var valueFormatSpan]:
                 var valueFormat = valueFormatSpan.Length == 0 ? null : new string(valueFormatSpan);
                 return _type switch
                 {
                     Type.PartyId => FormatPartyId(((PartyId)this).Value, valueFormat, provider),
                     Type.PartyUuid => FormatPartyUuid(((PartyUuid)this).Value, valueFormat, provider),
-                    Type.OrganizationIdentifier => FormatOrganizationIdentifier(((OrganizationIdentifier)this).Value, valueFormat, provider),
                     _ => Unreachable<string>(),
                 };
 
@@ -165,13 +161,18 @@ partial record TestUrn
     {
         switch (format)
         {
+            case ['v']:
+                charsWritten = ValueSpan.Length;
+                return ValueSpan.TryCopyTo(destination);
+            case ['k']:
+                charsWritten = KeySpan.Length;
+                return KeySpan.TryCopyTo(destination);
             case ['V', ..var valueFormatSpan]:
                 charsWritten = 0;
                 return _type switch
                 {
                     Type.PartyId => TryFormatPartyId(((PartyId)this).Value, destination, out charsWritten, valueFormatSpan, provider),
                     Type.PartyUuid => TryFormatPartyUuid(((PartyUuid)this).Value, destination, out charsWritten, valueFormatSpan, provider),
-                    Type.OrganizationIdentifier => false,
                     _ => Unreachable<bool>(),
                 };
 
@@ -218,21 +219,6 @@ partial record TestUrn
         return false;
     }
 
-    #pragma warning disable CS8826
-    [CompilerGenerated]
-    public partial bool IsOrganizationIdentifier([MaybeNullWhen(false)] out OrganizationNumber value)
-    #pragma warning restore CS8826
-    {
-        if (_type == Type.OrganizationIdentifier)
-        {
-            value = ((OrganizationIdentifier)this).Value;
-            return true;
-        }
-
-        value = default;
-        return false;
-    }
-
     /// <inheritdoc/>
     [CompilerGenerated]
     public override string ToString() => _urn.Urn;
@@ -250,48 +236,85 @@ partial record TestUrn
     public override int GetHashCode() => _urn.GetHashCode();
 
     [CompilerGenerated]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool TryParsePartyUuid(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out System.Guid value)
-        => System.Guid.TryParse(segment, provider, out value);
+    {
+        return Impl<System.Guid>(segment, provider, out value);
+
+        [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool Impl<T>(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out T value)
+            where T : ISpanParsable<T>
+            => T.TryParse(segment, provider, out value);
+    }
 
     [CompilerGenerated]
-    private static bool TryParseOrganizationIdentifier(ReadOnlySpan<char> segment, IFormatProvider? provider, [MaybeNullWhen(false)] out OrganizationNumber value)
-        => OrganizationNumber.TryParse(segment, provider, out value);
-
-    [CompilerGenerated]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string FormatPartyId(int value, string? format, IFormatProvider? provider)
-        => (value as IFormattable).ToString(format, provider);
+    {
+        return Impl<int>(value, format, provider);
+
+        [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static string Impl<T>(T value, string? format, IFormatProvider? provider)
+            where T : IFormattable
+            => value.ToString(format, provider);
+    }
 
     [CompilerGenerated]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool TryFormatPartyId(int value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);
+    {
+        return Impl<int>(value, destination, out charsWritten, format, provider);
+
+        [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool Impl<T>(T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : ISpanFormattable
+            => value.TryFormat(destination, out charsWritten, format, provider);
+    }
 
     [CompilerGenerated]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string FormatPartyUuid(System.Guid value, string? format, IFormatProvider? provider)
-        => (value as IFormattable).ToString(format, provider);
+    {
+        return Impl<System.Guid>(value, format, provider);
+
+        [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static string Impl<T>(T value, string? format, IFormatProvider? provider)
+            where T : IFormattable
+            => value.ToString(format, provider);
+    }
 
     [CompilerGenerated]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool TryFormatPartyUuid(System.Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => (value as ISpanFormattable).TryFormat(destination, out charsWritten, format, provider);
+    {
+        return Impl<System.Guid>(value, destination, out charsWritten, format, provider);
 
-    [CompilerGenerated]
-    private static string FormatOrganizationIdentifier(OrganizationNumber value, string? format, IFormatProvider? provider)
-        => (value as IFormattable).ToString(format, provider);
+        [CompilerGenerated]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool Impl<T>(T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : ISpanFormattable
+            => value.TryFormat(destination, out charsWritten, format, provider);
+    }
 
     /// <inheritdoc/>
     [CompilerGenerated]
     public static bool TryGetVariant(ReadOnlySpan<char> prefix, [MaybeNullWhen(returnValue: false)] out Type variant)
     {
         ReadOnlySpan<char> s = prefix;
-        if (s.StartsWith("urn:altinn:"))
+        if (s.StartsWith("urn:altinn:party:"))
         {
-            var s_0 = s.Slice(11);
-            if (s_0.StartsWith("organization:identifier-no"))
+            var s_0 = s.Slice(17);
+            if (s_0.StartsWith("id"))
             {
-                var s_0_0 = s_0.Slice(26);
+                var s_0_0 = s_0.Slice(2);
 
                 if (s_0_0.Length == 0)
                 {
-                    variant = Type.OrganizationIdentifier;
+                    variant = Type.PartyId;
                     return true;
                 }
 
@@ -299,35 +322,14 @@ partial record TestUrn
                 return false;
             }
 
-            if (s_0.StartsWith("party:"))
+            if (s_0.StartsWith("uuid"))
             {
-                var s_0_1 = s_0.Slice(6);
-                if (s_0_1.StartsWith("id"))
+                var s_0_1 = s_0.Slice(4);
+
+                if (s_0_1.Length == 0)
                 {
-                    var s_0_1_0 = s_0_1.Slice(2);
-
-                    if (s_0_1_0.Length == 0)
-                    {
-                        variant = Type.PartyId;
-                        return true;
-                    }
-
-                    variant = default;
-                    return false;
-                }
-
-                if (s_0_1.StartsWith("uuid"))
-                {
-                    var s_0_1_1 = s_0_1.Slice(4);
-
-                    if (s_0_1_1.Length == 0)
-                    {
-                        variant = Type.PartyUuid;
-                        return true;
-                    }
-
-                    variant = default;
-                    return false;
+                    variant = Type.PartyUuid;
+                    return true;
                 }
 
                 variant = default;
@@ -350,16 +352,16 @@ partial record TestUrn
     [CompilerGenerated]
     private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out TestUrn result)
     {
-        if (s.StartsWith("urn:altinn:"))
+        if (s.StartsWith("urn:altinn:party:"))
         {
-            var s_0 = s.Slice(11);
-            if (s_0.StartsWith("organization:identifier-no"))
+            var s_0 = s.Slice(17);
+            if (s_0.StartsWith("id"))
             {
-                var s_0_0 = s_0.Slice(26);
+                var s_0_0 = s_0.Slice(2);
 
-                if (s_0_0.Length > 1 && s_0_0[0] == ':' && TryParseOrganizationIdentifier(s_0_0.Slice(1), provider, out OrganizationNumber? s_0_0_value))
+                if (s_0_0.Length > 1 && s_0_0[0] == ':' && TryParsePartyId(s_0_0.Slice(1), provider, out int s_0_0_value))
                 {
-                    result = OrganizationIdentifier.FromParsed(original ?? new string(s), 38, s_0_0_value);
+                    result = PartyId.FromParsed(original ?? new string(s), 20, s_0_0_value);
                     return true;
                 }
 
@@ -367,35 +369,14 @@ partial record TestUrn
                 return false;
             }
 
-            if (s_0.StartsWith("party:"))
+            if (s_0.StartsWith("uuid"))
             {
-                var s_0_1 = s_0.Slice(6);
-                if (s_0_1.StartsWith("id"))
+                var s_0_1 = s_0.Slice(4);
+
+                if (s_0_1.Length > 1 && s_0_1[0] == ':' && TryParsePartyUuid(s_0_1.Slice(1), provider, out System.Guid s_0_1_value))
                 {
-                    var s_0_1_0 = s_0_1.Slice(2);
-
-                    if (s_0_1_0.Length > 1 && s_0_1_0[0] == ':' && TryParsePartyId(s_0_1_0.Slice(1), provider, out int s_0_1_0_value))
-                    {
-                        result = PartyId.FromParsed(original ?? new string(s), 20, s_0_1_0_value);
-                        return true;
-                    }
-
-                    result = default;
-                    return false;
-                }
-
-                if (s_0_1.StartsWith("uuid"))
-                {
-                    var s_0_1_1 = s_0_1.Slice(4);
-
-                    if (s_0_1_1.Length > 1 && s_0_1_1[0] == ':' && TryParsePartyUuid(s_0_1_1.Slice(1), provider, out System.Guid s_0_1_1_value))
-                    {
-                        result = PartyUuid.FromParsed(original ?? new string(s), 22, s_0_1_1_value);
-                        return true;
-                    }
-
-                    result = default;
-                    return false;
+                    result = PartyUuid.FromParsed(original ?? new string(s), 22, s_0_1_value);
+                    return true;
                 }
 
                 result = default;
@@ -493,8 +474,6 @@ partial record TestUrn
         PartyId = 1,
         /// <summary>Urn is a <see cref="TestUrn.PartyUuid" />.</summary>
         PartyUuid = 2,
-        /// <summary>Urn is a <see cref="TestUrn.OrganizationIdentifier" />.</summary>
-        OrganizationIdentifier = 3,
     }
 
     /// <summary>A PartyId variant of <see cref="TestUrn"/>.</summary>
@@ -656,83 +635,6 @@ partial record TestUrn
 
             public string ToString(string? format, IFormatProvider? provider)
                 => FormatPartyUuid(_value, format, provider);
-        }
-    }
-
-    /// <summary>A OrganizationIdentifier variant of <see cref="TestUrn"/>.</summary>
-    [CompilerGenerated]
-    [DebuggerDisplay("{DebuggerDisplay}")]
-    [System.Text.Json.Serialization.JsonConverterAttribute(typeof(Altinn.Urn.Json.UrnVariantJsonConverterFactory<My.Test.Namespace.TestUrn, My.Test.Namespace.TestUrn.Type>))]
-    public sealed partial record OrganizationIdentifier
-        : TestUrn
-        , IKeyValueUrnVariant<OrganizationIdentifier, TestUrn, Type, OrganizationNumber>
-    {
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public const string CanonicalPrefix = "urn:altinn:organization:identifier-no";
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public static Type Variant => Type.OrganizationIdentifier;
-
-        private static readonly new ImmutableArray<string> _validPrefixes = [
-            "urn:altinn:organization:identifier-no",
-        ];
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public static new ReadOnlySpan<string> Prefixes => _validPrefixes.AsSpan();
-
-        private readonly OrganizationNumber _value;
-
-        [CompilerGenerated]
-        private OrganizationIdentifier(string urn, int valueIndex, OrganizationNumber value) : base(urn, valueIndex, Type.OrganizationIdentifier) => (_value) = (value);
-
-        /// <summary>Constructs a <see cref="OrganizationIdentifier"/> from parsed components.</summary>
-        /// <param name="urn">The raw URN.</param>
-        /// <param name="valueIndex">The index of the value in the URN.</param>
-        /// <param name="value">The parsed value.</param>
-        /// <returns>A <see cref="OrganizationIdentifier"/> constructed from it's parts.</returns>
-        [CompilerGenerated]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal static OrganizationIdentifier FromParsed(string urn, int valueIndex, OrganizationNumber value) => new(urn, valueIndex, value);
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public OrganizationNumber Value => _value;
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public override string ToString() => _urn.Urn;
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public bool Equals(OrganizationIdentifier? other) => other is not null && _urn == other._urn;
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public override int GetHashCode() => _urn.GetHashCode();
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        public static OrganizationIdentifier Create(OrganizationNumber value)
-            => new($"""urn:altinn:organization:identifier-no:{new _FormatHelper(value)}""", 38, value);
-
-        /// <inheritdoc/>
-        [CompilerGenerated]
-        protected override void Accept(IKeyValueUrnVisitor visitor)
-            => visitor.Visit<TestUrn, Type, OrganizationNumber>(this, _type, _value);
-
-        [CompilerGenerated]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        private readonly struct _FormatHelper
-            : IFormattable
-        {
-            private readonly OrganizationNumber _value;
-
-            public _FormatHelper(OrganizationNumber value) => _value = value;
-
-            public string ToString(string? format, IFormatProvider? provider)
-                => FormatOrganizationIdentifier(_value, format, provider);
         }
     }
 }
