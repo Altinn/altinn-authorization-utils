@@ -266,8 +266,9 @@ partial record TestUrn
     {
         string? formatString = format.Length == 0 ? null : new string(format);
         string formatted = FormatPartyId(value, formatString, provider);
-        charsWritten = formatted.Length;
-        return formatted.TryCopyTo(destination);
+        bool result = formatted.TryCopyTo(destination);
+        charsWritten = result ? formatted.Length : 0;
+        return result;
     }
 
     [CompilerGenerated]
