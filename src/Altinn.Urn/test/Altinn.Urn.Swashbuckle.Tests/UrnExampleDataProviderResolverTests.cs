@@ -33,6 +33,7 @@ public class UrnExampleDataProviderResolverTests
         var options = new ExampleDataOptions();
         options.ProviderResolverChain.Add(new UrnExampleDataProviderResolver());
         options.ProviderResolverChain.Add(new PersonIdentifierExampleProviderResolver());
+        options.Providers.Add(new UrnEncodedExampleDataProvider());
 
         var urnExamples = ExampleData.GetExamples<PersonUrn>(options)?.Take(PersonUrn.Variants.Length);
         Assert.NotNull(urnExamples);

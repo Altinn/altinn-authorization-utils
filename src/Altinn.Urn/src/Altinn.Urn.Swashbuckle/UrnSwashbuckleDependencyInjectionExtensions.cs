@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Urn.Swashbuckle;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -18,10 +18,13 @@ public static class UrnSwashbuckleDependencyInjectionExtensions
     public static IServiceCollection AddUrnSwaggerSupport(this IServiceCollection services)
     {
         services.AddSingleton<UrnExampleDataProviderResolver>();
+        services.AddSingleton<UrnEncodedExampleDataProvider>();
+
         services.AddOpenApiExampleProvider()
-            .Configure((ExampleDataOptions opts, UrnExampleDataProviderResolver resolver) =>
+            .Configure((ExampleDataOptions opts, UrnExampleDataProviderResolver resolver, UrnEncodedExampleDataProvider encodedProvider) =>
             {
                 opts.ProviderResolverChain.Add(resolver);
+                opts.Providers.Add(encodedProvider);
             });
         services.AddSingleton<UrnSwaggerFilter>();
         services.AddSingleton<IConfigureOptions<SwaggerGenOptions>, UrnConfigureSwaggerGen>();

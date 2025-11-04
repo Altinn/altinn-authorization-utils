@@ -1,6 +1,7 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Urn.Json;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -16,6 +17,7 @@ public class UrnSwaggerFilterTests
     {
         var exampleOptions = new ExampleDataOptions(ExampleDataOptions.DefaultOptions);
         exampleOptions.ProviderResolverChain.Add(new UrnExampleDataProviderResolver());
+        exampleOptions.Providers.Add(new UrnEncodedExampleDataProvider());
 
         var jsonOptions = new JsonOptions();
         var openApiExampleProvider = new OpenApiExampleProvider(
@@ -43,6 +45,20 @@ public class UrnSwaggerFilterTests
         schema.Pattern.ShouldStartWith("^urn:altinn:party:uuid:");
 
         schema.Example.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Apply_ForUrnVariantType_WithUrnEncodedValue_HasExample()
+    {
+        var schema = SchemaFor<PersonUrn.PersonName>();
+
+        schema.Type.ShouldBe("string");
+        schema.Format.ShouldBe("urn");
+        schema.Pattern.ShouldNotBeNullOrEmpty();
+        schema.Pattern.ShouldStartWith("^urn:altinn:person:name:");
+
+        schema.Example.ShouldBeOfType<OpenApiString>()
+            .Value.ShouldContain("%3A");
     }
 
     [Fact]
