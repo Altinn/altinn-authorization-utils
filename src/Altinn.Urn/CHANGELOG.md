@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v3.0.0...Altinn.Urn-v4.0.0) (2025-11-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* Urn code generation is modified to use interfaces instead of public members. This means that extension-methods are not resolved in some cases. A bug where custom Format methods were not detected is also fixed.
+
+### Features
+
+* add example provider ([#403](https://github.com/Altinn/altinn-authorization-utils/issues/403)) ([2d00d0f](https://github.com/Altinn/altinn-authorization-utils/commit/2d00d0f71ffa5d41723e17fcdfa846bc146f1159))
+* add urn-parsable and formattable interfaces ([#400](https://github.com/Altinn/altinn-authorization-utils/issues/400)) ([b1489e1](https://github.com/Altinn/altinn-authorization-utils/commit/b1489e164dc8e7ec3c57bd59bc27b9d81903e5d8))
+* urn-encoded ([#402](https://github.com/Altinn/altinn-authorization-utils/issues/402)) ([767c479](https://github.com/Altinn/altinn-authorization-utils/commit/767c479d892f45c0c96a3a7b8c51b4ee3a422611))
+
 ## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v2.7.0...Altinn.Urn-v3.0.0) (2025-09-03)
 
 
