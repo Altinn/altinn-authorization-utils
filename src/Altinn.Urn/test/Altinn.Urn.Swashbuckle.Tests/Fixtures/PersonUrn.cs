@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.Swashbuckle.Tests.Fixtures;
+using Altinn.Urn.Swashbuckle.Tests.Fixtures;
 
 namespace Altinn.Urn.Swashbuckle.Tests;
 
@@ -20,4 +20,7 @@ public abstract partial record PersonUrn
 
     [UrnKey("altinn:person:d-number")]
     public partial bool IsDNumber(out int dNumber);
+
+    [UrnKey("altinn:person:name")]
+    public partial bool IsPersonName(out UrnEncoded name);
 }

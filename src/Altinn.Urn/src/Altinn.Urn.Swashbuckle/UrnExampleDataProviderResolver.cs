@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection;
