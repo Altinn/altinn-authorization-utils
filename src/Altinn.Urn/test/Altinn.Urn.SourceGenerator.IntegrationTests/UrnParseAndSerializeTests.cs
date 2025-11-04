@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 
@@ -8,6 +8,7 @@ public partial class UrnParseAndSerializeTests
     [InlineData("urn:altinn:person:identifier-no:12345678901", PersonUrn.Type.IdentifierNo, "altinn:person:identifier-no", "12345678901")]
     [InlineData("urn:altinn:party:id:123456", PersonUrn.Type.PartyId, "altinn:party:id", "123456")]
     [InlineData("urn:altinn:party:uuid:12345678-1234-1234-1234-123456789012", PersonUrn.Type.PartyUuid, "altinn:party:uuid", "12345678-1234-1234-1234-123456789012")]
+    [InlineData("urn:altinn:person:name:Øvrebø,+Åstein+Æser", PersonUrn.Type.PersonName, "altinn:person:name", "Øvrebø,+Åstein+Æser")]
     public void GeneralUrnTests(string urn, PersonUrn.Type type, string keyString, string valueString)
     {
         Assert.True(PersonUrn.TryParse(urn, out var personUrn));
@@ -61,6 +62,9 @@ public partial class UrnParseAndSerializeTests
 
         [UrnKey("altinn:person:d-number")]
         public partial bool IsDNumber(out int dNumber);
+
+        [UrnKey("altinn:person:name")]
+        public partial bool IsPersonName(out UrnEncoded name);
     }
 
     [KeyValueUrn]

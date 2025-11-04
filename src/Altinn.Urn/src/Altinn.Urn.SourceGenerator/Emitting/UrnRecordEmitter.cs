@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.SourceGenerator.Parsing;
+using Altinn.Urn.SourceGenerator.Parsing;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -483,7 +483,7 @@ internal ref struct UrnRecordEmitter
                 if (type.FormatMode.UseUrnFormattable)
                 {
                     builder_lv2.AppendLine("where T : IUrnFormattable");
-                    builder_lv2.AppendLine("=> value.TryUrnFormat(destination);");
+                    builder_lv2.AppendLine("=> value.TryUrnFormat(destination, out charsWritten);");
                 }
                 else
                 {
@@ -497,8 +497,9 @@ internal ref struct UrnRecordEmitter
                 // we synthesize TryFormat using Format
                 builder_lv1.AppendLine("string? formatString = format.Length == 0 ? null : new string(format);");
                 builder_lv1.AppendLine($"string formatted = Format{type.Name}(value, formatString, provider);");
-                builder_lv1.AppendLine("charsWritten = formatted.Length;");
-                builder_lv1.AppendLine("return formatted.TryCopyTo(destination);");
+                builder_lv1.AppendLine("bool result = formatted.TryCopyTo(destination);");
+                builder_lv1.AppendLine("charsWritten = result ? formatted.Length : 0;");
+                builder_lv1.AppendLine("return result;");
             }
             builder.AppendLine("}");
         }
