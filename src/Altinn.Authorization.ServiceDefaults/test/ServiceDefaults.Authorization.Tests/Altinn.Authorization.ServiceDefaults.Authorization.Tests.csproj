@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <XUnitVersion>v3</XUnitVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils.AspNetCore\Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils.Http\Altinn.Authorization.TestUtils.Http.csproj" />
+    <ProjectReference Include="..\..\src\ServiceDefaults.Authorization\Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
+  </ItemGroup>
+
+</Project>
