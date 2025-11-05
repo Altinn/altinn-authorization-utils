@@ -56,7 +56,7 @@ public abstract class ScopeSearchValues
     /// <summary>
     /// Determines whether the specified scope-string contains any of the values in this collection.
     /// </summary>
-    /// <param name="scopeString">A space-separated list of scoped.</param>
+    /// <param name="scopeString">A space-separated list of scopes.</param>
     /// <returns>Whether or not any of scopes in this collection was contained in <paramref name="scopeString"/>.</returns>
     public abstract bool Check(ReadOnlySpan<char> scopeString);
 
