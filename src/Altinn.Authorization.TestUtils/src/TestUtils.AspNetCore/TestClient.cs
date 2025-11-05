@@ -63,7 +63,8 @@ public class TestClient
         await host.StartAsync(cancellationToken);
         var server = host.GetTestServer();
         var handler = server.CreateHandler();
-        return new TestClient(handler, host)
+        var userHandler = new UserMessageHandler(handler);
+        return new TestClient(userHandler, host)
         {
             BaseAddress = server.BaseAddress,
             Timeout = TimeSpan.FromSeconds(200),
@@ -104,6 +105,9 @@ public class TestClient
                     partManager.ApplicationParts.Add(new TestControllerApplicationPart(type));
                     partManager.FeatureProviders.Add(TestControllerApplicationFeatureProvider.Instance);
 
+                    services.AddAuthentication("TestClient")
+                        .AddScheme<TestSchemeOptions, TestSchemeHandler>("TestClient", configureOptions: null);
+
                     configureMvc?.Invoke(mvcBuilder);
                 });
 
@@ -111,7 +115,10 @@ public class TestClient
             },
             (ctx, app) =>
             {
+                app.UseAuthentication();
+
                 app.UseRouting();
+                app.UseAuthorization();
 
                 configureApplication?.Invoke(ctx, app);
 
@@ -120,14 +127,31 @@ public class TestClient
     }
 
     private readonly IHost _host;
+    private readonly UserMessageHandler _handler;
     private readonly Lock _lock = new();
+
     private Task? _dispose;
 
-    private TestClient(HttpMessageHandler handler, IHost host)
+    private TestClient(UserMessageHandler handler, IHost host)
         : base(handler, disposeHandler: false)
     {
+        _handler = handler;
         _host = host;
     }
+
+    /// <summary>
+    /// Gets or sets the security principal representing the authenticated user associated with the current context.
+    /// </summary>
+    public ClaimsPrincipal? User
+    {
+        get => _handler.User;
+        set => _handler.User = value;
+    }
+
+    /// <summary>
+    /// Gets the application's service provider for resolving dependencies and accessing registered services.
+    /// </summary>
+    public IServiceProvider Services => _host.Services;
 
     void IDisposable.Dispose()
     {
@@ -155,5 +179,65 @@ public class TestClient
                 _host.Dispose();
             }
         }
+    }
+
+    private sealed class UserMessageHandler(HttpMessageHandler innerHandler)
+        : DelegatingHandler(innerHandler)
+    {
+        /// <summary>
+        /// Gets or sets the security principal representing the authenticated user associated with the current context.
+        /// </summary>
+        public ClaimsPrincipal? User { get; set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (User is not null)
+            {
+                //var toSerialize = User.Identities.Select(i => i.Claims.Select())
+                request.Headers.Add(
+                    "X-TestClient-User",
+                    Json.SerializeToString(JsonClaimsPrincipal.FromPrincipal(User)));
+            }
+
+            return base.SendAsync(request, cancellationToken);
+        }
+    }
+
+    private sealed class TestSchemeOptions
+        : AuthenticationSchemeOptions
+    {
+    }
+
+    private sealed class TestSchemeHandler(IOptionsMonitor<TestSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+        : AuthenticationHandler<TestSchemeOptions>(options, logger, encoder)
+    {
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            if (Request.Headers.TryGetValue("X-TestClient-User", out var value) && value.Count == 1)
+            {
+                var user = Json.Deserialize<JsonClaimsPrincipal>(value[0]!);
+                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(user!.ToPrincipal(), Scheme.Name)));
+            }
+
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+    }
+
+    private sealed record JsonClaim(string Type, string Value, string? ValueType, string? Issuer)
+    {
+        public static JsonClaim FromClaim(Claim claim) => new(claim.Type, claim.Value, claim.ValueType, claim.Issuer);
+        public Claim ToClaim() => new(type: Type, value: Value, valueType: ValueType, issuer: Issuer);
+    }
+
+    private sealed record JsonClaimsIdentity(IEnumerable<JsonClaim> Claims, string? AuthenticationType)
+    {
+        public static JsonClaimsIdentity FromIdentity(ClaimsIdentity identity) => new(identity.Claims.Select(JsonClaim.FromClaim), identity.AuthenticationType);
+        public ClaimsIdentity ToIdentity() => new(Claims.Select(c => c.ToClaim()), AuthenticationType);
+    }
+
+    private sealed record JsonClaimsPrincipal(IEnumerable<JsonClaimsIdentity> Identities)
+    {
+        public static JsonClaimsPrincipal FromPrincipal(ClaimsPrincipal principal) => new(principal.Identities.Select(JsonClaimsIdentity.FromIdentity));
+        public ClaimsPrincipal ToPrincipal() => new(Identities.Select(i => i.ToIdentity()));
     }
 }
