@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -502,7 +502,15 @@ public static class ShouldlyJsonExtensions
             return message;
         }
 
-        private static readonly JsonSerializerOptions _writerOptions = new JsonSerializerOptions { IndentCharacter = ' ', IndentSize = 2, WriteIndented = true };
+        private static readonly JsonSerializerOptions _writerOptions 
+            = new JsonSerializerOptions 
+            {
+#if NET9_0_OR_GREATER
+                IndentCharacter = ' ', 
+                IndentSize = 2, 
+#endif
+                WriteIndented = true,
+            };
         private static string PrettyPrint(JsonElement element)
         {
             if (element.ValueKind == JsonValueKind.Undefined)
