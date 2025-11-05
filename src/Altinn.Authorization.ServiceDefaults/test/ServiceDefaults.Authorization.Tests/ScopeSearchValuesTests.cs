@@ -1,6 +1,6 @@
-using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
-namespace Altinn.Authorization.ServiceDefaults.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
 public class ScopeSearchValuesTests
 {
@@ -133,6 +133,17 @@ public class ScopeSearchValuesTests
         {
             sut.Check($"xyz{item} {item}{item} {item}xyz xyz{item}xyz").ShouldBeFalse();
         }
+    }
+
+    [Theory]
+    [InlineData("$%(a.b?c{-}@)\\/+*^")]
+    public void Handles_Weird_Strings(string value)
+    {
+        var sut = ScopeSearchValues.Create([value]);
+
+        sut.Check(value).ShouldBeTrue();
+        sut.Check($"xyz {value} zyx").ShouldBeTrue();
+        sut.Check($"xyz{value}zyx").ShouldBeFalse();
     }
 
     public static TheoryData<string[]> ValidLists => new()

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Immutable;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,6 +11,16 @@ namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 public abstract class ScopeSearchValues
     : IReadOnlyList<string>
 {
+    private static ulong _createdCount = 0;
+
+    /// <summary>
+    /// Gets the total number of instances that have been created.
+    /// </summary>
+    /// <remarks>
+    /// Used for testing and diagnostics purposes.
+    /// </remarks>
+    internal static ulong CreatedCount => Volatile.Read(ref _createdCount);
+
     /// <summary>
     /// Creates a new instance of <see cref="ScopeSearchValues"/> using the specified set of string values.
     /// </summary>
@@ -25,6 +35,7 @@ public abstract class ScopeSearchValues
             throw new ArgumentException("Values cannot be empty", nameof(values));
         }
 
+        Interlocked.Increment(ref _createdCount);
         return new RegexScopeSearchValues(ImmutableArray.Create(values));
     }
 

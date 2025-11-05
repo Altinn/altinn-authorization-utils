@@ -1,6 +1,7 @@
-using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 using Altinn.Authorization.TestUtils.AspNetCore;
 using Altinn.Authorization.TestUtils.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
@@ -8,7 +9,8 @@ using System.Security.Claims;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
-public class AnyOfScopeAuthorizationHandlerIntegrationTests
+public abstract class AnyOfScopeAuthorizationHandlerIntegrationTests<TController>
+    where TController : class
 {
     [Theory]
     [InlineData("read", "admin", HttpStatusCode.OK)]
@@ -28,15 +30,21 @@ public class AnyOfScopeAuthorizationHandlerIntegrationTests
         await response.ShouldHaveStatusCode(expectedStatusCode);
     }
 
-    async Task<TestClient> CreateClient(string scopeString)
+    protected virtual void ConfigureServices(IServiceCollection services)
     {
-        var client = await TestClient.CreateControllerClient<Controller>(
+    }
+
+    protected async Task<TestClient> CreateClient(string scopeString)
+    {
+        var client = await TestClient.CreateControllerClient<TController>(
             configureHost: builder =>
             {
                 builder.ConfigureServices(services =>
                 {
                     services.AddAuthorization();
                     services.AddAltinnScopesAuthorizationHandlers();
+
+                    ConfigureServices(services);
                 });
             });
 
@@ -47,9 +55,17 @@ public class AnyOfScopeAuthorizationHandlerIntegrationTests
         return client;
     }
 
+
+    
+}
+
+[Collection(NonParallelCollectionDefinitionClass.CollectionName)]
+public class AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests
+    : AnyOfScopeAuthorizationHandlerIntegrationTests<AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests.Controller>
+{
     [ApiController]
     [AnyOfScopeAuthorization("access", "admin")]
-    private class Controller
+    public class Controller
         : ControllerBase
     {
         [HttpGet("read")]
@@ -60,4 +76,51 @@ public class AnyOfScopeAuthorizationHandlerIntegrationTests
         [AnyOfScopeAuthorization("write", "admin")]
         public ActionResult Write() => Ok();
     }
+
+    [Fact]
+    public async Task AttributeScopeSearchValues_IsCached()
+    {
+        await using var client = await CreateClient("admin");
+        var response = await client.GetAsync("read", TestContext.Current.CancellationToken);
+        await response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        var createdCount = ScopeSearchValues.CreatedCount;
+
+        response = await client.GetAsync("read", TestContext.Current.CancellationToken);
+        await response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        var newCreatedCount = ScopeSearchValues.CreatedCount;
+
+        newCreatedCount.ShouldBe(createdCount);
+    }
+}
+
+public class PolicyBasedAnyOfScopeAuthorizationHandlerIntegrationTests
+    : AnyOfScopeAuthorizationHandlerIntegrationTests<PolicyBasedAnyOfScopeAuthorizationHandlerIntegrationTests.Controller>
+{
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddAuthorizationBuilder()
+            .AddPolicy("access-policy", policy => policy.RequireAnyScopeOf("access", "admin"))
+            .AddPolicy("read-policy", policy => policy.RequireAnyScopeOf("read", "write", "admin"))
+            .AddPolicy("write-policy", policy => policy.RequireAnyScopeOf("write", "admin"));
+    }
+
+    [ApiController]
+    [Authorize("access-policy")]
+    public class Controller
+        : ControllerBase
+    {
+        [HttpGet("read")]
+        [Authorize("read-policy")]
+        public ActionResult Read() => Ok();
+
+        [HttpGet("write")]
+        [Authorize("write-policy")]
+        public ActionResult Write() => Ok();
+    }
+}
+
+[CollectionDefinition(CollectionName, DisableParallelization = true)]
+public class NonParallelCollectionDefinitionClass
+{
+    public const string CollectionName = "Non-Parallel Collection";
 }
