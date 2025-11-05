@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.1.0...Altinn.Authorization.TestUtils-v3.2.0) (2025-11-05)
+
+
+### Features
+
+* enable .NET 8 support ([#405](https://github.com/Altinn/altinn-authorization-utils/issues/405)) ([3974e28](https://github.com/Altinn/altinn-authorization-utils/commit/3974e286f0bb75369fb63d6bca0aed3530a0529d))
+* enable authorization support for TestClient ([#406](https://github.com/Altinn/altinn-authorization-utils/issues/406)) ([a6d1165](https://github.com/Altinn/altinn-authorization-utils/commit/a6d11653436a28f6e04a53447afad41f04e744c7))
+
 ## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.0.1...Altinn.Authorization.TestUtils-v3.1.0) (2025-10-18)
 
 
