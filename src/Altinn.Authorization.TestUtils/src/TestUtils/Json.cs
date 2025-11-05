@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace Altinn.Authorization.TestUtils;
 
@@ -7,7 +7,11 @@ namespace Altinn.Authorization.TestUtils;
 /// </summary>
 public static class Json
 {
+#if NET9_0_OR_GREATER
     private readonly static JsonSerializerOptions _options = JsonSerializerOptions.Web;
+#else
+    private readonly static JsonSerializerOptions _options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+#endif
 
     /// <summary>
     /// Get the default JSON serializer options used for serialization and deserialization.

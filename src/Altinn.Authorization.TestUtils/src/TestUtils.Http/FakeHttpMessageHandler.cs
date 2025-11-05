@@ -5,6 +5,10 @@ using Xunit.Sdk;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
+#if !NET9_0_OR_GREATER
+using Lock = System.Object;
+#endif
+
 /// <summary>
 /// A fake <see cref="HttpMessageHandler"/> that can be used for testing.
 /// </summary>
@@ -20,7 +24,6 @@ public class FakeHttpMessageHandler
     public static readonly Uri FakeBasePath = FakeHttpEndpoint.HttpsUri;
 
     private readonly Lock _lock = new();
-
     private readonly Queue<IFakeRequestHandler> _expectations = new();
     private readonly List<IFakeRequestHandler> _handlers = new();
     private readonly FallbackFakeRequestHandler _fallback = new();
