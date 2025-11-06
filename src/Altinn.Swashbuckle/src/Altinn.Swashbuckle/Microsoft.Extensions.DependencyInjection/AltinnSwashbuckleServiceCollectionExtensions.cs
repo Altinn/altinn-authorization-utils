@@ -1,5 +1,6 @@
 ﻿using Altinn.Swashbuckle.Examples;
 using Altinn.Swashbuckle.Filters;
+using Altinn.Swashbuckle.Servers;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -47,6 +48,30 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
                 options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SchemaFilterAttributeFilter>());
                 options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerStringAttributeFilter>());
                 options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerExampleFromExampleProviderFilter>());
+            });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds Altinn server configuration to Swashbuckle-generated OpenAPI specifications.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureServers">Optional configuration delegate for the servers.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddSwaggerAltinnServers(this IServiceCollection services, Action<AltinnServerOptions>? configureServers = null)
+    {
+        var configure = services.AddOptions<AltinnServerOptions>();
+        if (configureServers != null)
+        {
+            configure.Configure(configureServers);
+        }
+
+        services.AddSingleton<SwaggerAltinnServersDocumentFilter>();
+        services.AddOptions<SwaggerGenOptions>()
+            .Configure((SwaggerGenOptions options, IServiceProvider s) =>
+            {
+                options.AddDocumentFilterInstance(s.GetRequiredService<SwaggerAltinnServersDocumentFilter>());
             });
 
         return services;
