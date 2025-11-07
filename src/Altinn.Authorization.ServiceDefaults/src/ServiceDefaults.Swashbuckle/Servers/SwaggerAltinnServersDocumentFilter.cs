@@ -1,5 +1,4 @@
-﻿using Altinn.Swashbuckle.Servers;
-using Microsoft.AspNetCore.Hosting.Server;
+﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -7,7 +6,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Altinn.Swashbuckle.Filters;
+namespace Altinn.Authorization.ServiceDefaults.Swashbuckle.Servers;
 
 [ExcludeFromCodeCoverage]
 internal sealed class SwaggerAltinnServersDocumentFilter

@@ -113,6 +113,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Authorization.Tests", "src\Altinn.Authorization.ServiceDefaults\test\ServiceDefaults.Authorization.Tests\Altinn.Authorization.ServiceDefaults.Authorization.Tests.csproj", "{AA107D13-9807-40ED-9080-6A0567B599A9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{C7326F8D-68AC-56FC-84BA-810AB9E6A03C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Sample.Api", "src\Altinn.Authorization.ServiceDefaults\sample\ServiceDefaults.Sample.Api\Altinn.Authorization.ServiceDefaults.Sample.Api.csproj", "{42403F4F-7223-4775-B438-49A1F307644D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ServiceDefaults.Swashbuckle", "src\Altinn.Authorization.ServiceDefaults\src\ServiceDefaults.Swashbuckle\Altinn.Authorization.ServiceDefaults.Swashbuckle.csproj", "{D723EBA4-AD02-49E5-B6E3-A967B70683F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -531,6 +537,30 @@ Global
 		{AA107D13-9807-40ED-9080-6A0567B599A9}.Release|x64.Build.0 = Release|Any CPU
 		{AA107D13-9807-40ED-9080-6A0567B599A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{AA107D13-9807-40ED-9080-6A0567B599A9}.Release|x86.Build.0 = Release|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Debug|x64.Build.0 = Debug|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Debug|x86.Build.0 = Debug|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Release|x64.ActiveCfg = Release|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Release|x64.Build.0 = Release|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Release|x86.ActiveCfg = Release|Any CPU
+		{42403F4F-7223-4775-B438-49A1F307644D}.Release|x86.Build.0 = Release|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Debug|x64.Build.0 = Debug|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Debug|x86.Build.0 = Debug|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Release|x64.ActiveCfg = Release|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Release|x64.Build.0 = Release|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Release|x86.ActiveCfg = Release|Any CPU
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -584,6 +614,9 @@ Global
 		{AF3B231B-DAF6-4D61-8DEB-757492182E52} = {8280278A-98F2-E206-A079-E506139BE16C}
 		{F62EAC59-711C-48AC-B207-5BEEC87B5931} = {73FC86DF-ABEB-B5B7-2E65-11FA347832F9}
 		{AA107D13-9807-40ED-9080-6A0567B599A9} = {D3C758B1-2EFB-5E1A-6276-3A5D7C0FB0D3}
+		{C7326F8D-68AC-56FC-84BA-810AB9E6A03C} = {763561C8-F89B-6354-139D-F9478C28527A}
+		{42403F4F-7223-4775-B438-49A1F307644D} = {C7326F8D-68AC-56FC-84BA-810AB9E6A03C}
+		{D723EBA4-AD02-49E5-B6E3-A967B70683F5} = {73FC86DF-ABEB-B5B7-2E65-11FA347832F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD1F9C4B-7DD4-49B6-8DC2-881E80966634}
