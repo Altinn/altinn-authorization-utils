@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Altinn.Swashbuckle.Servers;
+namespace Altinn.Authorization.ServiceDefaults.Swashbuckle.Servers;
 
 /// <summary>
 /// Provides options for configuring Altinn servers in Swagger documentation.
