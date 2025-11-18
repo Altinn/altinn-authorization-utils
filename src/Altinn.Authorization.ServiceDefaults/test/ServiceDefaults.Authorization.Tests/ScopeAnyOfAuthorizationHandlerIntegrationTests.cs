@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
-public abstract class AnyOfScopeAuthorizationHandlerIntegrationTests<TController>
+public abstract class ScopeAnyOfAuthorizationHandlerIntegrationTests<TController>
     where TController : class
 {
     [Theory]
@@ -60,8 +60,8 @@ public abstract class AnyOfScopeAuthorizationHandlerIntegrationTests<TController
 }
 
 [Collection(NonParallelCollectionDefinitionClass.CollectionName)]
-public class AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests
-    : AnyOfScopeAuthorizationHandlerIntegrationTests<AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests.Controller>
+public class AttributeBasedScopeAnyOfAuthorizationHandlerIntegrationTests
+    : ScopeAnyOfAuthorizationHandlerIntegrationTests<AttributeBasedScopeAnyOfAuthorizationHandlerIntegrationTests.Controller>
 {
     [ApiController]
     [ScopeAnyOfAuthorize("access", "admin")]
@@ -93,8 +93,8 @@ public class AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests
     }
 }
 
-public class PolicyBasedAnyOfScopeAuthorizationHandlerIntegrationTests
-    : AnyOfScopeAuthorizationHandlerIntegrationTests<PolicyBasedAnyOfScopeAuthorizationHandlerIntegrationTests.Controller>
+public class PolicyBasedScopeAnyOfAuthorizationHandlerIntegrationTests
+    : ScopeAnyOfAuthorizationHandlerIntegrationTests<PolicyBasedScopeAnyOfAuthorizationHandlerIntegrationTests.Controller>
 {
     protected override void ConfigureServices(IServiceCollection services)
     {

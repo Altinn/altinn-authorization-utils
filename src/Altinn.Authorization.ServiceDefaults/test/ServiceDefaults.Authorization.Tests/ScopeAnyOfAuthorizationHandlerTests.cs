@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
-public class AnyOfScopeAuthorizationHandlerTests
+public class ScopeAnyOfAuthorizationHandlerTests
 {
     private ScopeAnyOfAuthorizationHandler Sut { get; } 
         = new(new DefaultAuthorizationScopeProvider());
