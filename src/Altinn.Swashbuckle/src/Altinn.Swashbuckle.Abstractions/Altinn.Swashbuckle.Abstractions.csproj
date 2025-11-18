@@ -6,12 +6,17 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Altinn.Swashbuckle" />
+		<InternalsVisibleTo Include="Altinn.Swashbuckle.Tests" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Diagnostics" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
 		<PackageReference Include="Microsoft.Extensions.Options" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Altinn.Authorization.ModelUtils\src\ModelUtils\Altinn.Authorization.ModelUtils.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
