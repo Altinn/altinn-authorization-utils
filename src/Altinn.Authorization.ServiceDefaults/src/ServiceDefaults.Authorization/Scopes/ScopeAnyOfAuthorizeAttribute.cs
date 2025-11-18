@@ -1,17 +1,17 @@
-namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+﻿namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
 /// <summary>
 /// Specifies an authorization requirement that succeeds if the user possesses any one of the specified scopes.
 /// </summary>
-public sealed class AnyOfScopeAuthorizationAttribute
+public sealed class ScopeAnyOfAuthorizeAttribute
     : AuthorizationRequirementAttribute
-    , IAnyOfScopeAuthorizationRequirement
+    , IScopeAnyOfAuthorizationRequirement
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AnyOfScopeAuthorizationAttribute"/> class.
+    /// Initializes a new instance of the <see cref="ScopeAnyOfAuthorizeAttribute"/> class.
     /// </summary>
     /// <param name="scopes">The list of scopes to check against.</param>
-    public AnyOfScopeAuthorizationAttribute(params string[] scopes)
+    public ScopeAnyOfAuthorizeAttribute(params string[] scopes)
     {
         AnyOfScopes = ScopeSearchValues.Create(scopes);
     }
@@ -21,5 +21,5 @@ public sealed class AnyOfScopeAuthorizationAttribute
 
     /// <inheritdoc/>
     public override string ToString()
-        => $"{nameof(AnyOfScopeAuthorizationRequirement)}: Requires one of the following scopes: {string.Join(", ", AnyOfScopes)}";
+        => $"{nameof(ScopeAnyOfAuthorizationRequirement)}: Requires one of the following scopes: {string.Join(", ", AnyOfScopes)}";
 }

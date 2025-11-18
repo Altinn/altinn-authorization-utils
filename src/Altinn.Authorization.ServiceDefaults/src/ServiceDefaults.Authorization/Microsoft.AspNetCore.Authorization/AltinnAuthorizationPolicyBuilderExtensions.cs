@@ -1,4 +1,4 @@
-using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
 namespace Microsoft.AspNetCore.Authorization;
 
@@ -19,7 +19,7 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
     /// <returns>The <see cref="AuthorizationPolicyBuilder"/> instance with the added scope requirement.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="scopes"/> is null or empty.</exception>
     [System.Runtime.CompilerServices.OverloadResolutionPriority(1)]
-    public static AuthorizationPolicyBuilder RequireAnyScopeOf(
+    public static AuthorizationPolicyBuilder RequireScopeAnyOf(
         this AuthorizationPolicyBuilder builder,
         params ReadOnlySpan<string> scopes)
     {
@@ -28,7 +28,7 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
             throw new ArgumentException("Scopes cannot be null or empty.", nameof(scopes));
         }
 
-        builder.Requirements.Add(new AnyOfScopeAuthorizationRequirement(scopes));
+        builder.Requirements.Add(new ScopeAnyOfAuthorizationRequirement(scopes));
         return builder;
     }
 #endif
@@ -42,7 +42,7 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
     /// requirement. Cannot be null or empty.</param>
     /// <returns>The <see cref="AuthorizationPolicyBuilder"/> instance with the added scope requirement.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="scopes"/> is null or empty.</exception>
-    public static AuthorizationPolicyBuilder RequireAnyScopeOf(
+    public static AuthorizationPolicyBuilder RequireScopeAnyOf(
         this AuthorizationPolicyBuilder builder,
         params string[] scopes)
     {
@@ -51,7 +51,7 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
             throw new ArgumentException("Scopes cannot be null or empty.", nameof(scopes));
         }
 
-        builder.Requirements.Add(new AnyOfScopeAuthorizationRequirement(scopes));
+        builder.Requirements.Add(new ScopeAnyOfAuthorizationRequirement(scopes));
         return builder;
     }
 }

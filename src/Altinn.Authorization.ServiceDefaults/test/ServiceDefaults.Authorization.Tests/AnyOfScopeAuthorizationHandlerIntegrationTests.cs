@@ -64,16 +64,16 @@ public class AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests
     : AnyOfScopeAuthorizationHandlerIntegrationTests<AttributeBasedAnyOfScopeAuthorizationHandlerIntegrationTests.Controller>
 {
     [ApiController]
-    [AnyOfScopeAuthorization("access", "admin")]
+    [ScopeAnyOfAuthorize("access", "admin")]
     public class Controller
         : ControllerBase
     {
         [HttpGet("read")]
-        [AnyOfScopeAuthorization("read", "write", "admin")]
+        [ScopeAnyOfAuthorize("read", "write", "admin")]
         public ActionResult Read() => Ok();
 
         [HttpGet("write")]
-        [AnyOfScopeAuthorization("write", "admin")]
+        [ScopeAnyOfAuthorize("write", "admin")]
         public ActionResult Write() => Ok();
     }
 
@@ -99,9 +99,9 @@ public class PolicyBasedAnyOfScopeAuthorizationHandlerIntegrationTests
     protected override void ConfigureServices(IServiceCollection services)
     {
         services.AddAuthorizationBuilder()
-            .AddPolicy("access-policy", policy => policy.RequireAnyScopeOf("access", "admin"))
-            .AddPolicy("read-policy", policy => policy.RequireAnyScopeOf("read", "write", "admin"))
-            .AddPolicy("write-policy", policy => policy.RequireAnyScopeOf("write", "admin"));
+            .AddPolicy("access-policy", policy => policy.RequireScopeAnyOf("access", "admin"))
+            .AddPolicy("read-policy", policy => policy.RequireScopeAnyOf("read", "write", "admin"))
+            .AddPolicy("write-policy", policy => policy.RequireScopeAnyOf("write", "admin"));
     }
 
     [ApiController]
