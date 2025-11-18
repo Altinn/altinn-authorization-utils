@@ -1,22 +1,22 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
 /// <summary>
-/// Handles authorization of <see cref="IAnyOfScopeAuthorizationRequirement"/>.
+/// Handles authorization of <see cref="IScopeAnyOfAuthorizationRequirement"/>.
 /// </summary>
-internal sealed class AnyOfScopeAuthorizationHandler
+internal sealed class ScopeAnyOfAuthorizationHandler
 
-    : AuthorizationHandler<IAnyOfScopeAuthorizationRequirement>
+    : AuthorizationHandler<IScopeAnyOfAuthorizationRequirement>
 {
     private readonly IAuthorizationScopeProvider _scopeProvider;
 
-    public AnyOfScopeAuthorizationHandler(IAuthorizationScopeProvider scopeProvider)
+    public ScopeAnyOfAuthorizationHandler(IAuthorizationScopeProvider scopeProvider)
     {
         _scopeProvider = scopeProvider;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IAnyOfScopeAuthorizationRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IScopeAnyOfAuthorizationRequirement requirement)
     {
         foreach (string scopeString in _scopeProvider.GetScopeStrings(context))
         {

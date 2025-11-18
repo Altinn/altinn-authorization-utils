@@ -1,4 +1,4 @@
-using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -7,7 +7,7 @@ namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
 public class AnyOfScopeAuthorizationHandlerTests
 {
-    private AnyOfScopeAuthorizationHandler Sut { get; } 
+    private ScopeAnyOfAuthorizationHandler Sut { get; } 
         = new(new DefaultAuthorizationScopeProvider());
 
     /// <summary>
@@ -168,7 +168,7 @@ public class AnyOfScopeAuthorizationHandlerTests
         scoped ReadOnlySpan<string> anyOfScopes,
         bool useAltinnScopePrefix = false)
     {
-        var requirement = new AnyOfScopeAuthorizationRequirement(anyOfScopes);
+        var requirement = new ScopeAnyOfAuthorizationRequirement(anyOfScopes);
 
         ClaimsPrincipal user = new([
             new ClaimsIdentity(
