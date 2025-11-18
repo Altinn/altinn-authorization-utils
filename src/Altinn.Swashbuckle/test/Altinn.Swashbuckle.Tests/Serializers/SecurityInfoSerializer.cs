@@ -70,12 +70,12 @@ public class SecurityInfoSerializer
             throw new JsonException("Expected start of condition array");
         }
 
-        while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+        while (reader.Read() || reader.TokenType != JsonTokenType.EndArray)
         {
             conditions.Add(DeserializeSecurityRequirementCondition(ref reader));
         }
 
-        if (!reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+        if (!reader.Read() || reader.TokenType != JsonTokenType.EndArray)
         {
             throw new JsonException($"Expected end of array");
         }
@@ -135,20 +135,20 @@ public class SecurityInfoSerializer
         var writer = new ArrayBufferWriter<byte>();
 
         {
-            using var serlializer = new Utf8JsonWriter(writer);
+            using var serializer = new Utf8JsonWriter(writer);
 
             switch (value)
             {
                 case SecurityInfo info:
-                    Serialize(info, serlializer);
+                    Serialize(info, serializer);
                     break;
 
                 case SecurityRequirement requirement:
-                    Serialize(requirement, serlializer);
+                    Serialize(requirement, serializer);
                     break;
 
                 case SecurityRequirementCondition condition:
-                    Serialize(condition, serlializer);
+                    Serialize(condition, serializer);
                     break;
 
                 default:

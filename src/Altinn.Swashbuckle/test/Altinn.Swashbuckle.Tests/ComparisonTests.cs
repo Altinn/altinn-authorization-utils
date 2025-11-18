@@ -41,7 +41,7 @@ public class ComparisonTests
     }
 
     [Fact]
-    public void LessThen_Then()
+    public void LessThan_Then()
     {
         Comparison.LessThan.Then(0, 1).ShouldBe(Comparison.LessThan);
         Comparison.LessThan.Then(0, 0).ShouldBe(Comparison.LessThan);
@@ -49,7 +49,7 @@ public class ComparisonTests
     }
 
     [Fact]
-    public void GreaterThen_Then()
+    public void GreaterThan_Then()
     {
         Comparison.GreaterThan.Then(0, 1).ShouldBe(Comparison.GreaterThan);
         Comparison.GreaterThan.Then(0, 0).ShouldBe(Comparison.GreaterThan);

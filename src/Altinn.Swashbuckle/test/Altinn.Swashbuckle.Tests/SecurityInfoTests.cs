@@ -9,7 +9,7 @@ namespace Altinn.Swashbuckle.Tests;
 public class SecurityInfoTests
 {
     [Theory]
-    [MemberData(nameof(GetNormanlizationCases))]
+    [MemberData(nameof(GetNormalizationCases))]
     public void Normalization_Check(
         SecurityInfo info,
         NormalizedSecurityInfo expectedNormalized)
@@ -86,7 +86,7 @@ public class SecurityInfoTests
         }
     }
 
-    public static TheoryData<SecurityInfo, NormalizedSecurityInfo> GetNormanlizationCases()
+    public static TheoryData<SecurityInfo, NormalizedSecurityInfo> GetNormalizationCases()
     {
         var apimCondition = SecurityRequirementCondition.Create("apim");
         var apimRequirement = SecurityRequirement.Create("requires apim", [apimCondition]);

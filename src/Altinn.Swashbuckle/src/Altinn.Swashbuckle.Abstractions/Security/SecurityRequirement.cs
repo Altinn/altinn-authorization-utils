@@ -16,7 +16,7 @@ public sealed record SecurityRequirement
 {
     /// <summary>
     /// Creates a new instance of the <see cref="SecurityRequirement"/> class using the specified display name and a
-    /// collection of conditions, any which will fulfill the requiremnt.
+    /// collection of conditions, any which will fulfill the requirement.
     /// </summary>
     /// <remarks>The returned security requirement will contain only unique conditions, ordered according to
     /// their natural ordering. If <paramref name="conditions"/> contains duplicates, only one instance of each will be
