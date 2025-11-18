@@ -7,7 +7,6 @@
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<!-- 👇 Since we target netstandard2.0 we need to manually set the lang version to get newer
 		language features -->
-		<LangVersion>12</LangVersion>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
@@ -17,8 +16,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces"
-			PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
 	</ItemGroup>
 
 </Project>

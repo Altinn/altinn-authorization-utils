@@ -6,6 +6,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Npgsql" />
+		<PackageReference Include="System.Text.RegularExpressions" />
 		<PackageReference Include="Yuniql.Core" />
 		<PackageReference Include="Yuniql.PostgreSql" />
 	</ItemGroup>
