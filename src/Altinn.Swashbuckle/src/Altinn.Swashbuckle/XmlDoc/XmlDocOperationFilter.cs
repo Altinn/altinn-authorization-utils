@@ -70,7 +70,13 @@ internal sealed class XmlDocOperationFilter
         var remarksNode = methodNode.SelectFirstChild("remarks");
         if (remarksNode != null)
         {
-            operation.Description = XmlCommentsTextHelper.Humanize(remarksNode.InnerXml);
+            var newDescription = XmlCommentsTextHelper.Humanize(remarksNode.InnerXml);
+            if (operation.Description is not null && operation.Description.StartsWith("\n\n"))
+            {
+                newDescription += operation.Description;
+            }
+
+            operation.Description = newDescription;
         }
 
         var responseNodes = methodNode.SelectChildren("response");

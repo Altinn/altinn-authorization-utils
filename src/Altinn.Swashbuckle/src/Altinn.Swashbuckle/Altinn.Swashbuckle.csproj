@@ -9,11 +9,11 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" />
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+		<PackageReference Include="System.Linq.AsyncEnumerable" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference
-			Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
+		<ProjectReference Include="..\Altinn.Swashbuckle.Abstractions\Altinn.Swashbuckle.Abstractions.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -29,8 +29,7 @@
 
 	<Target Name="_GetPackageMSBuildItems">
 		<ItemGroup>
-			<TfmSpecificPackageFile Include="@(PackageMSBuildItem)" BuildAction="None"
-				PackagePath="build/$(TargetFramework)/" />
+			<TfmSpecificPackageFile Include="@(PackageMSBuildItem)" BuildAction="None" PackagePath="build/$(TargetFramework)/" />
 		</ItemGroup>
 	</Target>
 

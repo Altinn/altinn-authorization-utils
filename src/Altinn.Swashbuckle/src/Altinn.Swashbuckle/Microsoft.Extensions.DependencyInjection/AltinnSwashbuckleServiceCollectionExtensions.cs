@@ -1,6 +1,6 @@
 ﻿using Altinn.Swashbuckle.Examples;
 using Altinn.Swashbuckle.Filters;
-using Altinn.Swashbuckle.Servers;
+using Altinn.Swashbuckle.Security;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -15,91 +15,89 @@ namespace Microsoft.Extensions.DependencyInjection;
 [ExcludeFromCodeCoverage]
 public static class AltinnSwashbuckleServiceCollectionExtensions
 {
-    /// <summary>
-    /// Add an <see cref="OpenApiExampleProvider"/> to the <see cref="IServiceCollection"/>.
-    /// </summary>
+    // TODO: https://github.com/dotnet/roslyn/issues/81217
+    // When this is resolved, un-comment all the <returns> tags in the XML comments below.
     /// <param name="services">The service collection.</param>
-    /// <returns><paramref name="services"/>.</returns>
-    public static OptionsBuilder<ExampleDataOptions> AddOpenApiExampleProvider(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        var builder = services.AddExampleDataOptions();
-
-        services.TryAddSingleton<OpenApiExampleProvider>();
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Add support for attributes implementing <see cref="ISchemaFilter"/> to take effect during schema generation.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns><paramref name="services"/>.</returns>
-    public static IServiceCollection AddSwaggerFilterAttributeSupport(this IServiceCollection services)
-    {
-        services.AddOpenApiExampleProvider();
-
-        services.AddSingleton<SchemaFilterAttributeFilter>();
-        services.AddSingleton<SwaggerStringAttributeFilter>();
-        services.AddSingleton<SwaggerExampleFromExampleProviderFilter>();
-
-        services.AddOptions<SwaggerGenOptions>()
-            .Configure((SwaggerGenOptions options, IServiceProvider s) =>
-            {
-                options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SchemaFilterAttributeFilter>());
-                options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerStringAttributeFilter>());
-                options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerExampleFromExampleProviderFilter>());
-            });
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds Altinn server configuration to Swashbuckle-generated OpenAPI specifications.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configureServers">Optional configuration delegate for the servers.</param>
-    /// <returns><paramref name="services"/>.</returns>
-    public static IServiceCollection AddSwaggerAltinnServers(this IServiceCollection services, Action<AltinnServerOptions>? configureServers = null)
-    {
-        var configure = services.AddOptions<AltinnServerOptions>();
-        if (configureServers != null)
+        /// <summary>
+        /// Add an <see cref="OpenApiExampleProvider"/> to the <see cref="IServiceCollection"/>.
+        /// </summary>
+        /// <!--<returns><paramref name="services"/>.</returns>-->
+        public OptionsBuilder<ExampleDataOptions> AddOpenApiExampleProvider()
         {
-            configure.Configure(configureServers);
+            var builder = services.AddExampleDataOptions();
+
+            services.TryAddSingleton<OpenApiExampleProvider>();
+
+            return builder;
         }
 
-        services.AddSingleton<SwaggerAltinnServersDocumentFilter>();
-        services.AddOptions<SwaggerGenOptions>()
-            .Configure((SwaggerGenOptions options, IServiceProvider s) =>
-            {
-                options.AddDocumentFilterInstance(s.GetRequiredService<SwaggerAltinnServersDocumentFilter>());
-            });
+        /// <summary>
+        /// Add support for attributes implementing <see cref="ISchemaFilter"/> to take effect during schema generation.
+        /// </summary>
+        /// <!--<returns><paramref name="services"/>.</returns>-->
+        public IServiceCollection AddSwaggerFilterAttributeSupport()
+        {
+            services.AddOpenApiExampleProvider();
 
-        return services;
-    }
+            services.AddSingleton<SchemaFilterAttributeFilter>();
+            services.AddSingleton<SwaggerStringAttributeFilter>();
+            services.AddSingleton<SwaggerExampleFromExampleProviderFilter>();
 
-    /// <summary>
-    /// Adds documentation to swagger documents based on automatically discovered XML documentation.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns><paramref name="services"/>.</returns>
-    public static IServiceCollection AddSwaggerAutoXmlDoc(this IServiceCollection services)
-    {
-        services.AddXmlDocProvider();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, XmlDocFilterConfigurator>());
+            services.AddOptions<SwaggerGenOptions>()
+                .Configure((SwaggerGenOptions options, IServiceProvider s) =>
+                {
+                    options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SchemaFilterAttributeFilter>());
+                    options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerStringAttributeFilter>());
+                    options.SchemaGeneratorOptions.SchemaFilters.Add(s.GetRequiredService<SwaggerExampleFromExampleProviderFilter>());
+                });
 
-        return services;
-    }
+            return services;
+        }
 
-    /// <summary>
-    /// Adds the default XML documentation provider to the service collection.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns><paramref name="services"/>.</returns>
-    public static IServiceCollection AddXmlDocProvider(this IServiceCollection services)
-    {
-        services.TryAddSingleton<IXmlDocProvider, DefaultXmlDocProvider>();
+        /// <summary>
+        /// Adds documentation to swagger documents based on automatically discovered XML documentation.
+        /// </summary>
+        /// <!--<returns><paramref name="services"/>.</returns>-->
+        public IServiceCollection AddSwaggerAutoXmlDoc()
+        {
+            services.AddXmlDocProvider();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, XmlDocFilterConfigurator>());
 
-        return services;
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default XML documentation provider to the service collection.
+        /// </summary>
+        /// <!--<returns><paramref name="services"/>.</returns>-->
+        public IServiceCollection AddXmlDocProvider()
+        {
+            services.TryAddSingleton<IXmlDocProvider, DefaultXmlDocProvider>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds OpenAPI security providers for authorization policies and operations.
+        /// </summary>
+        /// <!--<returns><paramref name="services"/>.</returns>-->
+        public IServiceCollection AddOpenApiSecurityProvider()
+        {
+            services.TryAddSingleton<OpenApiSecurityProvider>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IOpenApiAuthorizationPolicySecurityProvider, RequirementAuthorizationPolicySecurityProvider>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IOpenApiOperationSecurityProvider, AuthorizationOpenApiOperationSecurityProvider>());
+
+            services.TryAddSingleton<SwaggerSecurityOperationFilter>();
+            services.AddOptions<SwaggerGenOptions>()
+                .Configure((SwaggerGenOptions options, IServiceProvider s) =>
+                {
+                    options.AddOperationAsyncFilterInstance(s.GetRequiredService<SwaggerSecurityOperationFilter>());
+                });
+
+            return services;
+        }
     }
 
     private sealed class XmlDocFilterConfigurator
