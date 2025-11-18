@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Locator" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
     <PackageReference Include="Verify.SourceGenerators" />
@@ -14,8 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" />
+    <ProjectReference Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj" />
     <ProjectReference Include="..\..\src\Altinn.Urn\Altinn.Urn.csproj" />
   </ItemGroup>
 
