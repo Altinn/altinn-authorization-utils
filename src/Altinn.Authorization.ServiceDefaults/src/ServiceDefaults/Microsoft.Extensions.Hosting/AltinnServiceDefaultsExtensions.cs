@@ -175,6 +175,8 @@ public static class AltinnServiceDefaultsExtensions
                 });
         });
 
+        builder.Services.AddAltinnScopesAuthorizationHandlers();
+
         return builder;
     }
 

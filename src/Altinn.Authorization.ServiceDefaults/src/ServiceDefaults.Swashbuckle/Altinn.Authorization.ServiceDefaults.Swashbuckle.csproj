@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Swashbuckle\src\Altinn.Swashbuckle\Altinn.Swashbuckle.csproj" />
+    <ProjectReference Include="..\ServiceDefaults.Authorization\Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
+  </ItemGroup>
+
+</Project>

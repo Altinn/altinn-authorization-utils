@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ServiceDefaults.Abstractions\Altinn.Authorization.ServiceDefaults.Abstractions.csproj" />
+    <ProjectReference Include="..\ServiceDefaults.Authorization\Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
     <ProjectReference Include="..\ServiceDefaults.Telemetry\Altinn.Authorization.ServiceDefaults.Telemetry.csproj" />
   </ItemGroup>
 

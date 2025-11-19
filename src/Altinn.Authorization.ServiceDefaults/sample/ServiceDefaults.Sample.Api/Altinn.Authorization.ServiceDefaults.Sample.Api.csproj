@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsSampleProject>true</IsSampleProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Authorization.ModelUtils\src\ModelUtils.Swashbuckle\Altinn.Authorization.ModelUtils.Swashbuckle.csproj" />
+    <ProjectReference Include="..\..\..\Altinn.Swashbuckle\src\Altinn.Swashbuckle\Altinn.Swashbuckle.csproj" />
+    <ProjectReference Include="..\..\src\ServiceDefaults.Authorization\Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\ServiceDefaults.Swashbuckle\Altinn.Authorization.ServiceDefaults.Swashbuckle.csproj" />
+    <ProjectReference Include="..\..\src\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
+</Project>
