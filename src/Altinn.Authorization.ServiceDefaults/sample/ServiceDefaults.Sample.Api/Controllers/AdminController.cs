@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
 
 /// <summary>
-/// Gets and receives extensible enum values.
+/// Admin controller.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]

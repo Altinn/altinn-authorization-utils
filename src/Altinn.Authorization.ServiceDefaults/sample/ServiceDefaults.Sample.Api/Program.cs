@@ -27,9 +27,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("policy:read", policy => policy.RequireAnyScopeOf("read", "write", "admin"))
-    .AddPolicy("policy:write", policy => policy.RequireAnyScopeOf("write", "admin"))
-    .AddPolicy("policy:admin", policy => policy.RequireAnyScopeOf("admin"));
+    .AddPolicy("policy:read", policy => policy.RequireScopeAnyOf("read", "write", "admin"))
+    .AddPolicy("policy:write", policy => policy.RequireScopeAnyOf("write", "admin"))
+    .AddPolicy("policy:admin", policy => policy.RequireScopeAnyOf("admin"));
 
 
 var app = builder.Build();
@@ -49,6 +49,6 @@ app.MapControllers();
 await app.RunAsync();
 
 [ExcludeFromCodeCoverage]
-public partial class Program
+partial class Program
 {
 }

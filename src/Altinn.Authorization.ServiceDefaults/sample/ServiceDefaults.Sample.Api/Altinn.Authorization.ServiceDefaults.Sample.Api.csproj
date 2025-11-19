@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
   </ItemGroup>
@@ -20,6 +16,10 @@
     <ProjectReference Include="..\..\src\ServiceDefaults.Authorization\Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
     <ProjectReference Include="..\..\src\ServiceDefaults.Swashbuckle\Altinn.Authorization.ServiceDefaults.Swashbuckle.csproj" />
     <ProjectReference Include="..\..\src\ServiceDefaults\Altinn.Authorization.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
   </ItemGroup>
 
 </Project>
