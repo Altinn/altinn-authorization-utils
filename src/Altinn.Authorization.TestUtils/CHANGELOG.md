@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.2.0...Altinn.Authorization.TestUtils-v3.3.0) (2025-11-19)
+
+
+### Features
+
+* add net10 package ([#423](https://github.com/Altinn/altinn-authorization-utils/issues/423)) ([2c43aff](https://github.com/Altinn/altinn-authorization-utils/commit/2c43aff3f244fc38c863a880022dee0263d50ab3))
+
 ## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.1.0...Altinn.Authorization.TestUtils-v3.2.0) (2025-11-05)
 
 
