@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.3.0...Altinn.Authorization.TestUtils-v3.4.0) (2025-11-24)
+
+
+### Features
+
+* add `TestMeterFactory` ([#429](https://github.com/Altinn/altinn-authorization-utils/issues/429)) ([33f2c7b](https://github.com/Altinn/altinn-authorization-utils/commit/33f2c7b6f23b119c6b23b25d70a83ba4e29eb833))
+
 ## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.2.0...Altinn.Authorization.TestUtils-v3.3.0) (2025-11-19)
 
 
