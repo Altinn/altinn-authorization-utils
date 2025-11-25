@@ -126,7 +126,11 @@ public static class AltinnServiceDefaultsExtensions
                 var clusterInfo = clusterInfoOptions.CurrentValue;
                 if (clusterInfo.ClusterNetwork is { } clusterNetwork)
                 {
+#if NET10_0_OR_GREATER
+                    options.KnownIPNetworks.Add(clusterNetwork);
+#else
                     options.KnownNetworks.Add(new AspNetCore.HttpOverrides.IPNetwork(clusterNetwork.BaseAddress, clusterNetwork.PrefixLength));
+#endif
                 }
             });
 
