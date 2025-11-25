@@ -13,7 +13,7 @@ public sealed class AltinnSecurityOptions
     /// <summary>
     /// Gets the default authentication scheme name for platform tokens.
     /// </summary>
-    public static string DefaultPlatformTokenSchemeName => "altinn-platform";
+    public static string DefaultPlatformTokenSchemeName => "altinn-platform-token";
 
     /// <summary>
     /// Gets the default scheme name used for Azure API Management authentication.
@@ -28,7 +28,7 @@ public sealed class AltinnSecurityOptions
     /// <summary>
     /// Gets a value indicating whether the platform token authentication scheme is enabled by default.
     /// </summary>
-    public static bool DefaultEnablePlatformTokenScheme => false;
+    public static bool DefaultEnablePlatformTokenScheme => true;
 
     /// <summary>
     /// Gets a value indicating whether the Azure API Management scheme is enabled by default.
