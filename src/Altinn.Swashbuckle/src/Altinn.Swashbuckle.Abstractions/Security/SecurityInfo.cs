@@ -74,11 +74,11 @@ public sealed class SecurityInfo
     //   Output: (A AND C) OR (A AND D) OR (B AND C) OR (B AND D)
     private static ImmutableArray<ImmutableArray<KeyValuePair<string, ImmutableArray<string>>>> Normalize(ImmutableArray<SecurityRequirement> requirements)
     {
-        var results = new List<List<(string Scheme, string? Scope)>> { new() };
+        var results = new List<HashSet<(string Scheme, string? Scope)>> { new() };
         
         foreach (var requirement in requirements)
         {
-            var newResults = new List<List<(string Scheme, string? Scope)>>();
+            var newResults = new List<HashSet<(string Scheme, string? Scope)>>();
             foreach (var partialResult in results)
             {
                 foreach (var candidate in requirement)
@@ -101,19 +101,14 @@ public sealed class SecurityInfo
             .Where(static dict => dict.Length > 0)
             .ToImmutableArray();
 
-        static List<List<(string Scheme, string? Scope)>> Reduce(List<List<(string Scheme, string? Scope)>> orList)
+        static List<HashSet<(string Scheme, string? Scope)>> Reduce(List<HashSet<(string Scheme, string? Scope)>> orList)
         {
-            var simplified = new List<HashSet<(string Scheme, string? Scope)>>();
+            var simplified = new HashSet<HashSet<(string Scheme, string? Scope)>>(new SetComparer());
 
-            // Normalize by sorting each AND group to make comparison easier
-            var normalized = orList
-                .Select(andGroup => andGroup.ToHashSet())
-                .ToList();
-
-            for (int i = 0; i < normalized.Count; i++)
+            for (int i = 0; i < orList.Count; i++)
             {
-                var current = normalized[i];
-                bool subsumed = normalized.Any(other => other != current && other.IsSubsetOf(current)); // other ⊆ current
+                var current = orList[i];
+                bool subsumed = orList.Any(other => other != current && other.IsProperSubsetOf(current)); // other ⊆ current
 
                 if (!subsumed)
                 {
@@ -122,11 +117,41 @@ public sealed class SecurityInfo
             }
 
             // Remove supersets (redundant rules)
-            simplified = simplified
-                .Where(a => !simplified.Any(b => b != a && a.IsSubsetOf(b)))
+            var result = simplified
+                .Where(a => !simplified.Any(b => b != a && a.IsProperSubsetOf(b)))
                 .ToList();
 
-            return simplified.Select(set => set.ToList()).ToList();
+            return result;
+        }
+    }
+
+    private sealed class SetComparer
+        : IEqualityComparer<HashSet<(string Scheme, string? Scope)>>
+    {
+        public bool Equals(HashSet<(string Scheme, string? Scope)>? x, HashSet<(string Scheme, string? Scope)>? y)
+        {
+            if (x is null && y is null) return true;
+            if (x is null || y is null) return false;
+            if (x.Count != y.Count) return false;
+            return x.SetEquals(y);
+        }
+
+        public int GetHashCode(HashSet<(string Scheme, string? Scope)>? obj)
+        {
+            if (obj is null)
+            {
+                return 0;
+            }
+
+            HashCode hash = default;
+            
+            foreach (var item in obj.OrderBy(i => i.Scheme).ThenBy(i => i.Scope))
+            {
+                hash.Add(item.Scheme);
+                hash.Add(item.Scope);
+            }
+
+            return hash.ToHashCode();
         }
     }
 }
