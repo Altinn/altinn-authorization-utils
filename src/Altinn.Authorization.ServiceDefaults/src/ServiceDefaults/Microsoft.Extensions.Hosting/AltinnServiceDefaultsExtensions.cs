@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Http.Resilience;
@@ -113,8 +114,8 @@ public static class AltinnServiceDefaultsExtensions
             builder.AddApplicationInsights(logger);
         }
 
+        builder.Services.AddMetricsProvider();
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
-        builder.Services.AddSingleton<ServiceDefaultsMeter>();
         builder.Services.AddSingleton<HttpStandardResilienceTelemetry>();
         builder.Services.Configure<AltinnClusterInfo>(builder.Configuration.GetSection("Altinn:ClusterInfo"));
         builder.Services.AddSingleton<IConfigureOptions<AltinnClusterInfo>, ConfigureAltinnClusterInfo>();
@@ -182,6 +183,30 @@ public static class AltinnServiceDefaultsExtensions
         builder.Services.AddAltinnScopesAuthorizationHandlers();
 
         return builder;
+    }
+
+    /// <summary>
+    /// Adds metrics services and a default metrics provider to the specified service collection. Optionally allows
+    /// further configuration of metrics options.
+    /// </summary>
+    /// <param name="services">The service collection to which the metrics services and provider will be added. Cannot be null.</param>
+    /// <param name="configure">An optional delegate to configure metrics options.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddMetricsProvider(
+        this IServiceCollection services,
+        Action<IMetricsBuilder>? configure = null)
+    {
+        if (configure is null)
+        {
+            services.AddMetrics();
+        }
+        else
+        {
+            services.AddMetrics(configure);
+        }
+
+        services.TryAddSingleton<IMetricsProvider, DefaultMetricsProvider>();
+        return services;
     }
 
     /// <summary>
