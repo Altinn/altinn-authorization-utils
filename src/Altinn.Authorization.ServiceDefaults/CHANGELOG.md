@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.4.0...Altinn.Authorization.ServiceDefaults-v4.5.0) (2025-11-28)
+
+
+### Features
+
+* add metrics provider ([#431](https://github.com/Altinn/altinn-authorization-utils/issues/431)) ([e60812d](https://github.com/Altinn/altinn-authorization-utils/commit/e60812d919fd11668e598894298cf4afcf0c134d))
+* add more swashbuckle features to servicedefaults ([#417](https://github.com/Altinn/altinn-authorization-utils/issues/417)) ([1633d7d](https://github.com/Altinn/altinn-authorization-utils/commit/1633d7d20a123eb84698e22688d4a24a7eed456a))
+* add new `ServiceDefaults.Authorization` package ([#407](https://github.com/Altinn/altinn-authorization-utils/issues/407)) ([0a6751e](https://github.com/Altinn/altinn-authorization-utils/commit/0a6751e4da2743d4a43715eac7d8bb7ccf6c81f5))
+
+
+### Bug Fixes
+
+* `AuthorizationRequirementAttribute` should not implement `IAuthorizationData`. ([#414](https://github.com/Altinn/altinn-authorization-utils/issues/414)) ([6586e4d](https://github.com/Altinn/altinn-authorization-utils/commit/6586e4db5ee7844c73800a3242a9c75e3f521f64))
+
 ## [4.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.3.0...Altinn.Authorization.ServiceDefaults-v4.4.0) (2025-10-18)
 
 
