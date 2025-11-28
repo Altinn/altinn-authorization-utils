@@ -19,14 +19,14 @@ public abstract class OpenApiAuthorizationRequirementConditionProvider<TRequirem
     {
         if (requirement is TRequirement typedRequirement)
         {
-            return GetCandidatesForAuthorizationRequirement(typedRequirement, context, cancellationToken);
+            return GetConditionsForAuthorizationRequirement(typedRequirement, context, cancellationToken);
         }
 
         return AsyncEnumerable.Empty<SecurityRequirementCondition>();
     }
 
     /// <inheritdoc cref="IOpenApiAuthorizationRequirementConditionProvider.GetConditionsForAuthorizationRequirement(IAuthorizationRequirement, OpenApiSecurityContext, CancellationToken)"/>
-    protected abstract IAsyncEnumerable<SecurityRequirementCondition> GetCandidatesForAuthorizationRequirement(
+    protected abstract IAsyncEnumerable<SecurityRequirementCondition> GetConditionsForAuthorizationRequirement(
         TRequirement requirement,
         OpenApiSecurityContext context,
         CancellationToken cancellationToken = default);

@@ -93,7 +93,7 @@ public class RequirementAuthorizationPolicySecurityProviderTests
         : OpenApiAuthorizationRequirementConditionProvider<T>
         where T : IAuthorizationRequirement
     {
-        protected override IAsyncEnumerable<SecurityRequirementCondition> GetCandidatesForAuthorizationRequirement(T requirement, OpenApiSecurityContext context, CancellationToken cancellationToken = default)
+        protected override IAsyncEnumerable<SecurityRequirementCondition> GetConditionsForAuthorizationRequirement(T requirement, OpenApiSecurityContext context, CancellationToken cancellationToken = default)
             => AsyncEnumerable.ToAsyncEnumerable([condition]);
     }
 }
