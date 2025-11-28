@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -17,6 +18,7 @@ public static class AltinnServiceDefaultsAuthorizationServiceCollectionExtension
     public static IServiceCollection AddAltinnScopesAuthorizationHandlers(this IServiceCollection services)
     {
         services.AddScopeAnyOfAuthorizationHandler();
+        services.AddPlatformAccessTokenHandler();
 
         return services;
     }
@@ -31,6 +33,25 @@ public static class AltinnServiceDefaultsAuthorizationServiceCollectionExtension
     {
         services.AddAuthorizationScopeProvider();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IAuthorizationHandler, ScopeAnyOfAuthorizationHandler>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds an authorization handler that validates platform access tokens.
+    /// </summary>
+    /// <param name="services">The service collection to which the authorization handler will be added. Cannot be null.</param>
+    /// <param name="configure">Optional configuration delegate.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddPlatformAccessTokenHandler(this IServiceCollection services, Action<PlatformAccessTokenSettings>? configure = null)
+    {
+        var options = services.AddOptions<PlatformAccessTokenSettings>();
+        if (configure is not null)
+        { 
+            options.Configure(configure);
+        }
+
+        services.TryAddSingleton<IAuthorizationHandler, DefaultPlatformAccessTokenHandler>();
 
         return services;
     }

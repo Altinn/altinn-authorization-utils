@@ -160,6 +160,14 @@ public class SecurityInfoTests
                 [new("apim", []), new("scope", ["admin"])],           // - APIM and scope: admin
             ]);
 
+        Add(
+            "duplicate-requirement",
+            [apimRequirement, apimRequirement],
+            [
+                // requires EITHER:
+                [new("apim", [])], // - APIM
+            ]);
+
         return cases;
 
         void Add(

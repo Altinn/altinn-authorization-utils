@@ -1,4 +1,5 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,7 +11,7 @@ namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ExcludeFromCodeCoverage]
-[ScopeAnyOfAuthorize(["read", "write", "admin"])]
+[PlatformAccessTokenOrScopeAnyOfAuthorize(["read", "write", "admin"])]
 public class ResourceController
     : ControllerBase
 {
@@ -34,7 +35,7 @@ public class ResourceController
     /// <param name="value">The UUID value to set. Must be a valid <see cref="Guid"/>.</param>
     /// <returns>An <see cref="ActionResult{Guid}"/> containing the UUID value that was set.</returns>
     [HttpPost("uuid")]
-    [ScopeAnyOfAuthorize("write", "admin")]
+    [PlatformAccessTokenOrScopeAnyOfAuthorize("write", "admin")]
     public ActionResult<Guid> SetUuid(
         [FromBody] Guid value)
         => value;
@@ -58,6 +59,7 @@ public class ResourceController
     [HttpDelete("uuid")]
     [ScopeAnyOfAuthorize("delete")]
     [ScopeAnyOfAuthorize("write", "admin")]
+    [PlatformAccessTokenAuthorize]
     public ActionResult<Guid> DeleteUuid(
         [FromBody] Guid value)
         => value;
