@@ -1,13 +1,15 @@
 ﻿using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// An <see cref="ActionResult"/> that returns a <see cref="Microsoft.AspNetCore.Mvc.ProblemDetails"/>.
 /// </summary>
-internal sealed class ProblemDetailsActionResult
+internal sealed partial class ProblemDetailsActionResult
     : ActionResult
 {
     private readonly Microsoft.AspNetCore.Mvc.ProblemDetails _problemDetails;
@@ -26,8 +28,18 @@ internal sealed class ProblemDetailsActionResult
     /// <inheritdoc/>
     public override Task ExecuteResultAsync(ActionContext context)
     {
+        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<ProblemDetailsActionResult>>();
+        var errorCode = (_problemDetails as AltinnProblemDetails)?.ErrorCode;
+        Log.ReturningProblemDetails(logger, errorCode, _problemDetails.Status, _problemDetails.Detail);
+
         var httpResult = TypedResults.Problem(_problemDetails);
 
         return httpResult.ExecuteAsync(context.HttpContext);
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(1, LogLevel.Information, "Returning ProblemDetails with error code {ErrorCode}, status code {StatusCode}, and description '{Detail}'.")]
+        public static partial void ReturningProblemDetails(ILogger logger, ErrorCode? errorCode, int? statusCode, string? detail);
     }
 }
