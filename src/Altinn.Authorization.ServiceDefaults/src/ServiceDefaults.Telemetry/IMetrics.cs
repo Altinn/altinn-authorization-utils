@@ -22,25 +22,7 @@ public interface IMetrics<TSelf>
     /// </list>
     /// </remarks>
     public static virtual string MeterName
-    {
-        get
-        {
-            var assembly = typeof(TSelf).Assembly;
-            if (assembly.GetCustomAttribute<AssemblyMeterNameAttribute>() is { } attr)
-            {
-                return attr.MeterName;
-            }
-
-            var assemblyName = assembly.GetName().Name;
-            
-            if (string.IsNullOrEmpty(assemblyName))
-            {
-                throw new InvalidOperationException($"Cannot determine assembly name for type {typeof(TSelf)}");
-            }
-
-            return assemblyName;
-        }
-    }
+        => AssemblyMeterDescriptor.For<TSelf>().Name;
 
     /// <summary>
     /// Gets the version used for <see cref="MeterOptions.Version"/> by <see cref="IMeterFactory.Create(MeterOptions)"/>.
@@ -54,23 +36,7 @@ public interface IMetrics<TSelf>
     /// </list>
     /// </remarks>
     public static virtual string? MeterVersion
-    {
-        get
-        {
-            var assembly = typeof(TSelf).Assembly;
-            if (assembly.GetCustomAttribute<AssemblyMeterVersionAttribute>() is { } attr)
-            {
-                return attr.MeterVersion;
-            }
-
-            if (assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>() is { } versionAttr)
-            {
-                return versionAttr.InformationalVersion;
-            }
-
-            return null;
-        }
-    }
+        => AssemblyMeterDescriptor.For<TSelf>().Version;
 
     /// <summary>
     /// Creates a new instance of self.
@@ -80,4 +46,3 @@ public interface IMetrics<TSelf>
     /// <remarks><paramref name="meter"/> does not need to be disposed.</remarks>
     public static abstract TSelf Create(Meter meter);
 }
-
