@@ -1,6 +1,4 @@
-using Altinn.Authorization.ServiceDefaults.Utils;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,11 +11,18 @@ namespace Altinn.Authorization.ServiceDefaults.Tests;
 
 public class ServiceDefaultsTests
 {
+#if NET10_0_OR_GREATER
+    private static readonly IPNetwork TestNetwork
+        = new IPNetwork(new IPAddress([10, 50, 0, 15]), 16);
+#else
     private static readonly Microsoft.AspNetCore.HttpOverrides.IPNetwork TestNetwork
         = new Microsoft.AspNetCore.HttpOverrides.IPNetwork(new IPAddress([10, 50, 0, 15]), 16);
 
     private static readonly IPNetwork TestNetworkConverted
-        = IPNetworkUtils.From(TestNetwork);
+        = Altinn.Authorization.ServiceDefaults.Utils.IPNetworkUtils.From(TestNetwork);
+#endif
+
+
 
     [Fact]
     public async Task NoClusterInfo()
@@ -29,22 +34,36 @@ public class ServiceDefaultsTests
         Assert.NotNull(altinnClusterInfo);
 
         altinnClusterInfo.ClusterNetwork.ShouldBeNull();
+
+#if NET10_0_OR_GREATER
+        forwardedHeadersOptions.KnownIPNetworks.ShouldNotContain(TestNetwork);
+#else
         forwardedHeadersOptions.KnownNetworks.ShouldNotContain(TestNetwork);
+#endif
     }
 
     [Fact]
     public async Task ValidCidrInClusterInfo()
     {
         await using var app = await CreateApp([
-           KeyValuePair.Create("Altinn:ClusterInfo:ClusterNetwork", $"{TestNetwork.Prefix}/{TestNetwork.PrefixLength}"),
+#if NET10_0_OR_GREATER
+            KeyValuePair.Create("Altinn:ClusterInfo:ClusterNetwork", $"{TestNetwork.BaseAddress}/{TestNetwork.PrefixLength}"),
+#else
+            KeyValuePair.Create("Altinn:ClusterInfo:ClusterNetwork", $"{TestNetwork.Prefix}/{TestNetwork.PrefixLength}"),
+#endif
         ]);
 
         var altinnClusterInfo = app.GetRequiredService<IOptionsMonitor<AltinnClusterInfo>>().CurrentValue;
         var forwardedHeadersOptions = app.GetRequiredService<IOptionsMonitor<ForwardedHeadersOptions>>().CurrentValue;
         Assert.NotNull(altinnClusterInfo);
 
+#if NET10_0_OR_GREATER
+        altinnClusterInfo.ClusterNetwork.ShouldBe(TestNetwork);
+        forwardedHeadersOptions.KnownIPNetworks.ShouldContain(TestNetwork);
+#else
         altinnClusterInfo.ClusterNetwork.ShouldBe(TestNetworkConverted);
         forwardedHeadersOptions.KnownNetworks.ShouldContain(static x => x.Prefix.Equals(TestNetworkConverted.BaseAddress) && x.PrefixLength == TestNetworkConverted.PrefixLength);
+#endif
     }
 
     [Fact]
@@ -57,19 +76,6 @@ public class ServiceDefaultsTests
             ]);
 
             var _altinnClusterInfo = app.GetRequiredService<IOptionsMonitor<AltinnClusterInfo>>().CurrentValue;
-        });
-    }
-
-    [Fact]
-    public async Task EnableServices()
-    {
-        await using var app = await CreateApp(
-            [KeyValuePair.Create("ApplicationInsights:InstrumentationKey", Guid.NewGuid().ToString())],
-            opts => opts.ConfigureEnabledServices(services => services.DisableApplicationInsights()));
-
-        Should.Throw<InvalidOperationException>(() =>
-        {
-            var _ = app.GetRequiredService<ITelemetryInitializer>();
         });
     }
 

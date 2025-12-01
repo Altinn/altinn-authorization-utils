@@ -1,17 +1,13 @@
 ﻿using Altinn.Authorization.ServiceDefaults;
 using Altinn.Authorization.ServiceDefaults.AppConfiguration;
-using Altinn.Authorization.ServiceDefaults.ApplicationInsights;
 using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using Altinn.Authorization.ServiceDefaults.Options;
 using Altinn.Authorization.ServiceDefaults.Telemetry;
 using Azure.Core;
 using Azure.Identity;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CommunityToolkit.Diagnostics;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -28,7 +24,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Metrics;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -459,17 +454,11 @@ public static class AltinnServiceDefaultsExtensions
                 KeyValuePair.Create("ConnectionStrings:ApplicationInsights", (string?)applicationInsightsConnectionString),
             ]);
 
-            // NOTE: due to a bug in application insights, this must be registered before anything else
-            // See https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
-            builder.Services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp/logtelemetry" });
-            builder.Services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
-            {
-                ConnectionString = applicationInsightsConnectionString,
-            });
-
-            builder.Services.AddApplicationInsightsTelemetryProcessor<ApplicationInsightsEndpointFilterProcessor>();
-            builder.Services.AddApplicationInsightsTelemetryProcessor<ApplicationInsightsRequestTelemetryEnricherProcessor>();
-            builder.Services.AddSingleton<ITelemetryInitializer, AltinnServiceTelemetryInitializer>();
+            builder.Services.AddOpenTelemetry()
+                .UseAzureMonitor(options =>
+                {
+                    options.ConnectionString = applicationInsightsConnectionString;
+                });
 
             logger.Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");
         }
