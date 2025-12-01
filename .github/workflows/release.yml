@@ -49,7 +49,7 @@ jobs:
         path: ${{fromJson(needs.release-please.outputs.paths_released)}}
 
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: ${{ format('refs/tags/{0}', fromJSON(needs.release-please.outputs.full)[format('{0}--tag_name', matrix.path)]) }}
 
