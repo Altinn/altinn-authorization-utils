@@ -53,7 +53,8 @@ public static class AltinnServiceDefaultsSwashbuckleServiceCollectionExtensions
 
         services.AddOpenApiSecurityProvider();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IOpenApiOperationSecurityProvider, SwaggerOpenApiRequirementProvider>());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOpenApiAuthorizationRequirementConditionProvider, SwaggerAnyOfScopeAuthorizationRequirementCandidateProvider>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOpenApiAuthorizationRequirementConditionProvider, SwaggerAnyOfScopeAuthorizationRequirementConditionProvider>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOpenApiAuthorizationRequirementConditionProvider, SwaggerPlatformAccessTokenRequirementConditionProvider>());
 
         services.AddSingleton<SwaggerAltinnSecurityDocumentFilter>();
         services.AddSingleton<SwaggerAltinnOperationSecurityDescriptionFilter>();

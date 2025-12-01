@@ -6,17 +6,17 @@ using System.Diagnostics.CodeAnalysis;
 namespace Altinn.Authorization.ServiceDefaults.Swashbuckle.Security;
 
 [ExcludeFromCodeCoverage]
-internal sealed class SwaggerAnyOfScopeAuthorizationRequirementCandidateProvider
+internal sealed class SwaggerAnyOfScopeAuthorizationRequirementConditionProvider
     : OpenApiAuthorizationRequirementConditionProvider<IScopeAnyOfAuthorizationRequirement>
 {
     private readonly IOptionsMonitor<AltinnSecurityOptions> _options;
 
-    public SwaggerAnyOfScopeAuthorizationRequirementCandidateProvider(IOptionsMonitor<AltinnSecurityOptions> options)
+    public SwaggerAnyOfScopeAuthorizationRequirementConditionProvider(IOptionsMonitor<AltinnSecurityOptions> options)
     {
         _options = options;
     }
 
-    protected override IAsyncEnumerable<SecurityRequirementCondition> GetCandidatesForAuthorizationRequirement(
+    protected override IAsyncEnumerable<SecurityRequirementCondition> GetConditionsForAuthorizationRequirement(
         IScopeAnyOfAuthorizationRequirement requirement,
         OpenApiSecurityContext context,
         CancellationToken cancellationToken = default)
