@@ -1,5 +1,4 @@
-﻿using DnsClient.Internal;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 
