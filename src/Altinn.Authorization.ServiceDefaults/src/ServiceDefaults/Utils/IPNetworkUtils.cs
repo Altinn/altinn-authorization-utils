@@ -1,4 +1,4 @@
-using CommunityToolkit.Diagnostics;
+﻿using CommunityToolkit.Diagnostics;
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -44,8 +44,10 @@ internal static class IPNetworkUtils
     public static IPAddress StartAddress(this IPNetwork network)
         => network.BaseAddress;
 
+#if !NET10_0_OR_GREATER
     public static IPNetwork From(Microsoft.AspNetCore.HttpOverrides.IPNetwork network)
         => From(network.Prefix, network.PrefixLength);
+#endif
 
     public static IPNetwork From(IPAddress address, int prefixLength)
     {
@@ -56,8 +58,10 @@ internal static class IPNetworkUtils
         return new IPNetwork(truncatedAddress, prefixLength);
     }
 
+#if !NET10_0_OR_GREATER
     public static bool TryFrom(Microsoft.AspNetCore.HttpOverrides.IPNetwork network, out IPNetwork result)
         => TryFrom(network.Prefix, network.PrefixLength, out result);
+#endif
 
     public static bool TryFrom(IPAddress address, int prefixLength, out IPNetwork result)
     {

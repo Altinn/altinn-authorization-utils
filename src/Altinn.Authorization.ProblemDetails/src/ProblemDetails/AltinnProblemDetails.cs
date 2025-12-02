@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -18,6 +19,7 @@ public class AltinnProblemDetails
         ErrorCode = descriptor.ErrorCode;
         Status = (int)descriptor.StatusCode;
         Detail = descriptor.Detail;
+        TraceId = Activity.Current?.Id;
     }
 
     /// <summary>
@@ -29,6 +31,7 @@ public class AltinnProblemDetails
         ErrorCode = instance.ErrorCode;
         Status = (int)instance.StatusCode;
         Detail = instance.Detail;
+        TraceId = instance.TraceId;
 
         if (!instance.Extensions.IsDefaultOrEmpty)
         {
@@ -49,6 +52,14 @@ public class AltinnProblemDetails
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [JsonPropertyOrder(0)]
     public ErrorCode ErrorCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unique identifier used to trace a request or operation across system boundaries.
+    /// </summary>
+    [JsonPropertyName("traceId")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyOrder(1)]
+    public string? TraceId { get; set; }
 
     /// <inheritdoc/>
     void IJsonOnDeserializing.OnDeserializing()

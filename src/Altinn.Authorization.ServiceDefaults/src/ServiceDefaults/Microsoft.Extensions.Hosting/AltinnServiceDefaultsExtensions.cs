@@ -120,12 +120,18 @@ public static class AltinnServiceDefaultsExtensions
                 options.ForwardedHeaders = ForwardedHeaders.All;
 
                 var clusterInfo = clusterInfoOptions.CurrentValue;
-                if (clusterInfo.ClusterNetwork is { } clusterNetwork)
+                if (clusterInfo.TrustedProxies is { Count: > 0 } trustedProxies)
                 {
 #if NET10_0_OR_GREATER
-                    options.KnownIPNetworks.Add(clusterNetwork);
+                    foreach (var network in trustedProxies)
+                    {
+                        options.KnownIPNetworks.Add(network);
+                    }
 #else
-                    options.KnownNetworks.Add(new AspNetCore.HttpOverrides.IPNetwork(clusterNetwork.BaseAddress, clusterNetwork.PrefixLength));
+                    foreach (var network in trustedProxies)
+                    {
+                        options.KnownNetworks.Add(new AspNetCore.HttpOverrides.IPNetwork(network.BaseAddress, network.PrefixLength));
+                    }
 #endif
                 }
             });

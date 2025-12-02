@@ -38,6 +38,7 @@ public record class ProblemInstance
 
     private readonly ProblemDescriptor _descriptor;
     private readonly ProblemExtensionData _extensions;
+    private readonly string? _traceId = Activity.Current?.Id;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstance"/> class.
@@ -58,6 +59,11 @@ public record class ProblemInstance
 
     /// <inheritdoc cref="ProblemDescriptor.Detail"/>
     public string Detail => _descriptor.Detail;
+
+    /// <summary>
+    /// Gets the unique identifier for the current trace, if available.
+    /// </summary>
+    public string? TraceId => _traceId;
 
     /// <summary>
     /// Gets the extensions.

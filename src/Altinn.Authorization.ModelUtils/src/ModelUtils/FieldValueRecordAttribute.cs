@@ -68,6 +68,7 @@ public sealed class FieldValueRecordAttribute
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             Debug.Assert(typeToConvert == typeof(T));
+            Debug.Assert(_model.Constructor is not null);
 
             return _model.Constructor.Parameters.Length switch
             {

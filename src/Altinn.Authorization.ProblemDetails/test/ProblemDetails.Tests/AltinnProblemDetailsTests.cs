@@ -25,6 +25,7 @@ public class AltinnProblemDetailsTests
             deserialized.Detail.ShouldBe(problemDetails.Detail);
             deserialized.Status.ShouldBe(problemDetails.Status);
             deserialized.ErrorCode.ShouldBe(problemDetails.ErrorCode);
+            deserialized.TraceId.ShouldBe(problemDetails.TraceId);
         }
     }
 
