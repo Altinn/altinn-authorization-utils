@@ -15,6 +15,13 @@ public static class StdValidationErrors
         = _factory.Create(0, "The field is required.");
 
     /// <summary>
+    /// Gets a validation error descriptor for a catch-all validation error.
+    /// </summary>
+    [Obsolete("Use specific validation error descriptors where possible.")]
+    public static ValidationErrorDescriptor CatchAll { get; }
+        = _factory.Create(1, "A validation error occurred.");
+
+    /// <summary>
     /// Standard problem descriptors' error codes.
     /// </summary>
     public static class ErrorCodes
