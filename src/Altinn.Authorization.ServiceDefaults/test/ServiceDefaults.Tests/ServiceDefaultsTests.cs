@@ -33,7 +33,10 @@ public class ServiceDefaultsTests
         var forwardedHeadersOptions = app.GetRequiredService<IOptionsMonitor<ForwardedHeadersOptions>>().CurrentValue;
         Assert.NotNull(altinnClusterInfo);
 
+#pragma warning disable CS0618 // Type or member is obsolete
         altinnClusterInfo.ClusterNetwork.ShouldBeNull();
+#pragma warning restore CS0618 // Type or member is obsolete
+        altinnClusterInfo.TrustedProxies.ShouldBeEmpty();
 
 #if NET10_0_OR_GREATER
         forwardedHeadersOptions.KnownIPNetworks.ShouldNotContain(TestNetwork);
@@ -57,12 +60,46 @@ public class ServiceDefaultsTests
         var forwardedHeadersOptions = app.GetRequiredService<IOptionsMonitor<ForwardedHeadersOptions>>().CurrentValue;
         Assert.NotNull(altinnClusterInfo);
 
+        altinnClusterInfo.TrustedProxies.ShouldNotBeEmpty();
+
 #if NET10_0_OR_GREATER
+#pragma warning disable CS0618 // Type or member is obsolete
         altinnClusterInfo.ClusterNetwork.ShouldBe(TestNetwork);
+        altinnClusterInfo.TrustedProxies.ShouldContain(TestNetwork);
+#pragma warning restore CS0618 // Type or member is obsolete
         forwardedHeadersOptions.KnownIPNetworks.ShouldContain(TestNetwork);
 #else
+#pragma warning disable CS0618 // Type or member is obsolete
         altinnClusterInfo.ClusterNetwork.ShouldBe(TestNetworkConverted);
+        altinnClusterInfo.TrustedProxies.ShouldContain(TestNetworkConverted);
+#pragma warning restore CS0618 // Type or member is obsolete
         forwardedHeadersOptions.KnownNetworks.ShouldContain(static x => x.Prefix.Equals(TestNetworkConverted.BaseAddress) && x.PrefixLength == TestNetworkConverted.PrefixLength);
+#endif
+    }
+
+    [Fact]
+    public async Task ValidCidrListTrustedProxies()
+    {
+        await using var app = await CreateApp([
+            KeyValuePair.Create("Altinn:ClusterInfo:TrustedProxies", "10.11.12.13/24,, 10.100.0.0/16 ,"),
+        ]);
+
+        var altinnClusterInfo = app.GetRequiredService<IOptionsMonitor<AltinnClusterInfo>>().CurrentValue;
+        var forwardedHeadersOptions = app.GetRequiredService<IOptionsMonitor<ForwardedHeadersOptions>>().CurrentValue;
+        Assert.NotNull(altinnClusterInfo);
+
+        altinnClusterInfo.TrustedProxies.Count.ShouldBe(2);
+        altinnClusterInfo.TrustedProxies.ShouldContain(new IPNetwork(new IPAddress([10, 11, 12, 0]), 24));
+        altinnClusterInfo.TrustedProxies.ShouldContain(new IPNetwork(new IPAddress([10, 100, 0, 0]), 16));
+
+#if NET10_0_OR_GREATER
+        forwardedHeadersOptions.KnownIPNetworks.ShouldContain(new IPNetwork(new IPAddress([10, 11, 12, 0]), 24));
+        forwardedHeadersOptions.KnownIPNetworks.ShouldContain(new IPNetwork(new IPAddress([10, 100, 0, 0]), 16));
+#else
+        var ip1 = new IPAddress([10, 11, 12, 0]);
+        var ip2 = new IPAddress([10, 100, 0, 0]);
+        forwardedHeadersOptions.KnownNetworks.ShouldContain(x => x.Prefix.Equals(ip1) && x.PrefixLength == 24);
+        forwardedHeadersOptions.KnownNetworks.ShouldContain(x => x.Prefix.Equals(ip2) && x.PrefixLength == 16);
 #endif
     }
 
