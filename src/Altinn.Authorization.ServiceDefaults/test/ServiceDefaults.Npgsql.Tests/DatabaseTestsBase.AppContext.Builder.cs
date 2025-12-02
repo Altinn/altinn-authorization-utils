@@ -179,7 +179,7 @@ public abstract partial class DatabaseTestsBase
 
             public Builder AddYuniqlMigrations(Action<YuniqlDatabaseMigratorOptions> configure)
             {
-                _dbBuilder.AddYuniqlMigrations(configure);
+                _dbBuilder.AddYuniqlMigrations(serviceKey: typeof(AppContext), configure);
 
                 return this;
             }
