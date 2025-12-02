@@ -1,5 +1,33 @@
 # Changelog
 
+## [5.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.4.0...Altinn.Authorization.ServiceDefaults-v5.0.0) (2025-12-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* Removes the deprecated overloads for yuniql that did not require a `serviceKey`.
+* This replaces the old application-insights exporter with the newer azure-monitor one, which hooks into opentelemetry machinery. This can in theory break clients (though it's not expected).
+
+### Features
+
+* add metrics provider ([#431](https://github.com/Altinn/altinn-authorization-utils/issues/431)) ([e60812d](https://github.com/Altinn/altinn-authorization-utils/commit/e60812d919fd11668e598894298cf4afcf0c134d))
+* add more swashbuckle features to servicedefaults ([#417](https://github.com/Altinn/altinn-authorization-utils/issues/417)) ([1633d7d](https://github.com/Altinn/altinn-authorization-utils/commit/1633d7d20a123eb84698e22688d4a24a7eed456a))
+* add new `ServiceDefaults.Authorization` package ([#407](https://github.com/Altinn/altinn-authorization-utils/issues/407)) ([0a6751e](https://github.com/Altinn/altinn-authorization-utils/commit/0a6751e4da2743d4a43715eac7d8bb7ccf6c81f5))
+* assembly-level meter-descriptor ([#441](https://github.com/Altinn/altinn-authorization-utils/issues/441)) ([71ff5d6](https://github.com/Altinn/altinn-authorization-utils/commit/71ff5d62ff93ec33f92b55e5adcaa507bb639853))
+* platform access token handling ([#433](https://github.com/Altinn/altinn-authorization-utils/issues/433)) ([e1f5ccb](https://github.com/Altinn/altinn-authorization-utils/commit/e1f5ccb6b76d87894ebde8f56b64dc96faab95d5))
+* trusted proxies ([#448](https://github.com/Altinn/altinn-authorization-utils/issues/448)) ([c19da30](https://github.com/Altinn/altinn-authorization-utils/commit/c19da303723c57435c1f18c4fba53c540d50e9ee))
+* use azure monitor for telemetry exporting ([#440](https://github.com/Altinn/altinn-authorization-utils/issues/440)) ([2695730](https://github.com/Altinn/altinn-authorization-utils/commit/2695730c55640d20cb7ea775ef69d8d018b76a45))
+
+
+### Bug Fixes
+
+* `AuthorizationRequirementAttribute` should not implement `IAuthorizationData`. ([#414](https://github.com/Altinn/altinn-authorization-utils/issues/414)) ([6586e4d](https://github.com/Altinn/altinn-authorization-utils/commit/6586e4db5ee7844c73800a3242a9c75e3f521f64))
+
+
+### Miscellaneous Chores
+
+* remove deprecated API for net10 ([#443](https://github.com/Altinn/altinn-authorization-utils/issues/443)) ([cf1a485](https://github.com/Altinn/altinn-authorization-utils/commit/cf1a48590fbac6601da9a8b58cd94c396870cf58))
+
 ## [4.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.3.0...Altinn.Authorization.ServiceDefaults-v4.4.0) (2025-10-18)
 
 
