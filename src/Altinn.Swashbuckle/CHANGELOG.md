@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v3.0.0...Altinn.Swashbuckle-v3.1.0) (2025-12-02)
+
+
+### Features
+
+* add Altinn servers to OpenAPI documents ([#415](https://github.com/Altinn/altinn-authorization-utils/issues/415)) ([cc8c645](https://github.com/Altinn/altinn-authorization-utils/commit/cc8c645211aa20b7ed75f77b16b1d2f688c7349a))
+* add OpenApi security provider ([#427](https://github.com/Altinn/altinn-authorization-utils/issues/427)) ([84af00a](https://github.com/Altinn/altinn-authorization-utils/commit/84af00aef28c1aa50ebfcf289add434376c62c7b))
+* add SecurityInfo abstraction for OpenAPI ([#421](https://github.com/Altinn/altinn-authorization-utils/issues/421)) ([3efbfdb](https://github.com/Altinn/altinn-authorization-utils/commit/3efbfdb62b1d4abbb3590afa1822c4eb3ab1225e))
+* platform access token handling ([#433](https://github.com/Altinn/altinn-authorization-utils/issues/433)) ([e1f5ccb](https://github.com/Altinn/altinn-authorization-utils/commit/e1f5ccb6b76d87894ebde8f56b64dc96faab95d5))
+
 ## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v2.4.1...Altinn.Swashbuckle-v3.0.0) (2025-09-03)
 
 
