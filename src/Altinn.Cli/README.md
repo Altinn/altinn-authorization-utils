@@ -145,6 +145,19 @@ The `export key` command allows you to export a specific key in your required fo
     -s, --store                           The JWKs store to use. Either a directory or an Azure Key Vault URI [default: .]
 ```
 
+#### Example Maskinporten key
+
+```
+Create the key
+> altinn-jwks create maskinportclientkey
+
+Export public key. Default matches format for maskinporten
+> altinn-jwks export key maskinportclientkey -r Public
+
+Export private key as base64 (depends on format used in your app)
+> altinn-jwks export key maskinportclientkey -b
+```
+
 ## Contributing
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request on [GitHub](https://github.com/your/repository).
