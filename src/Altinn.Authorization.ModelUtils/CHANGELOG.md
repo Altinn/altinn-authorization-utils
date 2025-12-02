@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.1.0...Altinn.Authorization.ModelUtils-v3.2.0) (2025-12-02)
+
+
+### Features
+
+* add more swashbuckle features to servicedefaults ([#417](https://github.com/Altinn/altinn-authorization-utils/issues/417)) ([1633d7d](https://github.com/Altinn/altinn-authorization-utils/commit/1633d7d20a123eb84698e22688d4a24a7eed456a))
+
 ## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.0.0...Altinn.Authorization.ModelUtils-v3.1.0) (2025-10-18)
 
 
