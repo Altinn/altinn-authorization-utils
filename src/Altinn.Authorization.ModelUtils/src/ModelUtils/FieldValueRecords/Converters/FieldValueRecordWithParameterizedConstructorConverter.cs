@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
@@ -29,6 +30,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
         JsonSerializerOptions options)
         : base(model)
     {
+        Debug.Assert(model.Constructor is not null);
         Debug.Assert(model.Constructor.Parameters.Length > 0);
 
         var comparer = GetPropertyComparer(options);
@@ -110,6 +112,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
 
         T result;
 
+        Debug.Assert(Model.Constructor is not null);
         var parameterLength = Model.Constructor.Parameters.Length;
         object?[]? parametersScratch = null;
         byte[]? parametersSetScratch = null;
@@ -227,6 +230,7 @@ internal class FieldValueRecordWithParameterizedConstructorConverter<T>
             throw new JsonException($"Missing required constructor parameter '{missingProperty.Name.Name}'");
         }
 
+        Debug.Assert(Model.Constructor is not null);
         return Model.Constructor.Invoke(parameterSlots);
     }
 }
