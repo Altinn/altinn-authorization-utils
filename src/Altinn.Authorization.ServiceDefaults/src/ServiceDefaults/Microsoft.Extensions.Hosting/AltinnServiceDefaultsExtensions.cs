@@ -411,10 +411,6 @@ public static class AltinnServiceDefaultsExtensions
             builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
         }
 
-        // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
-        // builder.Services.AddOpenTelemetry()
-        //    .UseAzureMonitor();
-
         return builder;
     }
 

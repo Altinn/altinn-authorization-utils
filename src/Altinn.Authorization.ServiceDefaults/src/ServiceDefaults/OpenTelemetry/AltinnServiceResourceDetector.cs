@@ -17,6 +17,8 @@ internal sealed partial class AltinnServiceResourceDetector
         var attributes = new List<KeyValuePair<string, object>>(2)
         {
             new(ServiceAttributes.AttributeServiceName, serviceDescription.Name),
+            new(ServiceAttributes.AttributeServiceNamespace, "altinn"),
+            new(ServiceAttributes.AttributeServiceInstanceId, Environment.MachineName),
         };
 
         DetectHostAttributes(attributes);
