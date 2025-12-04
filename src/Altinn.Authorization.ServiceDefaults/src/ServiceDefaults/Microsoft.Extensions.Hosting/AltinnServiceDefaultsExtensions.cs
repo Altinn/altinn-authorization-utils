@@ -456,6 +456,9 @@ public static class AltinnServiceDefaultsExtensions
                 KeyValuePair.Create("ConnectionStrings:ApplicationInsights", (string?)applicationInsightsConnectionString),
             ]);
 
+            // configure features in the azure monitor otel SDK
+            Environment.SetEnvironmentVariable("OTEL_DOTNET_AZURE_MONITOR_ENABLE_RESOURCE_METRICS", "true");
+
             builder.Services.AddOpenTelemetry()
                 .UseAzureMonitor(options =>
                 {
