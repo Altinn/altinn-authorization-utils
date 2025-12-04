@@ -22,8 +22,12 @@ internal partial class ConfigureAltinnClusterInfo
 
     public void Configure(AltinnClusterInfo options)
     {
-        ConfigureClusterNetwork(options);
-        ConfigureTrustedProxies(options);
+        var hasTrustedProxies = ConfigureTrustedProxies(options);
+        
+        if (!hasTrustedProxies)
+        {
+            ConfigureClusterNetwork(options);
+        }
     }
 
     private void ConfigureClusterNetwork(AltinnClusterInfo options)
@@ -46,12 +50,12 @@ internal partial class ConfigureAltinnClusterInfo
         Log.ClusterNetworkDeprecated(_logger);
     }
 
-    private void ConfigureTrustedProxies(AltinnClusterInfo options)
+    private bool ConfigureTrustedProxies(AltinnClusterInfo options)
     {
         var proxies = _config.GetValue<string>("Altinn:ClusterInfo:TrustedProxies");
         if (string.IsNullOrEmpty(proxies))
         {
-            return;
+            return false;
         }
 
         var span = proxies.AsSpan();
@@ -70,6 +74,8 @@ internal partial class ConfigureAltinnClusterInfo
 
             options.TrustedProxies.Add(ipNetwork);
         }
+
+        return true;
     }
 
     private static partial class Log
