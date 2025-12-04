@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.0...Altinn.Authorization.ServiceDefaults-v5.1.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* more service attributes ([#453](https://github.com/Altinn/altinn-authorization-utils/issues/453)) ([989744c](https://github.com/Altinn/altinn-authorization-utils/commit/989744ce50925b8dad7b93a77046bd8785c8745e))
+
 ## [5.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.0.0...Altinn.Authorization.ServiceDefaults-v5.1.0) (2025-12-04)
 
 
