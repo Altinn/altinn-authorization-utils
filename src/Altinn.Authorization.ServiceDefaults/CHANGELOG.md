@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.0.0...Altinn.Authorization.ServiceDefaults-v5.1.0) (2025-12-04)
+
+
+### Features
+
+* add more resource detectors ([#451](https://github.com/Altinn/altinn-authorization-utils/issues/451)) ([444c748](https://github.com/Altinn/altinn-authorization-utils/commit/444c748494909ff3fef568367e38de4632c7ad23))
+
 ## [5.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v4.4.0...Altinn.Authorization.ServiceDefaults-v5.0.0) (2025-12-02)
 
 
