@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.1...Altinn.Authorization.ServiceDefaults-v5.1.2) (2025-12-05)
+
+
+### Bug Fixes
+
+* make platform access token service public ([#456](https://github.com/Altinn/altinn-authorization-utils/issues/456)) ([bce0458](https://github.com/Altinn/altinn-authorization-utils/commit/bce0458d30990fa01d0bdbe860111aeeedbda023))
+
 ## [5.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.0...Altinn.Authorization.ServiceDefaults-v5.1.1) (2025-12-04)
 
 
