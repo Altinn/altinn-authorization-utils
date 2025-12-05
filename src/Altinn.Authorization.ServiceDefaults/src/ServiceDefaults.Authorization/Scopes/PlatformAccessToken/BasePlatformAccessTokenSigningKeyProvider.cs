@@ -47,7 +47,7 @@ public abstract class BasePlatformAccessTokenSigningKeyProvider
         string issuer,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var cacheKey = $"/{nameof(PlatformAccessTokenSigningKeyProvider)}/pub-keys/{issuer}";
+        var cacheKey = $"/{nameof(DefaultPlatformAccessTokenSigningKeyProvider)}/pub-keys/{issuer}";
         var settings = _settings.CurrentValue;
         string? keyData;
 
