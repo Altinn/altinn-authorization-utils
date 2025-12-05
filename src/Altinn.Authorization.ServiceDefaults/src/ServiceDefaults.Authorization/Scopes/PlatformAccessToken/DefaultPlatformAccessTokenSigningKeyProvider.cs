@@ -14,12 +14,12 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
 [ExcludeFromCodeCoverage]
-internal sealed class PlatformAccessTokenSigningKeyProvider
+internal sealed class DefaultPlatformAccessTokenSigningKeyProvider
     : BasePlatformAccessTokenSigningKeyProvider
 {
     private readonly SecretClient _secretClient;
 
-    public PlatformAccessTokenSigningKeyProvider(
+    public DefaultPlatformAccessTokenSigningKeyProvider(
         IOptionsMonitor<PlatformAccessTokenSettings> settings,
         [FromKeyedServices(typeof(PlatformAccessTokenSettings))] SecretClient secretClient,
 #if NET9_0_OR_GREATER

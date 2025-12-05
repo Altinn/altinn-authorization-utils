@@ -2,7 +2,10 @@
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
-internal interface IPlatformAccessTokenSigningKeyProvider
+/// <summary>
+/// Provides a mechanism for retrieving signing keys used for validating platform access tokens.
+/// </summary>
+public interface IPlatformAccessTokenSigningKeyProvider
 {
     /// <summary>
     /// Gets the signing keys for the specified issuer.
