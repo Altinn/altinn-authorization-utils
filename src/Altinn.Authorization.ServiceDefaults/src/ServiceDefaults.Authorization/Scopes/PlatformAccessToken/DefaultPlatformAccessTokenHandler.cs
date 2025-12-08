@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -17,23 +18,31 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
 
     private readonly IOptionsMonitor<PlatformAccessTokenSettings> _settings;
     private readonly ILogger<DefaultPlatformAccessTokenHandler> _logger;
-    private readonly IPlatformAccessTokenSigningKeyProvider _keyProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public DefaultPlatformAccessTokenHandler(
         IOptionsMonitor<PlatformAccessTokenSettings> settings,
         ILogger<DefaultPlatformAccessTokenHandler> logger,
-        IPlatformAccessTokenSigningKeyProvider keyProvider)
+        IServiceProvider serviceProvider)
     {
         _settings = settings;
         _logger = logger;
-        _keyProvider = keyProvider;
+        _serviceProvider = serviceProvider;
     }
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IPlatformAccessTokenRequirement requirement)
     {
+        var settings = _settings.CurrentValue;
+
+        if (!settings.Enable)
+        {
+            return Task.CompletedTask;
+        }
+
+        var keyProvider = _serviceProvider.GetRequiredService<IPlatformAccessTokenSigningKeyProvider>();
         if (context.Resource is HttpContext httpContext)
         {
-            return HandleRequirementAsync(httpContext, context, requirement, httpContext.RequestAborted);
+            return HandleRequirementAsync(httpContext, context, requirement, keyProvider, settings, httpContext.RequestAborted);
         }
 
         return Task.CompletedTask;
@@ -43,9 +52,10 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
         HttpContext httpContext,
         AuthorizationHandlerContext context,
         IPlatformAccessTokenRequirement requirement,
+        IPlatformAccessTokenSigningKeyProvider keyProvider,
+        PlatformAccessTokenSettings settings,
         CancellationToken cancellationToken)
     {
-        var settings = _settings.CurrentValue;
         if (!httpContext.Request.Headers.TryGetValue(settings.AccessTokenHeaderId, out StringValues tokens)
             || tokens.Count == 0
             || string.IsNullOrEmpty(tokens[0]))
@@ -67,13 +77,14 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
             return Task.CompletedTask;
         }
 
-        return HandleTokenAsync(tokens[0]!, context, requirement, settings, httpContext, cancellationToken);
+        return HandleTokenAsync(tokens[0]!, context, requirement, keyProvider, settings, httpContext, cancellationToken);
     }
 
     private async Task HandleTokenAsync(
         string token,
         AuthorizationHandlerContext context,
         IPlatformAccessTokenRequirement requirement,
+        IPlatformAccessTokenSigningKeyProvider keyProvider,
         PlatformAccessTokenSettings settings,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -82,7 +93,7 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
 
         try
         {
-            isValid = await ValidateAccessTokenAsync(token, requirement.ApprovedIssuers, settings, httpContext, cancellationToken);
+            isValid = await ValidateAccessTokenAsync(keyProvider, token, requirement.ApprovedIssuers, settings, httpContext, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -102,6 +113,7 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
     }
 
     private async ValueTask<bool> ValidateAccessTokenAsync(
+        IPlatformAccessTokenSigningKeyProvider keyProvider,
         string token,
         ApprovedIssuersCheck approvedIssuers,
         PlatformAccessTokenSettings settings,
@@ -136,7 +148,7 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
             RequireExpirationTime = true,
             ValidateLifetime = true,
             ClockSkew = ClockSkew,
-            IssuerSigningKeys = await _keyProvider.GetSigningKeys(jwt.Issuer, cancellationToken).ToListAsync(cancellationToken),
+            IssuerSigningKeys = await keyProvider.GetSigningKeys(jwt.Issuer, cancellationToken).ToListAsync(cancellationToken),
         };
 
         ClaimsPrincipal principal;

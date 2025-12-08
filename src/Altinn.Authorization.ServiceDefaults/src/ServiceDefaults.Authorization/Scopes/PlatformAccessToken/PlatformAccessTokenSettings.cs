@@ -24,4 +24,10 @@ public sealed class PlatformAccessTokenSettings
     /// ID for cache token in 
     /// </summary>
     public string AccessTokenHttpContextId { get; set; } = "accesstokencontextid";
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the access token handler is enabled for processing authentication
+    /// tokens.
+    /// </summary>
+    public bool Enable { get; set; } = true;
 }
