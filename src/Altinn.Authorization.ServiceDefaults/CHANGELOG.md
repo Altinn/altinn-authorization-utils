@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.2...Altinn.Authorization.ServiceDefaults-v5.1.3) (2025-12-08)
+
+
+### Bug Fixes
+
+* register cache for authorization handler ([#458](https://github.com/Altinn/altinn-authorization-utils/issues/458)) ([50987ae](https://github.com/Altinn/altinn-authorization-utils/commit/50987aef28e6cf6227728d85df182c46af057c80))
+
 ## [5.1.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.1...Altinn.Authorization.ServiceDefaults-v5.1.2) (2025-12-05)
 
 
