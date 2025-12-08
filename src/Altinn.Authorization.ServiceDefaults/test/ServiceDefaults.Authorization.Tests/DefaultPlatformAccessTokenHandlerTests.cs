@@ -2,6 +2,7 @@
 using Altinn.Authorization.ServiceDefaults.Authorization.Tests.Mocks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,15 +18,34 @@ public class DefaultPlatformAccessTokenHandlerTests
 
     private readonly TestPlatformAccessTokenSigningKeyProvider _provider = new();
     private readonly PlatformAccessTokenSettings _settings = new();
+    private readonly IServiceProvider _services;
 
     private readonly DefaultPlatformAccessTokenHandler _sut;
 
     public DefaultPlatformAccessTokenHandlerTests()
     {
+        _services = new ServiceCollection()
+            .AddSingleton<IPlatformAccessTokenSigningKeyProvider>(_provider)
+            .BuildServiceProvider();
+
         _sut = new(
             settings: new TestOptionsMonitor<PlatformAccessTokenSettings>(_settings),
             logger: new NullLogger<DefaultPlatformAccessTokenHandler>(),
-            keyProvider: _provider);
+            serviceProvider: _services);
+    }
+
+    [Fact]
+    public async Task HandleRequirementAsync_Disabled_ContextFail()
+    {
+        _settings.Enable = false;
+
+        var token = CreateToken();
+
+        var context = CreateContext(token);
+
+        await _sut.HandleAsync(context);
+
+        context.HasSucceeded.ShouldBeFalse();
     }
 
     [Fact]
