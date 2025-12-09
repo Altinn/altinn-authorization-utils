@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.3...Altinn.Authorization.ServiceDefaults-v5.1.4) (2025-12-09)
+
+
+### Bug Fixes
+
+* make authorization more configurable ([#460](https://github.com/Altinn/altinn-authorization-utils/issues/460)) ([6f13ff7](https://github.com/Altinn/altinn-authorization-utils/commit/6f13ff70eabd663c1456906ad82889b31215266c))
+
 ## [5.1.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.2...Altinn.Authorization.ServiceDefaults-v5.1.3) (2025-12-08)
 
 
