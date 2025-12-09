@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ServiceDefaults;
 using Altinn.Authorization.ServiceDefaults.AppConfiguration;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using Altinn.Authorization.ServiceDefaults.Options;
@@ -112,7 +113,9 @@ public static class AltinnServiceDefaultsExtensions
         builder.Services.AddMetricsProvider();
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
         builder.Services.AddSingleton<HttpStandardResilienceTelemetry>();
-        builder.Services.Configure<AltinnClusterInfo>(builder.Configuration.GetSection("Altinn:ClusterInfo"));
+        builder.Services.AddOptions<AltinnClusterInfo>().BindConfiguration("Altinn:ClusterInfo");
+        builder.Services.AddOptions<PlatformAccessTokenSettings>().BindConfiguration("Altinn:PlatformAccessToken");
+        builder.Services.AddOptions<PlatformAccessTokenKeyVaultSettings>().BindConfiguration("Altinn:PlatformAccessToken:KeyVault");
         builder.Services.AddSingleton<IConfigureOptions<AltinnClusterInfo>, ConfigureAltinnClusterInfo>();
         builder.Services.AddOptions<ForwardedHeadersOptions>()
             .Configure((ForwardedHeadersOptions options, IOptionsMonitor<AltinnClusterInfo> clusterInfoOptions) =>
