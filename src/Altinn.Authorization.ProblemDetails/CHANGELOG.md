@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v4.0.1...Altinn.Authorization.ProblemDetails-v4.1.0) (2025-12-09)
+
+
+### Features
+
+* add std validation-error "catch-all" ([#446](https://github.com/Altinn/altinn-authorization-utils/issues/446)) ([03f0421](https://github.com/Altinn/altinn-authorization-utils/commit/03f04211dfd416363998bc81516ab74ef5ddd889))
+* add trace-id to problem-instance and details ([#445](https://github.com/Altinn/altinn-authorization-utils/issues/445)) ([8cf446b](https://github.com/Altinn/altinn-authorization-utils/commit/8cf446b012b82a2f39ddedb17e8ff93c12f1a293))
+
 ## [4.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v4.0.0...Altinn.Authorization.ProblemDetails-v4.0.1) (2025-12-01)
 
 
