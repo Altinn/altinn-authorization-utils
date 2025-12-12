@@ -15,13 +15,13 @@
     </When>
     <When Condition=" '$(TargetFramework)' == 'net9.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.10" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
         <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.10.0" />
       </ItemGroup>
     </When>
     <When Condition=" '$(TargetFramework)' == 'net8.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.21" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
       </ItemGroup>
     </When>
   </Choose>
