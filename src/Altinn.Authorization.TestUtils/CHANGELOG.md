@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.4.0...Altinn.Authorization.TestUtils-v3.5.0) (2026-01-15)
+
+
+### Features
+
+* add respond overload that takes a status-code ([#470](https://github.com/Altinn/altinn-authorization-utils/issues/470)) ([1a01564](https://github.com/Altinn/altinn-authorization-utils/commit/1a01564c88f82c4e79ceb46fb5972fbed95f3c5e))
+
+
+### Bug Fixes
+
+* disable exception wrapping for response-delegates ([#469](https://github.com/Altinn/altinn-authorization-utils/issues/469)) ([75766f4](https://github.com/Altinn/altinn-authorization-utils/commit/75766f4f33470c50ff548cffad1cd7f952d8a831))
+
 ## [3.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.3.0...Altinn.Authorization.TestUtils-v3.4.0) (2025-11-24)
 
 
