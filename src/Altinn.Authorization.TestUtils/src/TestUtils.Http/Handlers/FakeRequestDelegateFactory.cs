@@ -84,7 +84,7 @@ internal static class FakeRequestDelegateFactory
 
             return new(async (target, method, args, context, cancellationToken) =>
             {
-                var rawResult = method.Invoke(target, args);
+                var rawResult = method.Invoke(target, invokeAttr: BindingFlags.DoNotWrapExceptions, binder: null, args, culture: null);
                 var result = await awaiter.Await(rawResult, cancellationToken);
                 await executor.ExecuteResult(result, context, cancellationToken);
             });
