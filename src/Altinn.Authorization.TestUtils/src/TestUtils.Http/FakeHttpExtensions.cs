@@ -1,6 +1,7 @@
 ﻿using Altinn.Authorization.TestUtils.Http.Filters;
 using Altinn.Authorization.TestUtils.Http.Handlers;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -91,6 +92,17 @@ public static class FakeHttpExtensions
 
         builder.SetHandler(factory);
     }
+
+    /// <summary>
+    /// Sets the response for the request.
+    /// </summary>
+    /// <typeparam name="T">The request builder type.</typeparam>
+    /// <param name="builder">The builder.</param>
+    /// <param name="statusCode">The <see cref="HttpStatusCode"/> to return.</param>
+    /// <param name="content">Optional <see cref="HttpContent"/> to return.</param>
+    public static void Respond<T>(this T builder, HttpStatusCode statusCode, HttpContent? content = null)
+        where T : ISetFakeRequestHandler
+        => Respond(builder, () => new HttpResponseMessage(statusCode) { Content = content });
 
     /// <summary>
     /// Sets the response for the request.
