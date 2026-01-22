@@ -19,7 +19,7 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     /// <returns><paramref name="services"/>.</returns>
     public static IServiceCollection AddAuthorizationModelUtilsSwaggerSupport(this IServiceCollection services)
     {
-        services.AddExtensibleEnumSwaggerSupport();
+        services.AddNonExhaustiveSupport();
         services.AddFieldValueRecordSwaggerSupport();
         services.AddPolymorphicFieldValueRecordSwaggerSupport();
         services.AddFlagsEnumModelSupport();
@@ -32,11 +32,22 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns><paramref name="services"/>.</returns>
+    [Obsolete("Use AddNonExhaustiveSupport instead")]
     public static IServiceCollection AddExtensibleEnumSwaggerSupport(this IServiceCollection services)
+        => services.AddNonExhaustiveSupport();
+
+    /// <summary>
+    /// Adds support for <see cref="NonExhaustiveEnum{T}"/> and <see cref="NonExhaustive{T}"/> for Swagger/OpenAPI.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns><paramref name="services"/>.</returns>
+    public static IServiceCollection AddNonExhaustiveSupport(this IServiceCollection services)
     {
         services.AddXmlDocProvider();
         services.TryAddSingleton<NonExhaustiveEnumSchemaFilter>();
+        services.TryAddSingleton<NonExhaustiveSchemaFilter>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveEnumSchemaFilter>>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveSchemaFilter>>());
 
         return services;
     }
