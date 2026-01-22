@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;
+﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
+using Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
