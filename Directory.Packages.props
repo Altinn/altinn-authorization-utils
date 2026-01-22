@@ -9,19 +9,19 @@
   <Choose>
     <When Condition=" '$(TargetFramework)' == 'net10.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
-        <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="10.1.0" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.2" />
+        <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="10.2.0" />
       </ItemGroup>
     </When>
     <When Condition=" '$(TargetFramework)' == 'net9.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.11" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.12" />
         <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.10.0" />
       </ItemGroup>
     </When>
     <When Condition=" '$(TargetFramework)' == 'net8.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.22" />
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.23" />
       </ItemGroup>
     </When>
   </Choose>
@@ -40,7 +40,7 @@
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.23.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Routing" Version="2.3.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.12" />
     <PackageVersion Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.4.0" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
     <PackageVersion Include="Microsoft.Build.Framework" Version="18.0.2" />
@@ -50,14 +50,14 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="9.10.0" />
-    <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.10.0" />
-    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.12" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.5.2" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Abstractions" Version="9.5.2" />
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.10.0" />
@@ -82,17 +82,17 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.6" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.1" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.2" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
-    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.1" />
+    <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.2" />
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.10.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="31.9.3" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.9.4" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="xunit.v3.assert" Version="3.2.1" />
-    <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.1" />
-    <PackageVersion Include="xunit.v3" Version="3.2.1" />
+    <PackageVersion Include="xunit.v3.assert" Version="3.2.2" />
+    <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.2" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="Yuniql.Core" Version="1.3.15" />
     <PackageVersion Include="Yuniql.PostgreSql" Version="1.3.15" />
