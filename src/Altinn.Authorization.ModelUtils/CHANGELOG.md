@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.2.0...Altinn.Authorization.ModelUtils-v3.3.0) (2026-01-22)
+
+
+### Features
+
+* add generic non-exhaustive model ([#474](https://github.com/Altinn/altinn-authorization-utils/issues/474)) ([4a8bf9d](https://github.com/Altinn/altinn-authorization-utils/commit/4a8bf9d667067264f0c8221f57189b9bcba0fb05))
+
 ## [3.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.1.0...Altinn.Authorization.ModelUtils-v3.2.0) (2025-12-02)
 
 
