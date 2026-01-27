@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.1.0...Altinn.Urn-v4.1.1) (2026-01-27)
+
+
+### Bug Fixes
+
+* re-add net8 support ([#478](https://github.com/Altinn/altinn-authorization-utils/issues/478)) ([bf50b0a](https://github.com/Altinn/altinn-authorization-utils/commit/bf50b0ac7ab926eeb33ee68b3d3ca8efb9f9c4b2))
+
 ## [4.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.0.0...Altinn.Urn-v4.1.0) (2026-01-27)
 
 
