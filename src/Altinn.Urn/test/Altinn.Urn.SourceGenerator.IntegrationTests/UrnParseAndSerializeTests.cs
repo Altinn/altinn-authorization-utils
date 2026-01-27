@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 
@@ -23,6 +23,15 @@ public partial class UrnParseAndSerializeTests
 
         formatted = $"{personUrn}";
         formatted.Should().Be(urn);
+    }
+
+    [Fact]
+    public void VariantCanParse()
+    {
+        PersonUrn.PartyId.TryParse("urn:altinn:person:identifier-no:12345678901", out _).Should().BeFalse();
+        PersonUrn.IdentifierNo.TryParse("urn:altinn:person:identifier-no:12345678901", out var personId).Should().BeTrue();
+        personId.Should().NotBeNull();
+        personId.Value.Should().Be(PersonIdentifier.Parse("12345678901", null));
     }
 
     [Fact]

@@ -33,6 +33,7 @@ public partial class UrnDictionaryTests
     [Fact]
     public void EmptyDictionary_ContainsKey_False()
     {
+        /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)"/>
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
         dict.ContainsKey(TestUrn.Type.Organization).Should().BeFalse();

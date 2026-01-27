@@ -1,5 +1,6 @@
-using Altinn.Urn.SourceGenerator.Parsing;
+﻿using Altinn.Urn.SourceGenerator.Parsing;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 
 namespace Altinn.Urn.SourceGenerator.Emitting;
@@ -625,74 +626,6 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("return result;");
         builder.AppendLine("}");
-
-        static void EmitPrefixChecks(CodeBuilder builder, IPrefixNode<UrnPrefixInfo> node, string spanName, string outVar, bool parse)
-        {
-            var builder_lv1 = builder.Indent();
-
-            var index = 0;
-            var firstLine = true;
-            foreach (var child in node)
-            {
-                if (firstLine)
-                {
-                    firstLine = false;
-                }
-                else
-                {
-                    builder.AppendLine();
-                }
-
-                var sliceName = $"{spanName}_{index++}";
-                builder.AppendLine($"""if ({spanName}.StartsWith("{child.Prefix}"))""");
-                builder.AppendLine("{");
-                builder_lv1.AppendLine($"var {sliceName} = {spanName}.Slice({child.Prefix.Length});");
-
-                EmitPrefixChecks(builder_lv1, child, sliceName, outVar, parse);
-                builder.AppendLine("}");
-            }
-
-            if (node.Value.HasValue)
-            {
-                if (firstLine)
-                {
-                    firstLine = false;
-                }
-                else
-                {
-                    builder.AppendLine();
-                }
-
-                var value = node.Value.Value;
-                var outType = value.ValueTypeIsValueType ? value.ValueType : $"{value.ValueType}?";
-
-                builder.AppendLine();
-                if (parse)
-                {
-                    builder.AppendLine($"if ({spanName}.Length > 1 && {spanName}[0] == ':' && TryParse{value.Name}({spanName}.Slice(1), provider, out {outType} {spanName}_value))");
-                    builder.AppendLine("{");
-                    builder_lv1.AppendLine($"{outVar} = {value.Name}.FromParsed(original ?? new string(s), {node.PathLength + 1}, {spanName}_value);");
-                    builder_lv1.AppendLine("return true;");
-                    builder.AppendLine("}");
-                }
-                else
-                {
-                    builder.AppendLine($"if ({spanName}.Length == 0)");
-                    builder.AppendLine("{");
-                    builder_lv1.AppendLine($"{outVar} = Type.{value.Name};");
-                    builder_lv1.AppendLine("return true;");
-                    builder.AppendLine("}");
-                }
-            }
-
-            if (!firstLine)
-            {
-                builder.AppendLine();
-            }
-
-            builder.AppendLine($"{outVar} = default;");
-            builder.AppendLine("return false;");
-        }
     }
 
     private void EmitUtils(in UrnRecordInfo record, CodeBuilder builder, CancellationToken ct)
@@ -729,12 +662,20 @@ internal ref struct UrnRecordEmitter
         foreach (var member in record.Members)
         {
             ct.ThrowIfCancellationRequested();
-            EmitTypeRecord(in record, in member, builder);
+            EmitTypeRecord(in record, in member, builder, ct);
         }
     }
 
-    private void EmitTypeRecord(in UrnRecordInfo record, in UrnPrefixInfo member, CodeBuilder builder)
+    private void EmitTypeRecord(in UrnRecordInfo record, in UrnPrefixInfo member, CodeBuilder builder, CancellationToken ct)
     {
+        var prefixTree = new PrefixTree<UrnPrefixInfo>();
+        foreach (var prefix in member.Prefixes)
+        {
+            prefixTree.Add("urn:" + prefix, member);
+        }
+
+        var flattened = prefixTree.Flatten();
+
         var builder_lv1 = builder.Indent();
         var builder_lv2 = builder_lv1.Indent();
         var builder_lv3 = builder_lv2.Indent();
@@ -748,6 +689,8 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine($"public sealed partial record {member.Name}");
         builder_lv1.AppendLine($": {record.TypeName}");
         builder_lv1.AppendLine($", IKeyValueUrnVariant<{member.Name}, {record.TypeName}, Type, {member.ValueType}>");
+        builder_lv1.AppendLine($", IParsable<{member.Name}>");
+        builder_lv1.AppendLine($", ISpanParsable<{member.Name}>");
         builder.AppendLine("{");
 
         builder_lv1.AppendLine("/// <inheritdoc/>");
@@ -817,6 +760,95 @@ internal ref struct UrnRecordEmitter
         builder_lv2.AppendLine($$""""=> new($"""{{canonicalPrefix}}:{new _FormatHelper(value)}""", {{canonicalPrefix.Length + 1}}, value);"""");
 
         builder_lv1.AppendLine();
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out {member.Name} result)");
+        builder_lv1.AppendLine("{");
+        EmitPrefixChecks(builder_lv2, flattened, "s", "result", parse: true);
+        ct.ThrowIfCancellationRequested();
+        builder_lv1.AppendLine("}");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out {member.Name} result)");
+        builder_lv2.AppendLine("=> TryParse(s, provider, original: null, out result);");
+
+        
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc cref=\"ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)\"/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out {member.Name} result)");
+        builder_lv2.AppendLine("=> TryParse(s, provider: null, original: null, out result);");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"""public static {member.Name} Parse(ReadOnlySpan<char> s, IFormatProvider? provider)""");
+        builder_lv1.AppendLine("{");
+        builder_lv2.AppendLine($"if (!TryParse(s, provider, original: null, out {member.Name}? result))");
+        builder_lv2.AppendLine("{");
+        builder_lv3.AppendLine($"""throw new FormatException("Could not parse {member.Name}");""");
+        builder_lv2.AppendLine("}");
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine("return result;");
+        builder_lv1.AppendLine("}");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc cref=\"ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)\"/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"""public static {member.Name} Parse(ReadOnlySpan<char> s)""");
+        builder_lv1.AppendLine("{");
+        builder_lv2.AppendLine($"if (!TryParse(s, provider: null, original: null, out {member.Name}? result))");
+        builder_lv2.AppendLine("{");
+        builder_lv3.AppendLine($"""throw new FormatException("Could not parse {member.Name}");""");
+        builder_lv2.AppendLine("}");
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine("return result;");
+        builder_lv1.AppendLine("}");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out {member.Name} result)");
+        builder_lv2.AppendLine($"""=> TryParse(s.AsSpan(), provider, original: s, out result);""");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc cref=\"IParsable{TSelf}.TryParse(string, IFormatProvider?, out TSelf)\"/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out {member.Name} result)");
+        builder_lv2.AppendLine($"""=> TryParse(s.AsSpan(), provider: null, original: s, out result);""");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static {member.Name} Parse(string? s, IFormatProvider? provider)");
+        builder_lv1.AppendLine("{");
+        builder_lv2.AppendLine("ArgumentNullException.ThrowIfNull(s);");
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine($"if (!TryParse(s.AsSpan(), provider, original: s, out {member.Name}? result))");
+        builder_lv2.AppendLine("{");
+        builder_lv3.AppendLine($"""throw new FormatException("Could not parse {member.Name}");""");
+        builder_lv2.AppendLine("}");
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine("return result;");
+        builder_lv1.AppendLine("}");
+
+        builder_lv1.AppendLine();
+        builder_lv1.AppendLine("/// <inheritdoc cref=\"IParsable{TSelf}.Parse(string, IFormatProvider?)\"/>");
+        builder_lv1.AppendLine("[CompilerGenerated]");
+        builder_lv1.AppendLine($"public static {member.Name} Parse(string? s)");
+        builder_lv1.AppendLine("{");
+        builder_lv2.AppendLine("ArgumentNullException.ThrowIfNull(s);");
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine($"if (!TryParse(s.AsSpan(), provider: null, original: s, out {member.Name}? result))");
+        builder_lv2.AppendLine("{");
+        builder_lv3.AppendLine($"""throw new FormatException("Could not parse {member.Name}");""");
+        builder_lv2.AppendLine("}");
+        builder_lv2.AppendLine();
+        builder_lv2.AppendLine("return result;");
+        builder_lv1.AppendLine("}");
+
+        builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
         builder_lv1.AppendLine("protected override void Accept(IKeyValueUrnVisitor visitor)");
@@ -844,5 +876,73 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine("}");
 
         builder.AppendLine("}");
+    }
+
+    private static void EmitPrefixChecks(CodeBuilder builder, IPrefixNode<UrnPrefixInfo> node, string spanName, string outVar, bool parse)
+    {
+        var builder_lv1 = builder.Indent();
+
+        var index = 0;
+        var firstLine = true;
+        foreach (var child in node)
+        {
+            if (firstLine)
+            {
+                firstLine = false;
+            }
+            else
+            {
+                builder.AppendLine();
+            }
+
+            var sliceName = $"{spanName}_{index++}";
+            builder.AppendLine($"""if ({spanName}.StartsWith("{child.Prefix}"))""");
+            builder.AppendLine("{");
+            builder_lv1.AppendLine($"var {sliceName} = {spanName}.Slice({child.Prefix.Length});");
+
+            EmitPrefixChecks(builder_lv1, child, sliceName, outVar, parse);
+            builder.AppendLine("}");
+        }
+
+        if (node.Value.HasValue)
+        {
+            if (firstLine)
+            {
+                firstLine = false;
+            }
+            else
+            {
+                builder.AppendLine();
+            }
+
+            var value = node.Value.Value;
+            var outType = value.ValueTypeIsValueType ? value.ValueType : $"{value.ValueType}?";
+
+            builder.AppendLine();
+            if (parse)
+            {
+                builder.AppendLine($"if ({spanName}.Length > 1 && {spanName}[0] == ':' && TryParse{value.Name}({spanName}.Slice(1), provider, out {outType} {spanName}_value))");
+                builder.AppendLine("{");
+                builder_lv1.AppendLine($"{outVar} = {value.Name}.FromParsed(original ?? new string(s), {node.PathLength + 1}, {spanName}_value);");
+                builder_lv1.AppendLine("return true;");
+                builder.AppendLine("}");
+            }
+            else
+            {
+                builder.AppendLine($"if ({spanName}.Length == 0)");
+                builder.AppendLine("{");
+                builder_lv1.AppendLine($"{outVar} = Type.{value.Name};");
+                builder_lv1.AppendLine("return true;");
+                builder.AppendLine("}");
+            }
+        }
+
+        if (!firstLine)
+        {
+            builder.AppendLine();
+        }
+
+        builder.AppendLine($"{outVar} = default;");
+        builder.AppendLine("return false;");
     }
 }

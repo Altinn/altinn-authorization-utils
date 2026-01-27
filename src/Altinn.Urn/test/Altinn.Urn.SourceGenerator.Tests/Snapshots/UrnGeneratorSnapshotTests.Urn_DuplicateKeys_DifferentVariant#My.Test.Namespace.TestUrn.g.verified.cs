@@ -389,6 +389,8 @@ partial record TestUrn
     public sealed partial record Test1
         : TestUrn
         , IKeyValueUrnVariant<Test1, TestUrn, Type, System.Guid>
+        , IParsable<Test1>
+        , ISpanParsable<Test1>
     {
         /// <inheritdoc/>
         [CompilerGenerated]
@@ -439,6 +441,99 @@ partial record TestUrn
         [CompilerGenerated]
         public static Test1 Create(System.Guid value)
             => new($"""urn:altinn:test1:{new _FormatHelper(value)}""", 17, value);
+
+        [CompilerGenerated]
+        private static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, string? original, [MaybeNullWhen(false)] out Test1 result)
+        {
+            if (s.StartsWith("urn:altinn:test1"))
+            {
+                var s_0 = s.Slice(16);
+
+                if (s_0.Length > 1 && s_0[0] == ':' && TryParseTest1(s_0.Slice(1), provider, out System.Guid s_0_value))
+                {
+                    result = Test1.FromParsed(original ?? new string(s), 17, s_0_value);
+                    return true;
+                }
+
+                result = default;
+                return false;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out Test1 result)
+            => TryParse(s, provider, original: null, out result);
+
+        /// <inheritdoc cref="ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)"/>
+        [CompilerGenerated]
+        public static bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out Test1 result)
+            => TryParse(s, provider: null, original: null, out result);
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static Test1 Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+        {
+            if (!TryParse(s, provider, original: null, out Test1? result))
+            {
+                throw new FormatException("Could not parse Test1");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)"/>
+        [CompilerGenerated]
+        public static Test1 Parse(ReadOnlySpan<char> s)
+        {
+            if (!TryParse(s, provider: null, original: null, out Test1? result))
+            {
+                throw new FormatException("Could not parse Test1");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out Test1 result)
+            => TryParse(s.AsSpan(), provider, original: s, out result);
+
+        /// <inheritdoc cref="IParsable{TSelf}.TryParse(string, IFormatProvider?, out TSelf)"/>
+        [CompilerGenerated]
+        public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out Test1 result)
+            => TryParse(s.AsSpan(), provider: null, original: s, out result);
+
+        /// <inheritdoc/>
+        [CompilerGenerated]
+        public static Test1 Parse(string? s, IFormatProvider? provider)
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            if (!TryParse(s.AsSpan(), provider, original: s, out Test1? result))
+            {
+                throw new FormatException("Could not parse Test1");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)"/>
+        [CompilerGenerated]
+        public static Test1 Parse(string? s)
+        {
+            ArgumentNullException.ThrowIfNull(s);
+
+            if (!TryParse(s.AsSpan(), provider: null, original: s, out Test1? result))
+            {
+                throw new FormatException("Could not parse Test1");
+            }
+
+            return result;
+        }
 
         /// <inheritdoc/>
         [CompilerGenerated]
