@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.0.0...Altinn.Urn-v4.1.0) (2026-01-27)
+
+
+### Features
+
+* implement `IParsable` and `ISpanParsable` for urn variants ([#476](https://github.com/Altinn/altinn-authorization-utils/issues/476)) ([fa1f5a2](https://github.com/Altinn/altinn-authorization-utils/commit/fa1f5a2d0e0c1fc49a55aa5c15d02f555b14dbe3))
+
 ## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v3.0.0...Altinn.Urn-v4.0.0) (2025-11-04)
 
 
