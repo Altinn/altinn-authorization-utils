@@ -1,3 +1,4 @@
+﻿using Microsoft.VisualBasic;
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Diagnostics;
@@ -190,6 +191,7 @@ public sealed class UrnEncoded
         return result;
     }
 
+#if NET9_0_OR_GREATER
     private static void UnescapeStringToBuilder(
         scoped ReadOnlySpan<char> stringToUnescape,
         ref ValueStringBuilder vsb)
@@ -220,6 +222,15 @@ public sealed class UrnEncoded
         scratch.Dispose();
         vsb.Advance(written);
     }
+#else
+    private static void UnescapeStringToBuilder(
+        scoped ReadOnlySpan<char> stringToUnescape,
+        ref ValueStringBuilder vsb)
+    {
+        var unescaped = Uri.UnescapeDataString(new string(stringToUnescape).Replace('+', ' '));
+        vsb.Append(unescaped);
+    }
+#endif
 
     // Copied from System.UriHelper and removed unused arguments
     private static void EscapeStringToBuilder(

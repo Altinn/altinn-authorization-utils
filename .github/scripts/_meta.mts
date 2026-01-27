@@ -1,4 +1,4 @@
-import { globby } from "globby";
+﻿import { globby } from "globby";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { z } from "zod";
@@ -15,7 +15,7 @@ const enqueue = <T extends unknown>(fn: () => Promise<T>): Promise<T> => {
   var task = _queue.then(() => within(fn));
   _queue = task.then(
     (_) => {},
-    (_) => {}
+    (_) => {},
   );
   return task;
 };
@@ -32,7 +32,7 @@ const depSchema = z.string().transform((val, ctx) => {
   }
 
   ctx.addIssue({
-    code: z.ZodIssueCode.custom,
+    code: "custom",
     message: `Invalid dependency: ${val}, must start with 'lib:' or 'pkg:'`,
   });
 
@@ -55,7 +55,7 @@ const imageSchema = z
   .object({
     type: z.enum(["dotnet", "docker"]).default("dotnet"),
   })
-  .passthrough()
+  .loose()
   .pipe(z.discriminatedUnion("type", [dotnetImageSchema, dockerImageSchema]));
 
 const terraformSchema = z.object({
@@ -82,7 +82,7 @@ const sonarcloudSchema = z
     z.object({
       enabled: z.boolean().default(true),
       projectKey: z.string().optional(),
-    })
+    }),
   );
 
 const configSchema = z.object({
@@ -202,7 +202,7 @@ const last = (arr: string[]) => arr[arr.length - 1];
 const readProjects = async (
   verticalPath: string,
   verticalRelPath: string,
-  type: ProjectType
+  type: ProjectType,
 ): Promise<readonly Project[]> => {
   const projectFiles = await globby(`${type}/*/*.*proj`, { cwd: verticalPath });
   return projectFiles.map((file) => {
@@ -223,7 +223,7 @@ const readProjects = async (
 
 const readVertical = async (
   type: VerticalType,
-  dirPath: string
+  dirPath: string,
 ): Promise<RawVertical> => {
   const verticalPath = path.resolve(dirPath);
   const dirName = path.basename(verticalPath);
@@ -234,11 +234,21 @@ const readVertical = async (
     sample: await readProjects(verticalPath, dirPath, "sample"),
   };
 
+  let json: string | undefined = undefined;
   let parsed: any = {};
   try {
-    const json = await fs.readFile(configPath, { encoding: "utf-8" });
-    parsed = JSON.parse(json);
+    json = await fs.readFile(configPath, { encoding: "utf-8" });
   } catch (e) {}
+
+  if (json) {
+    try {
+      parsed = JSON.parse(json);
+    } catch (e) {
+      const error = fromError(e);
+      console.error(`Error parsing ${configPath}: ${error.toString()}`);
+      throw error;
+    }
+  }
 
   const result = await configSchema.safeParseAsync(parsed);
   if (!result.success) {
