@@ -6,7 +6,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// <summary>
 /// An instance of a <see cref="ValidationErrorDescriptor"/>, with optional paths and extensions.
 /// </summary>
-[DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
+[DebuggerDisplay("{ErrorCode,nq}: {Title,nq}")]
 public sealed record class ValidationErrorInstance
 {
     /// <summary>
@@ -15,7 +15,7 @@ public sealed record class ValidationErrorInstance
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor) 
-        => new ValidationErrorInstance(descriptor, paths: [], extensions: []);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: []);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="path"/>.
@@ -25,7 +25,18 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path)
-        => new ValidationErrorInstance(descriptor, paths: [path], extensions: []);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [path], extensions: []);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [path], extensions: []);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
@@ -35,7 +46,18 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths)
-        => new ValidationErrorInstance(descriptor, paths: paths, extensions: []);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: paths, extensions: []);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: paths, extensions: []);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="paths"/>.
@@ -45,7 +67,18 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
-        => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: []);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [.. paths], extensions: []);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [.. paths], extensions: []);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
@@ -54,7 +87,17 @@ public sealed record class ValidationErrorInstance
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ProblemExtensionData extensions)
-        => new ValidationErrorInstance(descriptor, paths: [], extensions: extensions);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: extensions);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ProblemExtensionData extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [], extensions: extensions);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
@@ -63,7 +106,17 @@ public sealed record class ValidationErrorInstance
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
-        => new ValidationErrorInstance(descriptor, paths: [], extensions: [.. extensions]);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: [.. extensions]);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail: detail, paths: [], extensions: [.. extensions]);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
@@ -74,7 +127,19 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions)
-        => new ValidationErrorInstance(descriptor, paths: [path], extensions: extensions);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [path], extensions: extensions);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="path"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [path], extensions: extensions);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="path"/>, and <paramref name="extensions"/>.
@@ -85,7 +150,19 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions)
-        => new ValidationErrorInstance(descriptor, paths: [path], extensions: [.. extensions]);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [path], extensions: [.. extensions]);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="path"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="path">The path.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [path], extensions: [.. extensions]);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
@@ -96,7 +173,19 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions)
-        => new ValidationErrorInstance(descriptor, paths: paths, extensions: extensions);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: paths, extensions: extensions);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: paths, extensions: extensions);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
@@ -107,7 +196,19 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions)
-        => new ValidationErrorInstance(descriptor, paths: paths, extensions: [.. extensions]);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: paths, extensions: [.. extensions]);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: paths, extensions: [.. extensions]);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
@@ -118,7 +219,19 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions)
-        => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: extensions);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [.. paths], extensions: extensions);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [.. paths], extensions: extensions);
 
     /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, and <paramref name="extensions"/>.
@@ -129,9 +242,22 @@ public sealed record class ValidationErrorInstance
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions)
-        => new ValidationErrorInstance(descriptor, paths: [.. paths], extensions: [.. extensions]);
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [.. paths], extensions: [.. extensions]);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="paths"/>, <paramref name="extensions"/>, and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="paths">The paths.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <param name="detail">The error detail.</param>
+    /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
+        => new ValidationErrorInstance(descriptor, detail, paths: [.. paths], extensions: [.. extensions]);
 
     private readonly ValidationErrorDescriptor _descriptor;
+    private readonly string? _detail;
     private readonly ImmutableArray<string> _paths;
     private readonly ProblemExtensionData _extensions;
 
@@ -139,23 +265,38 @@ public sealed record class ValidationErrorInstance
     /// Initializes a new instance of the <see cref="ValidationErrorInstance"/> class.
     /// </summary>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
+    /// <param name="detail">The detail message.</param>
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     internal ValidationErrorInstance(
-        ValidationErrorDescriptor descriptor, 
+        ValidationErrorDescriptor descriptor,
+        string? detail,
         ImmutableArray<string> paths, 
         ProblemExtensionData extensions)
     {
         _descriptor = descriptor;
+        _detail = detail;
         _paths = paths;
         _extensions = extensions;
+
+        DebugValidate();
     }
+
+    /// <summary>
+    /// Gets the validation-error descriptor.
+    /// </summary>
+    internal ValidationErrorDescriptor Descriptor => _descriptor;
 
     /// <inheritdoc cref="ValidationErrorDescriptor.ErrorCode"/>
     public ErrorCode ErrorCode => _descriptor.ErrorCode;
 
-    /// <inheritdoc cref="ValidationErrorDescriptor.Detail"/>
-    public string Detail => _descriptor.Detail;
+    /// <inheritdoc cref="ValidationErrorDescriptor.Title"/>
+    public string Title => _descriptor.Title;
+
+    /// <summary>
+    /// Gets the detailed description associated with the current instance.
+    /// </summary>
+    public string? Detail => _detail;
 
     /// <summary>
     /// Gets the error paths.
@@ -203,5 +344,17 @@ public sealed record class ValidationErrorInstance
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     public static implicit operator ValidationErrorInstance(ValidationErrorDescriptor descriptor) =>
-        new ValidationErrorInstance(descriptor, paths: [], extensions: []);
+        new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: []);
+
+    [Conditional("DEBUG")]
+    private void DebugValidate()
+    {
+        foreach (var path in _paths)
+        { 
+            if (!path.StartsWith('/')) 
+            {
+                Debug.WriteLine($"Validation-error path '{path}' is not valid");
+            }
+        }
+    }
 }

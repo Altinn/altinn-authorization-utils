@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Verify.XunitV3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils\Altinn.Authorization.TestUtils.csproj" />
     <ProjectReference Include="..\..\src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj" />
   </ItemGroup>
 

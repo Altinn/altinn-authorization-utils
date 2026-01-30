@@ -131,22 +131,22 @@ public class MultipleProblemsTests
 
         exception.Message.ShouldBe(
             $"""
-            {StdProblemDescriptors.MultipleProblems.Detail}
+            {StdProblemDescriptors.MultipleProblems.Title}
             code: {StdProblemDescriptors.MultipleProblems.ErrorCode}
             root-ext: root-val
 
             Problems:
-             - {StdProblemDescriptors.ValidationError.ErrorCode}: {StdProblemDescriptors.ValidationError.Detail}
+             - {StdProblemDescriptors.ValidationError.ErrorCode}: {StdProblemDescriptors.ValidationError.Title}
                vld-ext: vld-val
 
                Validation errors:
-                - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Detail}
+                - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Title}
                   path: /path
                   ext: val
-                - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Detail}
+                - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Title}
                   path: /path2
                   path: /path3
-             - {TestErrors.InternalServerError.ErrorCode}: {TestErrors.InternalServerError.Detail}
+             - {TestErrors.InternalServerError.ErrorCode}: {TestErrors.InternalServerError.Title}
                foo: bar
 
             """);

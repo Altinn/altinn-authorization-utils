@@ -23,7 +23,7 @@ public class ProblemDescriptorTests
         result.ShouldNotBeNull();
         result.ErrorCode.ToString().ShouldBe("TEST-00001");
         result.Status.ShouldBe((int)HttpStatusCode.BadRequest);
-        result.Detail.ShouldBe("Test error");
+        result.Title.ShouldBe("Test error");
         result.Extensions.ShouldContainKeyAndValue("Key1", "Value1");
         result.Extensions.ShouldContainKeyAndValue("Key2", 123);
     }
@@ -45,7 +45,7 @@ public class ProblemDescriptorTests
         result.ShouldNotBeNull();
         result.ErrorCode.ToString().ShouldBe("TEST-00001");
         result.Status.ShouldBe((int)HttpStatusCode.BadRequest);
-        result.Detail.ShouldBe("Test error");
+        result.Title.ShouldBe("Test error");
         result.Extensions.ShouldContainKeyAndValue("Key1", "Value1");
         result.Extensions.ShouldContainKeyAndValue("Key2", 123);
     }

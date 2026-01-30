@@ -39,7 +39,7 @@ internal sealed partial class ProblemDetailsActionResult
 
     private static partial class Log
     {
-        [LoggerMessage(1, LogLevel.Information, "Returning ProblemDetails with error code {ErrorCode}, status code {StatusCode}, and description '{Detail}'.")]
+        [LoggerMessage(1, LogLevel.Debug, "Returning ProblemDetails with error code {ErrorCode}, status code {StatusCode}, and description '{Detail}'.")]
         public static partial void ReturningProblemDetails(ILogger logger, ErrorCode? errorCode, int? statusCode, string? detail);
     }
 }

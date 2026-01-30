@@ -15,8 +15,9 @@ public sealed record MultipleProblemInstance
 
     internal MultipleProblemInstance(
         ImmutableArray<ProblemInstance> problems,
+        string? detail,
         ProblemExtensionData extensions)
-        : base(StdProblemDescriptors.MultipleProblems, extensions)
+        : base(StdProblemDescriptors.MultipleProblems, detail, extensions)
     {
         Guard.IsNotEmpty(problems.AsSpan(), nameof(problems));
 
@@ -41,7 +42,13 @@ public sealed record MultipleProblemInstance
         builder.Append(indent).AppendLine("Problems:");
         foreach (var problem in _problems)
         {
-            builder.Append(indent).AppendLine($" - {problem.ErrorCode}: {problem.Detail}");
+            builder.Append(indent).Append($" - {problem.ErrorCode}: {problem.Title}");
+            if (!string.IsNullOrWhiteSpace(problem.Detail))
+            {
+                builder.Append($" - {problem.Detail}");
+            }
+
+            builder.AppendLine();
             problem.AddExceptionDetails(builder, $"{indent}   ");
         }
     }

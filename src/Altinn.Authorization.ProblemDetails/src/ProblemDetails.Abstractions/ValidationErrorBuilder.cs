@@ -91,6 +91,19 @@ public struct ValidationErrorBuilder
     /// has been created; otherwise <see langword="false"/>.
     /// </returns>
     public readonly bool TryBuild([NotNullWhen(true)] out ValidationProblemInstance? instance)
+        => TryBuild(detail: null, out instance);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationProblemInstance"/> from this builder if any
+    /// validation errors have been added.
+    /// </summary>
+    /// <param name="detail">The error detail.</param>
+    /// <param name="instance">The resulting <see cref="ValidationProblemInstance"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if any validation errors have been added and the <paramref name="instance"/>
+    /// has been created; otherwise <see langword="false"/>.
+    /// </returns>
+    public readonly bool TryBuild(string? detail, [NotNullWhen(true)] out ValidationProblemInstance? instance)
     {
         var errors = _errors;
         if (errors is null or { Count: 0 })
@@ -105,7 +118,7 @@ public struct ValidationErrorBuilder
             extensions = [.. _extensions];
         }
 
-        instance = new(errors: [.. errors], extensions: extensions);
+        instance = new(errors: [.. errors], detail, extensions: extensions);
         return true;
     }
 }

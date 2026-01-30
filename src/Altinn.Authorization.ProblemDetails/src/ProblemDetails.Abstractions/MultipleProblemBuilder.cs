@@ -90,6 +90,22 @@ public struct MultipleProblemBuilder
     /// has been created; otherwise <see langword="false"/>.
     /// </returns>
     public readonly bool TryBuild([NotNullWhen(true)] out ProblemInstance? instance)
+        => TryBuild(detail: null, out instance);
+
+    /// <summary>
+    /// Creates a new <see cref="ProblemInstance"/> from this builder if any problems have been added.
+    /// </summary>
+    /// <param name="detail">The error detail.</param>
+    /// <param name="instance">The resulting <see cref="ProblemInstance"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if any validation errors have been added and the <paramref name="instance"/>
+    /// has been created; otherwise <see langword="false"/>.
+    /// </returns>
+    /// <remarks>
+    /// If <paramref name="detail"/> is non-<see langword="null"/>, and the builder only contains a single problem,
+    /// the <paramref name="detail"/> is discarded.
+    /// </remarks>
+    public readonly bool TryBuild(string? detail, [NotNullWhen(true)] out ProblemInstance? instance)
     {
         var problems = _problems;
         if (problems is null or { Count: 0 })
@@ -110,7 +126,7 @@ public struct MultipleProblemBuilder
             extensions = [.. _extensions];
         }
 
-        instance = new MultipleProblemInstance(problems: [.. problems], extensions: extensions);
+        instance = new MultipleProblemInstance(problems: [.. problems], detail, extensions: extensions);
         return true;
     }
 }

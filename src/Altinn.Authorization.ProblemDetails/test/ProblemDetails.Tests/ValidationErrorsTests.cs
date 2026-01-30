@@ -72,15 +72,15 @@ public class ValidationErrorsTests
 
         exception.Message.ShouldBe(
             $"""
-            {StdProblemDescriptors.ValidationError.Detail}
+            {StdProblemDescriptors.ValidationError.Title}
             code: {StdProblemDescriptors.ValidationError.ErrorCode}
             root-ext: root-val
 
             Validation errors:
-             - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Detail}
+             - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Title}
                path: /path
                ext: val
-             - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Detail}
+             - {StdValidationErrors.Required.ErrorCode}: {StdValidationErrors.Required.Title}
                path: /path2
                path: /path3
 

@@ -15,8 +15,9 @@ public sealed record ValidationProblemInstance
 
     internal ValidationProblemInstance(
         ImmutableArray<ValidationErrorInstance> errors,
+        string? detail,
         ProblemExtensionData extensions)
-        : base(StdProblemDescriptors.ValidationError, extensions)
+        : base(StdProblemDescriptors.ValidationError, detail, extensions)
     {
         Guard.IsNotEmpty(errors.AsSpan(), nameof(errors));
 
@@ -41,7 +42,14 @@ public sealed record ValidationProblemInstance
         builder.Append(indent).AppendLine("Validation errors:");
         foreach (var error in _errors)
         {
-            builder.Append(indent).AppendLine($" - {error.ErrorCode}: {error.Detail}");
+            builder.Append(indent).Append($" - {error.ErrorCode}: {error.Title}");
+            if (!string.IsNullOrWhiteSpace(error.Detail))
+            {
+                builder.Append($" - {error.Detail}");
+            }
+
+            builder.AppendLine();
+
             foreach (var path in error.Paths)
             {
                 builder.Append(indent).AppendLine($"   path: {path}");

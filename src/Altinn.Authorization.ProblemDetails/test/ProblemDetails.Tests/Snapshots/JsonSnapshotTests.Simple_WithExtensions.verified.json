@@ -1,0 +1,9 @@
+﻿{
+  "type": "urn:altinn:error:SNAP-00000",
+  "title": "Simple error",
+  "status": 507,
+  "code": "SNAP-00000",
+  "statusDescription": "Insufficient Storage",
+  "ext1": "1",
+  "ext2": "2"
+}

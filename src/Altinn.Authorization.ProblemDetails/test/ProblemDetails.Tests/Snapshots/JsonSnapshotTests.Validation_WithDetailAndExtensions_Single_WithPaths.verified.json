@@ -1,0 +1,20 @@
+﻿{
+  "type": "urn:altinn:error:STD-00000",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "detail": "Failure detail",
+  "code": "STD-00000",
+  "statusDescription": "Bad Request",
+  "validationErrors": [
+    {
+      "code": "SNAP.VLD-00000",
+      "title": "Invalid value",
+      "paths": [
+        "/foo",
+        "/bar"
+      ]
+    }
+  ],
+  "ext1": "1",
+  "ext2": "2"
+}

@@ -15,7 +15,7 @@ public sealed class AltinnValidationError
     internal AltinnValidationError(ValidationErrorDescriptor descriptor)
     {
         ErrorCode = descriptor.ErrorCode;
-        Detail = descriptor.Detail;
+        Title = descriptor.Title;
     }
 
     /// <summary>
@@ -23,10 +23,10 @@ public sealed class AltinnValidationError
     /// </summary>
     /// <param name="instance">The validation error instance.</param>
     internal AltinnValidationError(ValidationErrorInstance instance)
+        : this(instance.Descriptor)
     {
-        ErrorCode = instance.ErrorCode;
-        Detail = instance.Detail;
         Paths = instance.Paths;
+        Detail = instance.Detail;
 
         if (!instance.Extensions.IsDefaultOrEmpty)
         {
@@ -48,12 +48,12 @@ public sealed class AltinnValidationError
     public ErrorCode ErrorCode { get; set; }
 
     /// <summary>
-    /// Gets or sets the error details.
+    /// Gets or sets the error title.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyOrder(-2)]
-    [JsonPropertyName("detail")]
-    public string? Detail { get; set; }
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
 
     /// <summary>
     /// Gets or sets the error paths.
@@ -63,6 +63,14 @@ public sealed class AltinnValidationError
     [JsonPropertyOrder(-1)]
     [JsonPropertyName("paths")]
     public ImmutableArray<string> Paths { get; set; }
+
+    /// <summary>
+    /// Gets or sets the error detail.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyOrder(0)]
+    [JsonPropertyName("detail")]
+    public string? Detail { get; set; }
 
     /// <summary>
     /// Gets the <see cref="IDictionary{TKey, TValue}"/> for extension members.
