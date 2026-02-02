@@ -13,11 +13,18 @@
 		<!-- 👇 We don't want the source generator to be packable by itself, instead it's included in
 		the Altinn.Urn package -->
 		<IsPackable>false</IsPackable>
+			
+		<PolyStringInterpolation>true</PolyStringInterpolation>
+		<PolyUseEmbeddedAttribute>true</PolyUseEmbeddedAttribute>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+		<PackageReference Include="Polyfill">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 </Project>
