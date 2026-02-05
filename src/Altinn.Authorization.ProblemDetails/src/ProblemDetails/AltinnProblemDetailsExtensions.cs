@@ -659,13 +659,13 @@ public static class AltinnProblemDetailsExtensions
     /// <summary>
     /// Tries to convert the validation errors to a <see cref="AltinnValidationProblemDetails"/>.
     /// </summary>
-    /// <param name="errors">This <see cref="ValidationErrorBuilder"/> instance.</param>
+    /// <param name="errors">This <see cref="ValidationProblemBuilder"/> instance.</param>
     /// <param name="result">The resulting <see cref="AltinnValidationProblemDetails"/>, or <see langword="null"/>.</param>
     /// <returns>
     /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="AltinnValidationProblemDetails"/> was created,
     /// otherwise <see langword="false"/>.
     /// </returns>
-    public static bool TryToProblemDetails(this ref ValidationErrorBuilder errors, [NotNullWhen(true)] out AltinnValidationProblemDetails? result)
+    public static bool TryToProblemDetails(this ref ValidationProblemBuilder errors, [NotNullWhen(true)] out AltinnValidationProblemDetails? result)
     {
         if (errors.TryBuild(out var instance))
         {
@@ -682,13 +682,13 @@ public static class AltinnProblemDetailsExtensions
     /// <summary>
     /// Tries to convert the validation errors to a <see cref="ActionResult"/>.
     /// </summary>
-    /// <param name="errors">This <see cref="ValidationErrorBuilder"/> instance.</param>
+    /// <param name="errors">This <see cref="ValidationProblemBuilder"/> instance.</param>
     /// <param name="result">The resulting <see cref="ActionResult"/>, or <see langword="null"/>.</param>
     /// <returns>
     /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="ActionResult"/> was created,
     /// otherwise <see langword="false"/>.
     /// </returns>
-    public static bool TryToActionResult(this ref ValidationErrorBuilder errors, [NotNullWhen(true)] out ActionResult? result)
+    public static bool TryToActionResult(this ref ValidationProblemBuilder errors, [NotNullWhen(true)] out ActionResult? result)
     {
         if (errors.TryToProblemDetails(out var details))
         {

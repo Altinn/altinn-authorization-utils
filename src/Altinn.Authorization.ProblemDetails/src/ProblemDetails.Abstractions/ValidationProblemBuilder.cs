@@ -8,7 +8,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// A utility for building validation errors.
 /// </summary>
 [DebuggerDisplay("Count = {Count}")]
-public struct ValidationErrorBuilder
+public struct ValidationProblemBuilder
     : ICollection<ValidationErrorInstance>
     , IReadOnlyCollection<ValidationErrorInstance>
 {

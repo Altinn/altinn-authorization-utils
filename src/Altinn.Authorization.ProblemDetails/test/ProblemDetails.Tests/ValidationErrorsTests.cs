@@ -5,7 +5,7 @@ public class ValidationErrorsTests
     [Fact]
     public void Errors_IncludedInExceptionMessage()
     {
-        var errors = new ValidationErrorBuilder();
+        var errors = new ValidationProblemBuilder();
 
         errors.Add(StdValidationErrors.Required, "/path", [new("ext", "val")]);
         errors.Add(StdValidationErrors.Required, ["/path2", "/path3"]);

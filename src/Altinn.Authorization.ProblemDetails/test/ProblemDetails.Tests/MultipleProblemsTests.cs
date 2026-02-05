@@ -7,7 +7,7 @@ public class MultipleProblemsTests
     [Fact]
     public void Errors_IncludedInExceptionMessage()
     {
-        var validationBuilder = new ValidationErrorBuilder()
+        var validationBuilder = new ValidationProblemBuilder()
         {
             { StdValidationErrors.Required, "/path", [new("ext", "val")] },
             { StdValidationErrors.Required, ["/path2", "/path3"] },

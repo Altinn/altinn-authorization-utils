@@ -78,7 +78,7 @@ public class ResultTests
 
         static Result<int> TrySomething(bool fail)
         {
-            ValidationErrorBuilder errors = new();
+            ValidationProblemBuilder errors = new();
 
             if (fail)
             {

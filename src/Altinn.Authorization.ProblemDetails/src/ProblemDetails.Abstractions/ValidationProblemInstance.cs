@@ -6,11 +6,19 @@ namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// A problem instance of a validation problem, containing 1 or more validation errors. Created using
-/// a <see cref="ValidationErrorBuilder"/>.
+/// a <see cref="ValidationProblemBuilder"/>.
 /// </summary>
 public sealed record ValidationProblemInstance
     : ProblemInstance
 {
+    /// <summary>
+    /// Creates a new instance of the builder for constructing a validation-problem response.
+    /// </summary>
+    /// <returns>A <see cref="ValidationProblemBuilder"/> instance that can be used to configure and build a validation-problem
+    /// response.</returns>
+    public static ValidationProblemBuilder CreateBuilder()
+        => default;
+
     private readonly ImmutableArray<ValidationErrorInstance> _errors;
 
     internal ValidationProblemInstance(

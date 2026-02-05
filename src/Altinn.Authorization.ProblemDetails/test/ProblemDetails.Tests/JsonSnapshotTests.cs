@@ -98,7 +98,7 @@ public class JsonSnapshotTests
     [Fact]
     public async Task Validation_Single()
     {
-        ValidationErrorBuilder builder = default;
+        ValidationProblemBuilder builder = default;
         builder.Add(_invalid);
         builder.TryBuild(out var instance).ShouldBeTrue();
 
@@ -125,7 +125,7 @@ public class JsonSnapshotTests
     [Fact]
     public async Task Validation_Single_WithPaths()
     {
-        ValidationErrorBuilder builder = default;
+        ValidationProblemBuilder builder = default;
         builder.Add(_invalid, ["/foo", "/bar"]);
         builder.TryBuild(out var instance).ShouldBeTrue();
 
@@ -152,7 +152,7 @@ public class JsonSnapshotTests
     [Fact]
     public async Task Validation_Single_WithPathsAndDetailsAndExtensions()
     {
-        ValidationErrorBuilder builder = default;
+        ValidationProblemBuilder builder = default;
         builder.Add(_invalid, ["/foo", "/bar"], [new("ext1", "1"), new("ext2", "2")], "Invalid cause reasons");
         builder.TryBuild(out var instance).ShouldBeTrue();
 
@@ -182,7 +182,7 @@ public class JsonSnapshotTests
     [Fact]
     public async Task Validation_WithDetailAndExtensions_Single_WithPaths()
     {
-        ValidationErrorBuilder builder = default;
+        ValidationProblemBuilder builder = default;
         builder.Add(_invalid, ["/foo", "/bar"]);
         builder.AddExtension("ext1", "1");
         builder.AddExtension("ext2", "2");

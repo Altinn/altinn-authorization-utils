@@ -55,7 +55,7 @@ public static class CollectionExpressionResolutionTests
 
     public static void ValidationErrors_Add()
     {
-        ValidationErrorBuilder errors = default;
+        ValidationProblemBuilder errors = default;
 
         errors.Add(StdValidationErrors.Required);
         errors.Add(StdValidationErrors.Required, "/path");

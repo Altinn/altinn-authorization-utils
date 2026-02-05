@@ -3,7 +3,7 @@
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
-/// Extensions for <see cref="ValidationErrorBuilder"/>.
+/// Extensions for <see cref="ValidationProblemBuilder"/>.
 /// </summary>
 public static class ValidationErrorBuilderExtensions
 {
@@ -12,7 +12,7 @@ public static class ValidationErrorBuilderExtensions
     /// </summary>
     /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor)
         => errors.Add(descriptor.Create());
 
     /// <summary>
@@ -22,7 +22,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="path">The path.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, string path)
         => errors.Add(descriptor.Create(path));
 
     /// <summary>
@@ -33,7 +33,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="path">The path.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, string path, string? detail)
         => errors.Add(descriptor.Create(path, detail));
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths)
         => errors.Add(descriptor.Create(paths));
 
     /// <summary>
@@ -54,7 +54,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="paths">The paths.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, string? detail)
         => errors.Add(descriptor.Create(paths, detail));
 
     /// <summary>
@@ -64,7 +64,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="paths">The paths.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths)
         => errors.Add(descriptor.Create(paths));
 
     /// <summary>
@@ -75,7 +75,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="paths">The paths.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, string? detail)
         => errors.Add(descriptor.Create(paths, detail));
 
     /// <summary>
@@ -84,7 +84,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ProblemExtensionData extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ProblemExtensionData extensions)
         => errors.Add(descriptor.Create(extensions));
 
     /// <summary>
@@ -94,7 +94,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <param name="detail">The error detail.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ProblemExtensionData extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ProblemExtensionData extensions, string? detail)
         => errors.Add(descriptor.Create(extensions, detail));
 
     /// <summary>
@@ -103,7 +103,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="errors">The error collection.</param>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
         => errors.Add(descriptor.Create(extensions));
 
     /// <summary>
@@ -113,7 +113,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <param name="detail">The error detail.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IReadOnlyDictionary<string, string> extensions, string? detail)
         => errors.Add(descriptor.Create(extensions, detail));
 
     /// <summary>
@@ -124,7 +124,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions)
         => errors.Add(descriptor.Create(path, extensions));
 
     /// <summary>
@@ -136,7 +136,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <param name="detail">The error detail.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, string path, ProblemExtensionData extensions, string? detail)
         => errors.Add(descriptor.Create(path, extensions, detail));
 
     /// <summary>
@@ -147,7 +147,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="path">The path.</param>
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions)
         => errors.Add(descriptor.Create(path, extensions));
 
     /// <summary>
@@ -159,7 +159,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
     /// <param name="detail">The error detail.</param>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, string path, IReadOnlyDictionary<string, string> extensions, string? detail)
         => errors.Add(descriptor.Create(path, extensions, detail));
 
     /// <summary>
@@ -170,7 +170,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions)
         => errors.Add(descriptor.Create(paths, extensions));
 
     /// <summary>
@@ -182,7 +182,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="extensions">The extensions.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, ProblemExtensionData extensions, string? detail)
         => errors.Add(descriptor.Create(paths, extensions, detail));
 
     /// <summary>
@@ -193,7 +193,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions)
         => errors.Add(descriptor.Create(paths, extensions));
 
     /// <summary>
@@ -205,7 +205,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="extensions">The extensions.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, ImmutableArray<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
         => errors.Add(descriptor.Create(paths, extensions, detail));
 
     /// <summary>
@@ -216,7 +216,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions)
         => errors.Add(descriptor.Create(paths, extensions));
 
     /// <summary>
@@ -228,7 +228,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="extensions">The extensions.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, ProblemExtensionData extensions, string? detail)
         => errors.Add(descriptor.Create(paths, extensions, detail));
 
     /// <summary>
@@ -239,7 +239,7 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="paths">The paths.</param>
     /// <param name="extensions">The extensions.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions)
         => errors.Add(descriptor.Create(paths, extensions));
 
     /// <summary>
@@ -251,6 +251,6 @@ public static class ValidationErrorBuilderExtensions
     /// <param name="extensions">The extensions.</param>
     /// <param name="detail">The error detail.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public static void Add(this ref ValidationErrorBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
+    public static void Add(this ref ValidationProblemBuilder errors, ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
         => errors.Add(descriptor.Create(paths, extensions, detail));
 }

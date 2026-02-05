@@ -3,7 +3,7 @@
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
-/// Enumerator for <see cref="ProblemExtensionDataBuilder"/>, <see cref="MultipleProblemBuilder"/>, and <see cref="ValidationErrorBuilder"/>.
+/// Enumerator for <see cref="ProblemExtensionDataBuilder"/>, <see cref="MultipleProblemBuilder"/>, and <see cref="ValidationProblemBuilder"/>.
 /// </summary>
 /// <typeparam name="T">The item type.</typeparam>
 public struct CollectionBuilderEnumerator<T>
