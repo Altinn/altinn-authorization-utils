@@ -208,7 +208,7 @@ public struct ProblemExtensionDataBuilder
     public struct Enumerator
         : IEnumerator<KeyValuePair<string, string>>
     {
-        private readonly CollectionBuilderEnumerator<(string Key, string Value)> _inner;
+        private CollectionBuilderEnumerator<(string Key, string Value)> _inner;
 
         internal Enumerator(in CollectionBuilder<(string Key, string Value)> inner)
         {
