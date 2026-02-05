@@ -676,28 +676,6 @@ public static class AltinnProblemDetailsExtensions
         result = null;
         return false;
     }
-
-    /// <summary>
-    /// Tries to convert the validation errors to a <see cref="AltinnValidationProblemDetails"/>.
-    /// </summary>
-    /// <param name="errors">This <see cref="ValidationErrorBuilder"/> instance.</param>
-    /// <param name="detail">The error detail.</param>
-    /// <param name="result">The resulting <see cref="AltinnValidationProblemDetails"/>, or <see langword="null"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="AltinnValidationProblemDetails"/> was created,
-    /// otherwise <see langword="false"/>.
-    /// </returns>
-    public static bool TryToProblemDetails(this ref ValidationErrorBuilder errors, string? detail, [NotNullWhen(true)] out AltinnValidationProblemDetails? result)
-    {
-        if (errors.TryBuild(detail, out var instance))
-        {
-            result = new AltinnValidationProblemDetails(instance);
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
     #endregion
 
     #region ValidationErrorBuilder.TryToActionResult
@@ -713,28 +691,6 @@ public static class AltinnProblemDetailsExtensions
     public static bool TryToActionResult(this ref ValidationErrorBuilder errors, [NotNullWhen(true)] out ActionResult? result)
     {
         if (errors.TryToProblemDetails(out var details))
-        {
-            result = details.ToActionResult();
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to convert the validation errors to a <see cref="ActionResult"/>.
-    /// </summary>
-    /// <param name="errors">This <see cref="ValidationErrorBuilder"/> instance.</param>
-    /// <param name="detail">The error detail.</param>
-    /// <param name="result">The resulting <see cref="ActionResult"/>, or <see langword="null"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="ActionResult"/> was created,
-    /// otherwise <see langword="false"/>.
-    /// </returns>
-    public static bool TryToActionResult(this ref ValidationErrorBuilder errors, string? detail, [NotNullWhen(true)] out ActionResult? result)
-    {
-        if (errors.TryToProblemDetails(detail, out var details))
         {
             result = details.ToActionResult();
             return true;
@@ -766,28 +722,6 @@ public static class AltinnProblemDetailsExtensions
         result = null;
         return false;
     }
-
-    /// <summary>
-    /// Tries to convert the problems to a <see cref="AltinnProblemDetails"/>.
-    /// </summary>
-    /// <param name="errors">This <see cref="MultipleProblemBuilder"/> instance.</param>
-    /// <param name="detail">The error detail.</param>
-    /// <param name="result">The resulting <see cref="AltinnProblemDetails"/>, or <see langword="null"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="AltinnProblemDetails"/> was created,
-    /// otherwise <see langword="false"/>.
-    /// </returns>
-    public static bool TryToProblemDetails(this ref MultipleProblemBuilder errors, string? detail, [NotNullWhen(true)] out AltinnProblemDetails? result)
-    {
-        if (errors.TryBuild(detail, out var instance))
-        {
-            result = instance.ToProblemDetails();
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
     #endregion
 
     #region MultipleProblemBuilder.TryToActionResult
@@ -803,28 +737,6 @@ public static class AltinnProblemDetailsExtensions
     public static bool TryToActionResult(this ref MultipleProblemBuilder errors, [NotNullWhen(true)] out ActionResult? result)
     {
         if (errors.TryToProblemDetails(out var details))
-        {
-            result = details.ToActionResult();
-            return true;
-        }
-
-        result = null;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to convert the problems to a <see cref="ActionResult"/>.
-    /// </summary>
-    /// <param name="errors">This <see cref="MultipleProblemBuilder"/> instance.</param>
-    /// <param name="detail">The error detail.</param>
-    /// <param name="result">The resulting <see cref="ActionResult"/>, or <see langword="null"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if <paramref name="errors"/> was not empty and a <see cref="ActionResult"/> was created,
-    /// otherwise <see langword="false"/>.
-    /// </returns>
-    public static bool TryToActionResult(this ref MultipleProblemBuilder errors, string? detail, [NotNullWhen(true)] out ActionResult? result)
-    {
-        if (errors.TryToProblemDetails(detail, out var details))
         {
             result = details.ToActionResult();
             return true;

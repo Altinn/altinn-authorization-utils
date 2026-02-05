@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,10 +9,12 @@ namespace Altinn.Authorization.ProblemDetails;
 /// </summary>
 [DebuggerDisplay("Count = {Count}")]
 public struct ValidationErrorBuilder
-    : IReadOnlyList<ValidationErrorInstance>
+    : ICollection<ValidationErrorInstance>
+    , IReadOnlyCollection<ValidationErrorInstance>
 {
-    private List<ValidationErrorInstance>? _errors;
-    private List<KeyValuePair<string, string>>? _extensions;
+    private CollectionBuilder<ValidationErrorInstance> _errors;
+    private ProblemExtensionDataBuilder _extensions;
+    private string? _detail;
 
     /// <summary>
     /// Adds a validation error.
@@ -21,7 +22,6 @@ public struct ValidationErrorBuilder
     /// <param name="error">The error to add.</param>
     public void Add(ValidationErrorInstance error)
     {
-        _errors ??= new(8);
         _errors.Add(error);
     }
 
@@ -32,54 +32,43 @@ public struct ValidationErrorBuilder
     /// <param name="value">Extension value.</param>
     public void AddExtension(string key, string value)
     {
-        _extensions ??= new(8);
-        _extensions.Add(new(key, value));
+        _extensions.Add(key, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the detailed description or additional information associated with the object.
+    /// </summary>
+    public string? Detail
+    {
+        readonly get => _detail;
+        set => _detail = value;
     }
 
     /// <summary>
     /// Gets the error count.
     /// </summary>
-    public readonly int Count => _errors?.Count ?? 0;
-
-    /// <inheritdoc/>
-    public readonly ValidationErrorInstance this[int index]
-        => _errors is null
-        ? ThrowHelper.ThrowArgumentOutOfRangeException<ValidationErrorInstance>()
-        : _errors[index];
+    public readonly int Count => _errors.Count;
 
     /// <summary>
     /// Returns <see langword="true"/> if the collection is empty.
     /// </summary>
-    public readonly bool IsEmpty 
-        => _errors switch
-        {
-            null => true,
-            _ => _errors.Count == 0,
-        };
+    public readonly bool IsEmpty
+        => _errors.Count == 0;
 
-    /// <inheritdoc cref="IEnumerable{ValidationErrorInstance}.GetEnumerator()"/>
-    public readonly IEnumerator<ValidationErrorInstance> GetEnumerator()
-        => _errors switch
-        {
-            null => Enumerable.Empty<ValidationErrorInstance>().GetEnumerator(),
-            _ => _errors.GetEnumerator(),
-        };
+    /// <inheritdoc/>
+    bool ICollection<ValidationErrorInstance>.IsReadOnly => false;
+
+    /// <inheritdoc cref="IEnumerable{ProblemInstance}.GetEnumerator()"/>
+    public readonly CollectionBuilderEnumerator<ValidationErrorInstance> GetEnumerator()
+        => _errors.GetEnumerator();
 
     /// <inheritdoc/>
     readonly IEnumerator<ValidationErrorInstance> IEnumerable<ValidationErrorInstance>.GetEnumerator()
-        => _errors switch
-        {
-            null => Enumerable.Empty<ValidationErrorInstance>().GetEnumerator(),
-            _ => _errors.GetEnumerator(),
-        };
+        => _errors.GetEnumerator();
 
     /// <inheritdoc/>
     readonly IEnumerator IEnumerable.GetEnumerator()
-        => _errors switch
-        {
-            null => Enumerable.Empty<ValidationErrorInstance>().GetEnumerator(),
-            _ => _errors.GetEnumerator(),
-        };
+        => _errors.GetEnumerator();
 
     /// <summary>
     /// Creates a new <see cref="ValidationProblemInstance"/> from this builder if any
@@ -91,22 +80,8 @@ public struct ValidationErrorBuilder
     /// has been created; otherwise <see langword="false"/>.
     /// </returns>
     public readonly bool TryBuild([NotNullWhen(true)] out ValidationProblemInstance? instance)
-        => TryBuild(detail: null, out instance);
-
-    /// <summary>
-    /// Creates a new <see cref="ValidationProblemInstance"/> from this builder if any
-    /// validation errors have been added.
-    /// </summary>
-    /// <param name="detail">The error detail.</param>
-    /// <param name="instance">The resulting <see cref="ValidationProblemInstance"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if any validation errors have been added and the <paramref name="instance"/>
-    /// has been created; otherwise <see langword="false"/>.
-    /// </returns>
-    public readonly bool TryBuild(string? detail, [NotNullWhen(true)] out ValidationProblemInstance? instance)
     {
-        var errors = _errors;
-        if (errors is null or { Count: 0 })
+        if (_errors.Count == 0)
         {
             instance = null;
             return false;
@@ -115,10 +90,26 @@ public struct ValidationErrorBuilder
         ProblemExtensionData extensions = [];
         if (_extensions is { Count: > 0 })
         {
-            extensions = [.. _extensions];
+            extensions = _extensions.ToImmutable();
         }
 
-        instance = new(errors: [.. errors], detail, extensions: extensions);
+        instance = new(errors: _errors.ToImmutable(), Detail, extensions: extensions);
         return true;
     }
+
+    /// <inheritdoc/>
+    public void Clear()
+        => _errors.Clear();
+
+    /// <inheritdoc/>
+    public bool Contains(ValidationErrorInstance item)
+        => _errors.Contains(item);
+
+    /// <inheritdoc/>
+    void ICollection<ValidationErrorInstance>.CopyTo(ValidationErrorInstance[] array, int arrayIndex)
+        => _errors.CopyTo(array, arrayIndex);
+
+    /// <inheritdoc/>
+    bool ICollection<ValidationErrorInstance>.Remove(ValidationErrorInstance item)
+        => _errors.Remove(item);
 }

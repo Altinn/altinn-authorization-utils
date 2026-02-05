@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,10 +9,12 @@ namespace Altinn.Authorization.ProblemDetails;
 /// </summary>
 [DebuggerDisplay("Count = {Count}")]
 public struct MultipleProblemBuilder
-    : IReadOnlyList<ProblemInstance>
+    : ICollection<ProblemInstance>
+    , IReadOnlyCollection<ProblemInstance>
 {
-    private List<ProblemInstance>? _problems;
-    private List<KeyValuePair<string, string>>? _extensions;
+    private CollectionBuilder<ProblemInstance> _problems;
+    private ProblemExtensionDataBuilder _extensions;
+    private string? _detail;
 
     /// <summary>
     /// Adds a problem instance.
@@ -21,7 +22,6 @@ public struct MultipleProblemBuilder
     /// <param name="problem">The problem to add.</param>
     public void Add(ProblemInstance problem)
     {
-        _problems ??= new(8);
         _problems.Add(problem);
     }
 
@@ -32,54 +32,43 @@ public struct MultipleProblemBuilder
     /// <param name="value">Extension value.</param>
     public void AddExtension(string key, string value)
     {
-        _extensions ??= new(8);
-        _extensions.Add(new(key, value));
+        _extensions.Add(key, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the detailed description or additional information associated with the object.
+    /// </summary>
+    public string? Detail
+    {
+        readonly get => _detail;
+        set => _detail = value;
     }
 
     /// <summary>
     /// Gets the problem count.
     /// </summary>
-    public readonly int Count => _problems?.Count ?? 0;
-
-    /// <inheritdoc/>
-    public readonly ProblemInstance this[int index]
-        => _problems is null
-        ? ThrowHelper.ThrowArgumentOutOfRangeException<ProblemInstance>()
-        : _problems[index];
+    public readonly int Count => _problems.Count;
 
     /// <summary>
     /// Returns <see langword="true"/> if the collection is empty.
     /// </summary>
     public readonly bool IsEmpty
-        => _problems switch
-        {
-            null => true,
-            _ => _problems.Count == 0,
-        };
+        => _problems.Count == 0;
+
+    /// <inheritdoc/>
+    bool ICollection<ProblemInstance>.IsReadOnly => false;
 
     /// <inheritdoc cref="IEnumerable{ProblemInstance}.GetEnumerator()"/>
-    public readonly IEnumerator<ProblemInstance> GetEnumerator()
-        => _problems switch
-        {
-            null => Enumerable.Empty<ProblemInstance>().GetEnumerator(),
-            _ => _problems.GetEnumerator(),
-        };
+    public readonly CollectionBuilderEnumerator<ProblemInstance> GetEnumerator()
+        => _problems.GetEnumerator();
 
     /// <inheritdoc/>
     readonly IEnumerator<ProblemInstance> IEnumerable<ProblemInstance>.GetEnumerator()
-        => _problems switch
-        {
-            null => Enumerable.Empty<ProblemInstance>().GetEnumerator(),
-            _ => _problems.GetEnumerator(),
-        };
+        => _problems.GetEnumerator();
 
     /// <inheritdoc/>
     readonly IEnumerator IEnumerable.GetEnumerator()
-        => _problems switch
-        {
-            null => Enumerable.Empty<ProblemInstance>().GetEnumerator(),
-            _ => _problems.GetEnumerator(),
-        };
+        => _problems.GetEnumerator();
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> from this builder if any problems have been added.
@@ -90,39 +79,42 @@ public struct MultipleProblemBuilder
     /// has been created; otherwise <see langword="false"/>.
     /// </returns>
     public readonly bool TryBuild([NotNullWhen(true)] out ProblemInstance? instance)
-        => TryBuild(detail: null, out instance);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> from this builder if any problems have been added.
-    /// </summary>
-    /// <param name="detail">The error detail.</param>
-    /// <param name="instance">The resulting <see cref="ProblemInstance"/>.</param>
-    /// <returns>
-    /// <see langword="true"/> if any validation errors have been added and the <paramref name="instance"/>
-    /// has been created; otherwise <see langword="false"/>.
-    /// </returns>
-    public readonly bool TryBuild(string? detail, [NotNullWhen(true)] out ProblemInstance? instance)
     {
-        var problems = _problems;
-        if (problems is null or { Count: 0 })
+        if (_problems.Count == 0)
         {
             instance = null;
             return false;
         }
 
-        if (problems.Count == 1 && _extensions is null or { Count: 0 } && string.IsNullOrEmpty(detail))
+        if (_problems.Count == 1 && _extensions.Count == 0 && string.IsNullOrEmpty(Detail))
         {
-            instance = problems[0];
+            instance = _problems[0];
             return true;
         }
 
         ProblemExtensionData extensions = [];
-        if (_extensions is { Count: > 0 })
+        if (_extensions.Count > 0)
         {
-            extensions = [.. _extensions];
+            extensions = _extensions.ToImmutable();
         }
 
-        instance = new MultipleProblemInstance(problems: [.. problems], detail, extensions: extensions);
+        instance = new MultipleProblemInstance(problems: _problems.ToImmutable(), Detail, extensions: extensions);
         return true;
     }
+
+    /// <inheritdoc/>
+    public void Clear()
+        => _problems.Clear();
+
+    /// <inheritdoc/>
+    public bool Contains(ProblemInstance item)
+        => _problems.Contains(item);
+
+    /// <inheritdoc/>
+    void ICollection<ProblemInstance>.CopyTo(ProblemInstance[] array, int arrayIndex)
+        => _problems.CopyTo(array, arrayIndex);
+
+    /// <inheritdoc/>
+    bool ICollection<ProblemInstance>.Remove(ProblemInstance item)
+        => _problems.Remove(item);
 }

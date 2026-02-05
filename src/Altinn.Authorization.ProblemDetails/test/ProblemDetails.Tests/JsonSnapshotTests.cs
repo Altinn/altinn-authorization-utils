@@ -186,7 +186,8 @@ public class JsonSnapshotTests
         builder.Add(_invalid, ["/foo", "/bar"]);
         builder.AddExtension("ext1", "1");
         builder.AddExtension("ext2", "2");
-        builder.TryBuild(detail: "Failure detail", out var instance).ShouldBeTrue();
+        builder.Detail = "Failure detail";
+        builder.TryBuild(out var instance).ShouldBeTrue();
 
         await VerifyJson(
             instance.ToProblemDetails(),

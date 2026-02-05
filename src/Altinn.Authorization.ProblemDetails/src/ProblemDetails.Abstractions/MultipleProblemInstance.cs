@@ -11,6 +11,14 @@ namespace Altinn.Authorization.ProblemDetails;
 public sealed record MultipleProblemInstance
     : ProblemInstance
 {
+    /// <summary>
+    /// Creates a new instance of the builder for constructing a multiple problem response.
+    /// </summary>
+    /// <returns>A <see cref="MultipleProblemBuilder"/> instance that can be used to configure and build a multiple problem
+    /// response.</returns>
+    public static MultipleProblemBuilder CreateBuilder()
+        => default;
+
     private readonly ImmutableArray<ProblemInstance> _problems;
 
     internal MultipleProblemInstance(

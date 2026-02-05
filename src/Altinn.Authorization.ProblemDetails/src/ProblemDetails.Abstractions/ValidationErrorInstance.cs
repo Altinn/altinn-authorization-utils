@@ -10,6 +10,14 @@ namespace Altinn.Authorization.ProblemDetails;
 public sealed record class ValidationErrorInstance
 {
     /// <summary>
+    /// Creates a new instance of the builder for constructing a validation-error response.
+    /// </summary>
+    /// <returns>A <see cref="ValidationErrorBuilder"/> instance that can be used to configure and build a validation-error
+    /// response.</returns>
+    public static ValidationErrorBuilder CreateBuilder()
+        => default;
+
+    /// <summary>
     /// Creates a new <see cref="ValidationErrorInstance"/> with the specified <paramref name="descriptor"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
