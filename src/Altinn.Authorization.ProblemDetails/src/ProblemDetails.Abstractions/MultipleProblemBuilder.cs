@@ -101,10 +101,6 @@ public struct MultipleProblemBuilder
     /// <see langword="true"/> if any validation errors have been added and the <paramref name="instance"/>
     /// has been created; otherwise <see langword="false"/>.
     /// </returns>
-    /// <remarks>
-    /// If <paramref name="detail"/> is non-<see langword="null"/>, and the builder only contains a single problem,
-    /// the <paramref name="detail"/> is discarded.
-    /// </remarks>
     public readonly bool TryBuild(string? detail, [NotNullWhen(true)] out ProblemInstance? instance)
     {
         var problems = _problems;
@@ -114,7 +110,7 @@ public struct MultipleProblemBuilder
             return false;
         }
 
-        if (problems.Count == 1 && _extensions is null or { Count: 0 })
+        if (problems.Count == 1 && _extensions is null or { Count: 0 } && string.IsNullOrEmpty(detail))
         {
             instance = problems[0];
             return true;

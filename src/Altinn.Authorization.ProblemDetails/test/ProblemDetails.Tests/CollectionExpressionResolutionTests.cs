@@ -10,12 +10,18 @@ public static class CollectionExpressionResolutionTests
     {
         _ = StdProblemDescriptors.ValidationError.Create();
         _ = StdProblemDescriptors.ValidationError.Create([KeyValuePair.Create("foo", "bar")]);
+
+        _ = StdProblemDescriptors.ValidationError.Create("detail");
+        _ = StdProblemDescriptors.ValidationError.Create("detail", [KeyValuePair.Create("foo", "bar")]);
     }
 
     public static void ProblemInstance_Create()
     {
         _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError);
         _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, [KeyValuePair.Create("foo", "bar")]);
+
+        _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, "detail");
+        _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, "detail", [KeyValuePair.Create("foo", "bar")]);
     }
 
     public static void ValidationErrorDescriptor_Create()
@@ -25,6 +31,11 @@ public static class CollectionExpressionResolutionTests
         _ = StdValidationErrors.Required.Create("/path", [KeyValuePair.Create("foo", "bar")]);
         _ = StdValidationErrors.Required.Create([KeyValuePair.Create("foo", "bar")]);
         _ = StdValidationErrors.Required.Create(["/path"], [KeyValuePair.Create("foo", "bar")]);
+
+        _ = StdValidationErrors.Required.Create("/path", "detail");
+        _ = StdValidationErrors.Required.Create("/path", [KeyValuePair.Create("foo", "bar")], "detail");
+        _ = StdValidationErrors.Required.Create([KeyValuePair.Create("foo", "bar")], "detail");
+        _ = StdValidationErrors.Required.Create(["/path"], [KeyValuePair.Create("foo", "bar")], "detail");
     }
 
     public static void ValidationErrorInstance_Create()
@@ -34,6 +45,12 @@ public static class CollectionExpressionResolutionTests
         _ = ValidationErrorInstance.Create(StdValidationErrors.Required, "/path", [KeyValuePair.Create("foo", "bar")]);
         _ = ValidationErrorInstance.Create(StdValidationErrors.Required, [KeyValuePair.Create("foo", "bar")]);
         _ = ValidationErrorInstance.Create(StdValidationErrors.Required, ["/path"], [KeyValuePair.Create("foo", "bar")]);
+
+        _ = ValidationErrorInstance.Create(StdValidationErrors.Required);
+        _ = ValidationErrorInstance.Create(StdValidationErrors.Required, "/path", "detail");
+        _ = ValidationErrorInstance.Create(StdValidationErrors.Required, "/path", [KeyValuePair.Create("foo", "bar")], "detail");
+        _ = ValidationErrorInstance.Create(StdValidationErrors.Required, [KeyValuePair.Create("foo", "bar")], "detail");
+        _ = ValidationErrorInstance.Create(StdValidationErrors.Required, ["/path"], [KeyValuePair.Create("foo", "bar")], "detail");
     }
 
     public static void ValidationErrors_Add()
@@ -45,5 +62,11 @@ public static class CollectionExpressionResolutionTests
         errors.Add(StdValidationErrors.Required, "/path", [KeyValuePair.Create("foo", "bar")]);
         errors.Add(StdValidationErrors.Required, [KeyValuePair.Create("foo", "bar")]);
         errors.Add(StdValidationErrors.Required, ["/path"], [KeyValuePair.Create("foo", "bar")]);
+
+        errors.Add(StdValidationErrors.Required);
+        errors.Add(StdValidationErrors.Required, "/path", "detail");
+        errors.Add(StdValidationErrors.Required, "/path", [KeyValuePair.Create("foo", "bar")], "detail");
+        errors.Add(StdValidationErrors.Required, [KeyValuePair.Create("foo", "bar")], "detail");
+        errors.Add(StdValidationErrors.Required, ["/path"], [KeyValuePair.Create("foo", "bar")], "detail");
     }
 }

@@ -33,6 +33,11 @@ public class AltinnProblemDetails
         : this(instance.Descriptor)
     {
         Detail = instance.Detail;
+        
+        if (!string.IsNullOrEmpty(instance.TraceId))
+        {
+            TraceId = instance.TraceId;
+        }
 
         if (!instance.Extensions.IsDefaultOrEmpty)
         {
