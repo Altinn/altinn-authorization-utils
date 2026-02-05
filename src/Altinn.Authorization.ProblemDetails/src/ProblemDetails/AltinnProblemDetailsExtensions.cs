@@ -7,6 +7,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// Extension methods for <see cref="AltinnProblemDetails"/>,
 /// <see cref="ProblemDescriptor"/>, and <see cref="ValidationErrorDescriptor"/>.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public static class AltinnProblemDetailsExtensions
 {
     #region ProblemDetails.ToActionResult
