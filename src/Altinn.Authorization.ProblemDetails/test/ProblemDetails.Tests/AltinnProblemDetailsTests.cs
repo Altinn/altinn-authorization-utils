@@ -41,9 +41,9 @@ public class AltinnProblemDetailsTests
     [Fact]
     public void SetsDetail()
     {
-        TestErrors.BadRequest.Detail.ShouldBe("Bad request");
-        TestErrors.NotFound.Detail.ShouldBe("Not found");
-        TestErrors.InternalServerError.Detail.ShouldBe("Internal server error");
-        TestErrors.NotImplemented.Detail.ShouldBe("Not implemented");
+        TestErrors.BadRequest.Title.ShouldBe("Bad request");
+        TestErrors.NotFound.Title.ShouldBe("Not found");
+        TestErrors.InternalServerError.Title.ShouldBe("Internal server error");
+        TestErrors.NotImplemented.Title.ShouldBe("Not implemented");
     }
 }

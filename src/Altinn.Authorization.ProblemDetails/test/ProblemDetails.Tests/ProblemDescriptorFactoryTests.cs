@@ -17,7 +17,7 @@ public class ProblemDescriptorFactoryTests
         result.ShouldNotBeNull();
         result.ErrorCode.ToString().ShouldBe("TEST-00001");
         result.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-        result.Detail.ShouldBe("Test error");
+        result.Title.ShouldBe("Test error");
     }
 
     [Fact]

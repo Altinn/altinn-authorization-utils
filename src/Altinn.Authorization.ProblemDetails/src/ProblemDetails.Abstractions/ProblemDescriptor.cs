@@ -7,7 +7,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// <summary>
 /// An immutable descriptor for a problem.
 /// </summary>
-[DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
+[DebuggerDisplay("{ErrorCode,nq}: {Title,nq}")]
 public sealed record class ProblemDescriptor
 {
     /// <summary>
@@ -21,23 +21,23 @@ public sealed record class ProblemDescriptor
     public HttpStatusCode StatusCode { get; }
 
     /// <summary>
-    /// Gets the error details.
+    /// Gets the error title.
     /// </summary>
-    public string Detail { get; }
+    public string Title { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemDescriptor"/> class.
     /// </summary>
     /// <param name="errorCode">The error code.</param>
     /// <param name="statusCode">The HTTP status code.</param>
-    /// <param name="detail">The error description.</param>
-    internal ProblemDescriptor(ErrorCode errorCode, HttpStatusCode statusCode, string detail)
+    /// <param name="title">The error title.</param>
+    internal ProblemDescriptor(ErrorCode errorCode, HttpStatusCode statusCode, string title)
     {
         Guard.IsNotDefault(errorCode);
-        Guard.IsNotNullOrWhiteSpace(detail);
+        Guard.IsNotNullOrWhiteSpace(title);
 
         ErrorCode = errorCode;
         StatusCode = statusCode;
-        Detail = detail;
+        Title = title;
     }
 }

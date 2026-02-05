@@ -84,6 +84,6 @@ public sealed class AltinnValidationProblemDetails
     /// Gets or sets the validation errors.
     /// </summary>
     [JsonPropertyName("validationErrors")]
-    [JsonPropertyOrder(1)]
+    [JsonPropertyOrder(3)]
     public ICollection<AltinnValidationError> Errors { get; set; }
 }

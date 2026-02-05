@@ -46,7 +46,12 @@ public class ProblemInstanceException
 
     private static string CreateErrorMessage(ProblemInstance problemInstance)
     {
-        var sb = new StringBuilder(problemInstance.Detail);
+        var sb = new StringBuilder(problemInstance.Title);
+        if (!string.IsNullOrEmpty(problemInstance.Detail))
+        {
+            sb.Append(" - ");
+            sb.AppendLine(problemInstance.Detail);
+        }
 
         sb.AppendLine();
         sb.AppendLine($"code: {problemInstance.ErrorCode}");

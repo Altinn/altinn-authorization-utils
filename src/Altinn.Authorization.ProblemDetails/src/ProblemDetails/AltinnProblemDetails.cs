@@ -10,15 +10,18 @@ public class AltinnProblemDetails
     : Microsoft.AspNetCore.Mvc.ProblemDetails
     , IJsonOnDeserializing
 {
+    private string? _statusDescription;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AltinnProblemDetails"/> class.
     /// </summary>
     /// <param name="descriptor">The problem descriptor.</param>
     internal AltinnProblemDetails(ProblemDescriptor descriptor)
     {
+        Type = $"urn:altinn:error:{descriptor.ErrorCode}";
         ErrorCode = descriptor.ErrorCode;
         Status = (int)descriptor.StatusCode;
-        Detail = descriptor.Detail;
+        Title = descriptor.Title;
         TraceId = Activity.Current?.Id;
     }
 
@@ -27,11 +30,14 @@ public class AltinnProblemDetails
     /// </summary>
     /// <param name="instance">The problem instance.</param>
     internal AltinnProblemDetails(ProblemInstance instance)
+        : this(instance.Descriptor)
     {
-        ErrorCode = instance.ErrorCode;
-        Status = (int)instance.StatusCode;
         Detail = instance.Detail;
-        TraceId = instance.TraceId;
+        
+        if (!string.IsNullOrEmpty(instance.TraceId))
+        {
+            TraceId = instance.TraceId;
+        }
 
         if (!instance.Extensions.IsDefaultOrEmpty)
         {
@@ -60,6 +66,18 @@ public class AltinnProblemDetails
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyOrder(1)]
     public string? TraceId { get; set; }
+
+    /// <summary>
+    /// Gets or sets a human-readable description of the (HTTP) status code.
+    /// </summary>
+    [JsonPropertyName("statusDescription")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyOrder(2)]
+    public string? StatusDescription
+    {
+        get => _statusDescription ??= StatusDescriptions.GetStatusDescription(Status);
+        set => _statusDescription = value;
+    }
 
     /// <inheritdoc/>
     void IJsonOnDeserializing.OnDeserializing()

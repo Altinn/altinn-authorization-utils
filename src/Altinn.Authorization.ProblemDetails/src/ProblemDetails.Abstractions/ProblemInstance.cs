@@ -7,7 +7,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// <summary>
 /// An instance of a <see cref="ProblemDescriptor"/>, with optional extensions.
 /// </summary>
-[DebuggerDisplay("{ErrorCode,nq}: {Detail,nq}")]
+[DebuggerDisplay("{ErrorCode,nq}: {Title,nq}")]
 public record class ProblemInstance
 {
     /// <summary>
@@ -16,7 +16,16 @@ public record class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
     public static ProblemInstance Create(ProblemDescriptor descriptor) 
-        => new ProblemInstance(descriptor, []);
+        => new ProblemInstance(descriptor, detail: null, []);
+
+    /// <summary>
+    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="detail"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
+    /// <param name="detail">The detail message.</param>
+    /// <returns>A <see cref="ProblemInstance"/>.</returns>
+    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail)
+        => new ProblemInstance(descriptor, detail, []);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
@@ -25,7 +34,17 @@ public record class ProblemInstance
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
     public static ProblemInstance Create(ProblemDescriptor descriptor, ProblemExtensionData extensions) 
-        => new ProblemInstance(descriptor, extensions);
+        => new ProblemInstance(descriptor, detail: null, extensions);
+
+    /// <summary>
+    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
+    /// <param name="detail">The detail message.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <returns>A <see cref="ProblemInstance"/>.</returns>
+    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions)
+        => new ProblemInstance(descriptor, detail, extensions);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
@@ -34,9 +53,20 @@ public record class ProblemInstance
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
     public static ProblemInstance Create(ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions) 
-        => new ProblemInstance(descriptor, [..extensions]);
+        => new ProblemInstance(descriptor, detail: null, [..extensions]);
+
+    /// <summary>
+    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, and <paramref name="extensions"/>.
+    /// </summary>
+    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
+    /// <param name="detail">The detail message.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <returns>A <see cref="ProblemInstance"/>.</returns>
+    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions)
+        => new ProblemInstance(descriptor, detail, [.. extensions]);
 
     private readonly ProblemDescriptor _descriptor;
+    private readonly string? _detail;
     private readonly ProblemExtensionData _extensions;
     private readonly string? _traceId = Activity.Current?.Id;
 
@@ -44,12 +74,19 @@ public record class ProblemInstance
     /// Initializes a new instance of the <see cref="ProblemInstance"/> class.
     /// </summary>
     /// <param name="descriptor">The problem descriptor.</param>
+    /// <param name="detail">The detail message.</param>
     /// <param name="extensions">The extensions.</param>
-    internal ProblemInstance(ProblemDescriptor descriptor, ProblemExtensionData extensions)
+    internal ProblemInstance(ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions)
     {
         _descriptor = descriptor;
+        _detail = detail;
         _extensions = extensions;
     }
+
+    /// <summary>
+    /// Gets the problem descriptor.
+    /// </summary>
+    internal ProblemDescriptor Descriptor => _descriptor;
 
     /// <inheritdoc cref="ProblemDescriptor.ErrorCode"/>
     public ErrorCode ErrorCode => _descriptor.ErrorCode;
@@ -57,8 +94,13 @@ public record class ProblemInstance
     /// <inheritdoc cref="ProblemDescriptor.StatusCode"/>
     public HttpStatusCode StatusCode => _descriptor.StatusCode;
 
-    /// <inheritdoc cref="ProblemDescriptor.Detail"/>
-    public string Detail => _descriptor.Detail;
+    /// <inheritdoc cref="ProblemDescriptor.Title"/>
+    public string Title => _descriptor.Title;
+
+    /// <summary>
+    /// Gets the error detail.
+    /// </summary>
+    public string? Detail => _detail;
 
     /// <summary>
     /// Gets the unique identifier for the current trace, if available.
@@ -90,5 +132,5 @@ public record class ProblemInstance
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     public static implicit operator ProblemInstance(ProblemDescriptor descriptor) 
-        => new ProblemInstance(descriptor, []);
+        => new ProblemInstance(descriptor, detail: null, []);
 }

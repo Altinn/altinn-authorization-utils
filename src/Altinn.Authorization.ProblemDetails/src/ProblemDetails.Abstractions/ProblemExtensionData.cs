@@ -37,6 +37,13 @@ public readonly struct ProblemExtensionData
     public static ProblemExtensionData Create(ReadOnlySpan<KeyValuePair<string, string>> values)
         => new(ImmutableArray.Create(values));
 
+    /// <summary>
+    /// Creates a new instance of the builder for configuring problem extension data.
+    /// </summary>
+    /// <returns>A new <see cref="ProblemExtensionDataBuilder"/> instance for constructing problem extension data.</returns>
+    public static ProblemExtensionDataBuilder CreateBuilder()
+        => default;
+
     private readonly ImmutableArray<KeyValuePair<string, string>> _values;
 
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Altinn.Authorization.ProblemDetails.Tests;
 
@@ -43,5 +42,42 @@ public class AltinnMultipleProblemDetailsTests
 
         deserialized.ErrorCode.ShouldNotBe(StdProblemDescriptors.MultipleProblems.ErrorCode);
         deserialized.Problems.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Builder_ReturnsInner_WhenJustOneErrror_AndNoExtesnsionNorDetail()
+    {
+        MultipleProblemBuilder builder = default;
+
+        builder.Add(TestErrors.NotFound, "detail");
+
+        builder.TryBuild(out var instance).ShouldBeTrue();
+        instance.ErrorCode.ShouldBe(TestErrors.NotFound.ErrorCode);
+    }
+
+    [Fact]
+    public void Builder_ReturnsWrapper_WhenJustOneErrror_WithExtensions()
+    {
+        MultipleProblemBuilder builder = default;
+
+        builder.Add(TestErrors.NotFound, "detail");
+        builder.AddExtension("foo", "bar");
+
+        builder.TryBuild(out var instance).ShouldBeTrue();
+        instance.ErrorCode.ShouldBe(StdProblemDescriptors.ErrorCodes.MultipleProblems);
+        instance.Extensions.ShouldContainKeyAndValue("foo", "bar");
+    }
+
+    [Fact]
+    public void Builder_ReturnsWrapper_WhenJustOneErrror_WithDetail()
+    {
+        MultipleProblemBuilder builder = default;
+
+        builder.Add(TestErrors.NotFound, "detail");
+        builder.Detail = "detail";
+
+        builder.TryBuild(out var instance).ShouldBeTrue();
+        instance.ErrorCode.ShouldBe(StdProblemDescriptors.ErrorCodes.MultipleProblems);
+        instance.Detail.ShouldBe("detail");
     }
 }
