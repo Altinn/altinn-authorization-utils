@@ -179,6 +179,7 @@ internal sealed partial class DefaultPlatformAccessTokenHandler
         string? appClaim = identity.FindFirst(type: AppClaim)?.Value;
 
         httpContext.Items.TryAdd(settings.AccessTokenHttpContextId, $"{issuer}/{appClaim}");
+        httpContext.PlatformTokenMetadata = (Issuer: issuer, App: appClaim);
     }
 
     private static partial class Log
