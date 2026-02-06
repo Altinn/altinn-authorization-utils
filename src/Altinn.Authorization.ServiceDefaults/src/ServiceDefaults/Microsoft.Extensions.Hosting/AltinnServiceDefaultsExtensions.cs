@@ -11,6 +11,7 @@ using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
@@ -242,6 +243,17 @@ public static class AltinnServiceDefaultsExtensions
 
         app.UseForwardedHeaders();
 
+        app.Use(async (context, next) =>
+        {
+            var tagsFeature = context.Features.Get<IHttpMetricsTagsFeature>();
+            if (tagsFeature is { MetricsDisabled: false })
+            {
+                TelemetryHelpers.EnrichFromRequest(tagsFeature, context);
+            }
+
+            await next(context);
+        });
+
         return app;
     }
 
@@ -261,13 +273,13 @@ public static class AltinnServiceDefaultsExtensions
         app.MapHealthChecks(HealthEndpoint, new HealthCheckOptions
         {
             ResponseWriter = writer,
-        });
+        }).DisableHttpMetrics();
 
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
         app.MapHealthChecks(AliveEndpoint, new HealthCheckOptions
         {
             Predicate = static r => r.Tags.Contains("live"),
-        });
+        }).DisableHttpMetrics();
 
         return app;
     }
@@ -367,7 +379,8 @@ public static class AltinnServiceDefaultsExtensions
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
-                       .AddBuiltInMeters();
+                       .AddBuiltInMeters()
+                       .AddAspNetCoreInstrumentation();
             })
             .WithTracing(tracing =>
             {
@@ -391,7 +404,12 @@ public static class AltinnServiceDefaultsExtensions
 
                     o.EnrichWithHttpResponse = (activity, response) =>
                     {
-                        TelemetryHelpers.EnrichFromRequest(new ActivityTags(activity), response.HttpContext);
+                        if (activity is null || response is null)
+                        {
+                            return;
+                        }
+
+                        TelemetryHelpers.EnrichFromRequest(activity, response.HttpContext);
                     };
                 });
 

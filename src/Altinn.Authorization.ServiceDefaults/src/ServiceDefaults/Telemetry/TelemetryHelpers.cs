@@ -1,7 +1,9 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Hosting;
 using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ServiceDefaults.Telemetry;
@@ -41,8 +43,7 @@ internal static class TelemetryHelpers
         return false;
     }
 
-    public static void EnrichFromRequest<T>(T tags, HttpContext ctx)
-        where T : ITags
+    public static void EnrichFromRequest(Activity activity, HttpContext ctx)
     {
         if (ctx?.User is { } user)
         {
@@ -54,7 +55,7 @@ internal static class TelemetryHelpers
                     if (!hasAuthLevel && int.TryParse(claim.Value, out var authLevel))
                     {
                         hasAuthLevel = true;
-                        tags["altinn.auth_level"] = authLevel.ToString();
+                        activity.SetTag("altinn.auth_level", authLevel);
                     }
 
                     continue;
@@ -65,7 +66,7 @@ internal static class TelemetryHelpers
                     if (!hasPartyId && int.TryParse(claim.Value, out var partyId))
                     {
                         hasPartyId = true;
-                        tags["altinn.party_id"] = partyId.ToString();
+                        activity.SetTag("altinn.party_id", partyId);
                     }
 
                     continue;
@@ -76,7 +77,7 @@ internal static class TelemetryHelpers
                     if (!hasUserId && int.TryParse(claim.Value, out var userId))
                     {
                         hasUserId = true;
-                        tags["altinn.user_id"] = userId.ToString();
+                        activity.SetTag("altinn.user_id", userId);
                     }
 
                     continue;
@@ -87,7 +88,7 @@ internal static class TelemetryHelpers
                     if (!hasOrgNumber && int.TryParse(claim.Value, out var orgNumber))
                     {
                         hasOrgNumber = true;
-                        tags["altinn.org_number"] = orgNumber.ToString();
+                        activity.SetTag("altinn.org_number", claim.Value);
                     }
 
                     continue;
@@ -98,7 +99,7 @@ internal static class TelemetryHelpers
                     if (!hasClientId)
                     {
                         hasClientId = true;
-                        tags["altinn.client_id"] = claim.Value;
+                        activity.SetTag("altinn.client_id", claim.Value);
                     }
 
                     continue;
@@ -108,17 +109,27 @@ internal static class TelemetryHelpers
 
         if (ctx?.PlatformTokenMetadata is { App: var app, Issuer: var issuer })
         {
-            tags["altinn.platform_token.issuer"] = issuer;
+            activity.SetTag("altinn.platform_token.issuer", issuer);
 
             if (app is not null)
             {
-                tags["altinn.platform_token.app"] = app;
+                activity.SetTag("altinn.platform_token.app", app);
             }
         }
     }
 
-    public interface ITags
+    public static void EnrichFromRequest(IHttpMetricsTagsFeature metricsTagsFeature, HttpContext ctx)
     {
-        string this[string key] { set; }
+        if (ctx?.User is { } user)
+        {
+            foreach (var claim in user.Claims)
+            {
+                if (ClientId.Contains(claim.Type))
+                {
+                    metricsTagsFeature.Tags.Add(new("altinn.client_id", claim.Value));
+                    break;
+                }
+            }
+        }
     }
 }
