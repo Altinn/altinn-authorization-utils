@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ServiceDefaults.Telemetry;
@@ -7,10 +8,11 @@ namespace Altinn.Authorization.ServiceDefaults.Telemetry;
 [ExcludeFromCodeCoverage]
 internal static class TelemetryHelpers
 {
-    private readonly static string AuthenticationLevel = "urn:altinn:authlevel";
-    private readonly static string UserId = "urn:altinn:userid";
-    private readonly static string PartyID = "urn:altinn:partyid";
-    private readonly static string OrgNumber = "urn:altinn:orgNumber";
+    private readonly static SearchValues<string> AuthenticationLevel = SearchValues.Create(["urn:altinn:authlevel"], StringComparison.Ordinal);
+    private readonly static SearchValues<string> UserId = SearchValues.Create(["urn:altinn:userid"], StringComparison.Ordinal);
+    private readonly static SearchValues<string> PartyID = SearchValues.Create(["urn:altinn:partyid"], StringComparison.Ordinal);
+    private readonly static SearchValues<string> OrgNumber = SearchValues.Create(["urn:altinn:orgNumber"], StringComparison.Ordinal);
+    private readonly static SearchValues<string> ClientId = SearchValues.Create(["client_id"], StringComparison.Ordinal);
 
     public static bool ShouldExclude(Uri url)
         => ShouldExclude(url.LocalPath.AsSpan());
@@ -43,10 +45,10 @@ internal static class TelemetryHelpers
     {
         if (ctx?.User is { } user)
         {
-            bool hasAuthLevel = false, hasPartyId = false, hasUserId = false, hasOrgNumber = false;
+            bool hasAuthLevel = false, hasPartyId = false, hasUserId = false, hasOrgNumber = false, hasClientId = false;
             foreach (var claim in user.Claims)
             {
-                if (string.Equals(claim.Type, AuthenticationLevel, StringComparison.Ordinal))
+                if (AuthenticationLevel.Contains(claim.Type))
                 {
                     if (!hasAuthLevel && int.TryParse(claim.Value, out var authLevel))
                     {
@@ -57,7 +59,7 @@ internal static class TelemetryHelpers
                     continue;
                 }
                 
-                if (string.Equals(claim.Type, PartyID, StringComparison.Ordinal))
+                if (PartyID.Contains(claim.Type))
                 {
                     if (!hasPartyId && int.TryParse(claim.Value, out var partyId))
                     {
@@ -68,7 +70,7 @@ internal static class TelemetryHelpers
                     continue;
                 }
                 
-                if (string.Equals(claim.Type, UserId, StringComparison.Ordinal))
+                if (UserId.Contains(claim.Type))
                 {
                     if (!hasUserId && int.TryParse(claim.Value, out var userId))
                     {
@@ -79,12 +81,23 @@ internal static class TelemetryHelpers
                     continue;
                 }
                 
-                if (string.Equals(claim.Type, OrgNumber, StringComparison.Ordinal))
+                if (OrgNumber.Contains(claim.Type))
                 {
                     if (!hasOrgNumber && int.TryParse(claim.Value, out var orgNumber))
                     {
                         hasOrgNumber = true;
                         tags["altinn.org_number"] = orgNumber.ToString();
+                    }
+
+                    continue;
+                }
+
+                if (ClientId.Contains(claim.Type))
+                {
+                    if (!hasClientId)
+                    {
+                        hasClientId = true;
+                        tags["altinn.client_id"] = claim.Value;
                     }
 
                     continue;

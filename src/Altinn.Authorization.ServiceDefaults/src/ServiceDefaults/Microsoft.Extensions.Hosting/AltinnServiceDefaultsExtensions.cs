@@ -389,9 +389,9 @@ public static class AltinnServiceDefaultsExtensions
                         return true;
                     };
 
-                    o.EnrichWithHttpRequest = (activity, request) =>
+                    o.EnrichWithHttpResponse = (activity, response) =>
                     {
-                        TelemetryHelpers.EnrichFromRequest(new ActivityTags(activity), request.HttpContext);
+                        TelemetryHelpers.EnrichFromRequest(new ActivityTags(activity), response.HttpContext);
                     };
                 });
 
