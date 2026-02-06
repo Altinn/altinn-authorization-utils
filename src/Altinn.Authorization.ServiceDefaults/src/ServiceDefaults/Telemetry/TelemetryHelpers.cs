@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Altinn.Authorization.ServiceDefaults.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -102,6 +103,16 @@ internal static class TelemetryHelpers
 
                     continue;
                 }
+            }
+        }
+
+        if (ctx?.PlatformTokenMetadata is { App: var app, Issuer: var issuer })
+        {
+            tags["altinn.platform_token.issuer"] = issuer;
+
+            if (app is not null)
+            {
+                tags["altinn.platform_token.app"] = app;
             }
         }
     }

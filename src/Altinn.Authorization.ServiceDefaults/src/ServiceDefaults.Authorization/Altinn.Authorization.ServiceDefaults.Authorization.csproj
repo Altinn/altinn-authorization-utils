@@ -16,4 +16,8 @@
 		<PackageReference Include="System.Linq.AsyncEnumerable" />
 	</ItemGroup>
 
+  <ItemGroup>
+		<InternalsVisibleTo Include="Altinn.Authorization.ServiceDefaults"/>
+  </ItemGroup>
+
 </Project>
