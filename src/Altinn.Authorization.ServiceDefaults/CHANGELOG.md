@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.4...Altinn.Authorization.ServiceDefaults-v5.1.5) (2026-02-06)
+
+
+### Bug Fixes
+
+* enrich activity with client-id ([#488](https://github.com/Altinn/altinn-authorization-utils/issues/488)) ([3b4f9bd](https://github.com/Altinn/altinn-authorization-utils/commit/3b4f9bd7cab7d517ae0a9e8a63d633a26a0c0139))
+
 ## [5.1.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.3...Altinn.Authorization.ServiceDefaults-v5.1.4) (2025-12-09)
 
 
