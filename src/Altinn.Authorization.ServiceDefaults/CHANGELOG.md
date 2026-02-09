@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.7](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.6...Altinn.Authorization.ServiceDefaults-v5.1.7) (2026-02-09)
+
+
+### Bug Fixes
+
+* detect disabled metrics better ([#492](https://github.com/Altinn/altinn-authorization-utils/issues/492)) ([e13246a](https://github.com/Altinn/altinn-authorization-utils/commit/e13246a8ef424d0d88bec01e107d2387d549461b))
+
 ## [5.1.6](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.5...Altinn.Authorization.ServiceDefaults-v5.1.6) (2026-02-09)
 
 
