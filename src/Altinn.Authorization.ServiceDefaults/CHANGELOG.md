@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.6](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.5...Altinn.Authorization.ServiceDefaults-v5.1.6) (2026-02-09)
+
+
+### Bug Fixes
+
+* rename telemetry tags and fix ordering ([#490](https://github.com/Altinn/altinn-authorization-utils/issues/490)) ([0ff5494](https://github.com/Altinn/altinn-authorization-utils/commit/0ff5494e704303a0d6d2f9f88a6ac5e7d7f78f32))
+
 ## [5.1.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.4...Altinn.Authorization.ServiceDefaults-v5.1.5) (2026-02-06)
 
 
