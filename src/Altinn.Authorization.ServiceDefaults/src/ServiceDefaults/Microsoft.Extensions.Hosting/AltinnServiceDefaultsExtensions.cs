@@ -11,6 +11,7 @@ using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -243,15 +244,21 @@ public static class AltinnServiceDefaultsExtensions
 
         app.UseForwardedHeaders();
 
-        app.Use(async (context, next) =>
+        app.Use(static next => context =>
         {
             var tagsFeature = context.Features.Get<IHttpMetricsTagsFeature>();
-            if (tagsFeature is { MetricsDisabled: false })
+            if (tagsFeature is null or { MetricsDisabled: true })
             {
-                TelemetryHelpers.EnrichFromRequest(tagsFeature, context);
+                return next(context);
             }
 
-            await next(context);
+            return EnrichFromResponse(context, next, tagsFeature);
+
+            static async Task EnrichFromResponse(HttpContext context, RequestDelegate next, IHttpMetricsTagsFeature tagsFeature)
+            {
+                await next(context);
+                TelemetryHelpers.EnrichFromRequest(tagsFeature, context);
+            }
         });
 
         return app;

@@ -66,7 +66,7 @@ internal static class TelemetryHelpers
                     if (!hasPartyId && int.TryParse(claim.Value, out var partyId))
                     {
                         hasPartyId = true;
-                        activity.SetTag("altinn.party_id", partyId);
+                        activity.SetTag("altinn.party.id", partyId);
                     }
 
                     continue;
@@ -77,7 +77,7 @@ internal static class TelemetryHelpers
                     if (!hasUserId && int.TryParse(claim.Value, out var userId))
                     {
                         hasUserId = true;
-                        activity.SetTag("altinn.user_id", userId);
+                        activity.SetTag("altinn.user.id", userId);
                     }
 
                     continue;
@@ -88,7 +88,7 @@ internal static class TelemetryHelpers
                     if (!hasOrgNumber && int.TryParse(claim.Value, out var orgNumber))
                     {
                         hasOrgNumber = true;
-                        activity.SetTag("altinn.org_number", claim.Value);
+                        activity.SetTag("altinn.org.number", claim.Value);
                     }
 
                     continue;
@@ -99,7 +99,7 @@ internal static class TelemetryHelpers
                     if (!hasClientId)
                     {
                         hasClientId = true;
-                        activity.SetTag("altinn.client_id", claim.Value);
+                        activity.SetTag("altinn.client.id", claim.Value);
                     }
 
                     continue;
@@ -126,7 +126,7 @@ internal static class TelemetryHelpers
             {
                 if (ClientId.Contains(claim.Type))
                 {
-                    metricsTagsFeature.Tags.Add(new("altinn.client_id", claim.Value));
+                    metricsTagsFeature.Tags.Add(new("altinn.client.id", claim.Value));
                     break;
                 }
             }
