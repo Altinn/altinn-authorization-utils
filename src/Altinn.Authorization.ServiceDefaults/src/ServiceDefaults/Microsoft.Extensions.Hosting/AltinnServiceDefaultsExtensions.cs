@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
@@ -252,6 +253,12 @@ public static class AltinnServiceDefaultsExtensions
                 return next(context);
             }
 
+            var disableMetrics = context.GetEndpoint()?.Metadata.GetMetadata<IDisableHttpMetricsMetadata>();
+            if (disableMetrics is not null)
+            {
+                return next(context);
+            }
+
             return EnrichFromResponse(context, next, tagsFeature);
 
             static async Task EnrichFromResponse(HttpContext context, RequestDelegate next, IHttpMetricsTagsFeature tagsFeature)
@@ -277,16 +284,22 @@ public static class AltinnServiceDefaultsExtensions
         var writer = app.Services.GetRequiredService<HealthReportWriter>();
 
         // All health checks must pass for app to be considered ready to accept traffic after starting
-        app.MapHealthChecks(HealthEndpoint, new HealthCheckOptions
-        {
-            ResponseWriter = writer,
-        }).DisableHttpMetrics();
+        app.MapHealthChecks(
+            HealthEndpoint,
+            new HealthCheckOptions
+            {
+                ResponseWriter = writer,
+            })
+            .DisableHttpMetrics();
 
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
-        app.MapHealthChecks(AliveEndpoint, new HealthCheckOptions
-        {
-            Predicate = static r => r.Tags.Contains("live"),
-        }).DisableHttpMetrics();
+        app.MapHealthChecks(
+            AliveEndpoint,
+            new HealthCheckOptions
+            {
+                Predicate = static r => r.Tags.Contains("live"),
+            })
+            .DisableHttpMetrics();
 
         return app;
     }
