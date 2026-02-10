@@ -264,7 +264,7 @@ public sealed class FlagsEnumModel<TEnum>
     public ComponentStringEnumerable GetComponentStrings(TEnum value)
         => new(this, GetComponents(value));
 
-    private ImmutableArray<TEnum> GetComponents(TEnum value)
+    internal ImmutableArray<TEnum> GetComponents(TEnum value)
         => _components.GetOrAdd(value, GetComponentsCore);
 
     private ImmutableArray<TEnum> GetComponentsCore(TEnum value)

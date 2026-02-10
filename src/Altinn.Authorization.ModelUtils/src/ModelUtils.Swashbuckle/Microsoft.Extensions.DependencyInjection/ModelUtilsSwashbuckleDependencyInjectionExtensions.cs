@@ -45,8 +45,10 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
     {
         services.AddXmlDocProvider();
         services.TryAddSingleton<NonExhaustiveEnumSchemaFilter>();
+        services.TryAddSingleton<NonExhaustiveFlagsEnumSchemaFilter>();
         services.TryAddSingleton<NonExhaustiveSchemaFilter>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveEnumSchemaFilter>>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveFlagsEnumSchemaFilter>>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<SwaggerGenOptions>, SwaggerGenConfigAddSchemaFilter<NonExhaustiveSchemaFilter>>());
 
         return services;
