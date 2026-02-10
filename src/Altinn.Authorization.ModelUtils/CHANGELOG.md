@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.3.0...Altinn.Authorization.ModelUtils-v3.4.0) (2026-02-10)
+
+
+### Features
+
+* non-exhaustive flags-enum ([#494](https://github.com/Altinn/altinn-authorization-utils/issues/494)) ([6e2fec7](https://github.com/Altinn/altinn-authorization-utils/commit/6e2fec7b628c46bdbcc8f38bf9ad72ac6342ccb0))
+
 ## [3.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.2.0...Altinn.Authorization.ModelUtils-v3.3.0) (2026-01-22)
 
 
