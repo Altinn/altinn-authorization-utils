@@ -20,4 +20,11 @@ public class FlagsEnumController
     {
         return value;
     }
+
+    [HttpGet("non-exhaustive")]
+    public ActionResult<NonExhaustiveFlagsEnum<Enums.PartyFieldIncludes>> NonExhaustive()
+    {
+        NonExhaustiveFlagsEnum<Enums.PartyFieldIncludes> value = Enums.PartyFieldIncludes.Person | Enums.PartyFieldIncludes.Organization;
+        return value;
+    }
 }
