@@ -10,7 +10,11 @@ namespace Altinn.Authorization.ProblemDetails;
 internal sealed class ErrorCodeTracking
 {
     private readonly HashSet<uint> _usedCodes = new();
+#if NET9_0_OR_GREATER
     private readonly Lock _lock = new();
+#else
+    private readonly object _lock = new();
+#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ErrorCodeTracking"/> class.
