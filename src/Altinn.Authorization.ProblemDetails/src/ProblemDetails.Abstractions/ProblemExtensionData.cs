@@ -313,7 +313,7 @@ public readonly struct ProblemExtensionData
 
     object? IDictionary<string, object?>.this[string key]
     {
-        get => this[key];
+        get => ((IReadOnlyDictionary<string, string>)this)[key];
         set => ThrowHelper.ThrowNotSupportedException();
     }
 
