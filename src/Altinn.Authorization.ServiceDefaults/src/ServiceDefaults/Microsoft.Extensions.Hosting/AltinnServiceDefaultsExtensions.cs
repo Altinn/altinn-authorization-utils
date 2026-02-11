@@ -385,6 +385,9 @@ public static class AltinnServiceDefaultsExtensions
 
     private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddOptions<AltinnTelemetryOptions>()
+            .BindConfiguration("Altinn:Telemetry");
+
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
@@ -404,11 +407,12 @@ public static class AltinnServiceDefaultsExtensions
             })
             .WithTracing(tracing =>
             {
-                if (builder.Environment.IsDevelopment())
+                tracing.SetSampler(services =>
                 {
-                    // We want to view all traces in development
-                    tracing.SetSampler(new AlwaysOnSampler());
-                }
+                    var config = services.GetRequiredService<IOptions<AltinnTelemetryOptions>>();
+
+                    return config.Value.Sampling.ToSampler();
+                });
 
                 tracing.AddAspNetCoreInstrumentation(o =>
                 {
