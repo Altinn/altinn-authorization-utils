@@ -1,4 +1,4 @@
-namespace Altinn.Urn.Tests;
+﻿namespace Altinn.Urn.Tests;
 
 public class UrnEncodedTests
 {
@@ -30,5 +30,11 @@ public class UrnEncodedTests
     }
 
     static string GetEncoded(UrnEncoded encoded)
-        => ((IFormattable)encoded).ToString("u", null);
+    {
+        var result = encoded.Encoded;
+        var formattibleU = ((IFormattable)encoded).ToString("u", null);
+        formattibleU.ShouldBe(result);
+
+        return result;
+    }
 }
