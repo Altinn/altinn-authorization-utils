@@ -63,6 +63,11 @@ public sealed class UrnEncoded
     /// </summary>
     public string Value => _value;
 
+    /// <summary>
+    /// Gets the encoded string value.
+    /// </summary>
+    public string Encoded => _encoded;
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
         => obj switch
