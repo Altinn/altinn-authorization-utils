@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.1.1...Altinn.Urn-v4.1.2) (2026-02-12)
+
+
+### Bug Fixes
+
+* expose `Encoded` value of `UrnEncoded` ([#501](https://github.com/Altinn/altinn-authorization-utils/issues/501)) ([5e699a8](https://github.com/Altinn/altinn-authorization-utils/commit/5e699a8c07a4fc06ac942f5ae9c7baacc00a4e73))
+
 ## [4.1.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.1.0...Altinn.Urn-v4.1.1) (2026-01-27)
 
 
