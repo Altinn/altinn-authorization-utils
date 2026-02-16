@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -26,8 +25,43 @@ public sealed class UrnEncoded
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        var encoded = EscapeString(value);
+        var encoded = EncodeString(value);
         return new(value, encoded);
+    }
+
+    /// <summary>
+    /// Encodes the specified string by escaping special characters.
+    /// </summary>
+    /// <param name="value">The string to encode. This string may contain special characters that need to be escaped.</param>
+    /// <returns>A string that represents the encoded version of the input string, with special characters escaped.</returns>
+    public static string Encode(string value)
+        => EncodeString(value);
+
+    /// <summary>
+    /// Encodes the specified string by escaping special characters.
+    /// </summary>
+    /// <param name="value">The string to encode. This string may contain special characters that need to be escaped.</param>
+    /// <returns>A string that represents the encoded version of the input string, with special characters escaped.</returns>
+    public static string Encode(ReadOnlySpan<char> value)
+        => EncodeString(value);
+
+    /// <summary>
+    /// Attempts to unescape a URN-encoded value from the specified character span.
+    /// </summary>
+    /// <param name="s">The read-only span of characters containing the URN-encoded value to unescape.</param>
+    /// <param name="result">When this method returns, contains the unescaped value as a <see cref="UrnEncoded"/> instance if the operation succeeds;
+    /// otherwise, <see langword="null"/>. This parameter is passed uninitialized.</param>
+    /// <returns><see langword="true"/> if the value was successfully unescaped; otherwise, <see langword="false"/>.</returns>
+    public static bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out UrnEncoded result)
+    {
+        if (TryDecodeValue(s, backingString: null, out var unescaped))
+        {
+            result = Create(unescaped);
+            return true;
+        }
+
+        result = null;
+        return false;
     }
 
     /// <summary>
@@ -37,9 +71,9 @@ public sealed class UrnEncoded
     /// <param name="result">When this method returns, contains the unescaped value as a <see cref="UrnEncoded"/> instance if the operation succeeds;
     /// otherwise, <see langword="null"/>. This parameter is passed uninitialized.</param>
     /// <returns><see langword="true"/> if the value was successfully unescaped; otherwise, <see langword="false"/>.</returns>
-    public static bool TryUnescape(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out UrnEncoded result)
+    public static bool TryParse(string s, [MaybeNullWhen(returnValue: false)] out UrnEncoded result)
     {
-        if (TryUnescapeValue(s, out var unescaped))
+        if (TryDecodeValue(s, backingString: s, out var unescaped))
         {
             result = Create(unescaped);
             return true;
@@ -48,6 +82,55 @@ public sealed class UrnEncoded
         result = null;
         return false;
     }
+
+    /// <summary>
+    /// Attempts to unescape a URN-encoded value from the specified character span.
+    /// </summary>
+    /// <param name="s">The read-only span of characters containing the URN-encoded value to unescape.</param>
+    /// <param name="result">When this method returns, contains the unescaped value as a <see cref="UrnEncoded"/> instance if the operation succeeds;
+    /// otherwise, <see langword="null"/>. This parameter is passed uninitialized.</param>
+    /// <returns><see langword="true"/> if the value was successfully unescaped; otherwise, <see langword="false"/>.</returns>
+    public static bool TryDecode(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out string result)
+    {
+        if (TryDecodeValue(s, backingString: null, out var unescaped))
+        {
+            result = unescaped;
+            return true;
+        }
+
+        result = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to unescape a URN-encoded value from the specified character span.
+    /// </summary>
+    /// <param name="s">The read-only span of characters containing the URN-encoded value to unescape.</param>
+    /// <param name="result">When this method returns, contains the unescaped value as a <see cref="UrnEncoded"/> instance if the operation succeeds;
+    /// otherwise, <see langword="null"/>. This parameter is passed uninitialized.</param>
+    /// <returns><see langword="true"/> if the value was successfully unescaped; otherwise, <see langword="false"/>.</returns>
+    public static bool TryDecode(string s, [MaybeNullWhen(returnValue: false)] out string result)
+    {
+        if (TryDecodeValue(s, backingString: s, out var unescaped))
+        {
+            result = unescaped;
+            return true;
+        }
+
+        result = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to unescape a URN-encoded value from the specified character span.
+    /// </summary>
+    /// <param name="s">The read-only span of characters containing the URN-encoded value to unescape.</param>
+    /// <param name="result">When this method returns, contains the unescaped value as a <see cref="UrnEncoded"/> instance if the operation succeeds;
+    /// otherwise, <see langword="null"/>. This parameter is passed uninitialized.</param>
+    /// <returns><see langword="true"/> if the value was successfully unescaped; otherwise, <see langword="false"/>.</returns>
+    [Obsolete($"Renamed to {nameof(TryParse)}")]
+    public static bool TryUnescape(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out UrnEncoded result)
+        => TryParse(s, out result);
 
     private readonly string _value;
     private readonly string _encoded;
@@ -127,7 +210,7 @@ public sealed class UrnEncoded
 
     /// <inheritdoc/>
     static bool IUrnParsable<UrnEncoded>.TryParseUrnValue(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out UrnEncoded result)
-        => TryUnescape(s, out result);
+        => TryParse(s, out result);
 
     private const int StackallocThreshold = 512;
 
@@ -144,13 +227,13 @@ public sealed class UrnEncoded
             .Select(s => KeyValuePair.Create(Rune.GetRuneAt(s, 0), s))
             .ToFrozenDictionary();
 
-    private static bool TryUnescapeValue(ReadOnlySpan<char> s, [MaybeNullWhen(returnValue: false)] out string result)
+    private static bool TryDecodeValue(ReadOnlySpan<char> s, string? backingString, [MaybeNullWhen(returnValue: false)] out string result)
     {
         var indexOfFirstEscaped = s.IndexOfAny(UnescapeChars);
         if (indexOfFirstEscaped < 0) 
         {
             // No escaped characters, return as-is.
-            result = new string(s);
+            result = backingString ?? new string(s);
             return true;
         }
 
@@ -161,17 +244,20 @@ public sealed class UrnEncoded
         // We may throw for very large inputs (when growing the ValueStringBuilder).
         vsb.EnsureCapacity(s.Length);
 
-        UnescapeStringToBuilder(s[indexOfFirstEscaped..], ref vsb);
+        DecodeStringToBuilder(s[indexOfFirstEscaped..], ref vsb);
 
         result = string.Concat(s[..indexOfFirstEscaped], vsb.AsSpan());
         vsb.Dispose();
         return true;
     }
 
-    private static string EscapeString(string stringToEscape)
-        => EscapeString(stringToEscape, stringToEscape);
+    private static string EncodeString(string stringToEscape)
+        => EncodeString(stringToEscape, stringToEscape);
 
-    private static string EscapeString(ReadOnlySpan<char> charsToEscape, string? backingString)
+    private static string EncodeString(ReadOnlySpan<char> stringToEscape)
+        => EncodeString(stringToEscape, null);
+
+    private static string EncodeString(ReadOnlySpan<char> charsToEscape, string? backingString)
     {
         Debug.Assert(backingString is null || backingString.Length == charsToEscape.Length);
 
@@ -189,7 +275,7 @@ public sealed class UrnEncoded
         // We may throw for very large inputs (when growing the ValueStringBuilder).
         vsb.EnsureCapacity(charsToEscape.Length);
 
-        EscapeStringToBuilder(charsToEscape[indexOfFirstToEscape..], ref vsb);
+        EncodeStringToBuilder(charsToEscape[indexOfFirstToEscape..], ref vsb);
 
         string result = string.Concat(charsToEscape[..indexOfFirstToEscape], vsb.AsSpan());
         vsb.Dispose();
@@ -197,7 +283,7 @@ public sealed class UrnEncoded
     }
 
 #if NET9_0_OR_GREATER
-    private static void UnescapeStringToBuilder(
+    private static void DecodeStringToBuilder(
         scoped ReadOnlySpan<char> stringToUnescape,
         ref ValueStringBuilder vsb)
     {
@@ -228,7 +314,7 @@ public sealed class UrnEncoded
         vsb.Advance(written);
     }
 #else
-    private static void UnescapeStringToBuilder(
+    private static void DecodeStringToBuilder(
         scoped ReadOnlySpan<char> stringToUnescape,
         ref ValueStringBuilder vsb)
     {
@@ -238,7 +324,7 @@ public sealed class UrnEncoded
 #endif
 
     // Copied from System.UriHelper and removed unused arguments
-    private static void EscapeStringToBuilder(
+    private static void EncodeStringToBuilder(
         scoped ReadOnlySpan<char> stringToEscape,
         ref ValueStringBuilder vsb)
     {
