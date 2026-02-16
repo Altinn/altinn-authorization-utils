@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.5.0...Altinn.Authorization.TestUtils-v3.6.0) (2026-02-16)
+
+
+### Features
+
+* add activity collector ([#505](https://github.com/Altinn/altinn-authorization-utils/issues/505)) ([d590d6f](https://github.com/Altinn/altinn-authorization-utils/commit/d590d6f829002e8bbb72f539f9ffa4163eb00ca3))
+
 ## [3.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.4.0...Altinn.Authorization.TestUtils-v3.5.0) (2026-01-15)
 
 
