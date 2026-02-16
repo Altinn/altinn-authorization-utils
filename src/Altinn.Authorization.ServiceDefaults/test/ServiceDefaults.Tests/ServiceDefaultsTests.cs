@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Altinn.Authorization.TestUtils;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Trace;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Net;
@@ -116,9 +118,151 @@ public class ServiceDefaultsTests
         });
     }
 
-
-    private static async Task<AppContext> CreateApp(ImmutableArray<KeyValuePair<string, string>> config, Action<AltinnServiceDefaultOptions>? configureOptions = null)
+    [Fact]
+    public async Task OpenTelemetry_Sampling_RootSampler_IsConfigurable_Enabled()
     {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "1.0"),
+        ]);
+
+        await app.Poke(parent: default /* root activity */);
+
+        app.Activities.Select(static a => a.DisplayName).ShouldBe(["outer poke", "inner poke"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_RootSampler_IsConfigurable_Disabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "0.0"),
+        ]);
+
+        await app.Poke(parent: default /* root activity */);
+
+        //if (samplingRate == 0)
+        app.Activities.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_RemoteParentSampledSampler_IsConfigurable_Enabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "0.0"), // disable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:RemoteParentSampled:SamplingRatio", "1.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: true, sampled: true));
+
+        app.Activities.Select(static a => a.DisplayName).ShouldBe(["outer poke", "inner poke"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_RemoteParentSampledSampler_IsConfigurable_Disabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "1.0"), // enable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:RemoteParentSampled:SamplingRatio", "0.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: true, sampled: true));
+
+        app.Activities.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_RemoteParentNotSampledSampler_IsConfigurable_Enabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "0.0"), // disable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:RemoteParentNotSampled:SamplingRatio", "1.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: true, sampled: false));
+
+        app.Activities.Select(static a => a.DisplayName).ShouldBe(["outer poke", "inner poke"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_RemoteParentNotSampledSampler_IsConfigurable_Disabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "1.0"), // enable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:RemoteParentNotSampled:SamplingRatio", "0.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: true, sampled: false));
+
+        app.Activities.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_LocalParentSampledSampler_IsConfigurable_Enabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "0.0"), // disable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:LocalParentSampled:SamplingRatio", "1.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: false, sampled: true));
+
+        app.Activities.Select(static a => a.DisplayName).ShouldBe(["outer poke", "inner poke"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_LocalParentSampledSampler_IsConfigurable_Disabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "1.0"), // enable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:LocalParentSampled:SamplingRatio", "0.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: false, sampled: true));
+
+        app.Activities.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_LocalParentNotSampledSampler_IsConfigurable_Enabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "0.0"), // disable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:LocalParentNotSampled:SamplingRatio", "1.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: false, sampled: false));
+
+        app.Activities.Select(static a => a.DisplayName).ShouldBe(["outer poke", "inner poke"], ignoreOrder: true);
+    }
+
+    [Fact]
+    public async Task OpenTelemetry_Sampling_LocalParentNotSampledSampler_IsConfigurable_Disabled()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "1.0"), // enable root sampler, so we're sure that the remote parent sampled sampler is doing the work
+            new("Altinn:Telemetry:Sampling:LocalParentNotSampled:SamplingRatio", "0.0"),
+        ]);
+
+        await app.Poke(parent: CreateActivityContext(remote: false, sampled: false));
+
+        app.Activities.ShouldBeEmpty();
+    }
+
+    private static ActivityContext CreateActivityContext(bool remote, bool sampled) 
+        => new(
+            traceId: ActivityTraceId.CreateRandom(),
+            spanId: ActivitySpanId.CreateRandom(),
+            traceFlags: sampled ? ActivityTraceFlags.Recorded : ActivityTraceFlags.None,
+            traceState: null,
+            isRemote: remote);
+
+
+    private static async Task<AppContext> CreateApp(
+        ImmutableArray<KeyValuePair<string, string>> config,
+        Action<AltinnServiceDefaultOptions>? configureOptions = null)
+    {
+        var id = Guid.NewGuid(); // Do not use v7, v4s are easier to distinguish when debugging.
+        var activitySourceName = $"test-{id}";
+
         var configuration = new ConfigurationManager();
         configuration.AddInMemoryCollection(config);
 
@@ -132,6 +276,11 @@ public class ServiceDefaultsTests
         });
 
         hostAppBuilder.AddAltinnServiceDefaults("test", configureOptions);
+        hostAppBuilder.Services.AddKeyedSingleton(serviceKey: activitySourceName, (_, _) => new ActivitySource(activitySourceName));
+        hostAppBuilder.Services.AddScoped(s => new PokeService(s.GetRequiredKeyedService<ActivitySource>(serviceKey: activitySourceName)));
+
+        var activities = new ActivityCollector();
+        hostAppBuilder.Services.ConfigureOpenTelemetryTracerProvider(opts => opts.AddSource(activitySourceName).AddInMemoryExporter(activities));
 
         var app = hostAppBuilder.Build();
         try
@@ -143,7 +292,7 @@ public class ServiceDefaultsTests
             }
 
             await app.StartAsync().WaitAsync(waitTime);
-            var ctx = new AppContext(app);
+            var ctx = new AppContext(app, activities);
             app = null;
             return ctx;
         }
@@ -162,12 +311,25 @@ public class ServiceDefaultsTests
         , IServiceProvider
     {
         private readonly IHost _host;
+        private readonly ActivityCollector _activities;
 
         public AppContext(
-            IHost host)
+            IHost host,
+            ActivityCollector activities)
         {
             _host = host;
+            _activities = activities;
         }
+
+        public async Task Poke(ActivityContext parent)
+        {
+            await using var scope = _host.Services.CreateAsyncScope();
+            var pokeService = scope.ServiceProvider.GetRequiredService<PokeService>();
+            await pokeService.Poke(parent);
+        }
+
+        public IReadOnlyList<Activity> Activities
+            => _activities.Snapshot();
 
         public async ValueTask DisposeAsync()
         {
@@ -183,5 +345,27 @@ public class ServiceDefaultsTests
 
         object? IServiceProvider.GetService(Type serviceType)
             => _host.Services.GetService(serviceType);
+    }
+
+    private class PokeService(ActivitySource source)
+    {
+        public async Task Poke(ActivityContext parent)
+        {
+            await Task.Yield();
+            Activity.Current = null; // There are some wonkies with parent = default, so clearing away the current activity guarantees that we are in a root activity if parent is default.
+
+            using (var outer = source.StartActivity("outer poke", kind: ActivityKind.Internal, parentContext: parent))
+            {
+                await Task.Yield();
+                using (var inner = source.StartActivity("inner poke", kind: ActivityKind.Internal, parentContext: parent))
+                {
+                    await Task.Yield();
+                }
+
+                await Task.Yield();
+            }
+
+            await Task.Yield();
+        }
     }
 }

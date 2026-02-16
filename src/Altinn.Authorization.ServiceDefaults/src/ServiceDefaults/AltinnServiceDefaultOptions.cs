@@ -1,3 +1,5 @@
+﻿using System.ComponentModel.DataAnnotations;
+
 namespace Altinn.Authorization.ServiceDefaults;
 
 /// <summary>
