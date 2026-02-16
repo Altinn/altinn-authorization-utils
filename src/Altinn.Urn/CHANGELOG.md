@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.1.2...Altinn.Urn-v4.2.0) (2026-02-16)
+
+
+### Features
+
+* add static encode and decode methods to `UrnEncoded` ([#503](https://github.com/Altinn/altinn-authorization-utils/issues/503)) ([26486b7](https://github.com/Altinn/altinn-authorization-utils/commit/26486b7a29396a63d7af92be685c572b9b96cc71))
+
 ## [4.1.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.1.1...Altinn.Urn-v4.1.2) (2026-02-12)
 
 
