@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.6.0...Altinn.Authorization.TestUtils-v3.6.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* allow activity-collector to not collect everything ([#509](https://github.com/Altinn/altinn-authorization-utils/issues/509)) ([8732888](https://github.com/Altinn/altinn-authorization-utils/commit/8732888dcfffaea21f180ca2b52ec8e6c9e7613b))
+
 ## [3.6.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.5.0...Altinn.Authorization.TestUtils-v3.6.0) (2026-02-16)
 
 
