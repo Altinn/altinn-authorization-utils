@@ -12,6 +12,7 @@ internal static class Hex
 
         var lookup = "0123456789abcdef"u8;
 
+        // This is manually loop-unrolled for performance reasons, to avoid the overhead of a loop and bounds checks on each iteration.
         destination[0] = (char)lookup[unchecked((int)((value >> 28) & 0xF))];
         destination[1] = (char)lookup[unchecked((int)((value >> 24) & 0xF))];
         destination[2] = (char)lookup[unchecked((int)((value >> 20) & 0xF))];
@@ -29,6 +30,7 @@ internal static class Hex
 
         var lookup = "0123456789abcdef"u8;
 
+        // This is manually loop-unrolled for performance reasons, to avoid the overhead of a loop and bounds checks on each iteration.
         destination[00] = (char)lookup[unchecked((int)((value >> 60) & 0xF))];
         destination[01] = (char)lookup[unchecked((int)((value >> 56) & 0xF))];
         destination[02] = (char)lookup[unchecked((int)((value >> 52) & 0xF))];

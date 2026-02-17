@@ -247,6 +247,18 @@ public class ServiceDefaultsTests
         app.Activities.ShouldBeEmpty();
     }
 
+    [Fact]
+    public async Task OpenTelemetry_TailSampling_KeepsErrorSpans()
+    {
+        await using var app = await CreateApp([
+            new("Altinn:Telemetry:Sampling:Root:SamplingRatio", "0.0"), // disable root sampler, so spans would normally be dropped
+        ]);
+
+        await app.Poke(parent: default /* root activity */, error: true);
+
+        app.Activities.ShouldHaveSingleItem();
+    }
+
     private static ActivityContext CreateActivityContext(bool remote, bool sampled) 
         => new(
             traceId: ActivityTraceId.CreateRandom(),
@@ -321,11 +333,11 @@ public class ServiceDefaultsTests
             _activities = activities;
         }
 
-        public async Task Poke(ActivityContext parent)
+        public async Task Poke(ActivityContext parent, bool error = false)
         {
             await using var scope = _host.Services.CreateAsyncScope();
             var pokeService = scope.ServiceProvider.GetRequiredService<PokeService>();
-            await pokeService.Poke(parent);
+            await pokeService.Poke(parent, error);
         }
 
         public IReadOnlyList<Activity> Activities
@@ -349,7 +361,7 @@ public class ServiceDefaultsTests
 
     private class PokeService(ActivitySource source)
     {
-        public async Task Poke(ActivityContext parent)
+        public async Task Poke(ActivityContext parent, bool error)
         {
             await Task.Yield();
             Activity.Current = null; // There are some wonkies with parent = default, so clearing away the current activity guarantees that we are in a root activity if parent is default.
@@ -360,6 +372,10 @@ public class ServiceDefaultsTests
                 using (var inner = source.StartActivity("inner poke", kind: ActivityKind.Internal, parentContext: parent))
                 {
                     await Task.Yield();
+                    if (error)
+                    {
+                        inner?.SetStatus(ActivityStatusCode.Error, "I failed");
+                    }
                 }
 
                 await Task.Yield();
