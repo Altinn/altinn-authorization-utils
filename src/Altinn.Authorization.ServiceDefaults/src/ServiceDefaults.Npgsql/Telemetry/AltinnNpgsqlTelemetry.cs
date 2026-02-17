@@ -135,6 +135,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
     public void EnrichBatch(Activity activity, NpgsqlBatch batch)
     {
         var count = batch.BatchCommands.Count;
+
         if (count == 1)
         {
             EnrichCommand(activity, batch.BatchCommands[0]);
@@ -142,6 +143,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
         }
 
         RemoveUselessTags(activity);
+        activity.SetTag("db.operation.batch.size", count);
         string[] queries = ArrayPool<string>.Shared.Rent(count);
         try 
         {
@@ -173,19 +175,28 @@ internal sealed partial class AltinnNpgsqlTelemetry
         activity.SetTag("net.peer.name", null);
         activity.SetTag("net.peer.port", null);
         activity.SetTag("net.transport", null);
+
+        // we rename to newer spec tags
+        activity.SetTag("db.system.name", "postgres");
+        activity.SetTag("db.system", null);
     }
 
     private void UpdateStatement(Activity activity, ReadOnlySpan<string> queries)
     {
+        Debug.Assert(queries.Length > 0);
         activity.SetTag("db.statement", null);
 
         if (queries.Length == 1)
         {
-            activity.SetTag("db.query.hash", _queryHasher.Hash(queries[0]));
+            var hash = _queryHasher.Hash(queries[0]);
+            activity.SetTag("db.query.hash", hash);
+            activity.DisplayName = hash;
         }
         else
         {
-            activity.SetTag("db.query.hash", _queryHasher.Hash(queries));
+            var hash = _queryHasher.Hash(queries);
+            activity.SetTag("db.query.hash", hash);
+            activity.DisplayName = $"batch count={queries.Length}";
         }
     }
 
@@ -194,6 +205,12 @@ internal sealed partial class AltinnNpgsqlTelemetry
         if (chain?.Summary is { } summary)
         {
             activity.SetTag("db.query.summary", summary);
+            activity.DisplayName = summary;
+        }
+
+        if (chain?.SpanName is { } spanName)
+        {
+            activity.DisplayName = spanName;
         }
     }
 

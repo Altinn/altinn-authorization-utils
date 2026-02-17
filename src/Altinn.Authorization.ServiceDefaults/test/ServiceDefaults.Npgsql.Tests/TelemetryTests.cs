@@ -61,6 +61,7 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.query.text").ShouldBeNull();
         activity.GetTagItem("db.query.summary").ShouldBeNull();
         activity.GetTagItem("db.query.hash").ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString);
+        activity.DisplayName.ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString);
     }
 
     [Fact]
@@ -90,6 +91,7 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.query.text").ShouldBeNull();
         activity.GetTagItem("db.query.summary").ShouldBeNull();
         activity.GetTagItem("db.query.hash").ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString);
+        activity.DisplayName.ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString);
     }
 
     [Fact]
@@ -121,6 +123,7 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.query.summary").ShouldBeNull();
         activity.GetTagItem("db.query.hash").ShouldBe(
             $"{AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString},{AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 3").HexString}");
+        activity.DisplayName.ShouldBe("batch count=2");
     }
 
     [Fact]
@@ -137,6 +140,7 @@ public class TelemetryTests(DbFixture fixture)
         var activity = activities.ShouldHaveSingleItem();
 
         activity.GetTagItem("db.query.summary").ShouldBe("test summary");
+        activity.DisplayName.ShouldBe("test summary");
     }
 
     [Fact]
