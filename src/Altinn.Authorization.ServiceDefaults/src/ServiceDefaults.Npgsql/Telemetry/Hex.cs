@@ -25,7 +25,7 @@ internal static class Hex
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Format(ulong value, Span<char> destination)
     {
-        Debug.Assert(destination.Length >= 8);
+        Debug.Assert(destination.Length >= 16);
 
         var lookup = "0123456789abcdef"u8;
 

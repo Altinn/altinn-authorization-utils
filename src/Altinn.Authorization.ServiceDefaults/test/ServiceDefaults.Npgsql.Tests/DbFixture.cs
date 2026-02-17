@@ -2,7 +2,7 @@
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
-public class DbFixture
+public sealed class DbFixture
     : IAsyncLifetime
 {
     private PostgreSqlContainer _container
@@ -13,6 +13,8 @@ public class DbFixture
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
+        
         await _container.DisposeAsync();
     }
 

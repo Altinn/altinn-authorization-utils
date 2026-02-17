@@ -179,7 +179,6 @@ internal sealed partial class AltinnNpgsqlTelemetry
     {
         activity.SetTag("db.statement", null);
 
-        //activity.SetTag("db.query.hash", _queryHasher.Hash(query));
         if (queries.Length == 1)
         {
             activity.SetTag("db.query.hash", _queryHasher.Hash(queries[0]));

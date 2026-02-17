@@ -18,16 +18,20 @@ public static class NpgsqlTelemetry
     /// scope, all of them will be applied.
     /// </remarks>
     /// <param name="configure">A delegate to configure this scope.</param>
-    /// <returns>A <see cref="IDisposable"/> that reverts the configuration when disposed.</returns>
+    /// <returns>
+    /// An <see cref="IDisposable"/> that reverts the configuration when disposed, or <see langword="null"/>
+    /// if no configuration changes were made.
+    /// </returns>
     public static IDisposable? Configure(Action<INpgsqlScopeTelemetryOptions> configure)
         => AltinnNpgsqlTelemetry.StartScope(configure);
 
     /// <summary>
     /// Temporarily disables tracing for the current scope.
     /// </summary>
+    /// <inheritdoc cref="Configure(Action{INpgsqlScopeTelemetryOptions})" path="/remarks"/>
     /// <remarks>Use the returned <see cref="IDisposable"/> in a <c>using</c> statement to ensure that tracing
     /// is re-enabled when the scope ends.</remarks>
-    /// <returns>An <see cref="IDisposable"/> instance that, when disposed, restores the previous tracing state.</returns>
+    /// <inheritdoc cref="Configure(Action{INpgsqlScopeTelemetryOptions})" path="/returns"/>
     public static IDisposable? DisableTracing()
         => Configure(static o => o.ShouldTrace = false);
 
@@ -37,7 +41,7 @@ public static class NpgsqlTelemetry
     /// <param name="spanName">Optional span name to use for operations in this scope.</param>
     /// <param name="traceParameterNames">Optional additional parameter names to include in traces.</param>
     /// <param name="traceParameterTypes">Optional additional parameter types to include in traces.</param>
-    /// <returns></returns>
+    /// <inheritdoc cref="Configure(Action{INpgsqlScopeTelemetryOptions})" path="/returns"/>
     public static IDisposable? Configure(
         string? summary = null,
         string? spanName = null,
