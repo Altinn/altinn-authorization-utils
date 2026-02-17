@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.0...Altinn.Authorization.ServiceDefaults-v5.2.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* otel exporter orderings ([#512](https://github.com/Altinn/altinn-authorization-utils/issues/512)) ([2255ddf](https://github.com/Altinn/altinn-authorization-utils/commit/2255ddf8ba1e1979ad4ba166764701e9bc5aab2b))
+
 ## [5.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.7...Altinn.Authorization.ServiceDefaults-v5.2.0) (2026-02-17)
 
 
