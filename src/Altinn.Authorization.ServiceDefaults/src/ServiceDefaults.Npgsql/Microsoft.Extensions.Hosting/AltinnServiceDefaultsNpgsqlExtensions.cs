@@ -1,5 +1,6 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Npgsql;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 using CommunityToolkit.Diagnostics;
 using HealthChecks.NpgSql;
 using Microsoft.AspNetCore.Http.Json;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Metrics;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.Hosting;
@@ -66,6 +68,53 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         Action<NpgsqlSettings>? configureSettings = null,
         Action<NpgsqlDataSourceBuilder>? configureDataSourceBuilder = null)
         => AddAltinnPostgresDataSource(builder, DefaultConfigSectionName(connectionName), configureSettings, connectionName, configureDataSourceBuilder: configureDataSourceBuilder);
+
+    /// <summary>
+    /// Configures Altinn telemetry for the specified Npgsql data source builder, enabling tracing and enrichment of
+    /// database commands and batches.
+    /// </summary>
+    /// <param name="builder">The NpgsqlDataSourceBuilder instance to configure for telemetry integration.</param>
+    /// <param name="services">The IServiceProvider used to resolve the AltinnNpgsqlTelemetry service required for telemetry configuration.</param>
+    public static void ConfigureAltinnTelemetry(this NpgsqlDataSourceBuilder builder, IServiceProvider services)
+    {
+        var telemetry = services.GetRequiredService<AltinnNpgsqlTelemetry>();
+
+        builder.ConfigureTracing(o =>
+        {
+            o.EnableFirstResponseEvent(false);
+
+            o.ConfigureCommandSpanNameProvider(telemetry.GetCommandSpanName);
+            o.ConfigureCommandFilter(telemetry.ShouldTraceCommand);
+
+            o.ConfigureBatchSpanNameProvider(telemetry.GetBatchSpanName);
+            o.ConfigureBatchFilter(telemetry.ShouldTraceBatch);
+
+            o.ConfigureCommandEnrichmentCallback(telemetry.EnrichCommand);
+            o.ConfigureBatchEnrichmentCallback(telemetry.EnrichBatch);
+        });
+    }
+
+    /// <summary>
+    /// Configures Altinn-specific telemetry options for Npgsql by registering the required services in the provided
+    /// service collection.
+    /// </summary>
+    /// <param name="services">The service collection to which the telemetry options and related services will be added. Cannot be null.</param>
+    /// <returns>An options builder for <see cref="INpgsqlTelemetryOptions"/>, which can be used to further configure telemetry options for
+    /// Npgsql.</returns>
+    public static OptionsBuilder<INpgsqlTelemetryOptions> ConfigureAltinnNpgsqlTelemetry(this IServiceCollection services)
+    {
+        services.AddSingleton(s =>
+        {
+            var options = s.GetRequiredService<IOptions<INpgsqlTelemetryOptions>>();
+            var value = options.Value;
+
+            Debug.Assert(value is AltinnNpgsqlTelemetry.Builder);
+            return ((AltinnNpgsqlTelemetry.Builder)value).Build();
+        });
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsFactory<INpgsqlTelemetryOptions>, AltinnNpgsqlTelemetry.OptionsFactory>());
+        return services.AddOptions<INpgsqlTelemetryOptions>();
+    }
 
     [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "This is an overload for public methods that return the interface")]
     private static INpgsqlDatabaseBuilder AddAltinnPostgresDataSource(
@@ -126,7 +175,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
         {
             builder.TryAddHealthCheck(new HealthCheckRegistration(
                 "PostgreSql",
-                sp => new NpgSqlHealthCheck(new NpgSqlHealthCheckOptions(sp.GetRequiredService<NpgsqlDataSource>())),
+                sp => new NpgSqlHealthCheck(new NpgSqlHealthCheckOptions(sp.GetRequiredService<NpgsqlDataSource>()) { CommandText = NpgsqlConsts.HealthCheckCommandText }),
                 failureStatus: default,
                 tags: default,
                 timeout: default));
@@ -340,6 +389,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
 
         var services = builder.Services;
 
+        services.ConfigureAltinnNpgsqlTelemetry();
         services.AddOptions<JsonOptions>();
 
         services.TryAdd(
@@ -357,7 +407,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
                     var validators = sp.GetServices<IValidateOptions<NpgsqlDataSourceBuilder>>();
                     var jsonOptionsMonitor = sp.GetRequiredService<IOptionsMonitor<JsonOptions>>();
 
-                    ConfigureDataSourceBuilder(dataSourceBuilder, jsonOptionsMonitor.CurrentValue, setup, post, validators, configureDataSourceBuilder);
+                    ConfigureDataSourceBuilder(dataSourceBuilder, sp, jsonOptionsMonitor.CurrentValue, setup, post, validators, configureDataSourceBuilder);
                     return dataSourceBuilder.BuildMultiHost();
                 },
                 dataSourceLifetime));
@@ -397,6 +447,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
 
         static void ConfigureDataSourceBuilder(
             NpgsqlDataSourceBuilder builder,
+            IServiceProvider services,
             JsonOptions jsonOptions,
             IEnumerable<IConfigureOptions<NpgsqlDataSourceBuilder>> setups,
             IEnumerable<IPostConfigureOptions<NpgsqlDataSourceBuilder>> post,
@@ -404,6 +455,7 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
             Action<NpgsqlDataSourceBuilder>? configureDataSourceBuilder)
         {
             builder.ConfigureJsonOptions(jsonOptions.SerializerOptions);
+            builder.ConfigureAltinnTelemetry(services);
 
             foreach (var setup in setups)
             {

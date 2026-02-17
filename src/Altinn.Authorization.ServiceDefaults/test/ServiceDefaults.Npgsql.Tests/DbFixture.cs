@@ -2,22 +2,23 @@
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
-public class DbFixture
+public sealed class DbFixture
     : IAsyncLifetime
 {
     private PostgreSqlContainer _container
-        = new PostgreSqlBuilder()
-            .WithImage("ghcr.io/altinn/library/postgres:16.2-alpine")
+        = new PostgreSqlBuilder("ghcr.io/altinn/library/postgres:16.2-alpine")
             .WithUsername("superadmin_user")
             .WithPassword("superadmin_password")
             .Build();
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
+        
         await _container.DisposeAsync();
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();
     }

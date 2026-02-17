@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Altinn.Authorization.TestUtils;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using System.Data;
+using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
@@ -13,18 +15,33 @@ public abstract partial class DatabaseTestsBase
     {
         private readonly IHost _host;
         private readonly DatabaseContext _db;
+        private Activity _activity;
 
         public AppContext(
-            IHost host)
+            IHost host,
+            string dbName)
         {
             _host = host;
             _db = new(host);
+
+            _activity = _host.Services.GetRequiredKeyedService<ActivitySource>(serviceKey: dbName)
+                .CreateActivity(TestContext.Current.Test?.TestDisplayName ?? dbName, ActivityKind.Internal)!;
+        }
+
+        public void Start()
+        {
+            Activity.Current = null;
+            _activity?.Start();
         }
 
         public DatabaseContext Database => _db;
 
+        public IReadOnlyList<Activity> Activities
+            => _host.Services.GetRequiredService<ActivityCollector>().Snapshot();
+
         public async ValueTask DisposeAsync()
         {
+            _activity?.Dispose();
             await _host.StopAsync();
 
             if (_host is IAsyncDisposable h)
@@ -57,7 +74,7 @@ public abstract partial class DatabaseTestsBase
             _host.Services.GetRequiredService<IOptionsMonitor<Migration.NpgsqlDatabaseMigrationOptions>>()
                 .CurrentValue.AppRole!;
 
-        public async Task<NpgsqlDataReader> ExecuteReader(string sql, params NpgsqlParameter[] parameters)
+        public async Task<NpgsqlDataReader> ExecuteReader(string sql, params IEnumerable<NpgsqlParameter> parameters)
         {
             await using var cmd = DataSource.CreateCommand();
             cmd.CommandText = sql;
@@ -67,10 +84,10 @@ public abstract partial class DatabaseTestsBase
                 cmd.Parameters.Add(p);
             }
 
-            return await cmd.ExecuteReaderAsync();
+            return await cmd.ExecuteReaderAsync(TestContext.Current.CancellationToken);
         }
 
-        public async Task<T> ExecuteScalar<T>(string sql, params NpgsqlParameter[] parameters)
+        public async Task<T> ExecuteScalar<T>(string sql, params IEnumerable<NpgsqlParameter> parameters)
         {
             await using var cmd = DataSource.CreateCommand();
             cmd.CommandText = sql;
@@ -81,9 +98,9 @@ public abstract partial class DatabaseTestsBase
             }
 
             await using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SingleRow);
-            var hasResult = await reader.ReadAsync();
+            var hasResult = await reader.ReadAsync(TestContext.Current.CancellationToken);
 
-            hasResult.Should().BeTrue("ExecuteScalar expects a result");
+            hasResult.ShouldBeTrue("ExecuteScalar expects a result");
             return await reader.GetFieldValueAsync<T>(0);
         }
 
@@ -92,7 +109,7 @@ public abstract partial class DatabaseTestsBase
             await using var cmd = DataSource.CreateCommand();
             cmd.CommandText = sql;
 
-            return await cmd.ExecuteNonQueryAsync();
+            return await cmd.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
         }
     }
 }

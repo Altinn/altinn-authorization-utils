@@ -17,19 +17,19 @@ public class YuniqlTests(DbFixture fixture)
             ]);
 
         var id = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
-        id.Should().Be(1);
+        id.ShouldBe(1);
 
         var modified = await ctx.Database.ExecuteNonQuery(/*strpsql*/"INSERT INTO app.test (id) VALUES (2), (3)");
-        modified.Should().Be(2);
+        modified.ShouldBe(2);
 
         id = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
-        id.Should().Be(3);
+        id.ShouldBe(3);
 
         modified = await ctx.Database.ExecuteNonQuery(/*strpsql*/"DELETE FROM app.test WHERE id = 3");
-        modified.Should().Be(1);
+        modified.ShouldBe(1);
 
         id = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
-        id.Should().Be(2);
+        id.ShouldBe(2);
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public class YuniqlTests(DbFixture fixture)
         var value1 = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT value FROM app.test WHERE id = @id", new NpgsqlParameter<long>("id", id1));
         var value2 = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT value FROM app.test WHERE id = @id", new NpgsqlParameter<long>("id", id2));
 
-        value1.Should().Be(1);
-        value2.Should().Be(2);
+        value1.ShouldBe(1);
+        value2.ShouldBe(2);
     }
 
     [Fact]
@@ -71,10 +71,10 @@ public class YuniqlTests(DbFixture fixture)
         var value1 = await ctx.Database.ExecuteScalar<TestComposite>(/*strpsql*/"SELECT value FROM app.test WHERE id = @id", new NpgsqlParameter<long>("id", id1));
         var value2 = await ctx.Database.ExecuteScalar<TestComposite>(/*strpsql*/"SELECT value FROM app.test WHERE id = @id", new NpgsqlParameter<long>("id", id2));
 
-        value1.First.Should().Be(TestEnum.One);
-        value1.Second.Should().Be(TestEnum.One);
-        value2.First.Should().Be(TestEnum.Two);
-        value2.Second.Should().Be(TestEnum.Three);
+        value1.First.ShouldBe(TestEnum.One);
+        value1.Second.ShouldBe(TestEnum.One);
+        value2.First.ShouldBe(TestEnum.Two);
+        value2.Second.ShouldBe(TestEnum.Three);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class YuniqlTests(DbFixture fixture)
 
         var result = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT app.test_function(1)");
 
-        result.Should().Be(2);
+        result.ShouldBe(2);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class YuniqlTests(DbFixture fixture)
 
         var result = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT app.test_function(1)");
 
-        result.Should().Be(2);
+        result.ShouldBe(2);
     }
 
     [Fact]
@@ -144,26 +144,26 @@ public class YuniqlTests(DbFixture fixture)
         var migrations1Count = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT COUNT(*) FROM yuniql.migrations1");
         var migrations2Count = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT COUNT(*) FROM yuniql.migrations2");
 
-        migrations1Count.Should().Be(4);
-        migrations2Count.Should().Be(6);
+        migrations1Count.ShouldBe(4);
+        migrations2Count.ShouldBe(6);
 
         var test1Contains = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT COUNT(*) FROM app.test1 WHERE value = '1'");
         var test2Contains = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT COUNT(*) FROM app.test2 WHERE value = '2'");
 
-        test1Contains.Should().Be(1);
-        test2Contains.Should().Be(1);
+        test1Contains.ShouldBe(1);
+        test2Contains.ShouldBe(1);
 
         test1Contains = await ctx.Database.ExecuteScalar<long>(/*strpsql*/$"SELECT COUNT(*) FROM app.test1 WHERE value = '{ctx.Database.AppRole}'");
         test2Contains = await ctx.Database.ExecuteScalar<long>(/*strpsql*/$"SELECT COUNT(*) FROM app.test2 WHERE value = '{ctx.Database.AppRole}'");
 
-        test1Contains.Should().Be(1);
-        test2Contains.Should().Be(1);
+        test1Contains.ShouldBe(1);
+        test2Contains.ShouldBe(1);
 
         test1Contains = await ctx.Database.ExecuteScalar<long>(/*strpsql*/$"SELECT COUNT(*) FROM app.test1 WHERE value = '{ctx.Database.MigratorRole}'");
         test2Contains = await ctx.Database.ExecuteScalar<long>(/*strpsql*/$"SELECT COUNT(*) FROM app.test2 WHERE value = '{ctx.Database.MigratorRole}'");
 
-        test1Contains.Should().Be(1);
-        test2Contains.Should().Be(1);
+        test1Contains.ShouldBe(1);
+        test2Contains.ShouldBe(1);
     }
 
     private enum TestEnum

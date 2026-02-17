@@ -1,10 +1,13 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
 using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
+using Altinn.Authorization.TestUtils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using OpenTelemetry.Trace;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -151,8 +154,13 @@ public abstract partial class DatabaseTestsBase
 
         hostAppBuilder.AddAltinnServiceDefaults("test");
         var dbBuilder = hostAppBuilder.AddAltinnPostgresDataSource();
+        hostAppBuilder.Services.AddKeyedSingleton(serviceKey: dbName, (_, _) => new ActivitySource(dbName));
 
-        return new(hostAppBuilder, dbBuilder);
+        var activities = new ActivityCollector(dbName);
+        hostAppBuilder.Services.AddSingleton(activities);
+        hostAppBuilder.Services.ConfigureOpenTelemetryTracerProvider(opts => opts.AddSource(dbName).AddInMemoryExporter(activities));
+
+        return new(hostAppBuilder, dbBuilder, dbName);
     }
 
     protected sealed partial class AppContext
@@ -161,13 +169,16 @@ public abstract partial class DatabaseTestsBase
         {
             private readonly HostApplicationBuilder _hostBuilder;
             private readonly INpgsqlDatabaseBuilder _dbBuilder;
+            private readonly string _dbName;
 
             public Builder(
                 HostApplicationBuilder hostBuilder, 
-                INpgsqlDatabaseBuilder dbBuilder)
+                INpgsqlDatabaseBuilder dbBuilder,
+                string dbName)
             {
                 _hostBuilder = hostBuilder;
                 _dbBuilder = dbBuilder;
+                _dbName = dbName;
             }
 
             public Builder ConfigureNpgsql(Action<NpgsqlDataSourceBuilder> configure)
@@ -243,8 +254,8 @@ public abstract partial class DatabaseTestsBase
             }
 
             [EditorBrowsable(EditorBrowsableState.Never)]
-            public TaskAwaiter<AppContext> GetAwaiter()
-                => Build().GetAwaiter();
+            public Awaiter GetAwaiter()
+                => new Awaiter(Build().GetAwaiter());
 
             private async Task<AppContext> Build()
             {
@@ -258,7 +269,7 @@ public abstract partial class DatabaseTestsBase
                 try
                 {
                     await app.StartAsync().WaitAsync(waitTime);
-                    var ctx = new AppContext(app);
+                    var ctx = new AppContext(app, _dbName);
                     app = null;
                     return ctx;
                 }
@@ -270,6 +281,25 @@ public abstract partial class DatabaseTestsBase
                         app.Dispose();
                     }
                 }
+            }
+
+            public readonly struct Awaiter(TaskAwaiter<AppContext> inner)
+                : ICriticalNotifyCompletion
+            {
+                public bool IsCompleted => inner.IsCompleted;
+
+                public AppContext GetResult()
+                {
+                    var context = inner.GetResult();
+                    context.Start();
+                    return context;
+                }
+
+                public void OnCompleted(Action continuation)
+                    => inner.OnCompleted(continuation);
+
+                public void UnsafeOnCompleted(Action continuation)
+                    => inner.UnsafeOnCompleted(continuation);
             }
         }
     }

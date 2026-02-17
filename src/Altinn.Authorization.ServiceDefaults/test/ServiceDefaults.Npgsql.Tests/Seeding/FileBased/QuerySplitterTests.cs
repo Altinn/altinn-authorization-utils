@@ -87,6 +87,6 @@ public class QuerySplitterTests
             actual.Add(split);
         }
 
-        actual.Should().BeEquivalentTo(expected);
+        actual.ShouldBe(expected);
     }
 }
