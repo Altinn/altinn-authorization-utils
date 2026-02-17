@@ -438,6 +438,8 @@ public static class AltinnServiceDefaultsExtensions
                 });
 
                 tracing.AddHttpClientInstrumentation();
+                tracing.AddProcessor<TailSamplingProcessor>();
+                tracing.ConfigureServices(services => services.AddSingleton<ITailSampler, ErrorTailSampler>());
             });
 
         builder.AddOpenTelemetryExporters();
