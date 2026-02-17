@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.7...Altinn.Authorization.ServiceDefaults-v5.2.0) (2026-02-17)
+
+
+### Features
+
+* add otel-sampling ([#498](https://github.com/Altinn/altinn-authorization-utils/issues/498)) ([7ef8c49](https://github.com/Altinn/altinn-authorization-utils/commit/7ef8c495ca07b2a16a138e1562eaa1c25912cfa6))
+* add tail-sampling support ([#511](https://github.com/Altinn/altinn-authorization-utils/issues/511)) ([ab77cf1](https://github.com/Altinn/altinn-authorization-utils/commit/ab77cf129de72e66f5b222c38a04315137f795f7))
+* add tracing for npgsql params ([#497](https://github.com/Altinn/altinn-authorization-utils/issues/497)) ([b457b8c](https://github.com/Altinn/altinn-authorization-utils/commit/b457b8cca9114544048883e6c41a87d7f8eda6e4))
+
+
+### Bug Fixes
+
+* always record otel spans ([#508](https://github.com/Altinn/altinn-authorization-utils/issues/508)) ([461d818](https://github.com/Altinn/altinn-authorization-utils/commit/461d818c4060d4aeb04a77906478cd2c041f6654))
+
 ## [5.1.7](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.1.6...Altinn.Authorization.ServiceDefaults-v5.1.7) (2026-02-09)
 
 
