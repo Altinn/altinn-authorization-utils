@@ -1,5 +1,36 @@
 # Changelog
 
+## [5.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v4.0.1...Altinn.Authorization.ProblemDetails-v5.0.0) (2026-02-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* `type` is now set to `urn:altinn:error:<CODE>`, instead of the default URI used by ASP.NET.
+* `title` is set instead of `detail` from the problem- and validation-error- descriptors.
+* `detail` is now optional and set on instances instead of descriptors.
+* A new `statusDescription` field is added to `ProblemDetails` and auto-populated based on the (HTTP) status code.
+* When running under `DEBUG`, `ProblemDescriptorFactory` and `ValidationErrorDescriptorFactory` will throw if a code is reused.
+* `ValidationErrorBuilder` has been renamed to `ValidationProblemBuilder` to align with other names.
+
+### Features
+
+* add `MultipleProblemInstance.CreateBuilder`, `ValidationProblemInstance.CreateBuilder`, and `ProblemExtensionData.CreateBuilder` ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* add `statusDescription` field ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* add overloads to most converters/builders accepting an optional `detail` value. ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* add std validation-error "catch-all" ([#446](https://github.com/Altinn/altinn-authorization-utils/issues/446)) ([03f0421](https://github.com/Altinn/altinn-authorization-utils/commit/03f04211dfd416363998bc81516ab74ef5ddd889))
+* add trace-id to problem-instance and details ([#445](https://github.com/Altinn/altinn-authorization-utils/issues/445)) ([8cf446b](https://github.com/Altinn/altinn-authorization-utils/commit/8cf446b012b82a2f39ddedb17e8ff93c12f1a293))
+* allow setting `detail` on problem/error instances ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* detect duplicate code usage when running in `DEBUG` ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* renamed `ValidationErrorBuilder` to `ValidationProblemBuilder` ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* set `title` instead of `detail` from descriptors ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* set `type` property on `ProblemDetails` ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+* set problem-details type based on error-code ([#482](https://github.com/Altinn/altinn-authorization-utils/issues/482)) ([4d3287c](https://github.com/Altinn/altinn-authorization-utils/commit/4d3287c2524c0143c47d1843142f00875d7a062a))
+
+
+### Bug Fixes
+
+* re-add .NET 8 support ([#496](https://github.com/Altinn/altinn-authorization-utils/issues/496)) ([e6e23e0](https://github.com/Altinn/altinn-authorization-utils/commit/e6e23e07797b6b0486bcd84a325f71b2439cfe6a))
+
 ## [4.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v4.0.0...Altinn.Authorization.ProblemDetails-v4.0.1) (2025-12-01)
 
 
