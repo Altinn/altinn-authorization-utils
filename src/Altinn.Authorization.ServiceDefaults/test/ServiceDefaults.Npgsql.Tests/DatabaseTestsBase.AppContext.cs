@@ -15,12 +15,23 @@ public abstract partial class DatabaseTestsBase
     {
         private readonly IHost _host;
         private readonly DatabaseContext _db;
+        private Activity _activity;
 
         public AppContext(
-            IHost host)
+            IHost host,
+            string dbName)
         {
             _host = host;
             _db = new(host);
+
+            _activity = _host.Services.GetRequiredKeyedService<ActivitySource>(serviceKey: dbName)
+                .CreateActivity(TestContext.Current.Test?.TestDisplayName ?? dbName, ActivityKind.Internal)!;
+        }
+
+        public void Start()
+        {
+            Activity.Current = null;
+            _activity?.Start();
         }
 
         public DatabaseContext Database => _db;
@@ -30,6 +41,7 @@ public abstract partial class DatabaseTestsBase
 
         public async ValueTask DisposeAsync()
         {
+            _activity?.Dispose();
             await _host.StopAsync();
 
             if (_host is IAsyncDisposable h)
