@@ -105,14 +105,6 @@ public static class AltinnServiceDefaultsExtensions
             builder.AddAltinnConfiguration(serviceDescription, logger);
         }
 
-        // Note - this has to happen early due to a bug in Application Insights
-        // See: https://github.com/microsoft/ApplicationInsights-dotnet/issues/2879
-
-        if (options.EnabledServices.ApplicationInsights)
-        {
-            builder.AddApplicationInsights(logger);
-        }
-
         builder.Services.AddMetricsProvider();
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
         builder.Services.AddSingleton<HttpStandardResilienceTelemetry>();
@@ -144,7 +136,7 @@ public static class AltinnServiceDefaultsExtensions
 
         if (options.EnabledServices.OpenTelemetry)
         {
-            builder.ConfigureOpenTelemetry();
+            builder.ConfigureOpenTelemetry(options, logger);
         }
 
         if (options.EnabledServices.HealthCheck)
@@ -383,7 +375,7 @@ public static class AltinnServiceDefaultsExtensions
         return ThrowHelper.ThrowInvalidOperationException<bool>("Service of type AltinnServiceDescription registered without an instance");
     }
 
-    private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder, AltinnServiceDefaultOptions options, AltinnPreStartLogger logger)
     {
         builder.Services.AddOptions<AltinnTelemetryOptions>()
             .BindConfiguration("Altinn:Telemetry");
@@ -442,20 +434,25 @@ public static class AltinnServiceDefaultsExtensions
                 tracing.ConfigureServices(services => services.AddSingleton<ITailSampler, ErrorTailSampler>());
             });
 
-        builder.AddOpenTelemetryExporters();
+        builder.AddOpenTelemetryExporters(options, logger);
 
         return builder;
     }
 
-    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder, AltinnServiceDefaultOptions options, AltinnPreStartLogger logger)
     {
         var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
         if (useOtlpExporter)
         {
+            logger.Log("OTEL_EXPORTER_OTLP_ENDPOINT is set - using OTLP exporter for OpenTelemetry");
             builder.Services.ConfigureOpenTelemetryLoggerProvider(logging => logging.AddOtlpExporter());
             builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter());
             builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
+        }
+        else if (options.EnabledServices.ApplicationInsights)
+        {
+            builder.AddApplicationInsights(logger);
         }
 
         return builder;
