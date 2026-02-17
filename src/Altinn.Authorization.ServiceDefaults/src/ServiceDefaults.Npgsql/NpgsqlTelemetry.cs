@@ -33,22 +33,29 @@ public static class NpgsqlTelemetry
 
     /// <inheritdoc cref="Configure(Action{INpgsqlScopeTelemetryOptions})" path="/summary"/>
     /// <inheritdoc cref="Configure(Action{INpgsqlScopeTelemetryOptions})" path="/remarks"/>
+    /// <param name="summary">Optional summary to use for operations in this scope.</param>
     /// <param name="spanName">Optional span name to use for operations in this scope.</param>
     /// <param name="traceParameterNames">Optional additional parameter names to include in traces.</param>
     /// <param name="traceParameterTypes">Optional additional parameter types to include in traces.</param>
     /// <returns></returns>
     public static IDisposable? Configure(
+        string? summary = null,
         string? spanName = null,
         IEnumerable<string>? traceParameterNames = null,
         IEnumerable<Type>? traceParameterTypes = null)
     {
-        if (spanName is null && traceParameterNames is null && traceParameterTypes is null)
+        if (summary is null && spanName is null && traceParameterNames is null && traceParameterTypes is null)
         {
             return null;
         }
 
         return Configure(o =>
         {
+            if (summary is not null)
+            {
+                o.Summary = summary;
+            }
+
             if (spanName is not null)
             {
                 o.SpanName = spanName;

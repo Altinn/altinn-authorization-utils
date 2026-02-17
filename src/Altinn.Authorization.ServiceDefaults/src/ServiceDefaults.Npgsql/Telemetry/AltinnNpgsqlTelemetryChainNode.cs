@@ -3,21 +3,26 @@
 internal sealed class AltinnNpgsqlTelemetryChainNode
 {
     private readonly string? _spanName;
+    private readonly string? _summary;
     private readonly bool? _shouldTrace;
     private readonly Func<NpgsqlParameter, string, Type, NpgsqlTelemetryParameterFilterResult>? _parameterFilter;
 
     public AltinnNpgsqlTelemetryChainNode(
         AltinnNpgsqlTelemetryChainNode? parent,
         string? spanName,
+        string? summary,
         bool? shouldTrace,
         Func<NpgsqlParameter, string, Type, NpgsqlTelemetryParameterFilterResult>? parameterFilter)
     {
         _spanName = spanName;
+        _summary = summary;
         _shouldTrace = shouldTrace;
         _parameterFilter = CombineFilters(parameterFilter, parent?._parameterFilter);
     }
 
     public string? SpanName => _spanName;
+
+    public string? Summary => _summary;
 
     public bool? ShouldTrace => _shouldTrace;
 

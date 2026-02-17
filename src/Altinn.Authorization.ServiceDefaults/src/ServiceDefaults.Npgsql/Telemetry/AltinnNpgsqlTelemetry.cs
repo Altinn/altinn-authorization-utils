@@ -1,20 +1,27 @@
 ﻿using CommunityToolkit.Diagnostics;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NpgsqlTypes;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Diagnostics;
+using System.IO.Hashing;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
-internal sealed class AltinnNpgsqlTelemetry
+internal sealed partial class AltinnNpgsqlTelemetry
 {
-    private static readonly string RedactedPlaceholder = "REDACTED";
+    public static readonly string RedactedPlaceholder = "REDACTED";
     private static readonly AsyncLocal<AltinnNpgsqlTelemetryChainNode?> _chain = new();
     private static readonly ConcurrentDictionary<Type, Type> _typeMap = new();
 
-    internal static Builder CreateBuilder() => new();
+    internal static Builder CreateBuilder(ILogger<AltinnNpgsqlTelemetry> logger) => new(logger);
 
     private static AltinnNpgsqlTelemetryChainNode? Chain => _chain.Value;
 
@@ -35,13 +42,17 @@ internal sealed class AltinnNpgsqlTelemetry
         return new Scope(prev);
     }
 
+    private readonly QueryHasher _queryHasher;
     private readonly FrozenDictionary<string, NpgsqlTelemetryParameterFilterResult> _parameterByName;
     private readonly FrozenDictionary<Type, NpgsqlTelemetryParameterFilterResult> _parameterByType;
 
     public AltinnNpgsqlTelemetry(
         IReadOnlyDictionary<string, NpgsqlTelemetryParameterFilterResult> parameterByNameFilters,
-        IReadOnlyDictionary<Type, NpgsqlTelemetryParameterFilterResult> parameterByTypeFilters)
+        IReadOnlyDictionary<Type, NpgsqlTelemetryParameterFilterResult> parameterByTypeFilters,
+        ILogger<AltinnNpgsqlTelemetry> logger)
     {
+        _queryHasher = new QueryHasher(logger);
+
         _parameterByName = parameterByNameFilters.ToFrozenDictionary();
         _parameterByType = parameterByTypeFilters.ToFrozenDictionary();
 
@@ -77,13 +88,27 @@ internal sealed class AltinnNpgsqlTelemetry
 
     public void EnrichCommand(Activity activity, NpgsqlCommand command)
     {
-        var chain = Chain;
+        EnrichCommand(activity, command.CommandText, command.Parameters);
+    }
 
-        if (command.Parameters.Count > 0)
+    public void EnrichCommand(Activity activity, NpgsqlBatchCommand command)
+    {
+        EnrichCommand(activity, command.CommandText, command.Parameters);
+    }
+
+    private void EnrichCommand(Activity activity, string commandText, NpgsqlParameterCollection parameters)
+    {
+        RemoveUselessTags(activity);
+        UpdateStatement(activity, [commandText]);
+
+        var chain = Chain;
+        SetSummary(activity, chain);
+
+        if (parameters.Count > 0)
         {
-            foreach (NpgsqlParameter param in command.Parameters)
+            foreach (NpgsqlParameter param in parameters)
             {
-                var result = Filter(this, chain, param);
+                var result = FilterParameter(this, chain, param);
                 Debug.Assert(result != NpgsqlTelemetryParameterFilterResult.Default);
 
                 if (result == NpgsqlTelemetryParameterFilterResult.Ignore)
@@ -105,94 +130,155 @@ internal sealed class AltinnNpgsqlTelemetry
                 activity.SetTag($"db.query.parameters.{param.ParameterName}", value);
             }
         }
-
-        static NpgsqlTelemetryParameterFilterResult Filter(AltinnNpgsqlTelemetry telemetry, AltinnNpgsqlTelemetryChainNode? chain, NpgsqlParameter parameter)
-        {
-            var name = parameter.ParameterName;
-            var type = GetType(parameter);
-
-            type = _typeMap.GetOrAdd(type, UnwrapType);
-
-            var result = RunFilter(telemetry, chain, parameter, name, type);
-            if (result != NpgsqlTelemetryParameterFilterResult.Default)
-            {
-                return result;
-            }
-
-            return NpgsqlTelemetryParameterFilterResult.Ignore;
-        }
-
-        static Type GetType(NpgsqlParameter parameter)
-        {
-            var paramType = parameter.GetType();
-            if (paramType.IsConstructedGenericType && paramType.GetGenericTypeDefinition() == typeof(NpgsqlParameter<>)) 
-            {
-                var type = paramType.GetGenericArguments()[0];
-                if (type != typeof(object))
-                {
-                    return type;
-                }
-            }
-
-            return parameter.Value?.GetType() ?? typeof(object);
-        }
-
-        static Type UnwrapType(Type type)
-        {
-            Type original;
-
-            do
-            {
-                original = type;
-                if (Nullable.GetUnderlyingType(type) is { } underlyingType)
-                {
-                    type = underlyingType;
-                }
-
-                if (type.IsEnum)
-                {
-                    type = typeof(Enum);
-                }
-
-                if (type.IsSZArray)
-                {
-                    type = type.GetElementType()!;
-                }
-
-                if (type.IsConstructedGenericType)
-                {
-                    var genericDef = type.GetGenericTypeDefinition();
-                    if (genericDef == typeof(List<>)
-                        || genericDef == typeof(IList<>)
-                        || genericDef == typeof(IReadOnlyList<>)
-                        || genericDef == typeof(IEnumerable<>)
-                        || genericDef == typeof(ICollection<>)
-                        || genericDef == typeof(IReadOnlyCollection<>)
-                        || genericDef == typeof(Memory<>)
-                        || genericDef == typeof(ReadOnlyMemory<>))
-                    {
-                        type = type.GetGenericArguments()[0];
-                    }
-                }
-            }
-            while (type != original);
-
-            return type;
-        }
-
-        static NpgsqlTelemetryParameterFilterResult RunFilter(AltinnNpgsqlTelemetry telemetry, AltinnNpgsqlTelemetryChainNode? chain, NpgsqlParameter parameter, string name, Type type)
-        {
-            return chain?.FilterParameter(parameter, name, type) switch
-            {
-                null or NpgsqlTelemetryParameterFilterResult.Default => telemetry.DefaultFilterParameter(parameter, name, type),
-                { } result => result,
-            };
-        }
     }
 
     public void EnrichBatch(Activity activity, NpgsqlBatch batch)
     {
-        // No enrichment for batches at the moment, but this is where it would go if we wanted to add any.
+        var count = batch.BatchCommands.Count;
+        if (count == 1)
+        {
+            EnrichCommand(activity, batch.BatchCommands[0]);
+            return;
+        }
+
+        RemoveUselessTags(activity);
+        string[] queries = ArrayPool<string>.Shared.Rent(count);
+        try 
+        {
+            for (int i = 0; i < count; i++)
+            {
+                queries[i] = batch.BatchCommands[i].CommandText;
+            }
+
+            UpdateStatement(activity, queries.AsSpan(0, count));
+        }
+        finally
+        {
+            ArrayPool<string>.Shared.Return(queries, clearArray: true);
+        }
+
+        var chain = Chain;
+        SetSummary(activity, chain);
+    }
+
+    private static void RemoveUselessTags(Activity activity)
+    {
+        // Npgsql adds a lot of tags by default, but many of them are not useful for us and just add noise to our telemetry.
+        // We remove them here to keep our telemetry clean and focused on what we care about.
+        activity.SetTag("db.connection_id", null);
+        activity.SetTag("db.connection_string", null);
+        activity.SetTag("db.name", null);
+        activity.SetTag("db.user", null);
+        activity.SetTag("net.peer.ip", null);
+        activity.SetTag("net.peer.name", null);
+        activity.SetTag("net.peer.port", null);
+        activity.SetTag("net.transport", null);
+    }
+
+    private void UpdateStatement(Activity activity, ReadOnlySpan<string> queries)
+    {
+        activity.SetTag("db.statement", null);
+
+        //activity.SetTag("db.query.hash", _queryHasher.Hash(query));
+        if (queries.Length == 1)
+        {
+            activity.SetTag("db.query.hash", _queryHasher.Hash(queries[0]));
+        }
+        else
+        {
+            activity.SetTag("db.query.hash", _queryHasher.Hash(queries));
+        }
+    }
+
+    private static void SetSummary(Activity activity, AltinnNpgsqlTelemetryChainNode? chain)
+    {
+        if (chain?.Summary is { } summary)
+        {
+            activity.SetTag("db.query.summary", summary);
+        }
+    }
+
+    private static NpgsqlTelemetryParameterFilterResult FilterParameter(AltinnNpgsqlTelemetry telemetry, AltinnNpgsqlTelemetryChainNode? chain, NpgsqlParameter parameter)
+    {
+        var name = parameter.ParameterName;
+        var type = GetParameterType(parameter);
+
+        type = _typeMap.GetOrAdd(type, UnwrapType);
+
+        var result = RunFilter(telemetry, chain, parameter, name, type);
+        if (result != NpgsqlTelemetryParameterFilterResult.Default)
+        {
+            return result;
+        }
+
+        return NpgsqlTelemetryParameterFilterResult.Ignore;
+    }
+
+    private static Type GetParameterType(NpgsqlParameter parameter)
+    {
+        var paramType = parameter.GetType();
+        if (paramType.IsConstructedGenericType && paramType.GetGenericTypeDefinition() == typeof(NpgsqlParameter<>))
+        {
+            var type = paramType.GetGenericArguments()[0];
+            if (type != typeof(object))
+            {
+                return type;
+            }
+        }
+
+        return parameter.Value?.GetType() ?? typeof(object);
+    }
+
+    private static Type UnwrapType(Type type)
+    {
+        Type original;
+
+        do
+        {
+            original = type;
+            if (Nullable.GetUnderlyingType(type) is { } underlyingType)
+            {
+                type = underlyingType;
+            }
+
+            if (type.IsEnum)
+            {
+                type = typeof(Enum);
+            }
+
+            if (type.IsSZArray)
+            {
+                type = type.GetElementType()!;
+            }
+
+            if (type.IsConstructedGenericType)
+            {
+                var genericDef = type.GetGenericTypeDefinition();
+                if (genericDef == typeof(List<>)
+                    || genericDef == typeof(IList<>)
+                    || genericDef == typeof(IReadOnlyList<>)
+                    || genericDef == typeof(IEnumerable<>)
+                    || genericDef == typeof(ICollection<>)
+                    || genericDef == typeof(IReadOnlyCollection<>)
+                    || genericDef == typeof(Memory<>)
+                    || genericDef == typeof(ReadOnlyMemory<>))
+                {
+                    type = type.GetGenericArguments()[0];
+                }
+            }
+        }
+        while (type != original);
+
+        return type;
+    }
+
+    private static NpgsqlTelemetryParameterFilterResult RunFilter(AltinnNpgsqlTelemetry telemetry, AltinnNpgsqlTelemetryChainNode? chain, NpgsqlParameter parameter, string name, Type type)
+    {
+        return chain?.FilterParameter(parameter, name, type) switch
+        {
+            null or NpgsqlTelemetryParameterFilterResult.Default => telemetry.DefaultFilterParameter(parameter, name, type),
+            { } result => result,
+        };
     }
 
     internal NpgsqlTelemetryParameterFilterResult DefaultFilterParameter(NpgsqlParameter parameter, string name, Type type)
@@ -210,7 +296,7 @@ internal sealed class AltinnNpgsqlTelemetry
         return NpgsqlTelemetryParameterFilterResult.Default;
     }
 
-    internal sealed class Builder
+    internal sealed class Builder(ILogger<AltinnNpgsqlTelemetry> logger)
         : INpgsqlTelemetryOptions
     {
         private readonly Dictionary<string, NpgsqlTelemetryParameterFilterResult> _parameterByNameFilters = new();
@@ -249,7 +335,14 @@ internal sealed class AltinnNpgsqlTelemetry
         }
 
         public AltinnNpgsqlTelemetry Build()
-            => new(_parameterByNameFilters, _parameterByTypeFilters);
+            => new(_parameterByNameFilters, _parameterByTypeFilters, logger);
+    }
+
+    internal sealed class OptionsFactory(ILogger<AltinnNpgsqlTelemetry> logger)
+        : IOptionsFactory<INpgsqlTelemetryOptions>
+    {
+        public INpgsqlTelemetryOptions Create(string name)
+            => CreateBuilder(logger);
     }
 
     private sealed class Scope(AltinnNpgsqlTelemetryChainNode? previous)
@@ -264,5 +357,74 @@ internal sealed class AltinnNpgsqlTelemetry
                 _chain.Value = previous;
             }
         }
+    }
+
+    internal sealed class QueryHasher
+    {
+        [ThreadStatic]
+        private static StringBuilder? _sb;
+
+        private readonly HashSet<int> _seen = new();
+        private readonly Lock _lock = new();
+        private readonly ILogger _logger;
+
+        public QueryHasher(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        public string Hash(string query)
+        {
+            var (hash, hashString) = ComputeHashAndString(query);
+
+            bool isNew;
+            lock (_lock)
+            {
+                isNew = _seen.Add(hash.GetHashCode());
+            }
+
+            if (isNew)
+            {
+                Log.NewQueryHash(_logger, hashString, query);
+            }
+
+            return hashString;
+        }
+
+        public string Hash(ReadOnlySpan<string> queries)
+        {
+            var sb = (_sb ??= new(queries.Length * 17)).Clear();
+            sb.EnsureCapacity(queries.Length * 17);
+
+            foreach (var query in queries)
+            {
+                sb.Append(Hash(query)).Append(',');
+            }
+
+            sb.Length--; // Remove trailing comma
+            return sb.ToString();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static (ulong Hash, string HexString) ComputeHashAndString(ReadOnlySpan<char> query)
+        {
+            var hash = ComputeHash(query);
+            var hashString = HashToString(hash);
+            return (hash, hashString);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static ulong ComputeHash(ReadOnlySpan<char> query)
+                => XxHash64.HashToUInt64(MemoryMarshal.AsBytes(query));
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static string HashToString(ulong hash)
+                => string.Create(16, hash, static (span, value) => Hex.Format(value, span));
+        }
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(0, LogLevel.Information, "Encountered new query hash {Hash} for query: {Query}")]
+        public static partial void NewQueryHash(ILogger logger, string hash, string query);
     }
 }

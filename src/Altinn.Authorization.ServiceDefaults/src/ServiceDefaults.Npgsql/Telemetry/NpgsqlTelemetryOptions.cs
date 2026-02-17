@@ -4,6 +4,7 @@ internal sealed class NpgsqlTelemetryOptions
     : INpgsqlScopeTelemetryOptions
 {
     private readonly AltinnNpgsqlTelemetryChainNode? _parent;
+    private string? _summary;
     private string? _spanName;
     private bool? _shouldTrace;
     private Dictionary<string, NpgsqlTelemetryParameterFilterResult>? _parameterByName;
@@ -12,6 +13,12 @@ internal sealed class NpgsqlTelemetryOptions
     internal NpgsqlTelemetryOptions(AltinnNpgsqlTelemetryChainNode? parent)
     {
         _parent = parent;
+    }
+
+    public string? Summary
+    {
+        get => _summary ?? _parent?.Summary;
+        set => _summary = value;
     }
 
     public string? SpanName
@@ -40,7 +47,7 @@ internal sealed class NpgsqlTelemetryOptions
 
     internal AltinnNpgsqlTelemetryChainNode? ToNode()
     {
-        if (_spanName is null && _shouldTrace is null && _parameterByName is null && _parameterByType is null)
+        if (_summary is null && _spanName is null && _shouldTrace is null && _parameterByName is null && _parameterByType is null)
         {
             return null;
         }
@@ -70,6 +77,7 @@ internal sealed class NpgsqlTelemetryOptions
 
         return new AltinnNpgsqlTelemetryChainNode(
             parent: _parent,
+            summary: _summary,
             spanName: _spanName,
             shouldTrace: _shouldTrace,
             parameterFilter: _parameterFilter);

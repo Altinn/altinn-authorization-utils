@@ -15,7 +15,7 @@ public class TestSeedTests(DbFixture fixture)
             ]);
 
         var result = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
-        result.Should().Be(2);
+        result.ShouldBe(2);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class TestSeedTests(DbFixture fixture)
             ]);
 
         var result = await ctx.Database.ExecuteScalar<long>(/*strpsql*/"SELECT MAX(id) FROM app.test");
-        result.Should().Be(1);
+        result.ShouldBe(1);
     }
 
     [Fact]
@@ -51,12 +51,12 @@ public class TestSeedTests(DbFixture fixture)
         await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
-        while (await result.ReadAsync())
+        while (await result.ReadAsync(TestContext.Current.CancellationToken))
         {
             items.Add(result.GetString(0));
         }
 
-        items.Should().BeEquivalentTo(["prepare", "01-normal", "02-normal", "finalize"]);
+        items.ShouldBe(["prepare", "01-normal", "02-normal", "finalize"]);
     }
 
     [Fact]
@@ -77,12 +77,12 @@ public class TestSeedTests(DbFixture fixture)
         await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
-        while (await result.ReadAsync())
+        while (await result.ReadAsync(TestContext.Current.CancellationToken))
         {
             items.Add(result.GetString(0));
         }
 
-        items.Should().BeEmpty();
+        items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -100,12 +100,12 @@ public class TestSeedTests(DbFixture fixture)
         await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
-        while (await result.ReadAsync())
+        while (await result.ReadAsync(TestContext.Current.CancellationToken))
         {
             items.Add(result.GetString(0));
         }
 
-        items.Should().BeEquivalentTo(["value"]);
+        items.ShouldBe(["value"]);
     }
 
     [Fact]
@@ -131,11 +131,11 @@ public class TestSeedTests(DbFixture fixture)
         await using var result = await ctx.Database.ExecuteReader(/*strpsql*/"SELECT value FROM app.test ORDER BY id");
         var items = new List<string>();
 
-        while (await result.ReadAsync())
+        while (await result.ReadAsync(TestContext.Current.CancellationToken))
         {
             items.Add(result.GetString(0));
         }
 
-        items.Should().BeEquivalentTo(["01-normal", "02-asdn-v1", "03-asdn-v1", "04-asdn-v1", "02-normal"]);
+        items.ShouldBe(["01-normal", "02-asdn-v1", "03-asdn-v1", "04-asdn-v1", "02-normal"]);
     }
 }

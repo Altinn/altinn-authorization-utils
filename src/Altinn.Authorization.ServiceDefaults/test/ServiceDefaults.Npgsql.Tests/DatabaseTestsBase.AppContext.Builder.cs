@@ -1,10 +1,13 @@
 ﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
 using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
+using Altinn.Authorization.TestUtils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
+using OpenTelemetry.Trace;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -151,6 +154,10 @@ public abstract partial class DatabaseTestsBase
 
         hostAppBuilder.AddAltinnServiceDefaults("test");
         var dbBuilder = hostAppBuilder.AddAltinnPostgresDataSource();
+
+        var activities = new ActivityCollector();
+        hostAppBuilder.Services.AddSingleton(activities);
+        hostAppBuilder.Services.ConfigureOpenTelemetryTracerProvider(opts => opts.AddInMemoryExporter(activities));
 
         return new(hostAppBuilder, dbBuilder);
     }

@@ -7,6 +7,11 @@ public interface INpgsqlScopeTelemetryOptions
     : INpgsqlTelemetryOptions
 {
     /// <summary>
+    /// Gets or sets the summary to use for Npgsql operations that occur within this scope.
+    /// </summary>
+    public string? Summary { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the span to use for Npgsql operations that occur within this scope.
     /// </summary>
     public string? SpanName { get; set; }
