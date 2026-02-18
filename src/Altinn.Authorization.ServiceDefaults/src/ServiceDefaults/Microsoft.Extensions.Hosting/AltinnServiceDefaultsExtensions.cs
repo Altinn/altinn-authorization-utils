@@ -399,13 +399,6 @@ public static class AltinnServiceDefaultsExtensions
             })
             .WithTracing(tracing =>
             {
-                tracing.SetSampler(services =>
-                {
-                    var config = services.GetRequiredService<IOptions<AltinnTelemetryOptions>>();
-
-                    return config.Value.Sampling.ToSampler();
-                });
-
                 tracing.AddAspNetCoreInstrumentation(o =>
                 {
                     o.Filter = (httpContext) =>
@@ -435,6 +428,16 @@ public static class AltinnServiceDefaultsExtensions
             });
 
         builder.AddOpenTelemetryExporters(options, logger);
+        builder.Services.ConfigureOpenTelemetryTracerProvider(tracing =>
+        {
+            // Note: this has to go *after* adding azure monitor, becuase it overwrites the sampler
+            tracing.SetSampler(services =>
+            {
+                var config = services.GetRequiredService<IOptions<AltinnTelemetryOptions>>();
+
+                return config.Value.Sampling.ToSampler();
+            });
+        });
 
         return builder;
     }

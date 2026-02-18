@@ -171,10 +171,14 @@ internal sealed partial class AltinnNpgsqlTelemetry
         activity.SetTag("db.connection_string", null);
         activity.SetTag("db.name", null);
         activity.SetTag("db.user", null);
+        activity.SetTag("db.npgsql.data_source", null);
+        activity.SetTag("db.npgsql.connection_id", null);
         activity.SetTag("net.peer.ip", null);
         activity.SetTag("net.peer.name", null);
         activity.SetTag("net.peer.port", null);
         activity.SetTag("net.transport", null);
+        activity.SetTag("server.address", null);
+        activity.SetTag("server.port", null);
 
         // we rename to newer spec tags
         activity.SetTag("db.system.name", "postgres");
@@ -185,6 +189,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
     {
         Debug.Assert(queries.Length > 0);
         activity.SetTag("db.statement", null);
+        activity.SetTag("db.query.text", null);
 
         if (queries.Length == 1)
         {
@@ -377,9 +382,6 @@ internal sealed partial class AltinnNpgsqlTelemetry
 
     internal sealed class QueryHasher
     {
-        [ThreadStatic]
-        private static StringBuilder? _sb;
-
         private readonly HashSet<int> _seen = new();
         private readonly Lock _lock = new();
         private readonly ILogger _logger;
@@ -407,18 +409,17 @@ internal sealed partial class AltinnNpgsqlTelemetry
             return hashString;
         }
 
-        public string Hash(ReadOnlySpan<string> queries)
+        public string[] Hash(ReadOnlySpan<string> queries)
         {
-            var sb = (_sb ??= new(queries.Length * 17)).Clear();
-            sb.EnsureCapacity(queries.Length * 17);
+            Debug.Assert(queries.Length > 1);
 
-            foreach (var query in queries)
+            var hashes = new string[queries.Length];
+            for (int i = 0; i < queries.Length; i++)
             {
-                sb.Append(Hash(query)).Append(',');
+                hashes[i] = Hash(queries[i]);
             }
 
-            sb.Length--; // Remove trailing comma
-            return sb.ToString();
+            return hashes;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

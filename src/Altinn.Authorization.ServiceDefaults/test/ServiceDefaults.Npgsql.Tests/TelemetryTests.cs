@@ -121,8 +121,11 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.statement").ShouldBeNull();
         activity.GetTagItem("db.query.text").ShouldBeNull();
         activity.GetTagItem("db.query.summary").ShouldBeNull();
-        activity.GetTagItem("db.query.hash").ShouldBe(
-            $"{AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString},{AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 3").HexString}");
+        activity.GetTagItem("db.query.hash").ShouldBe(new string[] 
+        {
+            AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString,
+            AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 3").HexString,
+        });
         activity.DisplayName.ShouldBe("batch count=2");
     }
 
