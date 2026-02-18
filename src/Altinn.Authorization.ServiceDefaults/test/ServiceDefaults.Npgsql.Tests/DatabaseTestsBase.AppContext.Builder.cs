@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
+﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
 using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 using Altinn.Authorization.TestUtils;
@@ -184,6 +185,13 @@ public abstract partial class DatabaseTestsBase
             public Builder ConfigureNpgsql(Action<NpgsqlDataSourceBuilder> configure)
             {
                 _dbBuilder.Configure(configure);
+
+                return this;
+            }
+
+            public Builder ConfigureNpgsqlTelemetry(Action<INpgsqlDataSourceTelemetryOptions> configure)
+            {
+                _hostBuilder.Services.Configure(configure);
 
                 return this;
             }

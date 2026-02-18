@@ -5,13 +5,13 @@ using NpgsqlTypes;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO.Hashing;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
@@ -45,16 +45,19 @@ internal sealed partial class AltinnNpgsqlTelemetry
     private readonly QueryHasher _queryHasher;
     private readonly FrozenDictionary<string, NpgsqlTelemetryParameterFilterResult> _parameterByName;
     private readonly FrozenDictionary<Type, NpgsqlTelemetryParameterFilterResult> _parameterByType;
+    private readonly Func<string, bool> _excludeQuery;
 
     public AltinnNpgsqlTelemetry(
         IReadOnlyDictionary<string, NpgsqlTelemetryParameterFilterResult> parameterByNameFilters,
         IReadOnlyDictionary<Type, NpgsqlTelemetryParameterFilterResult> parameterByTypeFilters,
+        Func<string, bool> excludeQuery,
         ILogger<AltinnNpgsqlTelemetry> logger)
     {
         _queryHasher = new QueryHasher(logger);
 
         _parameterByName = parameterByNameFilters.ToFrozenDictionary();
         _parameterByType = parameterByTypeFilters.ToFrozenDictionary();
+        _excludeQuery = excludeQuery;
 
         if (_parameterByName.Values.Any(static result => result == NpgsqlTelemetryParameterFilterResult.Default))
         {
@@ -75,7 +78,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
 
     public bool ShouldTraceCommand(NpgsqlCommand command)
     {
-        if (string.Equals(command.CommandText, NpgsqlConsts.HealthCheckCommandText, StringComparison.Ordinal))
+        if (_excludeQuery(command.CommandText))
         {
             return false;
         }
@@ -84,7 +87,18 @@ internal sealed partial class AltinnNpgsqlTelemetry
     }
 
     public bool ShouldTraceBatch(NpgsqlBatch batch)
-        => Chain?.ShouldTrace ?? true;
+    {
+        foreach (var command in batch.BatchCommands)
+        {
+            // if any of the commands are not excluded, we trace the batch as a whole
+            if (!_excludeQuery(command.CommandText))
+            {
+                return Chain?.ShouldTrace ?? true;
+            }
+        }
+
+        return false;
+    }
 
     public void EnrichCommand(Activity activity, NpgsqlCommand command)
     {
@@ -318,7 +332,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
     }
 
     internal sealed class Builder(ILogger<AltinnNpgsqlTelemetry> logger)
-        : INpgsqlTelemetryOptions
+        : INpgsqlDataSourceTelemetryOptions
     {
         private readonly Dictionary<string, NpgsqlTelemetryParameterFilterResult> _parameterByNameFilters = new();
         private readonly Dictionary<Type, NpgsqlTelemetryParameterFilterResult> _parameterByTypeFilters = new()
@@ -327,7 +341,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
             { typeof(int), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(long), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(short), NpgsqlTelemetryParameterFilterResult.Include },
-            { typeof(byte), NpgsqlTelemetryParameterFilterResult.Include },
+            { typeof(byte), NpgsqlTelemetryParameterFilterResult.Ignore }, // this is typically a byte-array, which we don't want to include
             { typeof(sbyte), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(bool), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(decimal), NpgsqlTelemetryParameterFilterResult.Include },
@@ -339,11 +353,20 @@ internal sealed partial class AltinnNpgsqlTelemetry
             { typeof(TimeOnly), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(TimeSpan), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(Enum), NpgsqlTelemetryParameterFilterResult.Include },
-            { typeof(string), NpgsqlTelemetryParameterFilterResult.RedactValue },
-            { typeof(NpgsqlCidr), NpgsqlTelemetryParameterFilterResult.RedactValue },
-            { typeof(IPAddress), NpgsqlTelemetryParameterFilterResult.RedactValue },
-            { typeof(PhysicalAddress), NpgsqlTelemetryParameterFilterResult.RedactValue },
+            { typeof(string), NpgsqlTelemetryParameterFilterResult.Ignore },
+            { typeof(NpgsqlCidr), NpgsqlTelemetryParameterFilterResult.Ignore },
+            { typeof(IPAddress), NpgsqlTelemetryParameterFilterResult.Ignore },
+            { typeof(PhysicalAddress), NpgsqlTelemetryParameterFilterResult.Ignore },
         };
+
+        private readonly HashSet<string> _excludedQueries = [
+            NpgsqlConsts.HealthCheckCommandText,
+
+            // well known queries used internally by Npgsql
+            "select pg_is_in_recovery()",
+            "SHOW default_transaction_read_only",
+        ];
+        private readonly List<Func<string, bool>> _excludeQueryDelegates = new(8);
 
         public void SetParameterFilter(string parameterName, NpgsqlTelemetryParameterFilterResult filterResult)
         {
@@ -355,14 +378,59 @@ internal sealed partial class AltinnNpgsqlTelemetry
             _parameterByTypeFilters[parameterType] = filterResult;
         }
 
+        public void ExcludeQuery(string query)
+        {
+            _excludedQueries.Add(query);
+        }
+
+        public void ExcludeQuery(Func<string, bool> excludePredicate)
+        {
+            _excludeQueryDelegates.Add(excludePredicate);
+        }
+
         public AltinnNpgsqlTelemetry Build()
-            => new(_parameterByNameFilters, _parameterByTypeFilters, logger);
+        {
+            var searchValues = SearchValues.Create([.. _excludedQueries], StringComparison.Ordinal);
+            _excludeQueryDelegates.Add(CreateExcludeBySearchValueDelegate(searchValues));
+
+            return new(_parameterByNameFilters, _parameterByTypeFilters, CreateExcludeQueryDelegate([.. _excludeQueryDelegates]), logger);
+
+            static Func<string, bool> CreateExcludeBySearchValueDelegate(SearchValues<string> searchValues)
+                => searchValues.Contains;
+
+            static Func<string, bool> CreateExcludeQueryDelegate(ImmutableArray<Func<string, bool>> exludeDelegates) 
+            {
+                Debug.Assert(!exludeDelegates.IsDefaultOrEmpty);
+
+                if (exludeDelegates.Length == 1)
+                {
+                    return exludeDelegates[0];
+                }
+
+                return query =>
+                {
+                    foreach (var excludeDelegate in exludeDelegates)
+                    {
+                        if (excludeDelegate(query))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                };
+            }
+        }
     }
 
-    internal sealed class OptionsFactory(ILogger<AltinnNpgsqlTelemetry> logger)
-        : IOptionsFactory<INpgsqlTelemetryOptions>
+    internal sealed class OptionsFactory(
+        ILogger<AltinnNpgsqlTelemetry> logger,
+        IEnumerable<IConfigureOptions<INpgsqlDataSourceTelemetryOptions>> setups,
+        IEnumerable<IPostConfigureOptions<INpgsqlDataSourceTelemetryOptions>> postConfigures,
+        IEnumerable<IValidateOptions<INpgsqlDataSourceTelemetryOptions>> validations)
+        : OptionsFactory<INpgsqlDataSourceTelemetryOptions>(setups, postConfigures, validations)
     {
-        public INpgsqlTelemetryOptions Create(string name)
+        protected override INpgsqlDataSourceTelemetryOptions CreateInstance(string name)
             => CreateBuilder(logger);
     }
 
