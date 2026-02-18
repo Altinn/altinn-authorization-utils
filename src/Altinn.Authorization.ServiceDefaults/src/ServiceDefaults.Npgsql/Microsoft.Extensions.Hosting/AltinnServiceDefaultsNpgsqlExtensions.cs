@@ -105,14 +105,14 @@ public static class AltinnServiceDefaultsNpgsqlExtensions
     {
         services.AddSingleton(s =>
         {
-            var options = s.GetRequiredService<IOptions<INpgsqlTelemetryOptions>>();
+            var options = s.GetRequiredService<IOptions<INpgsqlDataSourceTelemetryOptions>>();
             var value = options.Value;
 
             Debug.Assert(value is AltinnNpgsqlTelemetry.Builder);
             return ((AltinnNpgsqlTelemetry.Builder)value).Build();
         });
 
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsFactory<INpgsqlTelemetryOptions>, AltinnNpgsqlTelemetry.OptionsFactory>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsFactory<INpgsqlDataSourceTelemetryOptions>, AltinnNpgsqlTelemetry.OptionsFactory>());
         return services.AddOptions<INpgsqlTelemetryOptions>();
     }
 

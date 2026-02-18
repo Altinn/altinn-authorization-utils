@@ -40,6 +40,79 @@ public class TelemetryTests(DbFixture fixture)
     }
 
     [Fact]
+    public async Task Telemetry_Batch_Only_HealthCheckCommand_IsNotTraced()
+    {
+        await using var ctx = await CreateBuilder();
+
+        {
+            await using var batch = ctx.Database.DataSource.CreateBatch();
+            batch.CreateBatchCommand("SELECT 1");
+            batch.CreateBatchCommand("SELECT 1");
+            await using var reader = await batch.ExecuteReaderAsync(TestContext.Current.CancellationToken);
+            await Drain(reader);
+        }
+
+        var activities = ctx.Activities;
+        activities.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task Telemetry_Batch_Some_HealthCheckCommand_IsTraced()
+    {
+        await using var ctx = await CreateBuilder();
+
+        {
+            await using var batch = ctx.Database.DataSource.CreateBatch();
+            batch.CreateBatchCommand("SELECT 1");
+            batch.CreateBatchCommand("SELECT 2");
+            await using var reader = await batch.ExecuteReaderAsync(TestContext.Current.CancellationToken);
+            await Drain(reader);
+        }
+
+        var activities = ctx.Activities;
+        activities.ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public async Task Telemetry_CommandsCanBeExcluded()
+    {
+        await using var ctx = await CreateBuilder()
+            .ConfigureNpgsqlTelemetry(o =>
+            {
+                o.ExcludeQuery("SELECT 2");
+            });
+
+        await ctx.Database.ExecuteScalar<int>("SELECT 1");  // health-check is still disabled
+        await ctx.Database.ExecuteScalar<int>("SELECT 2");
+        await ctx.Database.ExecuteScalar<int>("SELECT 22"); // should be included
+
+        var activities = ctx.Activities;
+        var activity = activities.ShouldHaveSingleItem();
+
+        activity.DisplayName.ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 22").HexString);
+    }
+
+    [Fact]
+    public async Task Telemetry_CommandsCanBeExcludedByDelegate()
+    {
+        await using var ctx = await CreateBuilder()
+            .ConfigureNpgsqlTelemetry(o =>
+            {
+                o.ExcludeQuery(static q => q.EndsWith('2'));
+            });
+
+        await ctx.Database.ExecuteScalar<int>("SELECT 1");  // health-check is still disabled
+        await ctx.Database.ExecuteScalar<int>("SELECT 2");  // ends with 2
+        await ctx.Database.ExecuteScalar<int>("SELECT 22"); // also ends with 2
+        await ctx.Database.ExecuteScalar<int>("SELECT 11"); // should be included
+
+        var activities = ctx.Activities;
+        var activity = activities.ShouldHaveSingleItem();
+
+        activity.DisplayName.ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 11").HexString);
+    }
+
+    [Fact]
     public async Task Command_GetsCleanedAndEnriched()
     {
         await using var ctx = await CreateBuilder();
@@ -173,6 +246,7 @@ public class TelemetryTests(DbFixture fixture)
         var inDateTime = new DateTimeOffset(inDate, new TimeOnly(Random.Shared.Next(1, 20), Random.Shared.Next(1, 55)), TimeSpan.Zero);
         var inString = Guid.NewGuid().ToString();
 
+        using (NpgsqlTelemetry.Configure(o => o.SetParameterFilter(typeof(string), NpgsqlTelemetryParameterFilterResult.RedactValue)))
         {
             await using var reader = await ctx.Database.ExecuteReader(
                 /*strpsql*/"""
@@ -272,7 +346,7 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.query.parameters.date").ShouldBe(inDate);
         activity.GetTagItem("db.query.parameters.dateTime").ShouldBe(inDateTime);
         activity.GetTagItem("db.query.parameters.string1").ShouldBe(inString1);
-        activity.GetTagItem("db.query.parameters.string2").ShouldBe(AltinnNpgsqlTelemetry.RedactedPlaceholder);
+        activity.GetTagItem("db.query.parameters.string2").ShouldBe(null);
     }
 
     [Fact]
