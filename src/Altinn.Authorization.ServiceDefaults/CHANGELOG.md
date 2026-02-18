@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.2.2](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.1...Altinn.Authorization.ServiceDefaults-v5.2.2) (2026-02-18)
+
+
+### Bug Fixes
+
+* allow adding custom excluded queries to telemetry config ([#515](https://github.com/Altinn/altinn-authorization-utils/issues/515)) ([d1db6dc](https://github.com/Altinn/altinn-authorization-utils/commit/d1db6dcba7af8d74951f1ec19a7c04f078d40c6d))
+* azure monitor overrides sampler ([#514](https://github.com/Altinn/altinn-authorization-utils/issues/514)) ([dcc31d6](https://github.com/Altinn/altinn-authorization-utils/commit/dcc31d680a1180ececb94f365d46403812af7c03))
+* change default parameter inclusion mode to exclude instead of redact for certain types ([#515](https://github.com/Altinn/altinn-authorization-utils/issues/515)) ([d1db6dc](https://github.com/Altinn/altinn-authorization-utils/commit/d1db6dcba7af8d74951f1ec19a7c04f078d40c6d))
+* npgsql 10 support ([dcc31d6](https://github.com/Altinn/altinn-authorization-utils/commit/dcc31d680a1180ececb94f365d46403812af7c03))
+* npgsql telemetry configuration ([#515](https://github.com/Altinn/altinn-authorization-utils/issues/515)) ([d1db6dc](https://github.com/Altinn/altinn-authorization-utils/commit/d1db6dcba7af8d74951f1ec19a7c04f078d40c6d))
+
 ## [5.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.0...Altinn.Authorization.ServiceDefaults-v5.2.1) (2026-02-17)
 
 
