@@ -40,7 +40,7 @@
     <PackageVersion Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageVersion Include="Microsoft.ApplicationInsights" Version="2.23.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Routing" Version="2.3.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.4.0" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
     <PackageVersion Include="Microsoft.Build.Framework" Version="18.0.2" />
