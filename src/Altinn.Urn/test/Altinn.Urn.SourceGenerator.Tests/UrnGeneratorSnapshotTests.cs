@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.Tests;
 
@@ -343,6 +344,34 @@ public class UrnGeneratorSnapshotTests
     }
 
     [Fact]
+    public async Task Urn_Custom_Format_And_Parse()
+    {
+        var source = """
+            /// <summary>
+            /// Try to get the urn as a party uuid.
+            /// </summary>
+            /// <param name="packageId">The resulting party uuid.</param>
+            /// <returns><see langword="true"/> if this party reference is a party uuid, otherwise <see langword="false"/>.</returns>
+            [UrnKey("altinn:accesspackage", Canonical = true)]
+            public partial bool IsAccessPackage(out string packageId);
+
+            // Manually overridden to disallow negative party ids
+            private static bool TryParseAccessPackage(ReadOnlySpan<char> segment, IFormatProvider? provider, out string value)
+            {
+                value = new(segment);
+                return true;
+            }
+
+            private static string FormatAccessPackage(string value, string? format, IFormatProvider? provider)
+            {
+                return value;
+            }
+            """;
+
+        await TestKeyValueUrn(source);
+    }
+
+    [Fact]
     public async Task NestedTypes()
     {
         // The source code to test
@@ -363,6 +392,44 @@ public class UrnGeneratorSnapshotTests
                     [UrnKey("altinn:party:uuid")]
                     public partial bool IsPartyUuid(out Guid partyUuid);
                 }
+            }
+            """;
+
+        await SourceGeneratorUtils.VerifySourceGeneratorOutput(source, []);
+    }
+
+    [Fact]
+    public async Task ValueClass_Implements_IFormattable_And_IParsable_Only()
+    {
+        // The source code to test
+        var source = """
+            using Altinn.Urn;
+            using System;
+            
+            namespace MyNamespace;
+
+            public sealed record AccessPackageIdentifier(string Value)
+                : IFormattable
+                , IParsable<AccessPackageIdentifier>
+            {
+                public static AccessPackageIdentifier Parse(string s, IFormatProvider? provider)
+                    => new(s);
+
+                public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out AccessPackageIdentifier result)
+                {
+                    result = new(s);
+                    return true;
+                }
+
+                public string ToString(string? format, IFormatProvider? formatProvider)
+                    => Value;
+            }
+
+            [KeyValueUrn]
+            public abstract partial record AccessPackageUrn
+            {
+                [UrnKey("altinn:accesspackage", Canonical = true)]
+                public partial bool IsAccessPackage(out AccessPackageIdentifier packageId);
             }
             """;
 
