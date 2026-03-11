@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.3...Altinn.Authorization.ServiceDefaults-v5.2.4) (2026-03-11)
+
+
+### Bug Fixes
+
+* resource detector ordering ([#522](https://github.com/Altinn/altinn-authorization-utils/issues/522)) ([bde72f2](https://github.com/Altinn/altinn-authorization-utils/commit/bde72f28f255495787183a9e88967aaa32cc7334))
+
 ## [5.2.3](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.2...Altinn.Authorization.ServiceDefaults-v5.2.3) (2026-03-11)
 
 
