@@ -32,6 +32,7 @@ internal sealed partial class AltinnServiceResourceDetector
             DetectKubernetesAttributes(attributes, logger);
         }
 
+        Log.Attributes(logger, attributes);
         _resource = new Resource(attributes);
     }
 
@@ -83,9 +84,23 @@ internal sealed partial class AltinnServiceResourceDetector
         }
     }
 
+    internal static class TagProvider
+    {
+        public static void ProvideTags(ITagCollector list, IEnumerable<KeyValuePair<string, object>> param)
+        {
+            foreach (var kvp in param)
+            {
+                list.Add(kvp.Key, kvp.Value);
+            }
+        }
+    }
+
     private static partial class Log
     {
         [LoggerMessage(0, LogLevel.Warning, "Missing kubernetes environment variable: '{EnvironmentVariableName}'")]
         public static partial void MissingKubernetesEnvVar(ILogger logger, string environmentVariableName);
+
+        [LoggerMessage(1, LogLevel.Information, "Detected resource attributes: {Attributes}")]
+        public static partial void Attributes(ILogger logger, [TagProvider(typeof(TagProvider), providerMethod: nameof(TagProvider.ProvideTags))] IEnumerable<KeyValuePair<string, object>> attributes);
     }
 }
