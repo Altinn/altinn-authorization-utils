@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.4...Altinn.Authorization.ServiceDefaults-v5.2.5) (2026-03-11)
+
+
+### Bug Fixes
+
+* use unified pipeline for otel logging ([#524](https://github.com/Altinn/altinn-authorization-utils/issues/524)) ([c61fac1](https://github.com/Altinn/altinn-authorization-utils/commit/c61fac1bc95d591f1d3e3f7f4d42e5be059edec4))
+
 ## [5.2.4](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.3...Altinn.Authorization.ServiceDefaults-v5.2.4) (2026-03-11)
 
 
