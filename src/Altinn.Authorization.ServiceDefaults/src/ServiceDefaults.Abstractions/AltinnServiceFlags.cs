@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults;
+namespace Altinn.Authorization.ServiceDefaults;
 
 [Flags]
 internal enum AltinnServiceFlags

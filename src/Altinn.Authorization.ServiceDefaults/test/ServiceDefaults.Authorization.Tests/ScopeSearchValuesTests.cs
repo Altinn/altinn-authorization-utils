@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 

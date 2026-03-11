@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn.Tests;
+namespace Altinn.Urn.Tests;
 
 public class UrnEncodedTests
 {

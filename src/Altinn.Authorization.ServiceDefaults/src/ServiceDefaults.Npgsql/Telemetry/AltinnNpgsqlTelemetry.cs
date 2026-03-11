@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NpgsqlTypes;
@@ -159,7 +159,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
         RemoveUselessTags(activity);
         activity.SetTag("db.operation.batch.size", count);
         string[] queries = ArrayPool<string>.Shared.Rent(count);
-        try 
+        try
         {
             for (int i = 0; i < count; i++)
             {
@@ -398,7 +398,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
             static Func<string, bool> CreateExcludeBySearchValueDelegate(SearchValues<string> searchValues)
                 => searchValues.Contains;
 
-            static Func<string, bool> CreateExcludeQueryDelegate(ImmutableArray<Func<string, bool>> exludeDelegates) 
+            static Func<string, bool> CreateExcludeQueryDelegate(ImmutableArray<Func<string, bool>> exludeDelegates)
             {
                 Debug.Assert(!exludeDelegates.IsDefaultOrEmpty);
 

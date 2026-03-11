@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.AspNet;
+using Altinn.Authorization.ModelUtils.AspNet;
 using Altinn.Authorization.ModelUtils.Swashbuckle;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;

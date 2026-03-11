@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Security;
+using Altinn.Swashbuckle.Security;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics.CodeAnalysis;

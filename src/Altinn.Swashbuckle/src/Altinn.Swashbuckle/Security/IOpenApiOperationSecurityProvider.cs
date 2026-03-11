@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace Altinn.Swashbuckle.Security;
 

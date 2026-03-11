@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization;
+using Altinn.Authorization.ServiceDefaults.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Hosting;
@@ -60,7 +60,7 @@ internal static class TelemetryHelpers
 
                     continue;
                 }
-                
+
                 if (PartyID.Contains(claim.Type))
                 {
                     if (!hasPartyId && int.TryParse(claim.Value, out var partyId))
@@ -71,7 +71,7 @@ internal static class TelemetryHelpers
 
                     continue;
                 }
-                
+
                 if (UserId.Contains(claim.Type))
                 {
                     if (!hasUserId && int.TryParse(claim.Value, out var userId))
@@ -82,7 +82,7 @@ internal static class TelemetryHelpers
 
                     continue;
                 }
-                
+
                 if (OrgNumber.Contains(claim.Type))
                 {
                     if (!hasOrgNumber && int.TryParse(claim.Value, out var orgNumber))

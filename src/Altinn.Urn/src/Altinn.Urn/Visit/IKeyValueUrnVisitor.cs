@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn.Visit;
+namespace Altinn.Urn.Visit;
 
 /// <summary>
 /// A visitor for key-value URNs.
@@ -14,7 +14,7 @@ public interface IKeyValueUrnVisitor
     /// <param name="urn">The URN.</param>
     /// <param name="variant">The URN variant.</param>
     /// <param name="value">The URN value.</param>
-    public void Visit<TUrn, TVariants, TValue>(TUrn urn, TVariants variant, TValue value) 
+    public void Visit<TUrn, TVariants, TValue>(TUrn urn, TVariants variant, TValue value)
         where TUrn : IKeyValueUrn<TUrn, TVariants>
         where TVariants : struct, Enum;
 }

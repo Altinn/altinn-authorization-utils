@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.Json;
+using Altinn.Urn.Json;
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;

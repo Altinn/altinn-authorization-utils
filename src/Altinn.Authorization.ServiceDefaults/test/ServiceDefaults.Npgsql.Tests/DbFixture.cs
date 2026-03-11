@@ -1,4 +1,4 @@
-﻿using Testcontainers.PostgreSql;
+using Testcontainers.PostgreSql;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
@@ -14,7 +14,7 @@ public sealed class DbFixture
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
-        
+
         await _container.DisposeAsync();
     }
 
@@ -23,6 +23,6 @@ public sealed class DbFixture
         await _container.StartAsync();
     }
 
-    public string ConnectionString =>
-        _container.GetConnectionString();
+    public string ConnectionString
+        => _container.GetConnectionString();
 }

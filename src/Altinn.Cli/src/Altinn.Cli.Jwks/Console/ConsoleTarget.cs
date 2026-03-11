@@ -1,4 +1,4 @@
-﻿namespace Altinn.Cli.Jwks.Console;
+namespace Altinn.Cli.Jwks.Console;
 
 internal enum ConsoleTarget
 {

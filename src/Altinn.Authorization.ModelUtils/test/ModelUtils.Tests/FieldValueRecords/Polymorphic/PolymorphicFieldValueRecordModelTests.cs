@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 
 namespace Altinn.Authorization.ModelUtils.Tests.FieldValueRecords.Polymorphic;
 

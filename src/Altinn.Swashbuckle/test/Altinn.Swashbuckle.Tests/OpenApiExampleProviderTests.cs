@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Microsoft.AspNetCore.Http.Json;
 
 namespace Altinn.Swashbuckle.Tests;

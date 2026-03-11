@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Utils;
+using Altinn.Authorization.ServiceDefaults.Utils;
 using System.Net;
 
 namespace Altinn.Authorization.ServiceDefaults.Tests;

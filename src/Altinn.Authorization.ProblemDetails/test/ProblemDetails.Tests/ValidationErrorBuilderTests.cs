@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ProblemDetails.Tests;
+namespace Altinn.Authorization.ProblemDetails.Tests;
 
 public class ValidationErrorBuilderTests
     : CollectionTests<ValidationErrorInstance, ValidationProblemBuilder, CollectionBuilderEnumerator<ValidationErrorInstance>>

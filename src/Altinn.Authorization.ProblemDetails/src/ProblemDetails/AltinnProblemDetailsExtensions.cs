@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ProblemDetails;
@@ -428,8 +428,8 @@ public static class AltinnProblemDetailsExtensions
         var ret = new AltinnValidationError(descriptor)
         {
             Paths = [path],
-        }; 
-        
+        };
+
         foreach (var (key, value) in extensions)
         {
             ret.Extensions.Add(key, value);

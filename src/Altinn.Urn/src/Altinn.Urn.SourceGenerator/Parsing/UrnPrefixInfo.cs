@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.SourceGenerator.Utils;
+using Altinn.Urn.SourceGenerator.Utils;
 
 namespace Altinn.Urn.SourceGenerator.Parsing;
 

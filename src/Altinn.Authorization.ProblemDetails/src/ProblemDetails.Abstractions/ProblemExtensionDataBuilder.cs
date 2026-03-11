@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -29,7 +29,7 @@ public struct ProblemExtensionDataBuilder
             {
                 throw new KeyNotFoundException($"The given key '{key}' was not present in the collection.");
             }
-                
+
             return value;
         }
 
@@ -61,7 +61,7 @@ public struct ProblemExtensionDataBuilder
 
         var span = _extensions.Items;
         var builder = ImmutableArray.CreateBuilder<KeyValuePair<string, string>>(span.Length);
-        
+
         foreach (ref readonly var kvp in span)
         {
             builder.Add(new(kvp.Key, kvp.Value));

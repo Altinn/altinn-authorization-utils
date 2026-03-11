@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults;
@@ -35,7 +35,7 @@ public sealed record AltinnEnvironment
     {
         Guard.IsNotNullOrWhiteSpace(name);
 
-        return name.ToUpperInvariant() switch 
+        return name.ToUpperInvariant() switch
         {
             "LOCAL" => LocalAT22, // backward compatibility
             "LOCAL-AT21" => LocalAT21,

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Cli.Jwks;
 
@@ -8,7 +8,7 @@ internal enum JsonWebKeySetEnvironment
     /// Test keys available.
     /// </summary>
     Test = 1 << 0,
-    
+
     /// <summary>
     /// Production keys available.
     /// </summary>

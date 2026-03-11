@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Configuration;
+using Altinn.Swashbuckle.Configuration;
 using CommunityToolkit.Diagnostics;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -229,7 +229,7 @@ public sealed class ExampleDataOptions
         return options;
     }
 
-    private sealed class ProviderList 
+    private sealed class ProviderList
         : ConfigurationList<ExampleDataProvider>
     {
         private readonly ExampleDataOptions _options;
@@ -245,7 +245,7 @@ public sealed class ExampleDataOptions
         protected override void OnCollectionModifying() => _options.VerifyMutable();
     }
 
-    private sealed class OptionsBoundExampleDataProviderResolverChain 
+    private sealed class OptionsBoundExampleDataProviderResolverChain
         : ExampleDataProviderResolverChain
     {
         private readonly ExampleDataOptions _options;

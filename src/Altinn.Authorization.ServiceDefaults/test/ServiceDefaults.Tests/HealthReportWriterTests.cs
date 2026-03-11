@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HealthChecks;
+using Altinn.Authorization.ServiceDefaults.HealthChecks;
 using Altinn.Authorization.TestUtils.Shouldly;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -187,8 +187,8 @@ public class HealthReportWriterTests
     public async Task CanWritePlaintext()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
-        { 
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
+        {
             Format = HealthReportWriterSettings.HealthReportFormat.PlainText,
         }));
         var report = new HealthReport(new Dictionary<string, HealthReportEntry>
@@ -218,7 +218,7 @@ public class HealthReportWriterTests
     public async Task Report_SingleEntry_NoException_NoData_NoTags()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
         {
             Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
         }));
@@ -306,7 +306,7 @@ public class HealthReportWriterTests
     public async Task WriteHealthCheckReportWithExceptions_UsesExceptionForDescription()
     {
         // Arrange
-        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings 
+        var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
         {
             Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
             Exceptions = HealthReportWriterSettings.ExceptionHandling.Include,
@@ -358,7 +358,7 @@ public class HealthReportWriterTests
         var writer = new HealthReportWriter(ExtOptions.Create(new HealthReportWriterSettings
         {
             Format = HealthReportWriterSettings.HealthReportFormat.JsonV1,
-            Exceptions = HealthReportWriterSettings.ExceptionHandling.IncludeStackTrace 
+            Exceptions = HealthReportWriterSettings.ExceptionHandling.IncludeStackTrace
                 | HealthReportWriterSettings.ExceptionHandling.IncludeInnerException,
         }));
 

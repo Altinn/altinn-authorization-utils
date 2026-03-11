@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
+using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Seeding.FileBased;
 
@@ -29,7 +29,7 @@ public class QuerySplitterTests
             SELECT * FROM table2;
             """,
             [
-                "SELECT * FROM table1", 
+                "SELECT * FROM table1",
                 "SELECT * FROM table2"
             ]);
     }

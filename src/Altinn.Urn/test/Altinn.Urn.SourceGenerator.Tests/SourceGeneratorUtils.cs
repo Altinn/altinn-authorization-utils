@@ -1,9 +1,7 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.Loader;
 
 namespace Altinn.Urn.SourceGenerator.Tests;
 
@@ -32,7 +30,7 @@ public static class SourceGeneratorUtils
         await Verifier.Verify(driver);
 
         var result = driver.GetRunResult();
-        
+
         if (expectedDiagnostics.Length == 0)
         {
             result.Diagnostics.ShouldBeEmpty();

@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.XmlDoc;
+using Altinn.Swashbuckle.XmlDoc;
 
 namespace Altinn.Swashbuckle.Tests.XmlDoc;
 

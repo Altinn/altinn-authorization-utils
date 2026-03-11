@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using System.Buffers;

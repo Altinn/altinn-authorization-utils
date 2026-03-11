@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 using Altinn.Common.AccessTokenClient.Services;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection.Extensions;

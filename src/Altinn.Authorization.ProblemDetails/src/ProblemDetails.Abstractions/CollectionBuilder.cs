@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -34,13 +34,13 @@ internal struct CollectionBuilder<T>
     /// Initializes a new instance of the <see cref="CollectionBuilder{T}"/> structure using the specified <paramref name="items" />.
     /// </summary>
     /// <param name="items">A span of items to initialize the list with.</param>
-    public CollectionBuilder(params ReadOnlySpan<T> items) 
+    public CollectionBuilder(params ReadOnlySpan<T> items)
         : this()
     {
         _itemCount = items.Length;
 
-        scoped Span<T> data = _itemCount <= InlineItems.Length 
-            ? _inlineItems 
+        scoped Span<T> data = _itemCount <= InlineItems.Length
+            ? _inlineItems
             : _overflowItems = new T[_itemCount + OverflowAdditionalCapacity];
 
         items.CopyTo(data);
@@ -66,8 +66,8 @@ internal struct CollectionBuilder<T>
         {
             Guard.IsLessThan(index, _itemCount);
 
-            return _overflowItems is null 
-                ? _inlineItems[index] 
+            return _overflowItems is null
+                ? _inlineItems[index]
                 : _overflowItems[index];
         }
         set
@@ -159,7 +159,7 @@ internal struct CollectionBuilder<T>
     /// <summary>
     /// Removes all elements from the <see cref="CollectionBuilder{T}" />.
     /// </summary>
-    public void Clear() 
+    public void Clear()
         => _itemCount = 0;
 
     /// <summary>
@@ -185,7 +185,7 @@ internal struct CollectionBuilder<T>
             : _inlineItems;
 
         items = items[.._itemCount];
-        
+
         var index = items.IndexOf(item);
         if (index < 0)
         {
@@ -251,13 +251,13 @@ internal struct CollectionBuilder<T>
     [UnscopedRef]
     internal Span<T> AsSpanUnsafe()
         => _overflowItems is not null
-            ? _overflowItems.AsSpan(0, _itemCount) 
+            ? _overflowItems.AsSpan(0, _itemCount)
             : ((Span<T>)_inlineItems).Slice(0, _itemCount);
 
     [UnscopedRef]
     internal readonly ReadOnlySpan<T> Items
         => _overflowItems is not null
-        ? _overflowItems.AsSpan(0, _itemCount) 
+        ? _overflowItems.AsSpan(0, _itemCount)
         : ((ReadOnlySpan<T>)_inlineItems).Slice(0, _itemCount);
 
     [InlineArray(8)]

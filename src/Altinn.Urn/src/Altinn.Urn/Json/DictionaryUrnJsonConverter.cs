@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.Visit;
+using Altinn.Urn.Visit;
 using System.Buffers;
 using System.Collections.Immutable;
 using System.Diagnostics;

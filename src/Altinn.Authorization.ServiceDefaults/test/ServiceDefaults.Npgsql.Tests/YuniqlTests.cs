@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
 using Microsoft.Extensions.FileProviders;
 using Npgsql;
 

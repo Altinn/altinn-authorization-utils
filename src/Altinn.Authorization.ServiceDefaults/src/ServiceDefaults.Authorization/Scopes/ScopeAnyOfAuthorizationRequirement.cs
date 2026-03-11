@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
 /// <summary>
 /// Default implementation of <see cref="IScopeAnyOfAuthorizationRequirement"/>.

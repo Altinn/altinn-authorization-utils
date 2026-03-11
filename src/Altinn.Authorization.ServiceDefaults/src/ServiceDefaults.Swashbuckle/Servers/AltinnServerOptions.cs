@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Altinn.Authorization.ServiceDefaults.Swashbuckle.Servers;
 

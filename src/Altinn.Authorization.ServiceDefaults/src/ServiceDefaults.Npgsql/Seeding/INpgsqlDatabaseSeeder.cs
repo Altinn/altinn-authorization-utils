@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
 
 /// <summary>
 /// A service that seeds a PostgreSQL database.

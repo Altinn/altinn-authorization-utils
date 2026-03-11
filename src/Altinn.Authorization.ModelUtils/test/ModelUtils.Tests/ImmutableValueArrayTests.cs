@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
@@ -348,7 +348,7 @@ public class ImmutableValueArrayTests
         ImmutableValueArray<int> right = From(source);
 
         left.GetHashCode().ShouldBe(right.GetHashCode());
-        
+
         var comp = EqualityComparer<ImmutableValueArray<int>>.Default;
         comp.GetHashCode(left).ShouldBe(comp.GetHashCode(right));
     }

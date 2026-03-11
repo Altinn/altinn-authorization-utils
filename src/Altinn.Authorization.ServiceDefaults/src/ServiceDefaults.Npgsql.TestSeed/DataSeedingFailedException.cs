@@ -1,9 +1,9 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 
 /// <summary>
 /// An exception that is thrown when data seeding fails.
 /// </summary>
-internal class DataSeedingFailedException 
+internal class DataSeedingFailedException
     : InvalidOperationException
 {
     /// <summary>

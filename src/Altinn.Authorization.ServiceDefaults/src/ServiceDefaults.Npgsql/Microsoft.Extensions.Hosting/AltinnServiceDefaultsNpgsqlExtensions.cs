@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql;
+using Altinn.Authorization.ServiceDefaults.Npgsql;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 using CommunityToolkit.Diagnostics;

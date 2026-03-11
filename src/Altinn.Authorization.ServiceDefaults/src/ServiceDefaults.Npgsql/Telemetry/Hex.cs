@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
@@ -6,7 +6,7 @@ namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 internal static class Hex
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Format(uint value, Span<char> destination) 
+    public static void Format(uint value, Span<char> destination)
     {
         Debug.Assert(destination.Length >= 8);
 

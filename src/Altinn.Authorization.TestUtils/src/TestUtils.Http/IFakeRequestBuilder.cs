@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.TestUtils.Http;
+namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Combination of <see cref="IFilterFakeRequest"/> and <see cref="ISetFakeRequestHandler"/>.

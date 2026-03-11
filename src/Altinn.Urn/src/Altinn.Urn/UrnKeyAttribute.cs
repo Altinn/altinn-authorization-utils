@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn;
+namespace Altinn.Urn;
 
 /// <summary>
 /// Marker attribute used by the source generator to generate URN keys.

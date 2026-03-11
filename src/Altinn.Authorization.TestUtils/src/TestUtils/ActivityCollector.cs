@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
 
@@ -33,7 +33,7 @@ public sealed class ActivityCollector
     }
 
     /// <inheritdoc/>
-    public int Count 
+    public int Count
         => Volatile.Read(ref _activities).Count;
 
     /// <inheritdoc/>

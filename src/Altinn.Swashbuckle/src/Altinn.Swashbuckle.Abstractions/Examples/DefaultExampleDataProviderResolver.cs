@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples.Providers;
+using Altinn.Swashbuckle.Examples.Providers;
 using System.Collections.Immutable;
 using System.Diagnostics;
 

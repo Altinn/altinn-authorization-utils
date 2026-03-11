@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Telemetry;
+namespace Altinn.Authorization.ServiceDefaults.Telemetry;
 
 /// <summary>
 /// Defines a contract for obtaining strongly typed metrics objects.

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -26,8 +26,8 @@ public struct CollectionBuilderEnumerator<T>
     readonly object IEnumerator.Current => _builder[_index];
 
     /// <inheritdoc/>
-    public void Dispose() 
-    { 
+    public void Dispose()
+    {
         _index = _builder.Count;
     }
 
@@ -39,6 +39,6 @@ public struct CollectionBuilderEnumerator<T>
     }
 
     /// <inheritdoc/>
-    public void Reset() 
+    public void Reset()
         => _index = -1;
 }

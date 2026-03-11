@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.Sample.Api.Models;
+using Altinn.Urn.Sample.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 

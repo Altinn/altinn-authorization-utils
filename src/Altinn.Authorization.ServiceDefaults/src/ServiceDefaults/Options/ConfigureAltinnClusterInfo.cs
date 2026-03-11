@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Utils;
+using Altinn.Authorization.ServiceDefaults.Utils;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,7 +23,7 @@ internal partial class ConfigureAltinnClusterInfo
     public void Configure(AltinnClusterInfo options)
     {
         var hasTrustedProxies = ConfigureTrustedProxies(options);
-        
+
         if (!hasTrustedProxies)
         {
             ConfigureClusterNetwork(options);

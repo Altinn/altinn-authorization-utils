@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql;
 
@@ -72,7 +72,7 @@ public static class NpgsqlTelemetry
                     o.SetParameterFilter(name, NpgsqlTelemetryParameterFilterResult.Include);
                 }
             }
-            
+
             if (traceParameterTypes is not null)
             {
                 foreach (var type in traceParameterTypes)

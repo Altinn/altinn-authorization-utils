@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
@@ -21,7 +21,7 @@ public class FieldValueRecordController
     {
         return new Models.FieldValueRecords.Outer
         {
-            Inner = new Models.FieldValueRecords.Inner 
+            Inner = new Models.FieldValueRecords.Inner
             {
                 Value = "some value",
             },

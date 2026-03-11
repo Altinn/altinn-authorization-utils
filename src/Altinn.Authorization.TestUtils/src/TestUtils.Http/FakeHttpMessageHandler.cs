@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
 using System.Text;
 using Xunit.Sdk;

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient;
+using Altinn.Authorization.ServiceDefaults.HttpClient;
 
 namespace Altinn.Authorization.ServiceDefaults.Tests;
 

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Immutable;
@@ -463,7 +463,7 @@ public readonly struct ProblemExtensionData
         }
 
         /// <inheritdoc/>
-        public ValuesEnumerator GetEnumerator() 
+        public ValuesEnumerator GetEnumerator()
             => new(_key, _data._values.GetEnumerator());
 
         IEnumerator<string> IEnumerable<string>.GetEnumerator()
@@ -489,10 +489,10 @@ public readonly struct ProblemExtensionData
         }
 
         /// <inheritdoc/>
-        public string Current 
+        public string Current
             => _enumerator.Current.Value;
 
-        object IEnumerator.Current 
+        object IEnumerator.Current
             => Current;
 
         /// <inheritdoc/>

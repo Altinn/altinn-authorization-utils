@@ -1,7 +1,6 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 using Npgsql;
 using NpgsqlTypes;
-using System.Data;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
@@ -16,7 +15,7 @@ public class TelemetryTests(DbFixture fixture)
         using (NpgsqlTelemetry.DisableTracing())
         {
             await ctx.Database.ExecuteScalar<int>("SELECT 2");
-            
+
             await using var batch = ctx.Database.DataSource.CreateBatch();
             batch.CreateBatchCommand("SELECT 2");
             batch.CreateBatchCommand("SELECT 3");
@@ -194,7 +193,7 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.statement").ShouldBeNull();
         activity.GetTagItem("db.query.text").ShouldBeNull();
         activity.GetTagItem("db.query.summary").ShouldBeNull();
-        activity.GetTagItem("db.query.hash").ShouldBe(new string[] 
+        activity.GetTagItem("db.query.hash").ShouldBe(new string[]
         {
             AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 2").HexString,
             AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 3").HexString,
@@ -207,7 +206,7 @@ public class TelemetryTests(DbFixture fixture)
     {
         await using var ctx = await CreateBuilder();
 
-        using (NpgsqlTelemetry.Configure(summary: "test summary")) 
+        using (NpgsqlTelemetry.Configure(summary: "test summary"))
         {
             await ctx.Database.ExecuteNonQuery("SELECT 2");
         }

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
@@ -25,7 +25,7 @@ public class ApprovedIssuersCheckTests
     }
 
     [Theory]
-    [InlineData(new string[] {}, "any")]
+    [InlineData(new string[] { }, "any")]
     [InlineData(new string[] { "foo", "bar", "foobar" }, "foo")]
     [InlineData(new string[] { "foo", "bar", "foobar" }, "bar")]
     [InlineData(new string[] { "foo", "bar", "foobar" }, "foobar")]

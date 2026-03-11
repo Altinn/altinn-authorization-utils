@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 using Microsoft.Extensions.Configuration;
 
 namespace Altinn.Authorization.ServiceDefaults.Tests;

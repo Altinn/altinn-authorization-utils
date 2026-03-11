@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Swashbuckle.Security;
+using Altinn.Authorization.ServiceDefaults.Swashbuckle.Security;
 using Altinn.Authorization.ServiceDefaults.Swashbuckle.Servers;
 using Altinn.Swashbuckle.Security;
 using Microsoft.Extensions.DependencyInjection.Extensions;

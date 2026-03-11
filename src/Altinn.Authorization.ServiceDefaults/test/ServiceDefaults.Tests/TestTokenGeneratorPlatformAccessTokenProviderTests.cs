@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 using Altinn.Authorization.TestUtils.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Utils;
 using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
@@ -173,7 +173,7 @@ public abstract partial class DatabaseTestsBase
             private readonly string _dbName;
 
             public Builder(
-                HostApplicationBuilder hostBuilder, 
+                HostApplicationBuilder hostBuilder,
                 INpgsqlDatabaseBuilder dbBuilder,
                 string dbName)
             {
@@ -231,7 +231,7 @@ public abstract partial class DatabaseTestsBase
                 });
             }
 
-            public Builder AddYuniqlMigrations(object? serviceKey,IFileProvider fs)
+            public Builder AddYuniqlMigrations(object? serviceKey, IFileProvider fs)
             {
                 return AddYuniqlMigrations(serviceKey, opts =>
                 {

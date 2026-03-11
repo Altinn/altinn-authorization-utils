@@ -1,10 +1,10 @@
-﻿namespace Altinn.Authorization.ModelUtils.Tests.Utils;
+namespace Altinn.Authorization.ModelUtils.Tests.Utils;
 
 public sealed class NullServices
     : IServiceProvider
 {
     public static NullServices Instance { get; } = new();
-    
+
     private NullServices()
     {
     }

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Swashbuckle.Security;
+namespace Altinn.Swashbuckle.Security;
 
 /// <summary>
 /// Represents the context for OpenAPI security providers.

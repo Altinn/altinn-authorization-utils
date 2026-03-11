@@ -1,4 +1,4 @@
-﻿using Nerdbank.Streams;
+using Nerdbank.Streams;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;

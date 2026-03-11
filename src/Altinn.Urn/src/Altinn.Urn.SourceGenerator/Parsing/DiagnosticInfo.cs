@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.SourceGenerator.Utils;
+using Altinn.Urn.SourceGenerator.Utils;
 using Microsoft.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.Parsing;

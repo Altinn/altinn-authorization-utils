@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Security;
+using Altinn.Swashbuckle.Security;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -76,7 +76,7 @@ internal sealed class SwaggerAltinnOperationSecurityDescriptionFilter
             .Where(group => !group.IsDefaultOrEmpty);
 
         foreach (var group in scopeGroups)
-        { 
+        {
             first = false;
             builder.Append("- `").AppendJoin("`, `", group).Append('`').Append(newline);
         }

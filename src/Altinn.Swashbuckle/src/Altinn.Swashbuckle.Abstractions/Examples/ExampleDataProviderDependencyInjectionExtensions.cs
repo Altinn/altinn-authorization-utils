@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
@@ -39,9 +39,9 @@ public static class ExampleDataProviderDependencyInjectionExtensions
     private sealed class ExampleDataOptionsFactory : OptionsFactory<ExampleDataOptions>
     {
         public ExampleDataOptionsFactory(
-            IEnumerable<IConfigureOptions<ExampleDataOptions>> setups, 
-            IEnumerable<IPostConfigureOptions<ExampleDataOptions>> postConfigures, 
-            IEnumerable<IValidateOptions<ExampleDataOptions>> validations) 
+            IEnumerable<IConfigureOptions<ExampleDataOptions>> setups,
+            IEnumerable<IPostConfigureOptions<ExampleDataOptions>> postConfigures,
+            IEnumerable<IValidateOptions<ExampleDataOptions>> validations)
             : base(setups, postConfigures, validations)
         {
         }

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 using CommunityToolkit.Diagnostics;
 using System.Text.Json;
@@ -764,7 +764,7 @@ public class PartyModelTests
         var serialized = Json.SerializeToDocument(party);
         serialized.ShouldBeStructurallyEquivalentTo(json);
     }
-    
+
     [Fact]
     public void CustomPropertyNames()
     {

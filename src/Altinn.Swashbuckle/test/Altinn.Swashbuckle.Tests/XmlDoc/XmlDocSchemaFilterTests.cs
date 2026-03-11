@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Tests.Fixtures;
+using Altinn.Swashbuckle.Tests.Fixtures;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;

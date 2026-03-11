@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using System.Reflection;
 
 namespace Altinn.Authorization.TestUtils.AspNetCore;

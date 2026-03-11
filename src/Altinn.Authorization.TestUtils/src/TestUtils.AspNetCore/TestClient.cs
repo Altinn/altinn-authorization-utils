@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +14,7 @@ using System.Text.Encodings.Web;
 namespace Altinn.Authorization.TestUtils.AspNetCore;
 
 #if !NET9_0_OR_GREATER
-using Lock=System.Object;
+using Lock = System.Object;
 #endif
 
 /// <summary>
@@ -52,7 +52,7 @@ public class TestClient
             .ConfigureWebHost(builder =>
             {
                 builder.UseTestServer();
-                builder.Configure((ctx, app) => 
+                builder.Configure((ctx, app) =>
                 {
                     configureApplication?.Invoke(ctx, app);
                 });

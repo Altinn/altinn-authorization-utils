@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -15,7 +15,7 @@ internal sealed class XmlDocDocumentFilter
 {
     private readonly SwaggerGeneratorOptions? _options;
     private readonly IXmlDocProvider _documentationProvider;
-    
+
     public XmlDocDocumentFilter(IXmlDocProvider documentationProvider, SwaggerGeneratorOptions? options)
     {
         _options = options;

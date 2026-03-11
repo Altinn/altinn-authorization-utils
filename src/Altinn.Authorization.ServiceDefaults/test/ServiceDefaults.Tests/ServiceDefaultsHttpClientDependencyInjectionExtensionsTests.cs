@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -74,7 +74,7 @@ public class ServiceDefaultsHttpClientDependencyInjectionExtensionsTests
     public void TryAddPlatformAccessTokenProvider_AddsIfNoneRegistered()
     {
         var services = new ServiceCollection();
-        
+
         services.TryAddPlatformAccessTokenProvider<TestPlatformAccessTokenProvider>();
         services.Count.ShouldBe(1);
 
@@ -127,7 +127,7 @@ public class ServiceDefaultsHttpClientDependencyInjectionExtensionsTests
     {
         public ValueTask<string> GetPlatformAccessToken(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException(nameof(TestPlatformAccessTokenProvider2)); 
+            throw new NotImplementedException(nameof(TestPlatformAccessTokenProvider2));
         }
     }
 }

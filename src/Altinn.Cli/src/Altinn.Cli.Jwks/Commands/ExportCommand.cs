@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Console;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
@@ -42,7 +42,7 @@ internal class ExportCommand
             case SynchronousCommandLineAction syncAction:
                 syncAction.Invoke(result);
                 return 1;
-            
+
             case AsynchronousCommandLineAction asyncAction:
                 await asyncAction.InvokeAsync(result, cancellationToken);
                 return 1;

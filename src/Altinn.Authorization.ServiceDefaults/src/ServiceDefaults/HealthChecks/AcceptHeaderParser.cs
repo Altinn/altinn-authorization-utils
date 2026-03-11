@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
 using System.Diagnostics;

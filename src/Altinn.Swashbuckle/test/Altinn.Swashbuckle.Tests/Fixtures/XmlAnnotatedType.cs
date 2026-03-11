@@ -1,12 +1,3 @@
-﻿using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Writers;
-using System.Reflection;
-
 namespace Altinn.Swashbuckle.Tests.Fixtures;
 
 /// <summary>

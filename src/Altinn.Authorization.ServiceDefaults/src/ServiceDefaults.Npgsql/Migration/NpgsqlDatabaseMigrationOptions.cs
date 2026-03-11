@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 
 /// <summary>
 /// Common options for PostgreSQL database migrations.

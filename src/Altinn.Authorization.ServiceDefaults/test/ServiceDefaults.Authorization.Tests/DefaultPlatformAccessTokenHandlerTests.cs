@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Altinn.Authorization.ServiceDefaults.Authorization.Tests.Mocks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -168,7 +168,7 @@ public class DefaultPlatformAccessTokenHandlerTests
         {
             httpContext.Request.Headers.Append(HeaderName, token);
         }
-        
+
         AuthorizationHandlerContext authContext = new(
             [requirement],
             user,

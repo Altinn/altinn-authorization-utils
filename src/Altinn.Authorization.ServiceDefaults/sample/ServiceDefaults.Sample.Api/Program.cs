@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults;
+using Altinn.Authorization.ServiceDefaults;
 using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
@@ -20,7 +20,7 @@ builder.Services.AddSwaggerFilterAttributeSupport();
 builder.Services.AddSwaggeAltinnSecuritySupport();
 builder.Services.AddSwaggerAltinnServers(c =>
 {
-    c.IncludePerformanceTestServer = false;        
+    c.IncludePerformanceTestServer = false;
 });
 builder.Services.ConfigureHttpJsonOptions(options =>
 {

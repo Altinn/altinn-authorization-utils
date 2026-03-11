@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 public class TestSeedTests(DbFixture fixture)
     : DatabaseTestsBase(fixture)

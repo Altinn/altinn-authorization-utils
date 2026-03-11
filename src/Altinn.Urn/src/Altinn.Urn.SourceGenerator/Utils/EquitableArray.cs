@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn.SourceGenerator.Utils;
+namespace Altinn.Urn.SourceGenerator.Utils;
 
 internal static class EquitableArray
 {

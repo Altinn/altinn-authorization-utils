@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Json;
 
 /// <summary>
 /// A default implementation of <see cref="JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
-/// 
+///
 /// It supports reading URNs as strings and as objects with a type and value property, and writing URNs as strings.
 /// </summary>
 /// <typeparam name="T">The URN type.</typeparam>

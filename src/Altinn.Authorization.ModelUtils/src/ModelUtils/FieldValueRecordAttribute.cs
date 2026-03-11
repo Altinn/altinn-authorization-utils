@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
+using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 using System.Collections.Concurrent;
 using System.Diagnostics;

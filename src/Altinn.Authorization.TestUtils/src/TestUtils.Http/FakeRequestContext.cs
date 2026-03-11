@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.TestUtils.Http;
+namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Represents the context of a request.

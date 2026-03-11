@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 

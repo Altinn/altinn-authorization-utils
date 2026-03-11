@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 using Altinn.Common.AccessTokenClient.Services;
 using System.Security.Cryptography.X509Certificates;
 

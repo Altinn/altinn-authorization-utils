@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Text;
 
 namespace Altinn.Urn.Swashbuckle;
@@ -8,13 +8,13 @@ internal class RegexBuilder
     private static readonly ThreadLocal<RegexBuilder> _threadStaticInstance
         = new(() => new RegexBuilder(256));
 
-    public static RegexBuilder ThreadStaticInstance 
+    public static RegexBuilder ThreadStaticInstance
         => _threadStaticInstance.Value!;
 
     private static readonly SearchValues<char> _metachars =
             SearchValues.Create("\t\n\f\r #$()*+.?[\\^{|");
 
-    private static int IndexOfMetachar(ReadOnlySpan<char> input) 
+    private static int IndexOfMetachar(ReadOnlySpan<char> input)
         => input.IndexOfAny(_metachars);
 
     private readonly StringBuilder _builder;

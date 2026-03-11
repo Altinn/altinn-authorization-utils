@@ -1,4 +1,3 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 using CommunityToolkit.Diagnostics;

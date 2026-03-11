@@ -1,4 +1,4 @@
-﻿namespace Altinn.Swashbuckle.Examples;
+namespace Altinn.Swashbuckle.Examples;
 
 /// <summary>
 /// An interface for providing example data for self.

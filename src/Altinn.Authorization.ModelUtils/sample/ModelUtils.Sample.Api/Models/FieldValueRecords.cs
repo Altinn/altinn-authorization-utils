@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Authorization.ModelUtils.Sample.Api.Models;
 

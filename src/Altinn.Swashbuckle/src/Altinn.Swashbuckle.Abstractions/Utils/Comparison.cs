@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -65,10 +65,10 @@ internal readonly struct Comparison
     public bool Equals(Comparison other)
         => _value == other._value;
 
-    public static bool operator == (Comparison left, Comparison right)
+    public static bool operator ==(Comparison left, Comparison right)
         => left.Equals(right);
 
-    public static bool operator != (Comparison left, Comparison right)
+    public static bool operator !=(Comparison left, Comparison right)
         => !left.Equals(right);
 
     public static implicit operator int(Comparison comparison)

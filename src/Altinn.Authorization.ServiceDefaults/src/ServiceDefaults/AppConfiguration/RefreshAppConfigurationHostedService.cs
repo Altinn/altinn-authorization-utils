@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -38,7 +38,7 @@ internal sealed class RefreshAppConfigurationHostedService
     {
         var timer = _timeProvider.CreateTimer(_timerCallback, state: this, RefreshInterval, RefreshInterval);
         Volatile.Write(ref _timer, timer);
-        
+
         return Task.CompletedTask;
     }
 

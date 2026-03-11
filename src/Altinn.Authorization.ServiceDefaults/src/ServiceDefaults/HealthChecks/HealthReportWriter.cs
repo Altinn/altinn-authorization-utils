@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -152,15 +152,15 @@ internal class HealthReportWriter
     }
 
     private bool SelectFormatter(
-        StringValues acceptHeader, 
-        [NotNullWhen(true)] out HealthReportFormatter? formatter, 
+        StringValues acceptHeader,
+        [NotNullWhen(true)] out HealthReportFormatter? formatter,
         [NotNullWhen(true)] out string? selectedContentType)
     {
         var acceptableMediaTypes = new List<MediaTypeSegmentWithQuality>();
         AcceptHeaderParser.ParseAcceptHeader(acceptHeader, acceptableMediaTypes);
 
         acceptableMediaTypes.Sort(_sortFunction);
-        
+
         if (acceptableMediaTypes.Count == 0)
         {
             formatter = null;

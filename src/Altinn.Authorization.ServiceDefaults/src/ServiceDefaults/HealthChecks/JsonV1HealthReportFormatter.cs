@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;

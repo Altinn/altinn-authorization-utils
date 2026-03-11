@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Buffers;
 using System.IO.Pipelines;
@@ -14,7 +14,7 @@ internal class PlainTextHealthReportFormatter
 
     internal static string ContentType => _contentType;
 
-    internal protected override bool Handles(MediaType accepts) 
+    internal protected override bool Handles(MediaType accepts)
         => _mediaType.IsSubsetOf(accepts);
 
     internal protected override Task WriteAsync(

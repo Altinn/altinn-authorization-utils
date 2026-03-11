@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 

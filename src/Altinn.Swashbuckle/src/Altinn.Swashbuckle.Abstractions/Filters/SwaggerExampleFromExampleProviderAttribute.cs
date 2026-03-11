@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Swashbuckle.Filters;

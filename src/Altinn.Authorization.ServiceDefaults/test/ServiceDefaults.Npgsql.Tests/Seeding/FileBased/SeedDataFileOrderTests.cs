@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
+using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests.Seeding.FileBased;
 

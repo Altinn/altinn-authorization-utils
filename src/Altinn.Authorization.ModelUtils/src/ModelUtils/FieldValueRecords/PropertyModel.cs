@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -54,7 +54,7 @@ internal sealed class PropertyModel<TOwner, TValue>
     public Type Type => typeof(TValue);
 
     /// <inheritdoc/>
-    public T? GetCustomAttribute<T>(bool inherit) 
+    public T? GetCustomAttribute<T>(bool inherit)
         where T : Attribute
         => _property.GetCustomAttribute<T>(inherit);
 

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -175,7 +175,7 @@ internal static class ActivityHelper
                 AddRangeSlow(tags);
                 return;
             }
-            
+
             Reserve(count);
             tags.CopyTo(_values.AsSpan(_count));
             _count += count;
@@ -356,11 +356,11 @@ internal static class ActivityHelper
     {
         public readonly static UnsetTagValueMarker Instance = new UnsetTagValueMarker();
 
-        private UnsetTagValueMarker() 
+        private UnsetTagValueMarker()
         {
         }
 
-        public override string ToString() 
+        public override string ToString()
             => "<unset tag value>";
     }
 }

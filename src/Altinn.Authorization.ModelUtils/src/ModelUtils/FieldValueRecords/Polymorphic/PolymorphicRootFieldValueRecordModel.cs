@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils;
+using Altinn.Authorization.ModelUtils;
 using Altinn.Authorization.ModelUtils.Internal;
 using CommunityToolkit.Diagnostics;
 using System.Collections.Immutable;
@@ -162,8 +162,8 @@ internal sealed class PolymorphicRootFieldValueRecordModel<T, TDiscriminator>
         => _root.Discriminators(includeDescendants);
 
     public IPolymorphicFieldValueRecordModel ModelFor(Type type)
-        => _root.TryGetDescendantModel(type, out var model) 
-        ? model 
+        => _root.TryGetDescendantModel(type, out var model)
+        ? model
         : ThrowHelper.ThrowInvalidOperationException<IPolymorphicFieldValueRecordModel>($"The type '{type}' is not part of the polymorphic field-value-record hierarchy.");
 
     public ImmutableArray<IFieldValueRecordPropertyModel<T>> Properties(bool includeInherited = true)

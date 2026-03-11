@@ -1,4 +1,4 @@
-﻿using Altinn.Common.AccessTokenClient.Services;
+using Altinn.Common.AccessTokenClient.Services;
 using Microsoft.Extensions.Options;
 
 namespace Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;

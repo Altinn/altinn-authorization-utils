@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;

@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.SourceGenerator.Utils;
+using Altinn.Urn.SourceGenerator.Utils;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.Parsing;
@@ -20,7 +20,7 @@ internal readonly record struct UrnRecordParserResult
     [MemberNotNullWhen(true, nameof(JsonConverterAttribute))]
     [MemberNotNullWhen(true, nameof(JsonConverterConcreteType))]
     [MemberNotNullWhen(true, nameof(JsonVariantConverterConcreteType))]
-    public bool HasRecordInfo 
+    public bool HasRecordInfo
         => !IsDefault
         && JsonConverterAttribute is not null
         && JsonConverterConcreteType is not null

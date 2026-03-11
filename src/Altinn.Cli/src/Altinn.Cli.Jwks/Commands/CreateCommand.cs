@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Console;
 using Altinn.Cli.Jwks.Options;
 using Altinn.Cli.Jwks.Stores;
 using Microsoft.IdentityModel.Tokens;
@@ -139,7 +139,7 @@ internal class CreateCommand
             var privJwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(privRsa);
 
             privJwk.Alg = algorithm.ToJwkString();
-            privJwk.Use =  use.ToJwkString();
+            privJwk.Use = use.ToJwkString();
 
             return privJwk;
         }

@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Urn.Json;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -340,7 +340,7 @@ internal class UrnSwaggerFilter
             schema.Pattern = pattern;
         }
 
-        
+
         private static string GetPattern(ReadOnlySpan<string> prefixes)
         {
             var builder = RegexBuilder.ThreadStaticInstance;

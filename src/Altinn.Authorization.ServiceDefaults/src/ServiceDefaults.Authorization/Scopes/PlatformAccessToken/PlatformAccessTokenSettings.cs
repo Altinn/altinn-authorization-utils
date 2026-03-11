@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
 /// <summary>
 /// Settings for access token
@@ -21,7 +21,7 @@ public sealed class PlatformAccessTokenSettings
     public int CacheCertLifetimeInSeconds { get; set; } = 3600;
 
     /// <summary>
-    /// ID for cache token in 
+    /// ID for cache token in
     /// </summary>
     public string AccessTokenHttpContextId { get; set; } = "accesstokencontextid";
 

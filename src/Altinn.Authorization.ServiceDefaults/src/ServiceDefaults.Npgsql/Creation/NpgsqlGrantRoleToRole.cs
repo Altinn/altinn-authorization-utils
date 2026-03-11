@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
 
 [DebuggerDisplay("GRANT {_options.GrantedRole} TO {_options.RoleName}")]
-internal sealed partial class NpgsqlGrantRoleToRole 
+internal sealed partial class NpgsqlGrantRoleToRole
     : INpgsqlDatabaseCreator
 {
     private readonly Settings _options;

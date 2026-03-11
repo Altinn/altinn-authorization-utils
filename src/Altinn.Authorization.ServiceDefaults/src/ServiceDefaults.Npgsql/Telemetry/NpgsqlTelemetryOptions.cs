@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
 internal sealed class NpgsqlTelemetryOptions
     : INpgsqlScopeTelemetryOptions

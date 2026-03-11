@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization;

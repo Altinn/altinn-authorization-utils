@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -111,14 +111,14 @@ internal partial class YuniqlDatabaseMigrator
             {
                 ThreadStart threadStart = () =>
                 {
-                    #pragma warning disable SYSLIB0046 // Type or member is obsolete
+#pragma warning disable SYSLIB0046 // Type or member is obsolete
                     ControlledExecution.Run(
                         () =>
                         {
                             migratorService.Run();
                         },
                         cancellationToken);
-                    #pragma warning restore SYSLIB0046 // Type or member is obsolete
+#pragma warning restore SYSLIB0046 // Type or member is obsolete
                 };
 
                 using var subscription = cancellationToken.Register(() =>

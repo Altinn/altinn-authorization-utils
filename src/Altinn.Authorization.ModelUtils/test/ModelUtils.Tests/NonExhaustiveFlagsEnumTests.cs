@@ -1,5 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
-using System.Text.Json;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Tests;
@@ -38,7 +37,7 @@ public class NonExhaustiveFlagsEnumTests
     public void UnknownValuesOnly_ExplicitlyCastsToEnum_Throws()
     {
         NonExhaustiveFlagsEnum<FlagsEnum> nonExhaustive = Json.Deserialize<NonExhaustiveFlagsEnum<FlagsEnum>>("""["not-a-value"]""");
-        
+
         Should.Throw<InvalidCastException>(() => (FlagsEnum)nonExhaustive);
     }
 
@@ -46,7 +45,7 @@ public class NonExhaustiveFlagsEnumTests
     public void PartialKnownValues_ExplicitlyCastsToEnum_Throws()
     {
         NonExhaustiveFlagsEnum<FlagsEnum> nonExhaustive = Json.Deserialize<NonExhaustiveFlagsEnum<FlagsEnum>>("""["first-value", "not-a-value"]""");
-        
+
         Should.Throw<InvalidCastException>(() => (FlagsEnum)nonExhaustive);
     }
 

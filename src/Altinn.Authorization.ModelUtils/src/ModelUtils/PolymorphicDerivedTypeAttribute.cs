@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.ModelUtils;

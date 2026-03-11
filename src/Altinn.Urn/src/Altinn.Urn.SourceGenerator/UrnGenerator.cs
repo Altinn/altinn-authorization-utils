@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.SourceGenerator.Emitting;
+using Altinn.Urn.SourceGenerator.Emitting;
 using Altinn.Urn.SourceGenerator.Parsing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -50,11 +50,11 @@ public class UrnGenerator
 
                 ctx.ReportDiagnostic(
                     Diagnostic.Create(
-                        diagnostic.Descriptor, 
-                        diagnostic.Location?.ToLocation(), 
+                        diagnostic.Descriptor,
+                        diagnostic.Location?.ToLocation(),
                         diagnostic.Severity,
-                        additionalLocations, 
-                        properties: null, 
+                        additionalLocations,
+                        properties: null,
                         messageArgs: null));
             }
 
@@ -78,9 +78,9 @@ public class UrnGenerator
             fileNameBuilder.Append(".g.cs");
 
             var result = UrnRecordEmitter.Emit(
-                input.RecordInfo, 
-                input.JsonConverterAttribute, 
-                input.JsonConverterConcreteType, 
+                input.RecordInfo,
+                input.JsonConverterAttribute,
+                input.JsonConverterConcreteType,
                 input.JsonVariantConverterConcreteType,
                 ctx.CancellationToken);
             ctx.AddSource(fileNameBuilder.ToString(), result);

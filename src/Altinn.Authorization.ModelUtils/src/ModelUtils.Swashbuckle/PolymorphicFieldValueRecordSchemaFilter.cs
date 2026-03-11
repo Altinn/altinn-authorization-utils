@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
+using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 using CommunityToolkit.Diagnostics;
@@ -133,7 +133,7 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         var oneOf = schema.OneOf switch
         {
             List<OpenApiSchema> list => list,
-            _ => new(), 
+            _ => new(),
         };
 
         schema.OneOf = oneOf;
@@ -274,7 +274,7 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
     private string ComputeDiscriminatorStringValue(object discriminatorValue)
     {
         Debug.Assert(discriminatorValue is not null);
-        
+
         var type = discriminatorValue.GetType();
         Debug.Assert(type.IsEnum);
 

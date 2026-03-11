@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.TestUtils.Http;
+namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// An exception that's thrown if an unexpected request is received.

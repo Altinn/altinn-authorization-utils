@@ -5,13 +5,15 @@ root = true
 [*]
 insert_final_newline = true
 tab_width = 2
-charset = utf-8-bom
+charset = utf-8
 
 [conf.json]
 charset = utf-8
 
 [*.cs]
 tab_width = 4
+indent_size = 4
+end_of_line = lf
 
 # VSTHRD200: Use "Async" suffix for async methods
 dotnet_diagnostic.VSTHRD200.severity = none
@@ -24,3 +26,25 @@ dotnet_diagnostic.FAA0002.severity = none
 
 # CA1822: Mark members as static
 dotnet_diagnostic.CA1822.severity = none
+
+# Roslynator configs
+dotnet_diagnostic.RCS0028.severity = warning
+roslynator_arrow_token_new_line = before
+
+dotnet_diagnostic.RCS0032.severity = warning
+roslynator_conditional_operator_new_line = before
+
+dotnet_diagnostic.RCS1260.severity = warning
+roslynator_trailing_comma_style = include
+
+# SA1509: Opening braces should not be preceded by blank line
+dotnet_diagnostic.SA1509.severity = none
+
+# VSTHRD200: Use "Async" suffix for async methods
+dotnet_diagnostic.VSTHRD200.severity = none
+
+# SA1118: Parameter should not span multiple lines
+dotnet_diagnostic.SA1118.severity = none
+
+# IDE0005: Unused using directive
+dotnet_diagnostic.IDE0005.severity = warning

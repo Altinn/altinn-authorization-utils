@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils;
+using Altinn.Authorization.ModelUtils;
 using CommunityToolkit.Diagnostics;
 using System.Collections;
 using System.Collections.Immutable;
@@ -46,7 +46,7 @@ public sealed record SecurityRequirement
     private readonly ImmutableValueArray<SecurityRequirementCondition> _conditions;
 
     /// <inheritdoc/>
-    public int Count 
+    public int Count
         => _conditions.Length;
 
     /// <inheritdoc/>

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ProblemDetails;
@@ -33,7 +33,7 @@ public class AltinnProblemDetails
         : this(instance.Descriptor)
     {
         Detail = instance.Detail;
-        
+
         if (!string.IsNullOrEmpty(instance.TraceId))
         {
             TraceId = instance.TraceId;

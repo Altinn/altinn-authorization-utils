@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Telemetry.OpenTelemetry;
+using Altinn.Authorization.ServiceDefaults.Telemetry.OpenTelemetry;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Resources;
 using System.Runtime.InteropServices;

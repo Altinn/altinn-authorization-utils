@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Security;
+using Altinn.Swashbuckle.Security;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;

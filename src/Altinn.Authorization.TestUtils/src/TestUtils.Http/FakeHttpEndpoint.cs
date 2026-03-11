@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
@@ -22,15 +22,15 @@ public sealed class FakeHttpEndpoint
     public static string BasePath => "/fake/root/";
 
     /// <summary>
-    /// Gets the root path used for routing by the fake message handler for https requests. 
-    /// Any requests made to the fake message handler will have to be relative to this path 
+    /// Gets the root path used for routing by the fake message handler for https requests.
+    /// Any requests made to the fake message handler will have to be relative to this path
     /// in order to match any routes.
     /// </summary>
     public static Uri HttpsUri { get; } = new Uri($"https://{Host}{BasePath}");
 
     /// <summary>
-    /// Gets the root path used for routing by the fake message handler for http requests. 
-    /// Any requests made to the fake message handler will have to be relative to this path 
+    /// Gets the root path used for routing by the fake message handler for http requests.
+    /// Any requests made to the fake message handler will have to be relative to this path
     /// in order to match any routes.
     /// </summary>
     public static Uri HttpUri { get; } = new Uri($"http://{Host}{BasePath}");
@@ -59,7 +59,7 @@ public sealed class FakeHttpEndpoint
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) 
+    public override bool Equals(object? obj)
         => obj is FakeHttpEndpoint other
         && _uri.Equals(other._uri);
 

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Telemetry;
+namespace Altinn.Authorization.ServiceDefaults.Telemetry;
 
 /// <summary>
 /// Overrides the default meter name for an assembly.

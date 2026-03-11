@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.AspNet;
+using Altinn.Authorization.ModelUtils.AspNet;
 using Altinn.Authorization.ModelUtils.EnumUtils;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.TestUtils.AspNetCore;
@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Altinn.Authorization.ModelUtils.Tests.AspNet;
 
@@ -38,7 +37,7 @@ public class FlagsEnumTests
     public void RoundTrip(PartyFieldIncludes value)
     {
         FlagsEnum<PartyFieldIncludes> sut = value;
-        
+
         var formatted = sut.ToString();
         formatted.ShouldBe(_model.Format(value));
 

@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -40,13 +40,13 @@ public static class StdProblemDescriptors
         /// <summary>
         /// Gets the error code for a validation error.
         /// </summary>
-        public static ErrorCode ValidationError 
+        public static ErrorCode ValidationError
             => StdProblemDescriptors.ValidationError.ErrorCode;
 
         /// <summary>
         /// Gets the error code for a multiple-problems error.
         /// </summary>
-        public static ErrorCode MultipleProblems 
+        public static ErrorCode MultipleProblems
             => StdProblemDescriptors.MultipleProblems.ErrorCode;
     }
 }

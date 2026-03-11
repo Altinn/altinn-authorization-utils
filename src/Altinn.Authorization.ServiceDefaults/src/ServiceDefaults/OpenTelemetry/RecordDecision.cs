@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.OpenTelemetry;
+namespace Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 
 /// <summary>
 /// Specifies the possible actions for handling an event in a logging or telemetry system.

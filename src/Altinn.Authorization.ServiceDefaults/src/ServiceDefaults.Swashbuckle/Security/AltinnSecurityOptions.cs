@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Swashbuckle.Security;
+namespace Altinn.Authorization.ServiceDefaults.Swashbuckle.Security;
 
 /// <summary>
 /// Provides configuration options for Altinn authentication schemes in Swagger documentation.

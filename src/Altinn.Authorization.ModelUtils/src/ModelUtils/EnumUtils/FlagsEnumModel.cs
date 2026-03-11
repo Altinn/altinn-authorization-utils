@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
@@ -75,7 +75,7 @@ public sealed class FlagsEnumModel<TEnum>
                 enumMemberAttributes.Add(field.Name, attribute.Name);
             }
         }
-        
+
         var noneFound = false;
         var builder = ImmutableArray.CreateBuilder<Item>(values.Length - 1);
         for (int i = 0; i < values.Length; i++)
@@ -237,14 +237,14 @@ public sealed class FlagsEnumModel<TEnum>
     public bool TryFormat(TEnum value, Span<char> destination, out int charsWritten)
     {
         var formatted = Format(value);
-        
+
         if (formatted.Length <= destination.Length)
         {
             formatted.AsSpan().CopyTo(destination);
             charsWritten = formatted.Length;
             return true;
         }
-        
+
         charsWritten = 0;
         return false;
     }

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Telemetry;
 using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;

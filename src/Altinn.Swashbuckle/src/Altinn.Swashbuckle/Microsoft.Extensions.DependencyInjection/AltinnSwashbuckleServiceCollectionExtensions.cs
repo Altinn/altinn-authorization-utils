@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Swashbuckle.Filters;
 using Altinn.Swashbuckle.Security;
 using Altinn.Swashbuckle.XmlDoc;

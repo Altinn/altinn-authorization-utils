@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 
 namespace Altinn.Authorization.ProblemDetails.Tests;
 
@@ -27,7 +27,7 @@ public class MultipleProblemBuilderTests
         return _factory.Create(id, HttpStatusCode.InternalServerError, $"Error {id}").Create();
     }
 
-    protected override CollectionBuilderEnumerator<ProblemInstance> GetEnumerator(MultipleProblemBuilder list) 
+    protected override CollectionBuilderEnumerator<ProblemInstance> GetEnumerator(MultipleProblemBuilder list)
         => list.GetEnumerator();
 
     [Fact]

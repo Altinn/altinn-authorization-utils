@@ -1,8 +1,6 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
+using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
-using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;

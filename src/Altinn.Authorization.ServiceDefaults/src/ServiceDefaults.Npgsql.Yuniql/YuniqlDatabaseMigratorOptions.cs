@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders;
 using System.ComponentModel.DataAnnotations;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;

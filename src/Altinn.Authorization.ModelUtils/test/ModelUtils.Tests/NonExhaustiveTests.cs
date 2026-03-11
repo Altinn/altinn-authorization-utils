@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;

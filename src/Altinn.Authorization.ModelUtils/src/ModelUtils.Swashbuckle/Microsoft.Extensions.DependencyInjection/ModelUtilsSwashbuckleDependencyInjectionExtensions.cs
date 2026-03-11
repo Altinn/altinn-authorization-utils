@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils;
+using Altinn.Authorization.ModelUtils;
 using Altinn.Authorization.ModelUtils.AspNet;
 using Altinn.Authorization.ModelUtils.Swashbuckle;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -23,7 +23,7 @@ public static class ModelUtilsSwashbuckleDependencyInjectionExtensions
         services.AddFieldValueRecordSwaggerSupport();
         services.AddPolymorphicFieldValueRecordSwaggerSupport();
         services.AddFlagsEnumModelSupport();
-        
+
         return services;
     }
 

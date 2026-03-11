@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text;
@@ -43,7 +43,7 @@ internal sealed partial class NpgsqlGrantDefaultTablePrivileges
             return;
         }
 
-        if (!_options.GrantSelect 
+        if (!_options.GrantSelect
             && !_options.GrantInsert
             && !_options.GrantUpdate
             && !_options.GrantDelete

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -38,7 +38,7 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
 
     /// <inheritdoc/>
     public async IAsyncEnumerable<ITestDataSeeder> GetSeeders(
-        NpgsqlConnection db, 
+        NpgsqlConnection db,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         foreach (var entry in _fileProvider.GetDirectoryContents("/"))
@@ -82,11 +82,11 @@ internal partial class SeedDataDirectoryTestDataSeederProvider
         if (tableName is not null)
         {
             bool isEmpty;
-            try 
+            try
             {
                 isEmpty = await IsTableEmpty(db, tableName, cancellationToken);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.CheckTableEmptyFailed(_logger, tableName, ex);
                 throw new DataSeedingFailedException(this, ex);

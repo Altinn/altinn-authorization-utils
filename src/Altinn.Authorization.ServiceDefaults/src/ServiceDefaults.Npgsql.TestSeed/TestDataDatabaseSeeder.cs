@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -114,8 +114,8 @@ internal partial class TestDataDatabaseSeeder
     }
 
     private async Task<List<ITestDataSeeder>> CollectSeeders(
-        NpgsqlConnection connection, 
-        IEnumerable<ITestDataSeederProvider> providers, 
+        NpgsqlConnection connection,
+        IEnumerable<ITestDataSeederProvider> providers,
         CancellationToken cancellationToken)
     {
         const string COLLECT_SAVEPOINT = "collect";

@@ -1,4 +1,4 @@
-﻿using OpenTelemetry.Trace;
+using OpenTelemetry.Trace;
 
 namespace Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 

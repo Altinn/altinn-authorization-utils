@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -163,7 +163,7 @@ public static class FieldValue
 
 /// <summary>
 /// Represents a field value (typically a database field or json property).
-/// 
+///
 /// This is similar to <see cref="Nullable{T}"/>, but with an additional state for unset values.
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>

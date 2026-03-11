@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.TestUtils.Http.Filters;
+using Altinn.Authorization.TestUtils.Http.Filters;
 using Altinn.Authorization.TestUtils.Http.Handlers;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;

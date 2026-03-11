@@ -1,11 +1,10 @@
-﻿using Altinn.Swashbuckle.Tests.Fixtures;
+using Altinn.Swashbuckle.Tests.Fixtures;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Globalization;
 
 namespace Altinn.Swashbuckle.Tests.XmlDoc;
 

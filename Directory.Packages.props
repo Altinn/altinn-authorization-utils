@@ -89,6 +89,7 @@
     <PackageVersion Include="System.IO.Hashing" Version="9.0.13" />
     <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.2" />
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.15.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.10.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
     <PackageVersion Include="Verify.XunitV3" Version="31.10.0" />

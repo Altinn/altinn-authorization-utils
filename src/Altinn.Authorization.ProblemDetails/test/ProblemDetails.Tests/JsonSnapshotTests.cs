@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.TestUtils.Shouldly;
+using Altinn.Authorization.TestUtils.Shouldly;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Reflection;

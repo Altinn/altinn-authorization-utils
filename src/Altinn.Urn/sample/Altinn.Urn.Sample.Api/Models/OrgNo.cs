@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Swashbuckle.Filters;
 using Altinn.Urn.Sample.Api.Json;
 using System.Buffers;
@@ -15,7 +15,7 @@ public record OrgNo
     , ISpanParsable<OrgNo>
     , IFormattable
     , IExampleDataProvider<OrgNo>
-    // purposefully not implementing ISpanFormattable to test the urn generator
+// purposefully not implementing ISpanFormattable to test the urn generator
 {
     private static readonly SearchValues<char> NUMBERS = SearchValues.Create(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
 

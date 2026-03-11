@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.TestUtils.Http;
+namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Interface used to set a delegate that handles requests for this <see cref="IFakeRequestHandler"/>.

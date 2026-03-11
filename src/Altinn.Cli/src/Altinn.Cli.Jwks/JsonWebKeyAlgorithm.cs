@@ -1,4 +1,4 @@
-﻿namespace Altinn.Cli.Jwks;
+namespace Altinn.Cli.Jwks;
 
 /// <summary>
 /// JWK algorithm.

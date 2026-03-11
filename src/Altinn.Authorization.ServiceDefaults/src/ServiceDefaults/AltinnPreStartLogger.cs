@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;

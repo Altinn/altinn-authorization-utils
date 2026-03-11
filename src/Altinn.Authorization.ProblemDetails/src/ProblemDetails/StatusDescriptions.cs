@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Frozen;
 
 namespace Altinn.Authorization.ProblemDetails;

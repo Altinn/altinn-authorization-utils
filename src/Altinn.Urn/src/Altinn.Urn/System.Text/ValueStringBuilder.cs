@@ -101,7 +101,7 @@ internal ref partial struct ValueStringBuilder
     {
         Debug.Assert(length >= 0);
         Debug.Assert(_pos + length <= _chars.Length);
-        
+
         _pos += length;
     }
 

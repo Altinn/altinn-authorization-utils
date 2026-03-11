@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using System.Diagnostics.CodeAnalysis;
@@ -15,31 +15,31 @@ internal sealed class Console
     private readonly IAnsiConsole _stdOut;
     private readonly IAnsiConsole _stdErr;
 
-    IAnsiConsole IConsole.StdOut 
+    IAnsiConsole IConsole.StdOut
         => _stdOut;
 
-    IAnsiConsole IConsole.StdErr 
+    IAnsiConsole IConsole.StdErr
         => _stdErr;
 
-    Profile IAnsiConsole.Profile 
+    Profile IAnsiConsole.Profile
         => _stdOut.Profile;
 
-    IAnsiConsoleCursor IAnsiConsole.Cursor 
+    IAnsiConsoleCursor IAnsiConsole.Cursor
         => _stdOut.Cursor;
 
-    IAnsiConsoleInput IAnsiConsole.Input 
+    IAnsiConsoleInput IAnsiConsole.Input
         => _stdOut.Input;
 
-    IExclusivityMode IAnsiConsole.ExclusivityMode 
+    IExclusivityMode IAnsiConsole.ExclusivityMode
         => _stdOut.ExclusivityMode;
 
-    RenderPipeline IAnsiConsole.Pipeline 
+    RenderPipeline IAnsiConsole.Pipeline
         => _stdOut.Pipeline;
 
     public Console()
     {
         _semaphore = new SemaphoreSlim(1, 1);
-        
+
         _stdOut = AnsiConsole.Create(new AnsiConsoleSettings
         {
             Ansi = AnsiSupport.Detect,

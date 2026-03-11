@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Immutable;
@@ -37,7 +37,7 @@ internal sealed class TestPlatformAccessTokenSigningKeyProvider
               new TestHybridCache()
 #else
               new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions()))
-#endif              
+#endif
               )
     {
     }
