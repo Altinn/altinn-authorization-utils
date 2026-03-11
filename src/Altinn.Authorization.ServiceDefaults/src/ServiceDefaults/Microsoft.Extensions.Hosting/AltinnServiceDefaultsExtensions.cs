@@ -387,17 +387,19 @@ public static class AltinnServiceDefaultsExtensions
         builder.Services.AddOptions<AltinnTelemetryOptions>()
             .BindConfiguration("Altinn:Telemetry");
 
-        builder.Logging.AddOpenTelemetry(logging =>
-        {
-            logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
-        });
-
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
                 resource.AddDetector(services => services.GetRequiredService<AltinnServiceResourceDetector>());
             })
+            .WithLogging(
+                configureBuilder: null,
+                configureOptions: logging =>
+                {
+                    logging.IncludeFormattedMessage = true;
+                    logging.IncludeScopes = true;
+                }
+            )
             .WithMetrics(metrics =>
             {
                 metrics.AddRuntimeInstrumentation()
