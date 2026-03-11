@@ -1,6 +1,10 @@
-using System.Buffers;
-using System.Collections.Frozen;
 using System.Runtime.InteropServices;
+
+#if NET9_0_OR_GREATER
+using System.Buffers;
+#else
+using System.Collections.Frozen;
+#endif
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
