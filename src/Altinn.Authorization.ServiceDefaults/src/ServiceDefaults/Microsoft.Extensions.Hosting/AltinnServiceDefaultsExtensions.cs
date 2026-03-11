@@ -1,4 +1,5 @@
-﻿using Altinn.Authorization.ServiceDefaults;
+﻿using System.Diagnostics.CodeAnalysis;
+using Altinn.Authorization.ServiceDefaults;
 using Altinn.Authorization.ServiceDefaults.AppConfiguration;
 using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Altinn.Authorization.ServiceDefaults.HealthChecks;
@@ -24,10 +25,10 @@ using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -220,6 +221,7 @@ public static class AltinnServiceDefaultsExtensions
     public static WebApplication AddDefaultAltinnMiddleware(this WebApplication app, string errorHandlingPath)
     {
         var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AltinnServiceDefaultsExtensions));
+        var otel = app.Services.GetService<TracerProvider>()?.GetResource();
         logger.LogInformation("Startup // Configure");
 
         if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
@@ -233,6 +235,11 @@ public static class AltinnServiceDefaultsExtensions
             logger.LogInformation("Production => Using exception handler");
 
             app.UseExceptionHandler(errorHandlingPath);
+        }
+
+        if (otel is not null)
+        {
+            logger.LogInformation("OpenTelemetry Resource: {ResourceAttributes}", otel.Attributes);
         }
 
         app.UseForwardedHeaders();
@@ -494,26 +501,30 @@ public static class AltinnServiceDefaultsExtensions
     private static IHostApplicationBuilder AddApplicationInsights(this IHostApplicationBuilder builder, AltinnPreStartLogger logger)
     {
         var applicationInsightsInstrumentationKey = builder.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+        var applicationInsightsConnectionString = builder.Configuration.GetValue<string>("ConnectionStrings:ApplicationInsights")
+            ?? builder.Configuration.GetValue<string>("ApplicationInsights:ConnectionString");
 
-        if (!string.IsNullOrEmpty(applicationInsightsInstrumentationKey))
+        if (string.IsNullOrEmpty(applicationInsightsConnectionString) && !string.IsNullOrEmpty(applicationInsightsInstrumentationKey))
         {
-            var applicationInsightsConnectionString = $"InstrumentationKey={applicationInsightsInstrumentationKey}";
+            applicationInsightsConnectionString = $"InstrumentationKey={applicationInsightsInstrumentationKey}";
             builder.Configuration.AddInMemoryCollection([
-                KeyValuePair.Create("ApplicationInsights:ConnectionString", (string?)applicationInsightsConnectionString),
-                KeyValuePair.Create("ConnectionStrings:ApplicationInsights", (string?)applicationInsightsConnectionString),
+                new("ConnectionStrings:ApplicationInsights", applicationInsightsConnectionString),
             ]);
+        }
+        
+        if (!string.IsNullOrEmpty(applicationInsightsConnectionString))
+        {
+            logger.Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");
 
             builder.Services.AddOpenTelemetry()
                 .UseAzureMonitor(options =>
                 {
                     options.ConnectionString = applicationInsightsConnectionString;
                 });
-
-            logger.Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");
         }
         else
         {
-            logger.Log("No ApplicationInsights:InstrumentationKey found - skipping Application Insights");
+            logger.Log("No ApplicationInsights connection string - skipping Application Insights");
         }
 
         return builder;
