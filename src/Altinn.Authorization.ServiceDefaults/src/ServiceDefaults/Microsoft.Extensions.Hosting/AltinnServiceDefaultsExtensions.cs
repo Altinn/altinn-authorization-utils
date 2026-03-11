@@ -221,7 +221,7 @@ public static class AltinnServiceDefaultsExtensions
     public static WebApplication AddDefaultAltinnMiddleware(this WebApplication app, string errorHandlingPath)
     {
         var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AltinnServiceDefaultsExtensions));
-        var otel = app.Services.GetService<TracerProvider>()?.GetResource();
+        var otel = app.Services.GetService<LoggerProvider>()?.GetResource();
         logger.LogInformation("Startup // Configure");
 
         if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
