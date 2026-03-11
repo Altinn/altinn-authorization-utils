@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -75,7 +75,7 @@ internal sealed class FieldValueRecordModel<T>
         var declaredProperties = GetDeclaredProperties().ToImmutableArray();
         var inheritedProperties = _parent is null ? [] : _parent.Properties(includeInherited: true).CastArray<IFieldValueRecordPropertyModel<T>>();
         var extensionDataProperty = GetExtensionDataProperty(ref declaredProperties, _parent);
-        
+
         _constructor = ctor;
         _declaredProperties = declaredProperties;
         _allProperties = [.. declaredProperties, .. inheritedProperties];
@@ -91,7 +91,7 @@ internal sealed class FieldValueRecordModel<T>
         => _parent;
 
     /// <inheritdoc/>
-    public IFieldValueRecordConstructorModel<T>? Constructor 
+    public IFieldValueRecordConstructorModel<T>? Constructor
         => _constructor;
 
     /// <inheritdoc/>
@@ -303,7 +303,7 @@ internal sealed class FieldValueRecordModel<T>
 
         public bool IsUnsettable => inner.IsUnsettable;
 
-        public T1? GetCustomAttribute<T1>(bool inherit) 
+        public T1? GetCustomAttribute<T1>(bool inherit)
             where T1 : Attribute
             => inner.GetCustomAttribute<T1>(inherit);
 

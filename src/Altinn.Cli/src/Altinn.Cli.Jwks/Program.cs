@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Commands;
+using Altinn.Cli.Jwks.Commands;
 using Altinn.Cli.Jwks.Console;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
 using Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -59,7 +59,7 @@ public static class TestSeedServiceCollectionExtensions
     {
         builder.AddTestDataSeeding();
         builder.Services.Add(ServiceDescriptor.Describe(typeof(ITestDataSeederProvider), factory, lifetime));
-        
+
         return builder;
     }
 
@@ -133,6 +133,6 @@ public static class TestSeedServiceCollectionExtensions
         });
     }
 
-    private static INpgsqlDatabaseBuilder AddTestDataSeeding(this INpgsqlDatabaseBuilder builder) 
+    private static INpgsqlDatabaseBuilder AddTestDataSeeding(this INpgsqlDatabaseBuilder builder)
         => builder.TryAddSeeder<TestDataDatabaseSeeder>();
 }

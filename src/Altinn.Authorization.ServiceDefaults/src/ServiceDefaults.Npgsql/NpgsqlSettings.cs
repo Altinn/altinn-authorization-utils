@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql;
 
 /// <summary>
 /// Provides the client configuration settings for connecting to a PostgreSQL database using Npgsql.

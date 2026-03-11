@@ -33,6 +33,9 @@ jobs:
               args: [--frozen-lockfile]
             - args: [--global, tsx]
 
+      - name: Check formatting
+        run: dotnet format --verify-no-changes
+
       - name: Update all sln files
         run: tsx ./.github/scripts/update-sln-files.mts
 

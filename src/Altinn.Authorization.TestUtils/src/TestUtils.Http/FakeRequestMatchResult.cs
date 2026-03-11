@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace Altinn.Authorization.TestUtils.Http;
@@ -49,7 +49,7 @@ public class FakeRequestMatchResult
 
         var sb = new StringBuilder();
         sb.Append("Multiple reasons for mismatch:");
-        
+
         foreach (var reason in _missmatchReasons)
         {
             sb.AppendLine();

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
+namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 
 /// <summary>
 /// A visitor for <see cref="IFieldValueRecordPropertyModel{TOwner}"/>.

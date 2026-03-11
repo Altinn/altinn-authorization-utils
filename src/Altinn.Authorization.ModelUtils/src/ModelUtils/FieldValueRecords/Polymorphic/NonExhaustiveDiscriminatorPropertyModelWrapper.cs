@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Reflection;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
@@ -29,7 +29,7 @@ internal class NonExhaustiveDiscriminatorPropertyModelWrapper<TOwner, TValue>
 
     public bool IsUnsettable => _innerModel.IsUnsettable;
 
-    public T? GetCustomAttribute<T>(bool inherit) 
+    public T? GetCustomAttribute<T>(bool inherit)
         where T : Attribute
         => _innerModel.GetCustomAttribute<T>(inherit);
 

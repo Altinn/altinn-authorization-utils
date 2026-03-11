@@ -1,4 +1,4 @@
-﻿namespace Altinn.Swashbuckle.Examples;
+namespace Altinn.Swashbuckle.Examples;
 
 /// <summary>
 /// A resolver for getting example-data providers.

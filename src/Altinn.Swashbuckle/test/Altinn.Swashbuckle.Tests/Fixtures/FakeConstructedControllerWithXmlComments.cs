@@ -1,5 +1,5 @@
-﻿namespace Altinn.Swashbuckle.Tests.Fixtures;
+namespace Altinn.Swashbuckle.Tests.Fixtures;
 
-public class FakeConstructedControllerWithXmlComments 
+public class FakeConstructedControllerWithXmlComments
     : GenericControllerWithXmlComments<string>
 { }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.ServiceDiscovery;
+using Microsoft.Extensions.ServiceDiscovery;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 

@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
@@ -7,7 +7,7 @@ public record OrgNo
     : IParsable<OrgNo>
     , ISpanParsable<OrgNo>
     , IFormattable
-    // purposefully not implementing ISpanFormattable to test the urn generator
+// purposefully not implementing ISpanFormattable to test the urn generator
 {
     private static readonly SearchValues<char> NUMBERS = SearchValues.Create(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']);
 

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed;
 
 /// <summary>
 /// A test-data seeder.

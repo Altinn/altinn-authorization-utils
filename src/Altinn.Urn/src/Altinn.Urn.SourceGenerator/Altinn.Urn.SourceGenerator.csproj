@@ -13,7 +13,7 @@
 		<!-- 👇 We don't want the source generator to be packable by itself, instead it's included in
 		the Altinn.Urn package -->
 		<IsPackable>false</IsPackable>
-			
+
 		<PolyStringInterpolation>true</PolyStringInterpolation>
 		<PolyUseEmbeddedAttribute>true</PolyUseEmbeddedAttribute>
 	</PropertyGroup>

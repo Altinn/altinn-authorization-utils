@@ -12,4 +12,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Roslynator.Formatting.Analyzers" PrivateAssets="all" IncludeAssets="analyzers" />
+  </ItemGroup>
+
 </Project>

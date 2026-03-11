@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace Altinn.Authorization.ProblemDetails.Tests;
 
-public class AltinnValidationProblemDetailsTests 
+public class AltinnValidationProblemDetailsTests
 {
     private static readonly JsonSerializerOptions _options = new(JsonSerializerDefaults.Web);
 

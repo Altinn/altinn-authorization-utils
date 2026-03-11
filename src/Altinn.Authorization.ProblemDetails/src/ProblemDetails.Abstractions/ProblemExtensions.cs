@@ -1,16 +1,16 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 
 namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
-/// Extension methods for <see cref="ProblemDescriptor"/>, <see cref="ProblemInstance"/>, <see cref="ValidationErrorDescriptor"/>, 
+/// Extension methods for <see cref="ProblemDescriptor"/>, <see cref="ProblemInstance"/>, <see cref="ValidationErrorDescriptor"/>,
 /// and <see cref="ValidationErrorInstance"/>.
 /// </summary>
 public static class ProblemExtensions
 {
     #region ProblemDescriptor.Create
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor) 
+    public static ProblemInstance Create(this ProblemDescriptor descriptor)
         => ProblemInstance.Create(descriptor);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?)"/>
@@ -18,7 +18,7 @@ public static class ProblemExtensions
         => ProblemInstance.Create(descriptor, detail);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, ProblemExtensionData)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, ProblemExtensionData extensions) 
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, ProblemExtensionData extensions)
         => ProblemInstance.Create(descriptor, extensions);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemExtensionData)"/>
@@ -26,7 +26,7 @@ public static class ProblemExtensions
         => ProblemInstance.Create(descriptor, detail, extensions);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, IReadOnlyDictionary{string, string})"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions) 
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
         => ProblemInstance.Create(descriptor, extensions);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, IReadOnlyDictionary{string, string})"/>
@@ -36,7 +36,7 @@ public static class ProblemExtensions
 
     #region ValidationErrorDescriptor.Create
     /// <inheritdoc cref="ValidationErrorInstance.Create(ValidationErrorDescriptor)"/>
-    public static ValidationErrorInstance Create(this ValidationErrorDescriptor descriptor) 
+    public static ValidationErrorInstance Create(this ValidationErrorDescriptor descriptor)
         => ValidationErrorInstance.Create(descriptor);
 
     /// <inheritdoc cref="ValidationErrorInstance.Create(ValidationErrorDescriptor, string)"/>

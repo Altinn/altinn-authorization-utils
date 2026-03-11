@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
@@ -84,7 +84,7 @@ internal static class EnvOptions
         }
 
         JsonWebKeySetEnvironments envs = JsonWebKeySetEnvironments.None;
-        foreach (var token in result.Tokens) 
+        foreach (var token in result.Tokens)
         {
             var value = token.Value.Trim().ToLowerInvariant();
             if (value.Contains(','))

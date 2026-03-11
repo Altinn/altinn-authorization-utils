@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.SourceGenerator.IntegrationTests.Utils;
+using Altinn.Urn.SourceGenerator.IntegrationTests.Utils;
 using System.Text.Json;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;

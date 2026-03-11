@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 using Altinn.Authorization.TestUtils.AspNetCore;
 using Altinn.Authorization.TestUtils.Http;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +56,7 @@ public abstract class ScopeAnyOfAuthorizationHandlerIntegrationTests<TController
     }
 
 
-    
+
 }
 
 [Collection(NonParallelCollectionDefinitionClass.CollectionName)]

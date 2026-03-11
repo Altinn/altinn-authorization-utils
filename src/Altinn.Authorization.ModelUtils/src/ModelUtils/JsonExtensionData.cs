@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;

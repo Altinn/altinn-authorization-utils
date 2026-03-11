@@ -1,4 +1,4 @@
-﻿using OpenTelemetry;
+using OpenTelemetry;
 using System.Collections.Immutable;
 using System.Diagnostics;
 
@@ -16,7 +16,7 @@ internal sealed class TailSamplingProcessor
 
     public override void OnEnd(Activity activity)
     {
-        if (activity.ActivityTraceFlags.HasFlag(ActivityTraceFlags.Recorded)) 
+        if (activity.ActivityTraceFlags.HasFlag(ActivityTraceFlags.Recorded))
         {
             // If the activity is already sampled, we don't need to do anything
             return;

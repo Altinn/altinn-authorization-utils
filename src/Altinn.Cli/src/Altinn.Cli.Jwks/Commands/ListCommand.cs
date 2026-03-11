@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Console;
 using Altinn.Cli.Jwks.Stores;
 using Spectre.Console;
 using System.CommandLine;

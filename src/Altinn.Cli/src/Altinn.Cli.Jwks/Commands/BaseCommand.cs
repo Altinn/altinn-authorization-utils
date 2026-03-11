@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Console;
+using Altinn.Cli.Jwks.Console;
 using Altinn.Cli.Jwks.Options;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;

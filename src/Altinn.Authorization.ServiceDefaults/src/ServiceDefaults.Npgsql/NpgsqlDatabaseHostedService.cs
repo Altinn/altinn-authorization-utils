@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 using Altinn.Authorization.ServiceDefaults.Npgsql.Seeding;
 using Microsoft.Extensions.DependencyInjection;
@@ -133,7 +133,7 @@ internal partial class NpgsqlDatabaseHostedService
     private async Task CreateDatabases(Options options, CancellationToken cancellationToken)
     {
         string? dbServerConnectionString, dbInitConnectionString;
-        
+
         dbServerConnectionString = options.CreateDatabaseClusterConnectionString;
         if (string.IsNullOrEmpty(dbServerConnectionString))
         {

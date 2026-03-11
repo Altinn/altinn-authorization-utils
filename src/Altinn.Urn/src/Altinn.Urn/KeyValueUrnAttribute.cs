@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn;
+namespace Altinn.Urn;
 
 /// <summary>
 /// Marker attribute used by the source generator to generate a key-value URN types.
@@ -7,4 +7,3 @@
 public sealed class KeyValueUrnAttribute : Attribute
 {
 }
-

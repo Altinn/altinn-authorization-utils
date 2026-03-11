@@ -1,10 +1,9 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
 using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;

@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Security;
+using Altinn.Swashbuckle.Security;
 using Altinn.Swashbuckle.Utils;
 using System.Collections;
 using System.Collections.Immutable;
@@ -37,7 +37,7 @@ public class SecurityInfoTests
             {
                 expectedKV.Key.ShouldBe(normalizedKV.Key);
                 expectedKV.Value.Count.ShouldBe(normalizedKV.Value.Count);
-                
+
                 foreach (var (expectedScope, normalizedScope) in expectedKV.Value.Zip(normalizedKV.Value))
                 {
                     expectedScope.ShouldBe(normalizedScope);
@@ -101,23 +101,23 @@ public class SecurityInfoTests
         var adminRequirement = SecurityRequirement.Create("requires admin access", [adminScopeCondition]);
 
         var cases = new TheoryData<SecurityInfo, NormalizedSecurityInfo>();
-        
+
         Add(
-            "empty", 
-            [], 
+            "empty",
+            [],
             []);
 
         Add(
-            "single-no-scope", 
-            [apimRequirement], 
+            "single-no-scope",
+            [apimRequirement],
             [
                  // requires EITHER:
                 [new("apim", [])], // - APIM
             ]);
-        
+
         Add(
-            "apim-read", 
-            [apimRequirement, readRequirement], 
+            "apim-read",
+            [apimRequirement, readRequirement],
             [
                 // requires EITHER:
                 [new("apim", []), new("scope", ["read"])],  // - APIM and scope: read

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 using CommunityToolkit.Diagnostics;
 using System.Buffers;

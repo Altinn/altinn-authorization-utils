@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Tests;
 
 public class AltinnEnvironmentTests
 {
@@ -19,7 +19,7 @@ public class AltinnEnvironmentTests
     public void IsLocalDev(string name, bool expected)
     {
         var env = AltinnEnvironment.Create(name);
-        
+
         env.IsLocalDev.ShouldBe(expected);
     }
 
@@ -145,7 +145,7 @@ public class AltinnEnvironmentTests
     public void EnvironmentId(string name, AltinnEnvironmentId expectedId)
     {
         var env = AltinnEnvironment.Create(name);
-        
+
         env.Id.ShouldBe(expectedId);
     }
 

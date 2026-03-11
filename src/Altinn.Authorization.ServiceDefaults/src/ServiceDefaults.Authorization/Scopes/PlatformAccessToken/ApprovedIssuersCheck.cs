@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Collections.Frozen;
 using System.Runtime.InteropServices;
 
@@ -35,7 +35,7 @@ public abstract class ApprovedIssuersCheck
         {
             throw new ArgumentException("At least one issuer must be specified.", nameof(issuers));
         }
-        
+
         return Create(CollectionsMarshal.AsSpan(names));
     }
 

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 
 /// <summary>
 /// Specifies an authorization requirement that succeeds if the user possesses any one of the specified scopes.

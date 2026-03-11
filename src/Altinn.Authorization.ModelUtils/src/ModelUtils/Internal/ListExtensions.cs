@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ModelUtils.Internal;
+namespace Altinn.Authorization.ModelUtils.Internal;
 
 internal static class ListExtensions
 {

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.EnumUtils;
+using Altinn.Authorization.ModelUtils.EnumUtils;
 using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
@@ -176,7 +176,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
     /// </summary>
     /// <param name="value">When this method returns, contains the value of type <typeparamref name="T"/> if the value is well known.</param>
     /// <returns><see langword="true"/> if the current value is well-known, otherwise <see langword="false"/>.</returns>
-    public bool TryGetValue(out T value) 
+    public bool TryGetValue(out T value)
     {
         value = _value;
         return IsWellKnown;
@@ -232,7 +232,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
 
     private bool Equals(IEnumerable<string> other)
     {
-        if (IsWellKnown) 
+        if (IsWellKnown)
         {
             return false;
         }
@@ -411,7 +411,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
         public override void Write(Utf8JsonWriter writer, NonExhaustiveFlagsEnum<T> value, JsonSerializerOptions options)
         {
             writer.WriteStartArray();
-            
+
             foreach (var known in _model.GetComponents(value._value))
             {
                 _inner.Write(writer, known, options);

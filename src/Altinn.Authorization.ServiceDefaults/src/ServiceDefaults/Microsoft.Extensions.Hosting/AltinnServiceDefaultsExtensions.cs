@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Altinn.Authorization.ServiceDefaults;
 using Altinn.Authorization.ServiceDefaults.AppConfiguration;
 using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
@@ -160,7 +160,7 @@ public static class AltinnServiceDefaultsExtensions
             http.Services.AddOptions<HttpStandardResilienceOptions>()
                 .Configure((HttpStandardResilienceOptions options, HttpStandardResilienceTelemetry telemetry) =>
                 {
-                    options.CircuitBreaker.OnOpened = (context) => 
+                    options.CircuitBreaker.OnOpened = (context) =>
                     {
                         telemetry.CircuitBreakerOpened(clientName, in context);
                         return ValueTask.CompletedTask;
@@ -475,8 +475,8 @@ public static class AltinnServiceDefaultsExtensions
         return builder;
     }
 
-    private static MeterProviderBuilder AddBuiltInMeters(this MeterProviderBuilder meterProviderBuilder) =>
-        meterProviderBuilder.AddMeter(
+    private static MeterProviderBuilder AddBuiltInMeters(this MeterProviderBuilder meterProviderBuilder)
+        => meterProviderBuilder.AddMeter(
             "Microsoft.AspNetCore.Hosting",
             "Microsoft.AspNetCore.Server.Kestrel",
             "System.Net.Http");
@@ -518,7 +518,7 @@ public static class AltinnServiceDefaultsExtensions
                 new("ConnectionStrings:ApplicationInsights", applicationInsightsConnectionString),
             ]);
         }
-        
+
         if (!string.IsNullOrEmpty(applicationInsightsConnectionString))
         {
             logger.Log($"ApplicationInsightsConnectionString = {applicationInsightsConnectionString}");

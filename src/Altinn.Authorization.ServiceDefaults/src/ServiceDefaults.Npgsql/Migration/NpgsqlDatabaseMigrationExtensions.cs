@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Migration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -19,7 +19,7 @@ public static class NpgsqlDatabaseMigrationExtensions
     /// <param name="migration">The migration.</param>
     /// <returns><paramref name="builder"/>.</returns>
     public static INpgsqlDatabaseBuilder AddInlineMigration(
-        this INpgsqlDatabaseBuilder builder, 
+        this INpgsqlDatabaseBuilder builder,
         Func<NpgsqlConnection, IServiceProvider, CancellationToken, Task> migration)
     {
         builder.Services.AddSingleton<INpgsqlDatabaseMigrator>((services) =>

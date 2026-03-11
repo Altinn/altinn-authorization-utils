@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql;
 
@@ -36,7 +36,7 @@ internal class AsyncLazy<T>
         lock (_lock)
         {
             // read barrier is provided by monitor
-            t = _task; 
+            t = _task;
             factory = _factory;
 
             if (factory is null)

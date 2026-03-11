@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.TestUtils.Http;
+namespace Altinn.Authorization.TestUtils.Http;
 
 /// <summary>
 /// Interface used to add filters to a <see cref="IFakeRequestHandler"/>.

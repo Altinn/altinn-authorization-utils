@@ -1,11 +1,11 @@
-﻿using Altinn.Urn.SourceGenerator.Utils;
+using Altinn.Urn.SourceGenerator.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Altinn.Urn.SourceGenerator.Parsing;
 
-internal ref struct UrnRecordParser 
+internal ref struct UrnRecordParser
 {
     internal static UrnRecordParserResult Parse(GeneratorAttributeSyntaxContext ctx, CancellationToken ct)
     {
@@ -35,7 +35,7 @@ internal ref struct UrnRecordParser
     private readonly SemanticModel _semanticModel;
     private readonly RecordDeclarationSyntax _syntax;
     private readonly INamedTypeSymbol _typeSymbol;
-    
+
     private EquitableArray<DiagnosticInfo>.Builder _diagnostics;
     private EquitableArray<UrnPrefixInfo>.Builder _members;
     private HashSet<string> _seenPrefixes;

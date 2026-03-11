@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.AspNet;
+using Altinn.Authorization.ModelUtils.AspNet;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Text.Json.Serialization;
 
@@ -120,10 +120,10 @@ public readonly struct UrnJsonTypeValue<T>
         => new(value);
 
     /// <inheritdoc/>
-    public static bool operator ==(UrnJsonTypeValue<T> left, UrnJsonTypeValue<T> right) 
+    public static bool operator ==(UrnJsonTypeValue<T> left, UrnJsonTypeValue<T> right)
         => left.Equals(right);
 
     /// <inheritdoc/>
-    public static bool operator !=(UrnJsonTypeValue<T> left, UrnJsonTypeValue<T> right) 
+    public static bool operator !=(UrnJsonTypeValue<T> left, UrnJsonTypeValue<T> right)
         => !(left == right);
 }

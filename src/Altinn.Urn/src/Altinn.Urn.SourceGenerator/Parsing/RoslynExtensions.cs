@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -36,9 +36,9 @@ internal static class RoslynExtensions
     /// <param name="symbol">The symbol to use for code analysis; otherwise, <see langword="null"/>.</param>
     /// <returns><see langword="true"/> if a symbol was found, otherwise <see langword="false"/>.</returns>
     public static bool TryGetBestTypeByMetadataName(
-        this Compilation compilation, 
-        string fullyQualifiedMetadataName, 
-        CancellationToken cancellationToken, 
+        this Compilation compilation,
+        string fullyQualifiedMetadataName,
+        CancellationToken cancellationToken,
         [NotNullWhen(true)] out INamedTypeSymbol? symbol)
     {
         // Try to get the unique type with this name, ignoring accessibility

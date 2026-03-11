@@ -5,7 +5,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <XUnitVersion>v2</XUnitVersion>
-  </PropertyGroup>		
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference

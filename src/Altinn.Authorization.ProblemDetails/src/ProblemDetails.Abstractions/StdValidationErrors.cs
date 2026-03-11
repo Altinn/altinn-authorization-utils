@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ProblemDetails;
+namespace Altinn.Authorization.ProblemDetails;
 
 /// <summary>
 /// Standard validation errors.

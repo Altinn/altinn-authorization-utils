@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
-using System.Net.Http;
+using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 

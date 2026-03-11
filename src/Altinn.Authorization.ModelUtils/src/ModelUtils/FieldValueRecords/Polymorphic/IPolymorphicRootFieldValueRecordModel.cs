@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
+namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 
 /// <summary>
 /// A model for a root polymorphic record type that consists of <see cref="FieldValue{T}"/>s.

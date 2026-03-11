@@ -1,9 +1,9 @@
-﻿namespace Altinn.Urn;
+namespace Altinn.Urn;
 
 /// <summary>
 /// Extension methods for <see cref="IKeyValueUrn"/>.
 /// </summary>
-public static class KeyValueUrnExtensions 
+public static class KeyValueUrnExtensions
 {
     /// <summary>
     /// Get the URN as a <see cref="KeyValueUrn"/>.

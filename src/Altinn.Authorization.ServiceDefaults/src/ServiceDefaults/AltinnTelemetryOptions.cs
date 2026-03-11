@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
+using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
@@ -20,7 +20,7 @@ public sealed class AltinnTelemetryOptions
     /// <summary>
     /// Represents configuration options for controlling sampling behavior in telemetry collection.
     /// </summary>
-    public sealed class SamplingOptions 
+    public sealed class SamplingOptions
     {
         /// <summary>
         /// Gets or sets the configuration options for the root sampler, which determines the sampling behavior for telemetry items that do not have a parent context.

@@ -1,4 +1,3 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,7 +85,7 @@ internal sealed class NonExhaustiveEnumSchemaFilter
                 var summaryNode = fieldNode.SelectChildren("summary", string.Empty)
                     ?.OfType<XPathNavigator>()
                     .FirstOrDefault();
-                
+
                 if (summaryNode != null)
                 {
                     description = XmlCommentsTextHelper.Humanize(summaryNode.InnerXml);
@@ -134,7 +133,7 @@ internal sealed class NonExhaustiveEnumSchemaFilter
         {
             throw new ArgumentException("Type is not a NonExhaustiveEnum<T> type.", nameof(type));
         }
-        
+
         var ctor = type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, [enumType]);
         Debug.Assert(ctor is not null);
         return ConstructorInvoker.Create(ctor);

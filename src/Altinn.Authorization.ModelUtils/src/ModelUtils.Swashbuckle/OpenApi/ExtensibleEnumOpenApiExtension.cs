@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi;
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Writers;
 using System.Collections;
@@ -11,46 +11,46 @@ internal sealed class ExtensibleEnumOpenApiExtension
 {
     private readonly List<ExtensibleEnumValue> _values = new();
 
-    public ExtensibleEnumValue this[int index] 
+    public ExtensibleEnumValue this[int index]
     {
         get => _values[index];
         set => _values[index] = value;
     }
 
-    public int Count 
+    public int Count
         => _values.Count;
 
     bool ICollection<ExtensibleEnumValue>.IsReadOnly
         => ((ICollection<ExtensibleEnumValue>)_values).IsReadOnly;
 
-    public void Add(ExtensibleEnumValue item) 
+    public void Add(ExtensibleEnumValue item)
         => _values.Add(item);
 
-    public void Clear() 
+    public void Clear()
         => _values.Clear();
 
-    public bool Contains(ExtensibleEnumValue item) 
+    public bool Contains(ExtensibleEnumValue item)
         => _values.Contains(item);
 
-    public void CopyTo(ExtensibleEnumValue[] array, int arrayIndex) 
+    public void CopyTo(ExtensibleEnumValue[] array, int arrayIndex)
         => _values.CopyTo(array, arrayIndex);
 
-    public IEnumerator<ExtensibleEnumValue> GetEnumerator() 
+    public IEnumerator<ExtensibleEnumValue> GetEnumerator()
         => ((IEnumerable<ExtensibleEnumValue>)_values).GetEnumerator();
 
-    public int IndexOf(ExtensibleEnumValue item) 
+    public int IndexOf(ExtensibleEnumValue item)
         => _values.IndexOf(item);
 
-    public void Insert(int index, ExtensibleEnumValue item) 
+    public void Insert(int index, ExtensibleEnumValue item)
         => _values.Insert(index, item);
 
-    public bool Remove(ExtensibleEnumValue item) 
+    public bool Remove(ExtensibleEnumValue item)
         => _values.Remove(item);
 
-    public void RemoveAt(int index) 
+    public void RemoveAt(int index)
         => _values.RemoveAt(index);
 
-    IEnumerator IEnumerable.GetEnumerator() 
+    IEnumerator IEnumerable.GetEnumerator()
         => ((IEnumerable)_values).GetEnumerator();
 
     void IOpenApiExtension.Write(IOpenApiWriter writer, OpenApiSpecVersion specVersion)

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Telemetry.OpenTelemetry;
+namespace Altinn.Authorization.ServiceDefaults.Telemetry.OpenTelemetry;
 
 // Copied from https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/f7987b5a976f7b363aaebc24e87d2fa4d63d5c4d/src/OpenTelemetry.SemanticConventions/Attributes/HostAttributes.cs
 

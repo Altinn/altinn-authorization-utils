@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
 public abstract partial class DatabaseTestsBase
     : IClassFixture<DbFixture>

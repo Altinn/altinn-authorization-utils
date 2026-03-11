@@ -132,7 +132,7 @@ public static class ShouldlyJsonExtensions
     /// Asserts that the specified <see cref="JsonDocument"/> is structurally equivalent to the provided JSON string.
     /// </summary>
     /// <remarks>Structural equivalence checks ensure that the JSON structure, including keys and value types,
-    /// matches between the actual and expected JSON. Differences in formatting, such as whitespace or property order, 
+    /// matches between the actual and expected JSON. Differences in formatting, such as whitespace or property order,
     /// are ignored.</remarks>
     /// <param name="actual">The <see cref="JsonDocument"/> to compare.</param>
     /// <param name="expected">A JSON string representing the expected structure.</param>
@@ -494,7 +494,7 @@ public static class ShouldlyJsonExtensions
                  {codePart}
                      Should be structurally equivalent to{expectedString}
                      but was{actualString}
-                
+
                  Errors:
                  {errors}
                  """;
@@ -502,12 +502,12 @@ public static class ShouldlyJsonExtensions
             return message;
         }
 
-        private static readonly JsonSerializerOptions _writerOptions 
-            = new JsonSerializerOptions 
+        private static readonly JsonSerializerOptions _writerOptions
+            = new JsonSerializerOptions
             {
 #if NET9_0_OR_GREATER
-                IndentCharacter = ' ', 
-                IndentSize = 2, 
+                IndentCharacter = ' ',
+                IndentSize = 2,
 #endif
                 WriteIndented = true,
             };

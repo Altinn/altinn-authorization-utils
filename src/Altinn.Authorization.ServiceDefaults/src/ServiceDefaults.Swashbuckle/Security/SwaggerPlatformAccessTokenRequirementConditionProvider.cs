@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Altinn.Swashbuckle.Security;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;

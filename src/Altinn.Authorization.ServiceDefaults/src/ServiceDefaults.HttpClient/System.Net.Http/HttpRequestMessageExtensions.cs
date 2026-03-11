@@ -1,4 +1,4 @@
-﻿namespace System.Net.Http;
+namespace System.Net.Http;
 
 /// <summary>
 /// Extension methods for <see cref="HttpRequestMessage"/> related to Altinn Authorization Service Defaults.
@@ -12,7 +12,7 @@ public static class AltinnAuthorizationServiceDefaultsHttpRequestMessageExtensio
     /// </summary>
     /// <param name="request">The <see cref="HttpRequestMessage"/> to check for disabled status.</param>
     /// <returns><see langword="true"/> if platform access token should be disabled for this request, otherwise <see langword="false"/>.</returns>
-    public static bool IsPlatformAccessTokenDisabled(this HttpRequestMessage request) 
+    public static bool IsPlatformAccessTokenDisabled(this HttpRequestMessage request)
         => request.Options.TryGetValue(_disablePlatformAccessTokenOptionsKey, out var disable) && disable;
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Swashbuckle.Examples.Providers;
+namespace Altinn.Swashbuckle.Examples.Providers;
 
 internal sealed class BoolExampleDataProvider
     : ExampleDataProvider<bool>

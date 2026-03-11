@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn;
+namespace Altinn.Urn;
 
 /// <summary>Provides functionality to format the string representation of an object into a URN.</summary>
 public interface IUrnFormattable

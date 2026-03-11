@@ -1,4 +1,4 @@
-﻿using Nerdbank.Streams;
+using Nerdbank.Streams;
 using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -270,4 +270,3 @@ public static class HttpResponseShouldExtensions
         }
     }
 }
-

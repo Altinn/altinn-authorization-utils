@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -95,7 +95,7 @@ public static class NonExhaustiveEnum
             public Factory()
             {
                 var type = typeof(T);
-                
+
                 if (type.GetCustomAttribute<StringEnumConverterAttribute>() is { } attribute)
                 {
                     _converter = attribute.Converter;

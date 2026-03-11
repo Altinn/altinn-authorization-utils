@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 using System.Diagnostics.CodeAnalysis;
 

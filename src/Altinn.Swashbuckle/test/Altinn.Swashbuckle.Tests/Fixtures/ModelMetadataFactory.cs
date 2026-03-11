@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Reflection;
 
 namespace Altinn.Swashbuckle.Tests.Fixtures;

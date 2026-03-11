@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 
@@ -21,7 +21,7 @@ internal class FieldValueConstructorParameterModel<TOwner, TValue>
     public override Type Type => typeof(TValue);
 
     /// <inheritdoc/>
-    public override FieldValue<FieldValue<TValue>> DefaultValue 
+    public override FieldValue<FieldValue<TValue>> DefaultValue
         => base.DefaultValue switch
         {
             { IsUnset: true } => FieldValue<TValue>.Unset,

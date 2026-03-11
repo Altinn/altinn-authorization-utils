@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Azure.Core;
 using Azure.Identity;
@@ -51,7 +51,7 @@ public static class AltinnServiceDefaultsAuthorizationServiceCollectionExtension
     {
         var options = services.AddOptions<PlatformAccessTokenSettings>();
         if (configure is not null)
-        { 
+        {
             options.Configure(configure);
         }
 

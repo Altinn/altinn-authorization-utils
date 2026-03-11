@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -17,7 +17,7 @@ public static partial class ImmutableValueArray
     /// </summary>
     /// <typeparam name="T">The type of element stored in the array.</typeparam>
     /// <returns>An empty array.</returns>
-    public static ImmutableValueArray<T> Create<T>() 
+    public static ImmutableValueArray<T> Create<T>()
         => ImmutableValueArray<T>.Create(ImmutableArray<T>.Empty);
 
     /// <summary>
@@ -216,7 +216,7 @@ public static partial class ImmutableValueArray
     /// Returns the current contents as an <see cref="ImmutableValueArray{T}"/> and sets the collection to a zero length array.
     /// </summary>
     /// <remarks>
-    /// If <see cref="ImmutableArray{T}.Builder.Capacity"/> equals <see cref="ImmutableArray{T}.Builder.Count"/>, 
+    /// If <see cref="ImmutableArray{T}.Builder.Capacity"/> equals <see cref="ImmutableArray{T}.Builder.Count"/>,
     /// the internal array will be extracted as an <see cref="ImmutableValueArray{T}"/> without copying the contents.
     /// Otherwise, the contents will be copied into a new array. The collection will then be set to a zero length array.
     /// </remarks>

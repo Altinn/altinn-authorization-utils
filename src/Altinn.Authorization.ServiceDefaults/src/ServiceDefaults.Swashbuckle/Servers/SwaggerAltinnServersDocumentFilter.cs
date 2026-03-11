@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -27,7 +27,7 @@ internal sealed class SwaggerAltinnServersDocumentFilter
         var defaultOptions = _options.CurrentValue;
         var suffix = options.EnvironmentServerPathSuffix.HasValue ? options.EnvironmentServerPathSuffix : defaultOptions.EnvironmentServerPathSuffix;
 
-        if (options.IncludeLocalhostServer ?? defaultOptions.IncludeLocalhostServer ?? true) 
+        if (options.IncludeLocalhostServer ?? defaultOptions.IncludeLocalhostServer ?? true)
         {
             swaggerDoc.Servers.Add(new OpenApiServer
             {
@@ -54,9 +54,9 @@ internal sealed class SwaggerAltinnServersDocumentFilter
                 Description = "Acceptance Test",
                 Url = string.Concat("https://platform.{environment}.altinn.cloud/", suffix),
                 Variables = new Dictionary<string, OpenApiServerVariable> {
-                    { 
-                        "environment", 
-                        new OpenApiServerVariable 
+                    {
+                        "environment",
+                        new OpenApiServerVariable
                         {
                             Default = "at22",
                             Enum = ["at22", "at23", "at24"],

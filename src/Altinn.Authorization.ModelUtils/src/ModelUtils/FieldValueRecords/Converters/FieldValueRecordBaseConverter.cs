@@ -1,12 +1,11 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
 using System.Buffers;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
 
 namespace Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 
@@ -89,7 +88,7 @@ internal abstract class FieldValueRecordBaseConverter<T>
         }
         writer.WriteEndObject();
     }
-    
+
     /// <summary>
     /// Populates an object from JSON data using a reader and specified options, ensuring required properties are set.
     /// </summary>

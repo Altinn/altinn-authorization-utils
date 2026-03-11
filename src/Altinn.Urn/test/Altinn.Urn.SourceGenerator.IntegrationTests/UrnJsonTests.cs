@@ -1,10 +1,10 @@
-﻿using Altinn.Urn.Json;
+using Altinn.Urn.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
 
-public partial class UrnJsonTests 
+public partial class UrnJsonTests
 {
     private static readonly JsonSerializerOptions _options = new(JsonSerializerDefaults.Web);
 

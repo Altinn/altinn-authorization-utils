@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Stores;
+using Altinn.Cli.Jwks.Stores;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using System.CommandLine;
@@ -46,7 +46,7 @@ internal class StoreOption
             {
                 fromEnv = Environment.CurrentDirectory;
             }
-            
+
             arg = fromEnv;
         }
         else if (result.Tokens is [var token])

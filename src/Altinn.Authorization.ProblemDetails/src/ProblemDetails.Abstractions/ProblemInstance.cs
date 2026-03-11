@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 
@@ -15,7 +15,7 @@ public record class ProblemInstance
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor) 
+    public static ProblemInstance Create(ProblemDescriptor descriptor)
         => new ProblemInstance(descriptor, detail: null, []);
 
     /// <summary>
@@ -33,7 +33,7 @@ public record class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, ProblemExtensionData extensions) 
+    public static ProblemInstance Create(ProblemDescriptor descriptor, ProblemExtensionData extensions)
         => new ProblemInstance(descriptor, detail: null, extensions);
 
     /// <summary>
@@ -52,8 +52,8 @@ public record class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions) 
-        => new ProblemInstance(descriptor, detail: null, [..extensions]);
+    public static ProblemInstance Create(ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
+        => new ProblemInstance(descriptor, detail: null, [.. extensions]);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, and <paramref name="extensions"/>.
@@ -131,6 +131,6 @@ public record class ProblemInstance
     /// Implicitly converts a <see cref="ProblemDescriptor"/> to a <see cref="ProblemInstance"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    public static implicit operator ProblemInstance(ProblemDescriptor descriptor) 
+    public static implicit operator ProblemInstance(ProblemDescriptor descriptor)
         => new ProblemInstance(descriptor, detail: null, []);
 }

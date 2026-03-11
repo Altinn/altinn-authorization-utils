@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 using Altinn.Swashbuckle.Filters;
 using Altinn.Urn.Sample.Api.Json;
 using System.Buffers;

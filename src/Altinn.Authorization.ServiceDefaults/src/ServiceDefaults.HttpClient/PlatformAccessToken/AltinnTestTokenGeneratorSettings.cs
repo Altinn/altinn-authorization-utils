@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 
 namespace Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;

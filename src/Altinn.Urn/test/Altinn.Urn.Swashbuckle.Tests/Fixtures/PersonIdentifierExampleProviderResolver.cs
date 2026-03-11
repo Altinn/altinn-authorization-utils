@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Examples;
+using Altinn.Swashbuckle.Examples;
 
 namespace Altinn.Urn.Swashbuckle.Tests.Fixtures;
 

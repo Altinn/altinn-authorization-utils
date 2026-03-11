@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Nerdbank.Streams;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -39,7 +39,7 @@ internal static class JsonUtils
     {
         using var seq = new Sequence<byte>(ArrayPool<byte>.Shared);
         Serialize(seq, value);
-        return Deserialize<T>(seq.AsReadOnlySequence) 
+        return Deserialize<T>(seq.AsReadOnlySequence)
             ?? ThrowHelper.ThrowInvalidOperationException<T>("Failed to deserialize cloned object.");
     }
 }

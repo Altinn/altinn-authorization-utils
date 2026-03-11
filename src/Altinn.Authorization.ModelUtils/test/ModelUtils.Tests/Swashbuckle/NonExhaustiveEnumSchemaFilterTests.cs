@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Swashbuckle;
+using Altinn.Authorization.ModelUtils.Swashbuckle;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.OpenApi.Models;

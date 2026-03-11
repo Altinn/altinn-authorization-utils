@@ -1,11 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 
 namespace Altinn.Swashbuckle.Examples;
 
 /// <summary>
 /// Entry point for getting example data.
 /// </summary>
-public static class ExampleData 
+public static class ExampleData
 {
     /// <summary>
     /// Gets the default options for getting example data.

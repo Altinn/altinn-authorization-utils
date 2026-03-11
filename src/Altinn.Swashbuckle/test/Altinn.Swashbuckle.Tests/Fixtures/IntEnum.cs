@@ -1,4 +1,4 @@
-﻿namespace Altinn.Swashbuckle.Tests.Fixtures;
+namespace Altinn.Swashbuckle.Tests.Fixtures;
 
 public enum IntEnum : int
 {

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
 /// <summary>
 /// Specifies the result of evaluating whether a parameter should be included in telemetry data for Npgsql operations.

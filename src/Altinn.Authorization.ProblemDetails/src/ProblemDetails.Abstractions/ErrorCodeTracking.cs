@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Diagnostics;
 
 namespace Altinn.Authorization.ProblemDetails;

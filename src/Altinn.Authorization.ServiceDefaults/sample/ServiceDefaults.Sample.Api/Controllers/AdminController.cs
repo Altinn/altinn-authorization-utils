@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -13,7 +13,7 @@ namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
 [ExcludeFromCodeCoverage]
 [Authorize("policy:admin")]
 [PlatformAccessTokenAuthorize]
-public class AdminController 
+public class AdminController
     : ControllerBase
 {
     /// <summary>

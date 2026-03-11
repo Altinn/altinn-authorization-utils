@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -45,7 +45,7 @@ public class NonExhaustiveEnumTests
     {
         NonExhaustiveEnum<Enums.Default> nonExhaustive = Json.Deserialize<NonExhaustiveEnum<Enums.Default>>(@"""not-a-value""");
         var value = Should.NotThrow(() => (string)nonExhaustive);
-        
+
         value.ShouldBe("not-a-value");
     }
 
@@ -77,7 +77,7 @@ public class NonExhaustiveEnumTests
     {
         NonExhaustiveEnum<Enums.Default> nonExhaustive = Json.Deserialize<NonExhaustiveEnum<Enums.Default>>(@"""not-a-value""");
         var value = Should.NotThrow(() => nonExhaustive.UnknownValue);
-        
+
         value.ShouldBe("not-a-value");
     }
 
@@ -85,7 +85,7 @@ public class NonExhaustiveEnumTests
     public void UnknownValue_IsUnknown()
     {
         NonExhaustiveEnum<Enums.Default> nonExhaustive = Json.Deserialize<NonExhaustiveEnum<Enums.Default>>(@"""not-a-value""");
-        
+
         nonExhaustive.IsUnknown.ShouldBeTrue();
         nonExhaustive.IsWellKnown.ShouldBeFalse();
     }
@@ -94,7 +94,7 @@ public class NonExhaustiveEnumTests
     public void WellKnownValue_IsWellKnown()
     {
         NonExhaustiveEnum<Enums.Default> nonExhaustive = Enums.Default.OtherValue3;
-        
+
         nonExhaustive.IsWellKnown.ShouldBeTrue();
         nonExhaustive.IsUnknown.ShouldBeFalse();
     }

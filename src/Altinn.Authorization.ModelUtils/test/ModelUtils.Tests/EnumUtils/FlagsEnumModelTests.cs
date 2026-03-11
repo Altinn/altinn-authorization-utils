@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.EnumUtils;
+using Altinn.Authorization.ModelUtils.EnumUtils;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.ModelUtils.Tests.EnumUtils;

@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 using Yuniql.Extensibility;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql;
 
-internal partial class YuniqlTraceService 
+internal partial class YuniqlTraceService
     : ITraceService
 {
     private readonly ILogger<YuniqlTraceService> _logger;
@@ -47,8 +47,8 @@ internal partial class YuniqlTraceService
     }
 
     [SuppressMessage(
-        "LoggerMessage", 
-        "LOGGEN036:A value being logged doesn't have an effective way to be converted into a string", 
+        "LoggerMessage",
+        "LOGGEN036:A value being logged doesn't have an effective way to be converted into a string",
         Justification = "We can't really do anything more than ToString on these objects we get from yuniql")]
     private static partial class Log
     {

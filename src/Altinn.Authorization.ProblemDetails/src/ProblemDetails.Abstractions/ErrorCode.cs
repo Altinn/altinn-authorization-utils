@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Diagnostics;
 using System.Numerics;
@@ -33,7 +33,7 @@ public readonly struct ErrorCode
         Guard.IsLessThan(code, 100_000);
 
         var domainName = domain.Name.AsSpan();
-        
+
         Span<char> span = stackalloc char[MAX_LENGTH];
         domainName.CopyTo(span);
         span[domainName.Length] = '-';

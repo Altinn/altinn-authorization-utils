@@ -1,4 +1,4 @@
-﻿using Altinn.Urn.Visit;
+using Altinn.Urn.Visit;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Altinn.Urn;
@@ -6,7 +6,7 @@ namespace Altinn.Urn;
 /// <summary>
 /// An URN consisting of a key and a value.
 /// </summary>
-public interface IKeyValueUrn 
+public interface IKeyValueUrn
     : IFormattable
     , ISpanFormattable
 {

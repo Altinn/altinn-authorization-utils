@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -19,7 +19,7 @@ internal sealed class ErrorCodeDomain
 
     internal const int MIN_LENGTH = ROOT_MIN_LENGTH;
     internal const int MAX_LENGTH = ROOT_MAX_LENGTH + SUB_MAX_LENGTH + 1;
-    
+
     private static readonly SearchValues<char> VALID_CHARS
         = SearchValues.Create("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
@@ -49,7 +49,7 @@ internal sealed class ErrorCodeDomain
         Guard.IsNotNullOrWhiteSpace(name);
         Guard.HasSizeLessThanOrEqualTo(name, MAX_LENGTH);
         Guard.HasSizeGreaterThanOrEqualTo(name, MIN_LENGTH);
-        
+
         if (name.AsSpan().ContainsAnyExcept(VALID_CHARS))
         {
             ThrowHelper.ThrowArgumentException(nameof(name), "Domain name must be uppercase ASCII letters only.");

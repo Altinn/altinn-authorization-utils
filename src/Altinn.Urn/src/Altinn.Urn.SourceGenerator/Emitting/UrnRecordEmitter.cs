@@ -1,23 +1,21 @@
-﻿using Altinn.Urn.SourceGenerator.Parsing;
+using Altinn.Urn.SourceGenerator.Parsing;
 using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
 
 namespace Altinn.Urn.SourceGenerator.Emitting;
 
-internal ref struct UrnRecordEmitter 
+internal ref struct UrnRecordEmitter
 {
     public static string Emit(
-        in UrnRecordInfo record, 
-        string jsonConverterAttribute, 
-        string jsonConverterConcreteType, 
-        string jsonVariantConverterConcreteType, 
+        in UrnRecordInfo record,
+        string jsonConverterAttribute,
+        string jsonConverterConcreteType,
+        string jsonVariantConverterConcreteType,
         CancellationToken cancellationToken)
     {
         using var builder = CodeStringBuilder.Rent();
         var emitter = new UrnRecordEmitter(builder, jsonConverterAttribute, jsonConverterConcreteType, jsonVariantConverterConcreteType);
         emitter.Emit(in record, cancellationToken);
-        
+
         return builder.ToString();
     }
 
@@ -27,8 +25,8 @@ internal ref struct UrnRecordEmitter
     private readonly string _jsonVariantConverterConcreteType;
 
     private UrnRecordEmitter(
-        CodeStringBuilder builder, 
-        string jsonConverterAttribute, 
+        CodeStringBuilder builder,
+        string jsonConverterAttribute,
         string jsonConverterConcreteType,
         string jsonVariantConverterConcreteType)
     {
@@ -74,9 +72,9 @@ internal ref struct UrnRecordEmitter
 
         builder.AppendLine($"partial {outer.Keyword} {outer.Name}");
         builder.AppendLine("{");
-        
+
         EmitContainingTypes(inner, in record, builder.Indent(), ct);
-        
+
         builder.AppendLine("}");
     }
 
@@ -95,7 +93,7 @@ internal ref struct UrnRecordEmitter
 
         var indented = builder.Indent();
         EmitRecordMembers(in record, indented, ct);
-        
+
         builder.AppendLine();
         EmitRecordOverrides(in record, indented, ct);
         EmitTypeParsers(in record, indented, ct);
@@ -106,7 +104,7 @@ internal ref struct UrnRecordEmitter
         builder.AppendLine();
         EmitTypeEnum(in record, indented, ct);
         EmitTypeRecords(in record, indented, ct);
-        
+
         builder.AppendLine("}");
     }
 
@@ -773,7 +771,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine($"public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out {member.Name} result)");
         builder_lv2.AppendLine("=> TryParse(s, provider, original: null, out result);");
 
-        
+
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc cref=\"ISpanParsable{TSelf}.TryParse(ReadOnlySpan{char}, IFormatProvider?, out TSelf)\"/>");
         builder_lv1.AppendLine("[CompilerGenerated]");

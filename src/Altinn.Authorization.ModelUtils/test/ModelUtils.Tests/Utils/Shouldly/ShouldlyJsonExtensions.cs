@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -395,7 +395,7 @@ internal static class ShouldlyJsonExtensions
                  {codePart}
                      Should be structurally equivalent to{expectedString}
                      but was{actualString}
-                
+
                  Errors:
                  {errors}
                  """;
@@ -438,6 +438,6 @@ internal static class ShouldlyJsonExtensions
 
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void Unreachable() 
+    private static void Unreachable()
         => throw new UnreachableException();
 }

@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Telemetry;
 using Altinn.Authorization.TestUtils;
 using System.Diagnostics.Metrics;
 

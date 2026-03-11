@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ModelUtils.Tests;
+namespace Altinn.Authorization.ModelUtils.Tests;
 
 public class FieldValueTests
 {
@@ -220,7 +220,8 @@ public class FieldValueTests
     }
 
     [Fact]
-    public void CastToValue_ThrowsForNull() {
+    public void CastToValue_ThrowsForNull()
+    {
         FieldValue<int> value = FieldValue.Null;
 
         Should.Throw<InvalidOperationException>(() => _ = (int)value);

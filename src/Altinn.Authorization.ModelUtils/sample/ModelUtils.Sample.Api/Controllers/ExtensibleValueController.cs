@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Sample.Api.Models;
+using Altinn.Authorization.ModelUtils.Sample.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 

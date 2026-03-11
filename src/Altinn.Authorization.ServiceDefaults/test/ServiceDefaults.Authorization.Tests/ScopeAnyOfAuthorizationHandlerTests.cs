@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
+using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
@@ -7,7 +7,7 @@ namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests;
 
 public class ScopeAnyOfAuthorizationHandlerTests
 {
-    private ScopeAnyOfAuthorizationHandler Sut { get; } 
+    private ScopeAnyOfAuthorizationHandler Sut { get; }
         = new(new DefaultAuthorizationScopeProvider());
 
     /// <summary>
@@ -17,7 +17,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_ValidScope_ContextSuccess()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("altinn:appdeploy", ["altinn:appdeploy"], useAltinnScopePrefix: true);
 
         // Act
@@ -35,7 +35,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_ValidScopeOf2_OneInvalidPresent_ContextSuccess()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("altinn:resourceregistry:write altinn:resourceregistry:read", ["altinn:resourceregistry:admin", "altinn:resourceregistry:write"]);
 
         // Act
@@ -56,7 +56,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [InlineData("scope:end")]
     public async Task HandleAsync_ValidScope_PartOfScopeString_ContextSuccess(string valid)
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("scope:start scope:mid scope:end", [valid]);
 
         // Act
@@ -87,7 +87,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_ValidScopeOf2_OneInvalidPresent_ContextFail()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("altinn:resourceregistry:read", ["altinn:resourceregistry:admin", "altinn:resourceregistry:write"]);
 
         // Act
@@ -104,7 +104,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_ValidScopeOf2_ContextSuccess()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("altinn:resourceregistry:write", ["altinn:resourceregistry:admin", "altinn:resourceregistry:write"]);
 
         // Act
@@ -118,7 +118,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_ValidScope_PartOfLongerScope_ContextSuccess()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("altin:foo:bar:baz altinn:foo:bar altinn:foo", ["altinn:foo:bar"]);
 
         // Act
@@ -136,7 +136,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_InvalidScope_ContextFail()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext("altinn:invalid", ["altinn:appdeploy"], useAltinnScopePrefix: true);
 
         // Act
@@ -153,7 +153,7 @@ public class ScopeAnyOfAuthorizationHandlerTests
     [Fact]
     public async Task HandleAsync_EmptyScope_ContextFail()
     {
-        // Arrange 
+        // Arrange
         AuthorizationHandlerContext context = CreateContext(string.Empty, ["altinn:appdeploy"], useAltinnScopePrefix: true);
 
         // Act

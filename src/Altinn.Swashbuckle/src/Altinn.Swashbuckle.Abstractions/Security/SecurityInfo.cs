@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Immutable;
 
 namespace Altinn.Swashbuckle.Security;
@@ -34,11 +34,11 @@ public sealed class SecurityInfo
     private readonly ImmutableArray<ImmutableArray<KeyValuePair<string, ImmutableArray<string>>>> _normalized;
 
     /// <inheritdoc/>
-    public int Count 
+    public int Count
         => _requirements.Length;
 
     /// <inheritdoc/>
-    public SecurityRequirement this[int index] 
+    public SecurityRequirement this[int index]
         => _requirements[index];
 
     private SecurityInfo(
@@ -65,7 +65,7 @@ public sealed class SecurityInfo
         => ((IEnumerable<SecurityRequirement>)_requirements).GetEnumerator();
 
     /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator() 
+    IEnumerator IEnumerable.GetEnumerator()
         => ((IEnumerable)_requirements).GetEnumerator();
 
     // Distributing AND over OR, i.e. converting a logical formula from CNF (Conjunctive Normal Form) to DNF (Disjunctive Normal Form).
@@ -75,7 +75,7 @@ public sealed class SecurityInfo
     private static ImmutableArray<ImmutableArray<KeyValuePair<string, ImmutableArray<string>>>> Normalize(ImmutableArray<SecurityRequirement> requirements)
     {
         var results = new List<HashSet<(string Scheme, string? Scope)>> { new() };
-        
+
         foreach (var requirement in requirements)
         {
             var newResults = new List<HashSet<(string Scheme, string? Scope)>>();
@@ -144,7 +144,7 @@ public sealed class SecurityInfo
             }
 
             HashCode hash = default;
-            
+
             foreach (var item in obj.OrderBy(i => i.Scheme).ThenBy(i => i.Scope))
             {
                 hash.Add(item.Scheme);

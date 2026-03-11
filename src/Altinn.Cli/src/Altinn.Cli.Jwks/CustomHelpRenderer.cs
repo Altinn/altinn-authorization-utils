@@ -1,4 +1,4 @@
-﻿using Altinn.Cli.Jwks.Commands;
+using Altinn.Cli.Jwks.Commands;
 using System.CommandLine;
 using System.CommandLine.Help;
 using System.CommandLine.Invocation;
@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Altinn.Cli.Jwks;
 
 [ExcludeFromCodeCoverage]
-internal class CustomHelpRenderer(HelpAction action) 
+internal class CustomHelpRenderer(HelpAction action)
     : SynchronousCommandLineAction
 {
     private static readonly HelpOption DefaultHelpOption = new();

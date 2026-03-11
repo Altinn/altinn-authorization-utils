@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils;
+using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 using System.Text.Json;
 
@@ -10,7 +10,7 @@ public class ExtensionDataInterfaceTests
     public void HasExtensionData_Unset_ReturnsFalse()
     {
         IHasExtensionData model = new WithExtensionData(default);
-        
+
         model.HasJsonExtensionData.ShouldBeFalse();
     }
 
@@ -18,7 +18,7 @@ public class ExtensionDataInterfaceTests
     public void HasExtensionData_Object_ReturnsTrue()
     {
         IHasExtensionData model = new WithExtensionData(Json.Deserialize<JsonElement>("{}"));
-        
+
         model.HasJsonExtensionData.ShouldBeTrue();
     }
 
@@ -26,7 +26,7 @@ public class ExtensionDataInterfaceTests
     public void JsonExtensionProperties_Unset_IsEmpty()
     {
         IHasExtensionData model = new WithExtensionData(default);
-        
+
         model.JsonExtensionProperties.ShouldBeEmpty();
     }
 
@@ -37,7 +37,7 @@ public class ExtensionDataInterfaceTests
             """
             { "property1": "value1", "property2": 42 }
             """));
-        
+
         var props = model.JsonExtensionProperties.ToList();
         props.Count.ShouldBe(2);
         props[0].Name.ShouldBe("property1");

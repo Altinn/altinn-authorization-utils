@@ -1,4 +1,4 @@
-﻿using Microsoft.Build.Locator;
+using Microsoft.Build.Locator;
 using System.Runtime.CompilerServices;
 
 namespace Altinn.Urn.SourceGenerator.Tests;

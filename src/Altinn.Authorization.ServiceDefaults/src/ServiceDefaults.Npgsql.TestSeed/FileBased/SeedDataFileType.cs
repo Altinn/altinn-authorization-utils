@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.FileBased;
 
 internal enum SeedDataFileType
 {

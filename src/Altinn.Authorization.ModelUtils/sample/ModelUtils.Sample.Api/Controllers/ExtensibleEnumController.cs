@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Sample.Api.Models;
+using Altinn.Authorization.ModelUtils.Sample.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 
@@ -10,7 +10,7 @@ namespace Altinn.Authorization.ModelUtils.Sample.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ExcludeFromCodeCoverage]
-public class ExtensibleEnumController 
+public class ExtensibleEnumController
     : ControllerBase
 {
     /// <summary>
@@ -39,7 +39,7 @@ public class ExtensibleEnumController
     {
         var enumValue = (Enums.CamelCase)value;
         IEnumerable<NonExhaustiveEnum<Enums.CamelCase>> result = [enumValue];
-        
+
         return new(result);
     }
 
@@ -54,7 +54,7 @@ public class ExtensibleEnumController
     {
         var enumValue = (Enums.LowerCase)value;
         IEnumerable<NonExhaustiveEnum<Enums.LowerCase>> result = [enumValue];
-        
+
         return new(result);
     }
 
@@ -69,7 +69,7 @@ public class ExtensibleEnumController
     {
         var enumValue = (Enums.KebabCaseLower)value;
         IEnumerable<NonExhaustiveEnum<Enums.KebabCaseLower>> result = [enumValue];
-        
+
         return new(result);
     }
 
@@ -99,7 +99,7 @@ public class ExtensibleEnumController
     {
         var enumValue = (Enums.SnakeCaseLower)value;
         IEnumerable<NonExhaustiveEnum<Enums.SnakeCaseLower>> result = [enumValue];
-        
+
         return new(result);
     }
 
@@ -114,7 +114,7 @@ public class ExtensibleEnumController
     {
         var enumValue = (Enums.SnakeCaseUpper)value;
         IEnumerable<NonExhaustiveEnum<Enums.SnakeCaseUpper>> result = [enumValue];
-        
+
         return new(result);
     }
 }

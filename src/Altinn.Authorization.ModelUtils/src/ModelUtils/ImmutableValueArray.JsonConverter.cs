@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -24,7 +24,7 @@ public static partial class ImmutableValueArray
 }
 
 [ImmutableValueArray.ImmutableValueArrayJsonConverter]
-public readonly partial struct ImmutableValueArray<T> 
+public readonly partial struct ImmutableValueArray<T>
 {
     internal sealed class JsonConverter
         : JsonConverter<ImmutableValueArray<T>>

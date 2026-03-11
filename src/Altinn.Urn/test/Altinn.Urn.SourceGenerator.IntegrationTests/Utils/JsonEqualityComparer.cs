@@ -1,4 +1,4 @@
-﻿using FluentAssertions.Equivalency;
+using FluentAssertions.Equivalency;
 using FluentAssertions.Execution;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -74,7 +74,7 @@ internal class JsonEqualityComparer
     }
 
     public EquivalencyResult Handle(
-        Comparands comparands, 
+        Comparands comparands,
         IEquivalencyValidationContext context,
         IEquivalencyValidator nestedValidator)
     {

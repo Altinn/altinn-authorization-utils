@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults;
+namespace Altinn.Authorization.ServiceDefaults;
 
 /// <summary>
 /// Specifies the identifier for an Altinn environment.

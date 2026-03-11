@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 using CommunityToolkit.Diagnostics;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -30,7 +30,7 @@ internal sealed class PolymorphicLeafFieldValueRecordConverter<T, TDiscriminator
     public IPolymorphicFieldValueRecordModel Model => _model;
 
     /// <inheritdoc/>
-    string IPolymorphicFieldValueRecordJsonConverter.DiscriminatorPropertyName 
+    string IPolymorphicFieldValueRecordJsonConverter.DiscriminatorPropertyName
         => ThrowHelper.ThrowNotSupportedException<string>();
 
     /// <inheritdoc/>

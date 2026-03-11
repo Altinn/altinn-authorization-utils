@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -230,7 +230,7 @@ public sealed class UrnEncoded
     private static bool TryDecodeValue(ReadOnlySpan<char> s, string? backingString, [MaybeNullWhen(returnValue: false)] out string result)
     {
         var indexOfFirstEscaped = s.IndexOfAny(UnescapeChars);
-        if (indexOfFirstEscaped < 0) 
+        if (indexOfFirstEscaped < 0)
         {
             // No escaped characters, return as-is.
             result = backingString ?? new string(s);

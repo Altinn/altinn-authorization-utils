@@ -1,4 +1,4 @@
-﻿using Spectre.Console;
+using Spectre.Console;
 
 namespace Altinn.Cli.Jwks.Console;
 

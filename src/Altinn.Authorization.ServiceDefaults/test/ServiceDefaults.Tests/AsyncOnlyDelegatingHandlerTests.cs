@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.HttpClient;
+using Altinn.Authorization.ServiceDefaults.HttpClient;
 
 namespace Altinn.Authorization.ServiceDefaults.Tests;
 
@@ -13,7 +13,7 @@ public class AsyncOnlyDelegatingHandlerTests
         var exception = Should.Throw<NotSupportedException>(() => client.Send(request, CancellationToken.None));
     }
 
-    public class TestHandler 
+    public class TestHandler
         : AsyncOnlyDelegatingHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

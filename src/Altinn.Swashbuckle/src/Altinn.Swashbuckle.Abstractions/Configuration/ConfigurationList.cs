@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Diagnostics;
 
 namespace Altinn.Swashbuckle.Configuration;
@@ -8,7 +8,7 @@ namespace Altinn.Swashbuckle.Configuration;
 /// </summary>
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 [DebuggerTypeProxy(typeof(ConfigurationList<>.ConfigurationListDebugView))]
-internal abstract class ConfigurationList<TItem> 
+internal abstract class ConfigurationList<TItem>
     : IList<TItem>
     , IReadOnlyList<TItem>
 {

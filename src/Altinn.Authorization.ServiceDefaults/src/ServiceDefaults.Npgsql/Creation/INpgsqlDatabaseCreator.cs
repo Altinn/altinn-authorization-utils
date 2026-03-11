@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Creation;
 
 /// <summary>
 /// A service that creates/initializes a PostgreSQL database.

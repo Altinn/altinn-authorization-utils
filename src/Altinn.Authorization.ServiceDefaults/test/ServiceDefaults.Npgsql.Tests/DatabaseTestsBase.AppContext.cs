@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.TestUtils;
+using Altinn.Authorization.TestUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -63,15 +63,15 @@ public abstract partial class DatabaseTestsBase
             _host = host;
         }
 
-        public NpgsqlDataSource DataSource =>
-            _host.Services.GetRequiredService<NpgsqlDataSource>();
+        public NpgsqlDataSource DataSource
+            => _host.Services.GetRequiredService<NpgsqlDataSource>();
 
-        public string MigratorRole =>
-            _host.Services.GetRequiredService<IOptionsMonitor<Migration.NpgsqlDatabaseMigrationOptions>>()
+        public string MigratorRole
+            => _host.Services.GetRequiredService<IOptionsMonitor<Migration.NpgsqlDatabaseMigrationOptions>>()
                 .CurrentValue.MigratorRole!;
 
-        public string AppRole =>
-            _host.Services.GetRequiredService<IOptionsMonitor<Migration.NpgsqlDatabaseMigrationOptions>>()
+        public string AppRole
+            => _host.Services.GetRequiredService<IOptionsMonitor<Migration.NpgsqlDatabaseMigrationOptions>>()
                 .CurrentValue.AppRole!;
 
         public async Task<NpgsqlDataReader> ExecuteReader(string sql, params IEnumerable<NpgsqlParameter> parameters)

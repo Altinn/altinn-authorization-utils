@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql;
 
 /// <summary>
 /// Extensions for Npgsql.

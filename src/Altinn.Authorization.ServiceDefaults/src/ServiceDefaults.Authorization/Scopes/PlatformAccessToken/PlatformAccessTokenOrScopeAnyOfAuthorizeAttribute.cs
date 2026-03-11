@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
+namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
 /// <summary>
 /// Specifies an authorization requirement that allows access if the request includes a valid platform access token or

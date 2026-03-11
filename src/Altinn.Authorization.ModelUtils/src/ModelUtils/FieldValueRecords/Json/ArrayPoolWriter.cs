@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Diagnostics;
 
@@ -38,7 +38,7 @@ internal sealed class ArrayPoolWriter<T>
         {
             _pool.Return(_buffer, clearArray: true);
         }
-        
+
         _buffer = [];
         _index = 0;
     }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using System.Diagnostics.Metrics;
 

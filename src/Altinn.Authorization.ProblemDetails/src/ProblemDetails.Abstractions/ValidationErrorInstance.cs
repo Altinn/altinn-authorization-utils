@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace Altinn.Authorization.ProblemDetails;
@@ -14,7 +14,7 @@ public sealed record class ValidationErrorInstance
     /// </summary>
     /// <param name="descriptor">The <see cref="ValidationErrorDescriptor"/>.</param>
     /// <returns>A <see cref="ValidationErrorInstance"/>.</returns>
-    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor) 
+    public static ValidationErrorInstance Create(ValidationErrorDescriptor descriptor)
         => new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: []);
 
     /// <summary>
@@ -271,7 +271,7 @@ public sealed record class ValidationErrorInstance
     internal ValidationErrorInstance(
         ValidationErrorDescriptor descriptor,
         string? detail,
-        ImmutableArray<string> paths, 
+        ImmutableArray<string> paths,
         ProblemExtensionData extensions)
     {
         _descriptor = descriptor;
@@ -303,7 +303,7 @@ public sealed record class ValidationErrorInstance
     /// </summary>
     /// <remarks>
     /// The paths SHOULD be a set of JSON Pointer values that identify the path(s) to the erroneous field(s) within the request document or parameters.
-    /// 
+    ///
     /// A few examples of JSON Pointers:
     /// <list type="table">
     ///   <listheader>
@@ -343,15 +343,15 @@ public sealed record class ValidationErrorInstance
     /// Implicitly converts a <see cref="ProblemDescriptor"/> to a <see cref="ProblemInstance"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    public static implicit operator ValidationErrorInstance(ValidationErrorDescriptor descriptor) =>
-        new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: []);
+    public static implicit operator ValidationErrorInstance(ValidationErrorDescriptor descriptor)
+        => new ValidationErrorInstance(descriptor, detail: null, paths: [], extensions: []);
 
     [Conditional("DEBUG")]
     private void DebugValidate()
     {
         foreach (var path in _paths)
-        { 
-            if (!path.StartsWith('/')) 
+        {
+            if (!path.StartsWith('/'))
             {
                 Debug.WriteLine($"Validation-error path '{path}' is not valid");
             }

@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Security;
+using Altinn.Swashbuckle.Security;
 using Altinn.Swashbuckle.Tests.Serializers;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -36,7 +36,7 @@ public class SecurityInfoSerializer
 
     private static SecurityInfo DeserializeSecurityInfo(ref Utf8JsonReader reader)
     {
-        if (reader.TokenType != JsonTokenType.StartArray) 
+        if (reader.TokenType != JsonTokenType.StartArray)
         {
             throw new JsonException("Expected start of array");
         }

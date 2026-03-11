@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
+using Altinn.Authorization.ModelUtils.Tests.Utils.Shouldly;
 using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -113,22 +113,22 @@ public static class Json
         // -1 = after single item read
         private int _index = -2;
 
-        public override bool CanRead 
+        public override bool CanRead
             => true;
 
-        public override bool CanSeek 
+        public override bool CanSeek
             => false;
 
-        public override bool CanWrite 
+        public override bool CanWrite
             => false;
 
-        public override long Length 
+        public override long Length
             => ThrowHelper.ThrowNotSupportedException<long>();
 
-        public override long Position 
-        { 
-            get => ThrowHelper.ThrowNotSupportedException<long>(); 
-            set => ThrowHelper.ThrowNotSupportedException(); 
+        public override long Position
+        {
+            get => ThrowHelper.ThrowNotSupportedException<long>();
+            set => ThrowHelper.ThrowNotSupportedException();
         }
 
         public override void Flush()

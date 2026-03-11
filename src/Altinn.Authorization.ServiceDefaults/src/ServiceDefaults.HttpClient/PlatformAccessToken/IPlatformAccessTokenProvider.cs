@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
+namespace Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 
 /// <summary>
 /// Defines a contract for obtaining a platform-access-token for an HTTP request.

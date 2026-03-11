@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils;
+using Altinn.Authorization.ModelUtils;
 using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
@@ -152,7 +152,7 @@ internal sealed class PolymorphicFieldValueRecordModel<T, TDiscriminator>
         _discriminators = discriminators.ToImmutableArray();
 
         var allModels = _descendants.Concat([this]);
-        
+
         _byDiscriminator = allModels
             .SelectMany(static model => model
                 .Discriminators(includeDescendants: false)

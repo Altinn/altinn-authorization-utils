@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Telemetry;
 
@@ -110,7 +110,7 @@ public static class AltinnActivityExtensions
         in TagList tags,
         ActivityContext parentContext = default,
         ReadOnlySpan<ActivityLink> links = default,
-        DateTimeOffset startTime = default) 
+        DateTimeOffset startTime = default)
         => StartActivity(
             source,
             name,

@@ -1,4 +1,4 @@
-﻿namespace Altinn.Urn.Visit;
+namespace Altinn.Urn.Visit;
 
 /// <summary>
 /// A visitable key-value URN.

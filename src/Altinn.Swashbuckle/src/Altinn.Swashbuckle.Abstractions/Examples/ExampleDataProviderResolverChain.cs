@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Configuration;
+using Altinn.Swashbuckle.Configuration;
 using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Swashbuckle.Examples;

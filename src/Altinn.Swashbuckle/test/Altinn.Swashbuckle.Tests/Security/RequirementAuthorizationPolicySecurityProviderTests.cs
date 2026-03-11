@@ -1,4 +1,4 @@
-﻿using Altinn.Swashbuckle.Security;
+using Altinn.Swashbuckle.Security;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Altinn.Swashbuckle.Tests.Security;

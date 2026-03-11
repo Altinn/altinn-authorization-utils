@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
+using Altinn.Authorization.ModelUtils.FieldValueRecords.Json;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;

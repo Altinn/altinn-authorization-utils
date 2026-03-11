@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 using System.Buffers;
 using System.Diagnostics;
 using System.Text.Json;
@@ -196,7 +196,7 @@ internal sealed class JsonExtensionDataBuilder
 
             current = next;
         }
-        
+
         var end = new QuoteReadOnlySegment(Utf8Quote, current.RunningIndex + current.Memory.Length);
         current.NextSegment = end;
 
@@ -211,7 +211,7 @@ internal sealed class JsonExtensionDataBuilder
     private sealed class QuoteReadOnlySegment
         : ReadOnlySequenceSegment<byte>
     {
-        public QuoteReadOnlySegment(ReadOnlyMemory<byte> data, long offset) 
+        public QuoteReadOnlySegment(ReadOnlyMemory<byte> data, long offset)
         {
             Memory = data;
             RunningIndex = offset;

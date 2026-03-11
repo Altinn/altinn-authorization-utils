@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.TestUtils.Http.Filters;
+namespace Altinn.Authorization.TestUtils.Http.Filters;
 
 internal sealed class HttpMethodFilter
     : IFakeRequestFilter

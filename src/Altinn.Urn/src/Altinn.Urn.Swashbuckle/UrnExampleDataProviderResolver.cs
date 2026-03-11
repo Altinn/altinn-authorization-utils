@@ -24,7 +24,7 @@ internal sealed class UrnExampleDataProviderResolver
             {
                 var method = _getBaseUrnProvider.MakeGenericMethod(urnType, variantEnumType);
                 return (ExampleDataProvider?)method.Invoke(null, [options]);
-            } 
+            }
             else
             {
                 var variantIface = type.GetInterfaces().FirstOrDefault(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IKeyValueUrnVariant<,,,>));
@@ -37,7 +37,7 @@ internal sealed class UrnExampleDataProviderResolver
                 urnType = variantIface.GetGenericArguments()[1];
                 variantEnumType = variantIface.GetGenericArguments()[2];
                 var valueType = variantIface.GetGenericArguments()[3];
-                
+
                 var method = _getVariantUrnProvider.MakeGenericMethod(variantType, urnType, variantEnumType, valueType);
                 return (ExampleDataProvider?)method.Invoke(null, [options]);
             }
@@ -139,7 +139,7 @@ internal sealed class UrnExampleDataProviderResolver
                     data.Add(examples.GetEnumerator());
                 }
             }
-            
+
             if (data.Count == 0)
             {
                 return null;

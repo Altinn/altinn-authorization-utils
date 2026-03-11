@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.TestUtils;
+using Altinn.Authorization.TestUtils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -259,7 +259,7 @@ public class ServiceDefaultsTests
         app.Activities.ShouldHaveSingleItem();
     }
 
-    private static ActivityContext CreateActivityContext(bool remote, bool sampled) 
+    private static ActivityContext CreateActivityContext(bool remote, bool sampled)
         => new(
             traceId: ActivityTraceId.CreateRandom(),
             spanId: ActivitySpanId.CreateRandom(),

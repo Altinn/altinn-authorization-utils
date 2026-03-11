@@ -109,14 +109,14 @@ public class ExampleDataTests
         examples.ShouldContain(new TestData { Name = "bar" });
     }
 
-    private sealed class ExampleStringProvider 
+    private sealed class ExampleStringProvider
         : ExampleDataProvider<string>
     {
         public override IEnumerable<string>? GetExamples(ExampleDataOptions options)
             => ["foo", "bar"];
     }
 
-    private sealed class ExampleStringProviderResolver 
+    private sealed class ExampleStringProviderResolver
         : IExampleDataProviderResolver
     {
         public ExampleDataProvider? GetProvider(Type type, ExampleDataOptions options)

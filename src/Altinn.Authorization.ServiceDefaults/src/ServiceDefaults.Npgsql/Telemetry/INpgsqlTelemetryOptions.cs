@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+namespace Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
 /// <summary>
 /// Telemetry options for Npgsql operations.

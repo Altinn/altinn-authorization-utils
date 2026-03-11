@@ -1,4 +1,4 @@
-﻿namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
+namespace Altinn.Authorization.ModelUtils.FieldValueRecords;
 
 /// <summary>
 /// Represents a model for a constructor parameter of a field-value-record.

@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Swashbuckle.Examples;
 
 /// <summary>
 /// Extension methods for <see cref="ExampleDataProvider"/>.
 /// </summary>
-public static class ExampleDataProviderExtensions 
+public static class ExampleDataProviderExtensions
 {
     /// <summary>
     /// Get a typed provider from a non-typed provider.

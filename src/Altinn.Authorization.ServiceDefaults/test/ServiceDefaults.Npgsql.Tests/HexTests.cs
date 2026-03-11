@@ -1,4 +1,4 @@
-﻿using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
+using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 

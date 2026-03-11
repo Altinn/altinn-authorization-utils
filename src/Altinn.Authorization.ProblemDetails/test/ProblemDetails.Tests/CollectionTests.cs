@@ -1,5 +1,3 @@
-﻿using System.Net;
-
 namespace Altinn.Authorization.ProblemDetails.Tests;
 
 public abstract class CollectionTests<TItem, TList, TEnumerator>

@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Altinn.Urn.Json;
 
 /// <summary>
 /// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
-/// 
+///
 /// It supports reading URNs as strings, and writing URNs as strings.
 /// </summary>
 internal sealed class StringUrnJsonConverter
@@ -17,7 +17,7 @@ internal sealed class StringUrnJsonConverter
 
 /// <summary>
 /// A implementation of <see cref="System.Text.Json.Serialization.JsonConverter{T}"/> for <see cref="IKeyValueUrn{TSelf}"/>.
-/// 
+///
 /// It supports reading URNs as strings, and writing URNs as strings.
 /// </summary>
 /// <typeparam name="TWrapper">A utility wrapper type.</typeparam>

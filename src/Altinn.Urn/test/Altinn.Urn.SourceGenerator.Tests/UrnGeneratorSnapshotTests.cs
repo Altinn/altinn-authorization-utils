@@ -1,4 +1,3 @@
-﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 
 namespace Altinn.Urn.SourceGenerator.Tests;
@@ -16,11 +15,11 @@ public class UrnGeneratorSnapshotTests
         var source = $$"""
             using Altinn.Urn;
             using System;
-            
+
             namespace My.Test.Namespace;
-            
+
             [KeyValueUrn]
-            public abstract partial record TestUrn 
+            public abstract partial record TestUrn
             {
                 {{body}}
             }
@@ -114,10 +113,10 @@ public class UrnGeneratorSnapshotTests
             """;
 
         await TestKeyValueUrn(
-            source, 
+            source,
             [
-                DiagnosticDescriptors.UrnTypeMethodPrefixHasWhitespace, 
-                DiagnosticDescriptors.UrnTypeMethodPrefixStartsWithUrn, 
+                DiagnosticDescriptors.UrnTypeMethodPrefixHasWhitespace,
+                DiagnosticDescriptors.UrnTypeMethodPrefixStartsWithUrn,
                 DiagnosticDescriptors.UrnTypeMethodPrefixEndsWithColon,
             ]);
     }
@@ -378,7 +377,7 @@ public class UrnGeneratorSnapshotTests
         var source = """
             using Altinn.Urn;
             using System;
-            
+
             namespace MyNamespace;
 
             public partial class PersonUrnTests
@@ -405,7 +404,7 @@ public class UrnGeneratorSnapshotTests
         var source = """
             using Altinn.Urn;
             using System;
-            
+
             namespace MyNamespace;
 
             public sealed record AccessPackageIdentifier(string Value)

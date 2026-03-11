@@ -1,4 +1,4 @@
-﻿using Azure.Security.KeyVault.Secrets;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography.X509Certificates;
