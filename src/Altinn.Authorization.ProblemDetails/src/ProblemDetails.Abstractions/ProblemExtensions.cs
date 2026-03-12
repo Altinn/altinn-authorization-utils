@@ -127,4 +127,36 @@ public static class ProblemExtensions
     public static ValidationErrorInstance Create(this ValidationErrorDescriptor descriptor, IEnumerable<string> paths, IReadOnlyDictionary<string, string> extensions, string? detail)
         => ValidationErrorInstance.Create(descriptor, paths, extensions, detail);
     #endregion
+
+    #region ValidationErrorInstance.ToProblemInstance
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/summary"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='validationError']"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/returns"/>
+    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError)
+        => validationError.ToProblemInstance(detail: null, extensions: default);
+
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/summary"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='detail']"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='validationError']"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/returns"/>
+    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, string? detail)
+        => validationError.ToProblemInstance(detail, extensions: default);
+
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/summary"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='validationError']"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='extensions']"/>
+    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/returns"/>
+    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, ProblemExtensionData extensions)
+        => validationError.ToProblemInstance(detail: null, extensions);
+
+    /// <summary>
+    /// Creates a new <see cref="ValidationProblemInstance"/> containing the provided <see cref="ValidationErrorInstance"/> and additional details and extensions.
+    /// </summary>
+    /// <param name="validationError">The <see cref="ValidationErrorInstance"/>.</param>
+    /// <param name="detail">The detail message.</param>
+    /// <param name="extensions">The extensions.</param>
+    /// <returns>A new <see cref="ValidationProblemInstance"/>.</returns>
+    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, string? detail, ProblemExtensionData extensions)
+        => new([validationError], detail: detail, extensions: extensions);
+    #endregion
 }
