@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.0.0...Altinn.Authorization.ProblemDetails-v5.1.0) (2026-03-12)
+
+
+### Features
+
+* add utility methods from validation errors to problem details ([#528](https://github.com/Altinn/altinn-authorization-utils/issues/528)) ([62660ae](https://github.com/Altinn/altinn-authorization-utils/commit/62660ae19a9ac8baa2eb9e8645207caa89f51dd4))
+
 ## [5.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v4.0.1...Altinn.Authorization.ProblemDetails-v5.0.0) (2026-02-17)
 
 
