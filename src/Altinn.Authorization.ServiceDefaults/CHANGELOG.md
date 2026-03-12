@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.6](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.5...Altinn.Authorization.ServiceDefaults-v5.2.6) (2026-03-12)
+
+
+### Bug Fixes
+
+* otel log resource name ([#529](https://github.com/Altinn/altinn-authorization-utils/issues/529)) ([140bd83](https://github.com/Altinn/altinn-authorization-utils/commit/140bd831f516e8aba2685fdd458b9abb88f6269a))
+
 ## [5.2.5](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.4...Altinn.Authorization.ServiceDefaults-v5.2.5) (2026-03-11)
 
 
