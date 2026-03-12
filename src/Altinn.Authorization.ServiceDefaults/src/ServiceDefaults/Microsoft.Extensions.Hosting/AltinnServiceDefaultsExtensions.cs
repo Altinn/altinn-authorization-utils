@@ -239,7 +239,7 @@ public static class AltinnServiceDefaultsExtensions
 
         if (otel is not null)
         {
-            logger.LogInformation("OpenTelemetry Resource: {ResourceAttributes}", otel.Attributes);
+            logger.LogInformation("OpenTelemetry logging resource: {ResourceAttributes}", otel.Attributes);
         }
 
         app.UseForwardedHeaders();
