@@ -472,7 +472,7 @@ partial record AccessPackageUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static AccessPackage Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+        public static new AccessPackage Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
         {
             if (!TryParse(s, provider, original: null, out AccessPackage? result))
             {
@@ -484,7 +484,7 @@ partial record AccessPackageUrn
 
         /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)"/>
         [CompilerGenerated]
-        public static AccessPackage Parse(ReadOnlySpan<char> s)
+        public static new AccessPackage Parse(ReadOnlySpan<char> s)
         {
             if (!TryParse(s, provider: null, original: null, out AccessPackage? result))
             {
@@ -506,7 +506,7 @@ partial record AccessPackageUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static AccessPackage Parse(string? s, IFormatProvider? provider)
+        public static new AccessPackage Parse(string? s, IFormatProvider? provider)
         {
             ArgumentNullException.ThrowIfNull(s);
 
@@ -520,7 +520,7 @@ partial record AccessPackageUrn
 
         /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)"/>
         [CompilerGenerated]
-        public static AccessPackage Parse(string? s)
+        public static new AccessPackage Parse(string? s)
         {
             ArgumentNullException.ThrowIfNull(s);
 

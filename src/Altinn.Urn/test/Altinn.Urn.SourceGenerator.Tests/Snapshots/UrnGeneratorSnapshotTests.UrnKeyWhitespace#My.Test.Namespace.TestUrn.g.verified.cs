@@ -475,7 +475,7 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static Test2 Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+        public static new Test2 Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
         {
             if (!TryParse(s, provider, original: null, out Test2? result))
             {
@@ -487,7 +487,7 @@ partial record TestUrn
 
         /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)"/>
         [CompilerGenerated]
-        public static Test2 Parse(ReadOnlySpan<char> s)
+        public static new Test2 Parse(ReadOnlySpan<char> s)
         {
             if (!TryParse(s, provider: null, original: null, out Test2? result))
             {
@@ -509,7 +509,7 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static Test2 Parse(string? s, IFormatProvider? provider)
+        public static new Test2 Parse(string? s, IFormatProvider? provider)
         {
             ArgumentNullException.ThrowIfNull(s);
 
@@ -523,7 +523,7 @@ partial record TestUrn
 
         /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)"/>
         [CompilerGenerated]
-        public static Test2 Parse(string? s)
+        public static new Test2 Parse(string? s)
         {
             ArgumentNullException.ThrowIfNull(s);
 

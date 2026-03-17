@@ -781,7 +781,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
-        builder_lv1.AppendLine($"""public static {member.Name} Parse(ReadOnlySpan<char> s, IFormatProvider? provider)""");
+        builder_lv1.AppendLine($"""public static new {member.Name} Parse(ReadOnlySpan<char> s, IFormatProvider? provider)""");
         builder_lv1.AppendLine("{");
         builder_lv2.AppendLine($"if (!TryParse(s, provider, original: null, out {member.Name}? result))");
         builder_lv2.AppendLine("{");
@@ -794,7 +794,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc cref=\"ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)\"/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
-        builder_lv1.AppendLine($"""public static {member.Name} Parse(ReadOnlySpan<char> s)""");
+        builder_lv1.AppendLine($"""public static new {member.Name} Parse(ReadOnlySpan<char> s)""");
         builder_lv1.AppendLine("{");
         builder_lv2.AppendLine($"if (!TryParse(s, provider: null, original: null, out {member.Name}? result))");
         builder_lv2.AppendLine("{");
@@ -819,7 +819,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
-        builder_lv1.AppendLine($"public static {member.Name} Parse(string? s, IFormatProvider? provider)");
+        builder_lv1.AppendLine($"public static new {member.Name} Parse(string? s, IFormatProvider? provider)");
         builder_lv1.AppendLine("{");
         builder_lv2.AppendLine("ArgumentNullException.ThrowIfNull(s);");
         builder_lv2.AppendLine();
@@ -834,7 +834,7 @@ internal ref struct UrnRecordEmitter
         builder_lv1.AppendLine();
         builder_lv1.AppendLine("/// <inheritdoc cref=\"IParsable{TSelf}.Parse(string, IFormatProvider?)\"/>");
         builder_lv1.AppendLine("[CompilerGenerated]");
-        builder_lv1.AppendLine($"public static {member.Name} Parse(string? s)");
+        builder_lv1.AppendLine($"public static new {member.Name} Parse(string? s)");
         builder_lv1.AppendLine("{");
         builder_lv2.AppendLine("ArgumentNullException.ThrowIfNull(s);");
         builder_lv2.AppendLine();

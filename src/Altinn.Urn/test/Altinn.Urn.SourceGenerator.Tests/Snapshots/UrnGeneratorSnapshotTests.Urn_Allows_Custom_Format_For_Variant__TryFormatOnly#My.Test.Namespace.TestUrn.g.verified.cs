@@ -475,7 +475,7 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static PartyUuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+        public static new PartyUuid Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
         {
             if (!TryParse(s, provider, original: null, out PartyUuid? result))
             {
@@ -487,7 +487,7 @@ partial record TestUrn
 
         /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)"/>
         [CompilerGenerated]
-        public static PartyUuid Parse(ReadOnlySpan<char> s)
+        public static new PartyUuid Parse(ReadOnlySpan<char> s)
         {
             if (!TryParse(s, provider: null, original: null, out PartyUuid? result))
             {
@@ -509,7 +509,7 @@ partial record TestUrn
 
         /// <inheritdoc/>
         [CompilerGenerated]
-        public static PartyUuid Parse(string? s, IFormatProvider? provider)
+        public static new PartyUuid Parse(string? s, IFormatProvider? provider)
         {
             ArgumentNullException.ThrowIfNull(s);
 
@@ -523,7 +523,7 @@ partial record TestUrn
 
         /// <inheritdoc cref="IParsable{TSelf}.Parse(string, IFormatProvider?)"/>
         [CompilerGenerated]
-        public static PartyUuid Parse(string? s)
+        public static new PartyUuid Parse(string? s)
         {
             ArgumentNullException.ThrowIfNull(s);
 
