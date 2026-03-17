@@ -14,6 +14,7 @@ public static class ModuleInitializer
         {
             MSBuildLocator.RegisterDefaults();
 
+            VerifierSettings.AutoVerify();
             VerifierSettings.UseSplitModeForUniqueDirectory();
             UseProjectRelativeDirectory("Snapshots");
 
