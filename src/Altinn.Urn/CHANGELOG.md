@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.2.0...Altinn.Urn-v4.2.1) (2026-03-17)
+
+
+### Bug Fixes
+
+* override warning in generated URN code ([#532](https://github.com/Altinn/altinn-authorization-utils/issues/532)) ([b57a8ff](https://github.com/Altinn/altinn-authorization-utils/commit/b57a8ff4bfa3518dd384b52316c262f3ccbb7bbc))
+
 ## [4.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.1.2...Altinn.Urn-v4.2.0) (2026-02-16)
 
 
