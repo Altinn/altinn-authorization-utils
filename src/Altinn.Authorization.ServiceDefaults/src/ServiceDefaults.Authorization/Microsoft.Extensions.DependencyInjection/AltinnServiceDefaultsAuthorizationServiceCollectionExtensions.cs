@@ -84,7 +84,7 @@ public static class AltinnServiceDefaultsAuthorizationServiceCollectionExtension
 
                 credentialList.Add(new EnvironmentCredential());
                 credentialList.Add(new WorkloadIdentityCredential());
-                credentialList.Add(new ManagedIdentityCredential());
+                credentialList.Add(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned));
 
                 return new ChainedTokenCredential([.. credentialList]);
             });

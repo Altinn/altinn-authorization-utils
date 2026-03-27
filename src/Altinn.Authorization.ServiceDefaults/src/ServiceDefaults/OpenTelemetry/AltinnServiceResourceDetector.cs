@@ -86,8 +86,14 @@ internal sealed partial class AltinnServiceResourceDetector
 
     internal static class TagProvider
     {
-        public static void ProvideTags(ITagCollector list, IEnumerable<KeyValuePair<string, object>> param)
+        public static void ProvideTags(ITagCollector? list, IEnumerable<KeyValuePair<string, object>>? param)
         {
+            if (param is null || list is null)
+            {
+                return;
+            }
+
+
             foreach (var kvp in param)
             {
                 list.Add(kvp.Key, kvp.Value);

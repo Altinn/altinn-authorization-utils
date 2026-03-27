@@ -12,26 +12,26 @@ public partial class UrnParseAndSerializeTests
     public void GeneralUrnTests(string urn, PersonUrn.Type type, string keyString, string valueString)
     {
         Assert.True(PersonUrn.TryParse(urn, out var personUrn));
-        personUrn.Urn.Should().Be(urn);
-        personUrn.UrnType.Should().Be(type);
+        personUrn.Urn.ShouldBe(urn);
+        personUrn.UrnType.ShouldBe(type);
 
-        new string(personUrn.KeySpan).Should().Be(keyString);
-        new string(personUrn.ValueSpan).Should().Be(valueString);
+        new string(personUrn.KeySpan).ShouldBe(keyString);
+        new string(personUrn.ValueSpan).ShouldBe(valueString);
 
         var formatted = $"urn:{personUrn:P}:{personUrn:S}";
-        formatted.Should().Be(urn);
+        formatted.ShouldBe(urn);
 
         formatted = $"{personUrn}";
-        formatted.Should().Be(urn);
+        formatted.ShouldBe(urn);
     }
 
     [Fact]
     public void VariantCanParse()
     {
-        PersonUrn.PartyId.TryParse("urn:altinn:person:identifier-no:12345678901", out _).Should().BeFalse();
-        PersonUrn.IdentifierNo.TryParse("urn:altinn:person:identifier-no:12345678901", out var personId).Should().BeTrue();
-        personId.Should().NotBeNull();
-        personId.Value.Should().Be(PersonIdentifier.Parse("12345678901", null));
+        PersonUrn.PartyId.TryParse("urn:altinn:person:identifier-no:12345678901", out _).ShouldBeFalse();
+        PersonUrn.IdentifierNo.TryParse("urn:altinn:person:identifier-no:12345678901", out var personId).ShouldBeTrue();
+        personId.ShouldNotBeNull();
+        personId.Value.ShouldBe(PersonIdentifier.Parse("12345678901", null));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public partial class UrnParseAndSerializeTests
     {
         Assert.True(AnyUrn.TryParse("urn:any:foo:bar", out var anyUrn));
         Assert.True(anyUrn.IsAny(out var value));
-        value.Value.Should().Be("foo:bar");
+        value.Value.ShouldBe("foo:bar");
     }
 
     [Fact]
@@ -47,11 +47,11 @@ public partial class UrnParseAndSerializeTests
     {
         Assert.True(HierarchicalUrn.TryParse("urn:parent:123", out var parent));
         Assert.True(parent.IsParent(out var parentId));
-        parentId.Should().Be(123);
+        parentId.ShouldBe(123);
 
         Assert.True(HierarchicalUrn.TryParse("urn:parent:child:456", out var child));
         Assert.True(child.IsChild(out var childId));
-        childId.Should().Be(456);
+        childId.ShouldBe(456);
     }
 
     [KeyValueUrn]

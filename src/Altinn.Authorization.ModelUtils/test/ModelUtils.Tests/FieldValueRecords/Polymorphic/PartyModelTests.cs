@@ -898,8 +898,11 @@ public class PartyModelTests
     public record PartyRecord
         : IHasExtensionData
     {
+        // CS0649: this field is populated by serializers via [JsonExtensionData], not by direct assignments in code.
+#pragma warning disable CS0649
         [JsonExtensionData]
         private readonly JsonExtensionData _extensionData;
+#pragma warning restore CS0649
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.

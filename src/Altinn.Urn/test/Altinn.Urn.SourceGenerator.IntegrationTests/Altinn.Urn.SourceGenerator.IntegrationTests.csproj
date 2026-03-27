@@ -4,10 +4,10 @@
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <XUnitVersion>v2</XUnitVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils\Altinn.Authorization.TestUtils.csproj" />
     <ProjectReference
       Include="..\..\src\Altinn.Urn.SourceGenerator\Altinn.Urn.SourceGenerator.csproj"
       ReferenceOutputAssembly="false" OutputItemType="Analyzer" />

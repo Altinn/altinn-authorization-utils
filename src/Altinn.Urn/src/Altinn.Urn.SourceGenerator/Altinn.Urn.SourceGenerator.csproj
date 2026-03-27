@@ -5,17 +5,14 @@
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
 		<!-- 👇 We don't want to reference the source generator dll directly in consuming projects -->
 		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<!-- 👇 Since we target netstandard2.0 we need to manually set the lang version to get newer
-		language features -->
-		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
 		<!-- 👇 We don't want the source generator to be packable by itself, instead it's included in
 		the Altinn.Urn package -->
 		<IsPackable>false</IsPackable>
 
 		<PolyStringInterpolation>true</PolyStringInterpolation>
 		<PolyUseEmbeddedAttribute>true</PolyUseEmbeddedAttribute>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
