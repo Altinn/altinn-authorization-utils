@@ -102,10 +102,8 @@ internal struct CollectionBuilder<T>
             AddToOverflow(ref this, item);
         }
 
-        /// <summary>
-        /// Adds an item to the overflow list. Slow path outlined from Add to maximize the chance for the fast path to be inlined.
-        /// </summary>
-        /// <param name="item">Item to add to the list.</param>
+        // Adds an item to the overflow list. Slow path outlined from Add to maximize
+        // the chance for the fast path to be inlined.
         [MethodImpl(MethodImplOptions.NoInlining)]
         static void AddToOverflow(ref CollectionBuilder<T> self, T item)
         {

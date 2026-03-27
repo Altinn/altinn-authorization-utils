@@ -657,8 +657,11 @@ public class FieldValueRecordModelTests
     [FieldValueRecord]
     public record WithExtensionData
     {
+        // CS0649: this field is populated by serializers via [JsonExtensionData], not by direct assignments in code.
+#pragma warning disable CS0649
         [JsonExtensionData]
         private readonly JsonElement _extensionData;
+#pragma warning restore CS0649
 
         public required FieldValue<string> OptionalString { get; init; }
 

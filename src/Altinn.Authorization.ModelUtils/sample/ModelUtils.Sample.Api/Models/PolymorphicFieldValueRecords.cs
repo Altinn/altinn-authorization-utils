@@ -304,8 +304,11 @@ public static class PolymorphicFieldValueRecords
     public record PartyRecord
         : IHasExtensionData
     {
+        // CS0649: this field is populated by serializers via [JsonExtensionData], not by direct assignments in code.
+#pragma warning disable CS0649
         [JsonExtensionData]
         private readonly JsonElement _extensionData;
+#pragma warning restore CS0649
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PartyRecord"/> class.
@@ -466,7 +469,7 @@ public static class PolymorphicFieldValueRecords
         public required FieldValue<StreetAddress> Address { get; init; }
 
         /// <summary>
-        /// Gets the (optional) <see cref="Parties.MailingAddress"/> of the person.
+        /// Gets the (optional) <see cref="MailingAddress"/> of the person.
         /// </summary>
         public required FieldValue<MailingAddress> MailingAddress { get; init; }
 

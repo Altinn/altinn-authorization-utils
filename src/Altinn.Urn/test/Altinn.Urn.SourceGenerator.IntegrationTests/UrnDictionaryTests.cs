@@ -1,4 +1,4 @@
-using Altinn.Urn.SourceGenerator.IntegrationTests.Utils;
+using Altinn.Authorization.TestUtils.Shouldly;
 using System.Text.Json;
 
 namespace Altinn.Urn.SourceGenerator.IntegrationTests;
@@ -10,7 +10,7 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.Should().BeEmpty();
+        dict.Count.ShouldBe(0);
     }
 
     [Fact]
@@ -18,7 +18,7 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.IsReadOnly.Should().BeFalse();
+        dict.IsReadOnly.ShouldBeFalse();
     }
 
     [Fact]
@@ -26,8 +26,7 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.Invoking(d => d[TestUrn.Type.Organization])
-            .Should().Throw<KeyNotFoundException>();
+        Should.Throw<KeyNotFoundException>(() => _ = dict[TestUrn.Type.Organization]);
     }
 
     [Fact]
@@ -36,7 +35,7 @@ public partial class UrnDictionaryTests
         /// <inheritdoc cref="ISpanParsable{TSelf}.Parse(ReadOnlySpan{char}, IFormatProvider?)"/>
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.ContainsKey(TestUrn.Type.Organization).Should().BeFalse();
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeFalse();
     }
 
     [Fact]
@@ -44,8 +43,8 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.TryGetValue(TestUrn.Type.Organization, out var value).Should().BeFalse();
-        value.Should().BeNull();
+        dict.TryGetValue(TestUrn.Type.Organization, out var value).ShouldBeFalse();
+        value.ShouldBeNull();
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public partial class UrnDictionaryTests
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
         dict.Add(TestUrn.Organization.Create(123456789));
-        dict.Should().ContainKey(TestUrn.Type.Organization);
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeTrue();
     }
 
     [Fact]
@@ -63,8 +62,7 @@ public partial class UrnDictionaryTests
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
         dict.Add(TestUrn.Organization.Create(123456789));
-        dict.Invoking(d => d.Add(TestUrn.Organization.Create(987654321)))
-            .Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(() => dict.Add(TestUrn.Organization.Create(987654321)));
     }
 
     [Fact]
@@ -72,8 +70,8 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.TryAdd(TestUrn.Organization.Create(123456789)).Should().BeTrue();
-        dict.Should().ContainKey(TestUrn.Type.Organization);
+        dict.TryAdd(TestUrn.Organization.Create(123456789)).ShouldBeTrue();
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeTrue();
     }
 
     [Fact]
@@ -84,11 +82,11 @@ public partial class UrnDictionaryTests
         var org1 = TestUrn.Organization.Create(123456789);
         var org2 = TestUrn.Organization.Create(987654321);
 
-        dict.TryAdd(org1).Should().BeTrue();
-        dict.TryAdd(org2).Should().BeFalse();
+        dict.TryAdd(org1).ShouldBeTrue();
+        dict.TryAdd(org2).ShouldBeFalse();
 
-        dict.Should().ContainKey(TestUrn.Type.Organization)
-            .WhoseValue.Should().Be(org1);
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeTrue();
+        dict[TestUrn.Type.Organization].ShouldBe(org1);
     }
 
     [Fact]
@@ -97,7 +95,7 @@ public partial class UrnDictionaryTests
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
         dict.Add(TestUrn.Organization.Create(123456789));
-        dict.ContainsKey(TestUrn.Type.Organization).Should().BeTrue();
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeTrue();
     }
 
     [Fact]
@@ -108,8 +106,8 @@ public partial class UrnDictionaryTests
         var org = TestUrn.Organization.Create(123456789);
         dict.Add(org);
 
-        dict.TryGetValue(TestUrn.Type.Organization, out var value).Should().BeTrue();
-        value.Should().Be(org);
+        dict.TryGetValue(TestUrn.Type.Organization, out var value).ShouldBeTrue();
+        value.ShouldBe(org);
     }
 
     [Fact]
@@ -121,7 +119,7 @@ public partial class UrnDictionaryTests
         dict.Add(TestUrn.Party.Create(987654321));
 
         dict.Clear();
-        dict.Should().BeEmpty();
+        dict.Count.ShouldBe(0);
     }
 
     [Fact]
@@ -129,7 +127,7 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.ContainsKey(TestUrn.Type.Organization).Should().BeFalse();
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeFalse();
     }
 
     [Fact]
@@ -137,8 +135,8 @@ public partial class UrnDictionaryTests
     {
         var dict = new KeyValueUrnDictionary<TestUrn, TestUrn.Type>();
 
-        dict.TryGetValue(TestUrn.Type.Organization, out var value).Should().BeFalse();
-        value.Should().BeNull();
+        dict.TryGetValue(TestUrn.Type.Organization, out var value).ShouldBeFalse();
+        value.ShouldBeNull();
     }
 
     [Fact]
@@ -149,8 +147,8 @@ public partial class UrnDictionaryTests
         TestUrn org = TestUrn.Organization.Create(123456789);
         dict.Add(org);
 
-        ((ICollection<TestUrn>)dict).Contains(org).Should().BeTrue();
-        ((ICollection<KeyValuePair<TestUrn.Type, TestUrn>>)dict).Contains(KeyValuePair.Create(org.UrnType, org)).Should().BeTrue();
+        ((ICollection<TestUrn>)dict).Contains(org).ShouldBeTrue();
+        ((ICollection<KeyValuePair<TestUrn.Type, TestUrn>>)dict).Contains(KeyValuePair.Create(org.UrnType, org)).ShouldBeTrue();
     }
 
     [Fact]
@@ -173,10 +171,8 @@ public partial class UrnDictionaryTests
             }
             """;
 
-        var actual = JsonDocument.Parse(actualString);
-        var expected = JsonDocument.Parse(expectedString);
-
-        actual.Should().BeEquivalentTo(expected, opt => opt.Using(JsonEqualityComparer.Instance));
+        using var actual = JsonDocument.Parse(actualString);
+        actual.ShouldBeStructurallyEquivalentTo(expectedString);
     }
 
     [Fact]
@@ -192,13 +188,14 @@ public partial class UrnDictionaryTests
             """;
 
         var dict = JsonSerializer.Deserialize<KeyValueUrnDictionary<TestUrn, TestUrn.Type>>(json);
-        dict.Should().HaveCount(3);
-        dict.Should().ContainKey(TestUrn.Type.Organization)
-            .WhoseValue.Should().Be(TestUrn.Organization.Create(123456789));
-        dict.Should().ContainKey(TestUrn.Type.Party)
-            .WhoseValue.Should().Be(TestUrn.Party.Create(42));
-        dict.Should().ContainKey(TestUrn.Type.OrganizationRole)
-            .WhoseValue.Should().Be(TestUrn.OrganizationRole.Create(29));
+        dict.ShouldNotBeNull();
+        dict.Count.ShouldBe(3);
+        dict.ContainsKey(TestUrn.Type.Organization).ShouldBeTrue();
+        dict[TestUrn.Type.Organization].ShouldBe(TestUrn.Organization.Create(123456789));
+        dict.ContainsKey(TestUrn.Type.Party).ShouldBeTrue();
+        dict[TestUrn.Type.Party].ShouldBe(TestUrn.Party.Create(42));
+        dict.ContainsKey(TestUrn.Type.OrganizationRole).ShouldBeTrue();
+        dict[TestUrn.Type.OrganizationRole].ShouldBe(TestUrn.OrganizationRole.Create(29));
     }
 
     [KeyValueUrn]

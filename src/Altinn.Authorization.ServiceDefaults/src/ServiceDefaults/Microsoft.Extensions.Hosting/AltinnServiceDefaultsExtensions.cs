@@ -611,7 +611,7 @@ public static class AltinnServiceDefaultsExtensions
             if (enableManagedIdentityCredential)
             {
                 logger.Log("adding config from keyvault using managed identity credentials");
-                credentialList.Add(new ManagedIdentityCredential());
+                credentialList.Add(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned));
             }
 
             if (credentialList.Count == 0)
@@ -676,7 +676,7 @@ public static class AltinnServiceDefaultsExtensions
             if (enableManagedIdentityCredential)
             {
                 logger.Log("adding config from appconfiguration using managed identity credentials");
-                credentialList.Add(new ManagedIdentityCredential());
+                credentialList.Add(new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned));
             }
 
             if (credentialList.Count == 0)
