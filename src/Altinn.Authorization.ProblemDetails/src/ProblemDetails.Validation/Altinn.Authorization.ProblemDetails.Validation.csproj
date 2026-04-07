@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProblemDetails.Abstractions\Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
