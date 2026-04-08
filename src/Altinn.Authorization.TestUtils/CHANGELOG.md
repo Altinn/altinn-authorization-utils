@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.6.1...Altinn.Authorization.TestUtils-v3.7.0) (2026-04-08)
+
+
+### Features
+
+* add validation library ([#539](https://github.com/Altinn/altinn-authorization-utils/issues/539)) ([e223f30](https://github.com/Altinn/altinn-authorization-utils/commit/e223f30e36a03d0702eb421f7f7549a4da922277))
+
 ## [3.6.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.6.0...Altinn.Authorization.TestUtils-v3.6.1) (2026-02-17)
 
 
