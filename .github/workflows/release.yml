@@ -77,7 +77,28 @@ jobs:
         working-directory: ${{ matrix.path }}
         run: dotnet build -c Release
 
+      - name: Check if vertical contains tests
+        id: check-tests
+        working-directory: ${{ matrix.path }}
+        run: |
+          # 1. list all projects in the solution
+          # 2. trim whitespace and normalize path separators
+          # 3. filter out lines ending with *proj (e.g., .csproj, .fsproj, .vbproj)
+          # 4. for each project file, extract the value of IsTestingPlatformApplication
+          # 5. check if any of the values is true
+          if dotnet sln list \
+            | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s#\\#/#g' \
+            | grep -E 'proj$' \
+            | xargs -I{} dotnet msbuild "{}" -getProperty:IsTestingPlatformApplication \
+            | grep -qx 'true'
+          then
+            echo "has_tests=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "has_tests=false" >>"$GITHUB_OUTPUT"
+          fi
+
       - name: Test
+        if: steps.check-tests.outputs.has_tests == 'true'
         working-directory: ${{ matrix.path }}
         run: dotnet test -c Release --no-build
 
