@@ -27,7 +27,6 @@
         <PackageReference Include="coverlet.mtp" />
         <PackageReference Include="Shouldly" Condition=" '$(XUnitVersion)' == 'v3' " />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
         <PackageReference Include="xunit.v3.mtp-v2" Condition=" '$(XUnitVersion)' == 'v3' " />
         <PackageReference Include="xunit.runner.visualstudio">
           <PrivateAssets>all</PrivateAssets>
