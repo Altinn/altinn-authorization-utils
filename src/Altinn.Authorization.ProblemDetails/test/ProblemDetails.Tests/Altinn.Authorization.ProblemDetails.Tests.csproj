@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils\Altinn.Authorization.TestUtils.csproj" />
     <ProjectReference Include="..\..\src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj" />
+    <ProjectReference Include="..\..\src\ProblemDetails.Validation\Altinn.Authorization.ProblemDetails.Validation.csproj" />
   </ItemGroup>
 
 </Project>
