@@ -109,4 +109,7 @@ internal sealed class Console
 
     void IAnsiConsole.Write(IRenderable renderable)
         => _stdOut.Write(renderable);
+
+    void IAnsiConsole.WriteAnsi(Action<Spectre.Console.AnsiWriter> action)
+        => _stdOut.WriteAnsi(action);
 }
