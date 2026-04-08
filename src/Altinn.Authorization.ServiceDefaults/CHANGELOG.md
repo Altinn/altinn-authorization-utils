@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.6...Altinn.Authorization.ServiceDefaults-v5.3.0) (2026-04-08)
+
+
+### Features
+
+* add validation library ([#539](https://github.com/Altinn/altinn-authorization-utils/issues/539)) ([e223f30](https://github.com/Altinn/altinn-authorization-utils/commit/e223f30e36a03d0702eb421f7f7549a4da922277))
+
 ## [5.2.6](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.5...Altinn.Authorization.ServiceDefaults-v5.2.6) (2026-03-12)
 
 
