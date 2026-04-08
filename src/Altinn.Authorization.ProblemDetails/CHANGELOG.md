@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.1.0...Altinn.Authorization.ProblemDetails-v5.2.0) (2026-04-08)
+
+
+### Features
+
+* add validation library ([#539](https://github.com/Altinn/altinn-authorization-utils/issues/539)) ([e223f30](https://github.com/Altinn/altinn-authorization-utils/commit/e223f30e36a03d0702eb421f7f7549a4da922277))
+
 ## [5.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.0.0...Altinn.Authorization.ProblemDetails-v5.1.0) (2026-03-12)
 
 
