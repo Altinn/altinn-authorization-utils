@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using CommunityToolkit.Diagnostics;
 
@@ -154,7 +155,8 @@ public ref struct ValidationContext
     /// <param name="descriptor">The descriptor of the validation error.</param>
     /// <param name="path">The child path for the validation error.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public void AddChildProblem(ValidationErrorDescriptor descriptor, ReadOnlySpan<string> path)
+    [OverloadResolutionPriority(1)]
+    public void AddChildProblem(ValidationErrorDescriptor descriptor, scoped ReadOnlySpan<string> path)
         => AddProblem(descriptor.Create(_root.Path(path)));
 
     /// <summary>
@@ -192,7 +194,8 @@ public ref struct ValidationContext
     /// <param name="path">The child path for the validation error.</param>
     /// <param name="detail">The detail message for the validation error.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public void AddChildProblem(ValidationErrorDescriptor descriptor, ReadOnlySpan<string> path, string? detail)
+    [OverloadResolutionPriority(1)]
+    public void AddChildProblem(ValidationErrorDescriptor descriptor, scoped ReadOnlySpan<string> path, string? detail)
         => AddProblem(descriptor.Create(_root.Path(path), detail));
 
     /// <summary>
@@ -232,7 +235,8 @@ public ref struct ValidationContext
     /// <param name="path">The child path for the validation error.</param>
     /// <param name="extensions">The extension data for the validation error.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public void AddChildProblem(ValidationErrorDescriptor descriptor, ReadOnlySpan<string> path, ProblemExtensionData extensions)
+    [OverloadResolutionPriority(1)]
+    public void AddChildProblem(ValidationErrorDescriptor descriptor, scoped ReadOnlySpan<string> path, ProblemExtensionData extensions)
         => AddProblem(descriptor.Create(_root.Path(path), extensions));
 
     /// <summary>
@@ -274,7 +278,8 @@ public ref struct ValidationContext
     /// <param name="extensions">The extension data for the validation error.</param>
     /// <param name="detail">The detail message for the validation error.</param>
     /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
-    public void AddChildProblem(ValidationErrorDescriptor descriptor, ReadOnlySpan<string> path, ProblemExtensionData extensions, string? detail)
+    [OverloadResolutionPriority(1)]
+    public void AddChildProblem(ValidationErrorDescriptor descriptor, scoped ReadOnlySpan<string> path, ProblemExtensionData extensions, string? detail)
         => AddProblem(descriptor.Create(_root.Path(path), extensions, detail));
 
     /// <summary>
@@ -366,7 +371,7 @@ public ref struct ValidationContext
             return $"{_path}{childPath}";
         }
 
-        internal ImmutableArray<string> Path(ReadOnlySpan<string> childPaths)
+        internal ImmutableArray<string> Path(scoped ReadOnlySpan<string> childPaths)
         {
             var builder = ImmutableArray.CreateBuilder<string>(childPaths.Length);
             foreach (string childPath in childPaths)
