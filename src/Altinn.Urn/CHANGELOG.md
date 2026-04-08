@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.2.1...Altinn.Urn-v4.3.0) (2026-04-08)
+
+
+### Features
+
+* add validation library ([#539](https://github.com/Altinn/altinn-authorization-utils/issues/539)) ([e223f30](https://github.com/Altinn/altinn-authorization-utils/commit/e223f30e36a03d0702eb421f7f7549a4da922277))
+
 ## [4.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.2.0...Altinn.Urn-v4.2.1) (2026-03-17)
 
 
