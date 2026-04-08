@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Altinn.Authorization.ProblemDetails.Validation;
 
 /// <summary>
-/// Extension methods for validating validation.
+/// Extension methods for validation.
 /// </summary>
 public static class ValidationExtensions
 {
@@ -107,10 +107,10 @@ public static class ValidationExtensions
             => model.TryValidate(ref builder, path: "/", out validated);
     }
 
-    /// <typeparam name="TIn"></typeparam>
-    /// <typeparam name="TOut"></typeparam>
-    /// <typeparam name="TValidator"></typeparam>
-    /// <param name="validator"></param>
+    /// <typeparam name="TIn">The type of the input model.</typeparam>
+    /// <typeparam name="TOut">The type of the validated model.</typeparam>
+    /// <typeparam name="TValidator">The type of the custom validator.</typeparam>
+    /// <param name="validator">The custom validator to use.</param>
     extension<TIn, TOut, TValidator>(TValidator validator)
         where TValidator : IValidator<TIn, TOut>
         where TOut : notnull

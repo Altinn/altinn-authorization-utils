@@ -21,9 +21,7 @@ public ref struct ValidationContext
         where TOut : notnull
     {
         Guard.IsNotNull(validator);
-
-        Debug.Assert(path.StartsWith('/'));
-        Debug.Assert(path.Length == 1 || !path.EndsWith('/'));
+        Guard.IsValidRootPath(path);
 
         if (path.Length == 1)
         {
@@ -365,19 +363,19 @@ public ref struct ValidationContext
 
         internal string Path(string childPath)
         {
-            Debug.Assert(childPath.StartsWith('/'));
-            Debug.Assert(!childPath.EndsWith('/'));
+            Guard.IsValidChildPath(childPath);
 
             return $"{_path}{childPath}";
         }
 
         internal ImmutableArray<string> Path(scoped ReadOnlySpan<string> childPaths)
         {
+            Guard.IsNotEmpty(childPaths);
+
             var builder = ImmutableArray.CreateBuilder<string>(childPaths.Length);
-            foreach (string childPath in childPaths)
+            foreach (ref readonly string childPath in childPaths)
             {
-                Debug.Assert(childPath.StartsWith('/'));
-                Debug.Assert(!childPath.EndsWith('/'));
+                Guard.IsValidChildPath(childPath);
 
                 builder.Add($"{_path}{childPath}");
             }
@@ -387,11 +385,12 @@ public ref struct ValidationContext
 
         internal ImmutableArray<string> Path(ImmutableArray<string> childPaths)
         {
+            ValidationGuardExtensions.IsNotEmpty(childPaths);
+
             var builder = ImmutableArray.CreateBuilder<string>(childPaths.Length);
             foreach (string childPath in childPaths)
             {
-                Debug.Assert(childPath.StartsWith('/'));
-                Debug.Assert(!childPath.EndsWith('/'));
+                Guard.IsValidChildPath(childPath);
 
                 builder.Add($"{_path}{childPath}");
             }
@@ -401,11 +400,12 @@ public ref struct ValidationContext
 
         internal ImmutableArray<string> Path(IEnumerable<string> childPaths)
         {
+            Guard.IsNotNull(childPaths);
+
             var builder = ImmutableArray.CreateBuilder<string>();
             foreach (string childPath in childPaths)
             {
-                Debug.Assert(childPath.StartsWith('/'));
-                Debug.Assert(!childPath.EndsWith('/'));
+                Guard.IsValidChildPath(childPath);
 
                 builder.Add($"{_path}{childPath}");
             }
@@ -420,13 +420,13 @@ public ref struct ValidationContext
             _perThreadPathBuilder = null;
             _nextOwner = 1;
 
+            Debug.Assert(_path.Length == 0);
             _path.Append(path);
         }
 
         internal ParentHandle Acquire(OwnerHandle owner, string path)
         {
-            Debug.Assert(path.StartsWith('/'));
-            Debug.Assert(!path.EndsWith('/'));
+            Guard.IsValidChildPath(path);
 
             Debug.Assert(_owner == owner);
             OwnerHandle newOwner = new OwnerHandle(_nextOwner++);
