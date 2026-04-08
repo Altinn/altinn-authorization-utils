@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Diagnostics;
+using Microsoft.CodeAnalysis;
 
 namespace Altinn.Authorization.ProblemDetails.Validation;
 
+[Embedded]
 internal static class ValidationGuardExtensions
 {
     extension(Guard)
