@@ -10,11 +10,11 @@ namespace Altinn.Authorization.ProblemDetails.Validation;
 public static class ListValidator
 {
     /// <summary>
-    /// Creates an <see cref="IInputModel{T}"/> for an <see cref="IEnumerable{T}"/> of input models.
+    /// Creates an <see cref="IValidator{TIn, TOut}"/> for an <see cref="IEnumerable{T}"/> of input models.
     /// </summary>
     /// <typeparam name="TIn">The type of the input model.</typeparam>
     /// <typeparam name="TOut">The type of the output model.</typeparam>
-    /// <returns>An <see cref="IInputModel{T}"/> for the input enumerable.</returns>
+    /// <returns>An <see cref="IValidator{TIn, TOut}"/> for the input enumerable.</returns>
     public static InputEnumerableValidator<TIn, TOut, InputModelValidator<TIn, TOut>> ForEnumerable<TIn, TOut>()
         where TIn : IInputModel<TOut>
         where TOut : notnull
@@ -23,11 +23,11 @@ public static class ListValidator
     }
 
     /// <summary>
-    /// Creates an <see cref="IInputModel{T}"/> for an <see cref="IEnumerable{T}"/> of input models.
+    /// Creates an <see cref="IValidator{TIn, TOut}"/> for an <see cref="IEnumerable{T}"/> of input models.
     /// </summary>
     /// <typeparam name="TIn">The type of the input model.</typeparam>
     /// <typeparam name="TOut">The type of the output model.</typeparam>
-    /// <returns>An <see cref="IInputModel{T}"/> for the input enumerable.</returns>
+    /// <returns>An <see cref="IValidator{TIn, TOut}"/> for the input enumerable.</returns>
     public static InputEnumerableValidator<TIn, TOut, DelegateValidator<TIn, TOut>> ForEnumerable<TIn, TOut>(Validator<TIn, TOut> validator)
         where TOut : notnull
     {
@@ -35,12 +35,12 @@ public static class ListValidator
     }
 
     /// <summary>
-    /// Creates an <see cref="IInputModel{T}"/> for an <see cref="IEnumerable{T}"/> of input models.
+    /// Creates an <see cref="IValidator{TIn, TOut}"/> for an <see cref="IEnumerable{T}"/> of input models.
     /// </summary>
     /// <typeparam name="TIn">The type of the input model.</typeparam>
     /// <typeparam name="TOut">The type of the output model.</typeparam>
     /// <typeparam name="TValidator">The type of the custom validator.</typeparam>
-    /// <returns>An <see cref="IInputModel{T}"/> for the input enumerable.</returns>
+    /// <returns>An <see cref="IValidator{TIn, TOut}"/> for the input enumerable.</returns>
     public static InputEnumerableValidator<TIn, TOut, TValidator> ForEnumerable<TIn, TOut, TValidator>(TValidator validator)
         where TOut : notnull
         where TValidator : IValidator<TIn, TOut>
@@ -87,7 +87,8 @@ public static class ListValidator
             var index = 0;
             foreach (TIn item in input)
             {
-                if (context.TryValidateChild(path: $"/{index}", item, _validator, out TOut? validatedItem))
+                if (context.TryValidateChild(path: $"/{index}", item, _validator, out TOut? validatedItem)
+                    && !context.HasErrors)
                 {
                     validatedList.Add(validatedItem);
                 }
@@ -122,7 +123,8 @@ public static class ListValidator
             var index = 0;
             foreach (TIn item in input)
             {
-                if (context.TryValidateChild(path: $"/{index}", item, _validator, out TOut? validatedItem))
+                if (context.TryValidateChild(path: $"/{index}", item, _validator, out TOut? validatedItem)
+                    && !context.HasErrors)
                 {
                     validatedList.Add(validatedItem);
                 }

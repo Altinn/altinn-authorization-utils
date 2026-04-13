@@ -150,7 +150,7 @@ public static class ValidationExtensions
     extension(ref ValidationProblemBuilder builder)
     {
         /// <summary>
-        /// Tries to validate a input model of type <typeparamref name="TIn"/> and produce a validated output model of type <typeparamref name="TOut"/>.
+        /// Tries to validate an input model of type <typeparamref name="TIn"/> and produce a validated output model of type <typeparamref name="TOut"/>.
         /// </summary>
         /// <typeparam name="TIn">The type of the input model.</typeparam>
         /// <typeparam name="TOut">The type of the validated model.</typeparam>
@@ -179,7 +179,7 @@ public static class ValidationExtensions
         }
 
         /// <summary>
-        /// Tries to validate a input model of type <typeparamref name="TIn"/> using a custom validator of type <typeparamref name="TValidator"/> and produce a validated output model of type <typeparamref name="TOut"/>.
+        /// Tries to validate an input model of type <typeparamref name="TIn"/> using a custom validator of type <typeparamref name="TValidator"/> and produce a validated output model of type <typeparamref name="TOut"/>.
         /// </summary>
         /// <typeparam name="TIn">The type of the input model.</typeparam>
         /// <typeparam name="TOut">The type of the validated model.</typeparam>
@@ -213,7 +213,7 @@ public static class ValidationExtensions
         }
 
         /// <summary>
-        /// Tries to validate a input model of type <typeparamref name="TIn"/> using a custom validator and produce a validated output model of type <typeparamref name="TOut"/>.
+        /// Tries to validate an input model of type <typeparamref name="TIn"/> using a custom validator and produce a validated output model of type <typeparamref name="TOut"/>.
         /// </summary>
         /// <typeparam name="TIn">The type of the input model.</typeparam>
         /// <typeparam name="TOut">The type of the validated model.</typeparam>

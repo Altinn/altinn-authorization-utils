@@ -158,6 +158,32 @@ public class ListValidationTests
             e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
     }
 
+    [Fact]
+    public void IEnumerable_CustomValidator_ToList_WithErrors()
+    {
+        IEnumerable<string?> inputs = [
+            "0",
+            null,
+            "2",
+            null,
+        ];
+
+        ValidationProblemBuilder builder = new();
+        builder.TryValidate("/", inputs, ListValidator.ForEnumerable<string?, NonNullString, NonNullStringValidator>(default), out List<NonNullString>? _)
+            .ShouldBeFalse();
+
+        builder.TryBuild(out var error).ShouldBeTrue();
+        error.Errors.Length.ShouldBe(2);
+
+        error.Errors[0].ShouldSatisfyAllConditions(
+            e => e.Paths.ShouldBe(["/1"], ignoreOrder: true),
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+
+        error.Errors[1].ShouldSatisfyAllConditions(
+            e => e.Paths.ShouldBe(["/3"], ignoreOrder: true),
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+    }
+
     private record NonNullString(string Value);
 
     private record StringInputModel(string? Value) : IInputModel<NonNullString>

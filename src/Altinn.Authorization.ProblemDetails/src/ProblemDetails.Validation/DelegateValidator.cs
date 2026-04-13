@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Authorization.ProblemDetails.Validation;
 
@@ -18,12 +19,19 @@ public readonly struct DelegateValidator<TIn, TOut>
 
     internal DelegateValidator(Validator<TIn, TOut> validator)
     {
+        Guard.IsNotNull(validator);
+
         _validator = validator;
     }
 
     /// <inheritdoc/>
     public bool TryValidate(ref ValidationContext context, TIn input, [NotNullWhen(true)] out TOut? validated)
     {
+        if (_validator is null)
+        {
+            ThrowHelper.ThrowInvalidOperationException($"Cannot use default({nameof(DelegateValidator<,>)})");
+        }
+
         return _validator(ref context, input, out validated);
     }
 }
