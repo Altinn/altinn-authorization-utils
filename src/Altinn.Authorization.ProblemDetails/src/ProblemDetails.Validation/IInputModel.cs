@@ -7,7 +7,11 @@ namespace Altinn.Authorization.ProblemDetails.Validation;
 /// </summary>
 /// <typeparam name="TValidated">The validated model type.</typeparam>
 public interface IInputModel<TValidated>
+#if NET9_0_OR_GREATER
+    where TValidated : notnull, allows ref struct
+#else
     where TValidated : notnull
+#endif
 {
     /// <summary>
     /// Validates the input model and produces a validated representation.

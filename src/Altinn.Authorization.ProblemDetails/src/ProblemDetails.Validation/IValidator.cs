@@ -8,7 +8,12 @@ namespace Altinn.Authorization.ProblemDetails.Validation;
 /// <typeparam name="TIn">The type of the input model.</typeparam>
 /// <typeparam name="TOut">The type of the validated model.</typeparam>
 public interface IValidator<TIn, TOut>
+#if NET9_0_OR_GREATER
+    where TIn : allows ref struct
+    where TOut : notnull, allows ref struct
+#else
     where TOut : notnull
+#endif
 {
     /// <summary>
     /// Tries to validate the input model and produce a validated output model.
