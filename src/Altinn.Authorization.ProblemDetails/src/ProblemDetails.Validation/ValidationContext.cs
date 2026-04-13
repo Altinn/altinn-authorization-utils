@@ -12,13 +12,20 @@ namespace Altinn.Authorization.ProblemDetails.Validation;
 /// </summary>
 public ref struct ValidationContext
 {
-    internal static bool TryValidate<TIn, TOut>(
+    internal static bool TryValidate<TIn, TOut, TValidator>(
         ref ValidationProblemBuilder builder,
         string path,
         TIn input,
-        Validator<TIn, TOut> validator,
+        TValidator validator,
         [NotNullWhen(true)] out TOut? validated)
+#if NET9_0_OR_GREATER
+        where TIn : allows ref struct
         where TOut : notnull
+        where TValidator : IValidator<TIn, TOut>
+#else
+        where TOut : notnull
+        where TValidator : IValidator<TIn, TOut>
+#endif
     {
         Guard.IsNotNull(validator);
         Guard.IsValidRootPath(path);
@@ -34,7 +41,7 @@ public ref struct ValidationContext
         var context = new ValidationContext(ref root, OwnerHandle.Root, parent: default, ref builder);
         try
         {
-            return validator(ref context, input, out validated);
+            return validator.TryValidate(ref context, input, out validated);
         }
         finally
         {
@@ -84,7 +91,39 @@ public ref struct ValidationContext
         TIn input,
         Validator<TIn, TOut> validator,
         [NotNullWhen(true)] out TOut? validated)
+#if NET9_0_OR_GREATER
+        where TIn : allows ref struct
         where TOut : notnull
+#else
+        where TOut : notnull
+#endif
+        => TryValidateChild(path, input, new DelegateValidator<TIn, TOut>(validator), out validated);
+
+    /// <summary>
+    /// Validates a child model using the specified validator.
+    /// </summary>
+    /// <typeparam name="TIn">The type of the input model.</typeparam>
+    /// <typeparam name="TOut">The type of the validated model.</typeparam>
+    /// <typeparam name="TValidator">The type of the custom validator.</typeparam>
+    /// <param name="path">The path to the child model.</param>
+    /// <param name="input">The input model to validate.</param>
+    /// <param name="validator">The validator to use.</param>
+    /// <param name="validated">The validated model.</param>
+    /// <inheritdoc cref="ValidationErrorInstance.Paths" path="/remarks"/>
+    /// <returns>True if the child model is valid; otherwise, false.</returns>
+    public bool TryValidateChild<TIn, TOut, TValidator>(
+        string path,
+        TIn input,
+        TValidator validator,
+        [NotNullWhen(true)] out TOut? validated)
+#if NET9_0_OR_GREATER
+        where TIn : allows ref struct
+        where TOut : notnull
+        where TValidator : IValidator<TIn, TOut>
+#else
+        where TOut : notnull
+        where TValidator : IValidator<TIn, TOut>
+#endif
     {
         Debug.Assert(!_state.HasFlag(ValidationState.IsDisposed));
         var parentHandle = _root.Acquire(_handle, path);
@@ -92,7 +131,7 @@ public ref struct ValidationContext
         var context = new ValidationContext(ref _root, parentHandle.Owner, parentHandle, ref _builder);
         try
         {
-            var result = validator(ref context, input, out validated);
+            var result = validator.TryValidate(ref context, input, out validated);
             if (!result)
             {
                 _state |= ValidationState.HasErrors;
