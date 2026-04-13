@@ -19,5 +19,5 @@ public interface IInputModel<TValidated>
     /// <param name="context">The validation context.</param>
     /// <param name="validated">The validated representation of the input model.</param>
     /// <returns><c>true</c> if the validation succeeded; otherwise, <c>false</c>.</returns>
-    bool TryValidate(ref ValidationContext context, [NotNullWhen(true)] out TValidated? validated);
+    public bool TryValidate(ref ValidationContext context, [NotNullWhen(true)] out TValidated? validated);
 }

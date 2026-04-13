@@ -10,7 +10,7 @@ namespace Altinn.Authorization.ProblemDetails.Validation;
 public interface IValidator<TIn, TOut>
 #if NET9_0_OR_GREATER
     where TIn : allows ref struct
-    where TOut : notnull, allows ref struct
+    where TOut : notnull
 #else
     where TOut : notnull
 #endif
