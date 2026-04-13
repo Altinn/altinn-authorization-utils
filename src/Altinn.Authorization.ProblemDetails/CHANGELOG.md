@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.2.0...Altinn.Authorization.ProblemDetails-v5.2.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* allow ref struct for validation interfaces ([#547](https://github.com/Altinn/altinn-authorization-utils/issues/547)) ([3a6a833](https://github.com/Altinn/altinn-authorization-utils/commit/3a6a833d92c353d7d25c485314fc653ac31172af))
+
 ## [5.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.1.0...Altinn.Authorization.ProblemDetails-v5.2.0) (2026-04-08)
 
 
