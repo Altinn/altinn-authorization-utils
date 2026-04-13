@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.2.1...Altinn.Authorization.ProblemDetails-v5.3.0) (2026-04-13)
+
+
+### Features
+
+* add list validation ([#549](https://github.com/Altinn/altinn-authorization-utils/issues/549)) ([2951df7](https://github.com/Altinn/altinn-authorization-utils/commit/2951df78f1b5db67dbb2a0e7e217bc02ebc2ed9f))
+
 ## [5.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.2.0...Altinn.Authorization.ProblemDetails-v5.2.1) (2026-04-13)
 
 
