@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.3.0...Altinn.Authorization.ServiceDefaults-v5.3.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* downgrade AccessTokenClient library ([#551](https://github.com/Altinn/altinn-authorization-utils/issues/551)) ([9e139ba](https://github.com/Altinn/altinn-authorization-utils/commit/9e139ba8ea690cd56acc4b478c3b99cf9a07d26d))
+
 ## [5.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.2.6...Altinn.Authorization.ServiceDefaults-v5.3.0) (2026-04-08)
 
 
