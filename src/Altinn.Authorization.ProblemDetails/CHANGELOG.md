@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.3.0...Altinn.Authorization.ProblemDetails-v5.4.0) (2026-04-24)
+
+
+### Features
+
+* allow smuggeling an exception in a ProblemInstance ([#557](https://github.com/Altinn/altinn-authorization-utils/issues/557)) ([e0d9635](https://github.com/Altinn/altinn-authorization-utils/commit/e0d963505850c581df4d8943e677034635b3e253))
+
 ## [5.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.2.1...Altinn.Authorization.ProblemDetails-v5.3.0) (2026-04-13)
 
 
