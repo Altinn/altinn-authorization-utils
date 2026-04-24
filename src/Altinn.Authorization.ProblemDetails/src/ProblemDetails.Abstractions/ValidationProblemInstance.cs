@@ -25,7 +25,7 @@ public sealed record ValidationProblemInstance
         ImmutableArray<ValidationErrorInstance> errors,
         string? detail,
         ProblemExtensionData extensions)
-        : base(StdProblemDescriptors.ValidationError, detail, extensions)
+        : base(StdProblemDescriptors.ValidationError, detail, extensions, exception: null)
     {
         Guard.IsNotEmpty(errors.AsSpan(), nameof(errors));
 

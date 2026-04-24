@@ -25,7 +25,7 @@ public sealed record MultipleProblemInstance
         ImmutableArray<ProblemInstance> problems,
         string? detail,
         ProblemExtensionData extensions)
-        : base(StdProblemDescriptors.MultipleProblems, detail, extensions)
+        : base(StdProblemDescriptors.MultipleProblems, detail, extensions, exception: null)
     {
         Guard.IsNotEmpty(problems.AsSpan(), nameof(problems));
 

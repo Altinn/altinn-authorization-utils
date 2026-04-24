@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.ProblemDetails;
 
@@ -13,25 +15,49 @@ public static class ProblemExtensions
     public static ProblemInstance Create(this ProblemDescriptor descriptor)
         => ProblemInstance.Create(descriptor);
 
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, Exception)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, Exception exception)
+        => ProblemInstance.Create(descriptor, exception);
+
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?)"/>
     public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail)
         => ProblemInstance.Create(descriptor, detail);
+
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, Exception)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, Exception exception)
+        => ProblemInstance.Create(descriptor, detail, exception);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, ProblemExtensionData)"/>
     public static ProblemInstance Create(this ProblemDescriptor descriptor, ProblemExtensionData extensions)
         => ProblemInstance.Create(descriptor, extensions);
 
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, ProblemExtensionData, Exception)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, ProblemExtensionData extensions, Exception exception)
+        => ProblemInstance.Create(descriptor, extensions, exception);
+
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemExtensionData)"/>
     public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions)
         => ProblemInstance.Create(descriptor, detail, extensions);
+
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemExtensionData, Exception)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions, Exception exception)
+        => ProblemInstance.Create(descriptor, detail, extensions, exception);
 
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, IReadOnlyDictionary{string, string})"/>
     public static ProblemInstance Create(this ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
         => ProblemInstance.Create(descriptor, extensions);
 
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, IReadOnlyDictionary{string, string}, Exception)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions, Exception exception)
+        => ProblemInstance.Create(descriptor, extensions, exception);
+
     /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, IReadOnlyDictionary{string, string})"/>
     public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions)
         => ProblemInstance.Create(descriptor, detail, extensions);
+
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, IReadOnlyDictionary{string, string}, Exception)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions, Exception exception)
+        => ProblemInstance.Create(descriptor, detail, extensions, exception);
     #endregion
 
     #region ValidationErrorDescriptor.Create
@@ -159,4 +185,35 @@ public static class ProblemExtensions
     public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, string? detail, ProblemExtensionData extensions)
         => new([validationError], detail: detail, extensions: extensions);
     #endregion
+
+    /// <param name="instance">The <see cref="ProblemInstance"/>.</param>
+    extension(ProblemInstance instance)
+    {
+        /// <summary>
+        /// Converts the <see cref="ProblemInstance"/> to a <see cref="ProblemInstanceException"/>.
+        /// The resulting exception will have its message and inner exception set based on the problem instance.
+        /// </summary>
+        /// <returns>A <see cref="ProblemInstanceException"/>.</returns>
+        public ProblemInstanceException ToException()
+            => new(instance);
+
+        /// <summary>
+        /// Throws a <see cref="ProblemInstanceException"/> created from the <see cref="ProblemInstance"/>.
+        /// This is a convenience method to throw a problem instance as an exception without having to manually convert it first.
+        /// </summary>
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void Throw()
+            => throw instance.ToException();
+
+        /// <summary>
+        /// Throws a <see cref="ProblemInstanceException"/> created from the <see cref="ProblemInstance"/>.
+        /// This is a convenience method to throw a problem instance as an exception without having to manually convert it first.
+        /// </summary>
+        /// <typeparam name="T">The return type. This is only used to satisfy the compiler when throwing from an expression-bodied method, and has no effect on the actual exception thrown.</typeparam>
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public T Throw<T>()
+            => throw instance.ToException();
+    }
 }
