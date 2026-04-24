@@ -11,7 +11,7 @@ public class ProblemInstanceException
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstanceException"/> class.
     /// </summary>
-    /// <param name="problemInstance">The <see cref="Problem"/>.</param>
+    /// <param name="problemInstance">The <see cref="ProblemInstance"/>.</param>
     public ProblemInstanceException(ProblemInstance problemInstance)
         : this(null, problemInstance)
     {
@@ -20,8 +20,10 @@ public class ProblemInstanceException
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstanceException"/> class.
     /// </summary>
-    /// <param name="message">The message.</param>
-    /// <param name="problemInstance">The <see cref="Problem"/>.</param>
+    /// <param name="message">
+    /// The message. If <see langword="null"/>, the message is generated from <paramref name="problemInstance"/>.
+    /// </param>
+    /// <param name="problemInstance">The <see cref="ProblemInstance"/>.</param>
     public ProblemInstanceException(string? message, ProblemInstance problemInstance)
         : this(message, null, problemInstance)
     {
@@ -30,11 +32,15 @@ public class ProblemInstanceException
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstanceException"/> class.
     /// </summary>
-    /// <param name="message">The message.</param>
-    /// <param name="innerException">The inner exception.</param>
-    /// <param name="problemInstance">The <see cref="Problem"/>.</param>
+    /// <param name="message">
+    /// The message. If <see langword="null"/>, the message is generated from <paramref name="problemInstance"/>.
+    /// </param>
+    /// <param name="innerException">
+    /// The inner exception. If <see langword="null"/>, the exception is taken from <paramref name="problemInstance"/>, if it has one.
+    /// </param>
+    /// <param name="problemInstance">The <see cref="ProblemInstance"/>.</param>
     public ProblemInstanceException(string? message, Exception? innerException, ProblemInstance problemInstance)
-        : base(message ?? CreateErrorMessage(problemInstance), innerException)
+        : base(message ?? CreateErrorMessage(problemInstance), innerException ?? problemInstance.Exception)
     {
         Problem = problemInstance;
     }
