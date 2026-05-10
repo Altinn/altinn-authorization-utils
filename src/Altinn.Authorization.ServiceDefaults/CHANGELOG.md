@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.3.1...Altinn.Authorization.ServiceDefaults-v5.4.0) (2026-05-10)
+
+
+### Features
+
+* add maskinporten client ([#559](https://github.com/Altinn/altinn-authorization-utils/issues/559)) ([9a8ff0f](https://github.com/Altinn/altinn-authorization-utils/commit/9a8ff0f33407bf0259e1fd2bba1ce2424d76bede))
+
 ## [5.3.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.3.0...Altinn.Authorization.ServiceDefaults-v5.3.1) (2026-04-14)
 
 
