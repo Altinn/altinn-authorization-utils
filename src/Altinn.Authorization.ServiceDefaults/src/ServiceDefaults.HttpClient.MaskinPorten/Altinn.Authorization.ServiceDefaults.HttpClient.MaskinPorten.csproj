@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+		<PropertyGroup>
+		</PropertyGroup>
+
+		<ItemGroup>
+				<PackageReference Include="CommunityToolkit.Diagnostics" />
+		</ItemGroup>
+
+		<ItemGroup>
+		  <ProjectReference Include="..\ServiceDefaults.HttpClient\Altinn.Authorization.ServiceDefaults.HttpClient.csproj" />
+		  <ProjectReference Include="..\ServiceDefaults.Telemetry\Altinn.Authorization.ServiceDefaults.Telemetry.csproj" />
+		</ItemGroup>
+
+</Project>
