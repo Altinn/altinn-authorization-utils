@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.4.0...Altinn.Authorization.ModelUtils-v3.5.0) (2026-05-21)
+
+
+### Features
+
+* FieldValue.Or helper ([#563](https://github.com/Altinn/altinn-authorization-utils/issues/563)) ([9316947](https://github.com/Altinn/altinn-authorization-utils/commit/9316947454403c7caa127687cc344c7d68c03192))
+
 ## [3.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ModelUtils-v3.3.0...Altinn.Authorization.ModelUtils-v3.4.0) (2026-02-10)
 
 
