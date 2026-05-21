@@ -220,6 +220,14 @@ public readonly struct FieldValue<T>
     /// <summary>
     /// Gets the field value or a default value if the field is null/unset.
     /// </summary>
+    /// <param name="defaultValue">The default value to return if the field is null or unset.</param>
+    /// <returns>The field value, or the specified default value.</returns>
+    public FieldValue<T> Or(FieldValue<T> defaultValue)
+        => HasValue ? this : defaultValue;
+
+    /// <summary>
+    /// Gets the field value or a default value if the field is null/unset.
+    /// </summary>
     /// <returns>The field value, or <see langword="default"/>.</returns>
     public T? OrDefault(T? defaultValue = default)
         => HasValue ? _value : defaultValue;
