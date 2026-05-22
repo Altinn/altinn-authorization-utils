@@ -701,9 +701,27 @@ public static class AltinnServiceDefaultsExtensions
                 }
 
                 logger.Log($"Adding app configuration key filters for: '{serviceDescriptor.Name}', '{serviceDescriptor.Environment:l}', and '{serviceDescriptor.Environment:l}-{serviceDescriptor.Name}'");
-                options.Select(KeyFilter.Any, serviceDescriptor.Name);
-                options.Select(KeyFilter.Any, serviceDescriptor.Environment.ToString(format: "l"));
-                options.Select(KeyFilter.Any, $"{serviceDescriptor.Environment:l}-{serviceDescriptor.Name}");
+                var labels = new[]
+                {
+                    $"{serviceDescriptor.Name}",
+                    $"{serviceDescriptor.Environment:l}",
+                    $"{serviceDescriptor.Environment:l}-{serviceDescriptor.Name}",
+                };
+
+                foreach (var label in labels)
+                {
+                    logger.Log($"Adding app configuration key-value label: '{label}'");
+                    options.Select(KeyFilter.Any, label);
+                }
+                
+                options.UseFeatureFlags(flags =>
+                {
+                    foreach (var label in labels)
+                    {
+                        logger.Log($"Adding app configuration feature flag label: '{label}'");
+                        flags.Select(KeyFilter.Any, label);
+                    }
+                });
 
                 options.ConfigureKeyVault(kvOptions => kvOptions.SetCredential(credential));
                 options.Connect(appConfigurationEndpointUri, credential);
