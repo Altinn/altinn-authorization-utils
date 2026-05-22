@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.4.0...Altinn.Authorization.ServiceDefaults-v5.5.0) (2026-05-22)
+
+
+### Features
+
+* add app-configuration feature flags support ([#565](https://github.com/Altinn/altinn-authorization-utils/issues/565)) ([089d5a9](https://github.com/Altinn/altinn-authorization-utils/commit/089d5a93dd29dc164b5e6fe9d688b2a1256d5432))
+
 ## [5.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.3.1...Altinn.Authorization.ServiceDefaults-v5.4.0) (2026-05-10)
 
 
