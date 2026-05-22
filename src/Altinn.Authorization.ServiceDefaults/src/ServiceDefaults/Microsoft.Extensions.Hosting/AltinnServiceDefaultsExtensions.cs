@@ -641,6 +641,7 @@ public static class AltinnServiceDefaultsExtensions
 
         var appConfigurationEndpoint = manager.GetValue<string>("Altinn:AppConfiguration:Endpoint");
         var appConfigurationLabel = manager.GetValue<string>("Altinn:AppConfiguration:Label");
+        var appConfigurationFeatureFlagsEnabled = manager.GetValue<bool>("Altinn:AppConfiguration:FeatureFlags:Enable");
         var enableEnvironmentCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:Environment:Enable", defaultValue: false);
         var enableWorkloadIdentityCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:WorkloadIdentity:Enable", defaultValue: true);
         var enableManagedIdentityCredential = manager.GetValue("Altinn:AppConfiguration:Credentials:ManagedIdentity:Enable", defaultValue: true);
@@ -707,6 +708,22 @@ public static class AltinnServiceDefaultsExtensions
 
                 options.ConfigureKeyVault(kvOptions => kvOptions.SetCredential(credential));
                 options.Connect(appConfigurationEndpointUri, credential);
+
+                if (appConfigurationFeatureFlagsEnabled)
+                {
+                    logger.Log("Enabling feature flags from app configuration");
+                    options.UseFeatureFlags(fOpts =>
+                    {
+                        if (!string.IsNullOrEmpty(appConfigurationLabel))
+                        {
+                            fOpts.Select(KeyFilter.Any, appConfigurationLabel);
+                        }
+
+                        fOpts.Select(KeyFilter.Any, serviceDescriptor.Name);
+                        fOpts.Select(KeyFilter.Any, serviceDescriptor.Environment.ToString(format: "l"));
+                        fOpts.Select(KeyFilter.Any, $"{serviceDescriptor.Environment:l}-{serviceDescriptor.Name}");
+                    });
+                }
             });
 
             builder.Services.AddAzureAppConfiguration();
