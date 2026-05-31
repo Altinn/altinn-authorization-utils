@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.7.0...Altinn.Authorization.TestUtils-v3.8.0) (2026-05-31)
+
+
+### Features
+
+* add test options-monitor ([#571](https://github.com/Altinn/altinn-authorization-utils/issues/571)) ([d43a709](https://github.com/Altinn/altinn-authorization-utils/commit/d43a709c3c32d38f52934efd20e403aa8f45880b))
+
 ## [3.7.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.6.1...Altinn.Authorization.TestUtils-v3.7.0) (2026-04-08)
 
 
