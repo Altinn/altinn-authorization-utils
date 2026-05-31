@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Swashbuckle.Abstract
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ModelUtils", "..\Altinn.Authorization.ModelUtils\src\ModelUtils\Altinn.Authorization.ModelUtils.csproj", "{FF83A249-DAD9-4C0B-B1E3-60E8856DBD1E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.TestUtils.Options", "..\Altinn.Authorization.TestUtils\src\TestUtils.Options\Altinn.Authorization.TestUtils.Options.csproj", "{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +223,18 @@ Global
 		{FF83A249-DAD9-4C0B-B1E3-60E8856DBD1E}.Release|x64.Build.0 = Release|Any CPU
 		{FF83A249-DAD9-4C0B-B1E3-60E8856DBD1E}.Release|x86.ActiveCfg = Release|Any CPU
 		{FF83A249-DAD9-4C0B-B1E3-60E8856DBD1E}.Release|x86.Build.0 = Release|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Debug|x64.Build.0 = Debug|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Debug|x86.Build.0 = Debug|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Release|x64.ActiveCfg = Release|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Release|x64.Build.0 = Release|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Release|x86.ActiveCfg = Release|Any CPU
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -242,5 +256,6 @@ Global
 		{E1D254C9-17DA-47C0-90E4-0F6625578021} = {4F07C5D6-87C9-9B71-06C2-560ED4F74589}
 		{C188C574-E16F-48A7-BC93-1EAADEC57CF7} = {4F07C5D6-87C9-9B71-06C2-560ED4F74589}
 		{FF83A249-DAD9-4C0B-B1E3-60E8856DBD1E} = {4F07C5D6-87C9-9B71-06C2-560ED4F74589}
+		{93C18235-3ACD-4B01-A1A6-FAC54064AB3F} = {00E22EFA-B251-4832-5267-0E375C381169}
 	EndGlobalSection
 EndGlobal
