@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.TestUt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.ProblemDetails.Validation", "src\ProblemDetails.Validation\Altinn.Authorization.ProblemDetails.Validation.csproj", "{D28603EF-9522-47E5-81E1-4F4DDCBD5169}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.TestUtils.Options", "..\Altinn.Authorization.TestUtils\src\TestUtils.Options\Altinn.Authorization.TestUtils.Options.csproj", "{A956DAF3-B21A-4628-955A-8B19A3DC4824}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,18 @@ Global
 		{D28603EF-9522-47E5-81E1-4F4DDCBD5169}.Release|x64.Build.0 = Release|Any CPU
 		{D28603EF-9522-47E5-81E1-4F4DDCBD5169}.Release|x86.ActiveCfg = Release|Any CPU
 		{D28603EF-9522-47E5-81E1-4F4DDCBD5169}.Release|x86.Build.0 = Release|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Debug|x64.Build.0 = Debug|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Debug|x86.Build.0 = Debug|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Release|x64.ActiveCfg = Release|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Release|x64.Build.0 = Release|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Release|x86.ActiveCfg = Release|Any CPU
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -132,5 +146,6 @@ Global
 		{5CFB2BC7-F6F4-4D8A-BD6E-88497349ACC3} = {00E22EFA-B251-4832-5267-0E375C381169}
 		{781A9550-DA8A-4CF9-9193-2CC077E8F3C2} = {00E22EFA-B251-4832-5267-0E375C381169}
 		{D28603EF-9522-47E5-81E1-4F4DDCBD5169} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{A956DAF3-B21A-4628-955A-8B19A3DC4824} = {00E22EFA-B251-4832-5267-0E375C381169}
 	EndGlobalSection
 EndGlobal
