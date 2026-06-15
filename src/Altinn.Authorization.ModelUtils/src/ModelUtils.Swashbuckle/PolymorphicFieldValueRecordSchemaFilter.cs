@@ -189,7 +189,13 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         IPolymorphicFieldValueRecordJsonConverter converter,
         SchemaGeneratorOptions options)
     {
-        var required = schema.Required;
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
+
+        openApiSchema.Required ??= new HashSet<string>();
+        var required = openApiSchema.Required;
         var props = schema.Properties switch
         {
             Dictionary<string, IOpenApiSchema> dict => dict,
@@ -197,11 +203,6 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
                 ? new Dictionary<string, IOpenApiSchema>(schema.Properties)
                 : new Dictionary<string, IOpenApiSchema>(),
         };
-
-        if (schema is not OpenApiSchema openApiSchema)
-        {
-            return;
-        }
 
         openApiSchema.Properties = props;
 
@@ -224,11 +225,11 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
 
                 if (propModel.IsRequired)
                 {
-                    required?.Add(name);
+                    required.Add(name);
                 }
                 else
                 {
-                    required?.Remove(name);
+                    required.Remove(name);
                 }
             }
         }
