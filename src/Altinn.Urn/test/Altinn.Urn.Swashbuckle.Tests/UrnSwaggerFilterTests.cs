@@ -1,8 +1,7 @@
 using Altinn.Swashbuckle.Examples;
 using Altinn.Urn.Json;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Urn.Swashbuckle.Tests;
@@ -39,7 +38,7 @@ public class UrnSwaggerFilterTests
     {
         var schema = SchemaFor<PersonUrn.PartyUuid>();
 
-        schema.Type.ShouldBe("string");
+        schema.Type.ShouldBe(JsonSchemaType.String);
         schema.Format.ShouldBe("urn");
         schema.Pattern.ShouldNotBeNullOrEmpty();
         schema.Pattern.ShouldStartWith("^urn:altinn:party:uuid:");
@@ -52,13 +51,13 @@ public class UrnSwaggerFilterTests
     {
         var schema = SchemaFor<PersonUrn.PersonName>();
 
-        schema.Type.ShouldBe("string");
+        schema.Type.ShouldBe(JsonSchemaType.String);
         schema.Format.ShouldBe("urn");
         schema.Pattern.ShouldNotBeNullOrEmpty();
         schema.Pattern.ShouldStartWith("^urn:altinn:person:name:");
 
-        schema.Example.ShouldBeOfType<OpenApiString>()
-            .Value.ShouldContain("%3A");
+        schema.Example.ShouldNotBeNull();
+        schema.Example.AsValue().GetValue<string>().ShouldContain("%3A");
     }
 
     [Fact]
@@ -72,7 +71,7 @@ public class UrnSwaggerFilterTests
 
         foreach (var variant in schema.OneOf.Select(Resolve))
         {
-            variant.Type.ShouldBe("string");
+            variant.Type.ShouldBe(JsonSchemaType.String);
             variant.Format.ShouldBe("urn");
             variant.Pattern.ShouldNotBeNullOrEmpty();
             variant.Pattern.ShouldStartWith("^urn:");
@@ -88,22 +87,22 @@ public class UrnSwaggerFilterTests
     }
 
     //private ISchemaFilter SchemaFilter => _sut;
-    private OpenApiSchema SchemaFor(Type type)
+    private IOpenApiSchema SchemaFor(Type type)
     {
         var reference = _schemaGenerator.GenerateSchema(type, _schemaRepository);
         return Resolve(reference);
     }
 
-    private OpenApiSchema SchemaFor<T>()
+    private IOpenApiSchema SchemaFor<T>()
     {
         return SchemaFor(typeof(T));
     }
 
-    private OpenApiSchema Resolve(OpenApiSchema schema)
+    private IOpenApiSchema Resolve(IOpenApiSchema schema)
     {
-        if (schema.Reference is { } schemaRef)
+        if (schema is OpenApiSchemaReference schemaRef)
         {
-            return _schemaRepository.Schemas[schemaRef.Id];
+            return _schemaRepository.Schemas[schemaRef.Reference!.Id!];
         }
 
         return schema;
