@@ -1,7 +1,5 @@
 using Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;
 using Microsoft.OpenApi;
-using Microsoft.OpenApi.Interfaces;
-using Microsoft.OpenApi.Writers;
 using System.Text.Json;
 
 namespace Altinn.Authorization.ModelUtils.Tests.Swashbuckle;
@@ -69,6 +67,9 @@ public class ExtensibleEnumOpenApiExtensionTests
     {
         public void Flush()
             => writer.Flush();
+
+        public async Task FlushAsync(CancellationToken cancellationToken = default)
+            => await writer.FlushAsync(cancellationToken);
 
         public void WriteEndArray()
             => writer.WriteEndArray();

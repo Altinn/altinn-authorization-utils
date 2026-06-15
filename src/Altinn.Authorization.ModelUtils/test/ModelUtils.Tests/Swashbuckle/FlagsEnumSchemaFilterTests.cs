@@ -1,6 +1,6 @@
 using Altinn.Authorization.ModelUtils.AspNet;
 using Altinn.Authorization.ModelUtils.Swashbuckle;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Authorization.ModelUtils.Tests.Swashbuckle;
@@ -15,10 +15,10 @@ public class FlagsEnumSchemaFilterTests
         // more or less how swashbuckle would generate the initial schema
         var schema = new OpenApiSchema
         {
-            Type = "object",
-            Properties = new Dictionary<string, OpenApiSchema>()
+            Type = JsonSchemaType.Object,
+            Properties = new Dictionary<string, IOpenApiSchema>()
             {
-                { "value", new OpenApiSchema { Type = "string" } },
+                { "value", new OpenApiSchema { Type = JsonSchemaType.String } },
             },
         };
 
@@ -29,9 +29,9 @@ public class FlagsEnumSchemaFilterTests
         schema.Format.ShouldBeNull();
         schema.Properties.ShouldBeNull();
 
-        schema.Type.ShouldBe("array");
+        schema.Type.ShouldBe(JsonSchemaType.Array);
         schema.Items.ShouldNotBeNull();
-        schema.Items.Type.ShouldBe("string");
+        schema.Items.Type.ShouldBe(JsonSchemaType.String);
     }
 
     private ISchemaFilter Subject => new FlagsEnumModelSchemaFilter();

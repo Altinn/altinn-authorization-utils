@@ -1,5 +1,5 @@
 using Altinn.Authorization.ModelUtils.AspNet;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Concurrent;
 
@@ -10,7 +10,7 @@ internal sealed class FlagsEnumModelSchemaFilter
 {
     private static readonly ConcurrentDictionary<Type, ISchemaFilter> _inner = new();
 
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         if (FlagsEnum.IsFlagsEnumModelType(context.Type, out var enumType))
         {
@@ -29,18 +29,21 @@ internal sealed class FlagsEnumModelSchemaFilter
         : ISchemaFilter
         where TEnum : struct, Enum
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
         {
-            schema.Enum = null;
-            schema.Format = null;
-            schema.Properties = null;
-            schema.Required = null;
-            schema.AdditionalProperties = null;
-
-            schema.Type = "array";
-            schema.Items = new OpenApiSchema
+            if (schema is not OpenApiSchema openApiSchema)
             {
-                Type = "string",
+                return;
+            }
+            openApiSchema.Enum = null;
+            openApiSchema.Format = null;
+            openApiSchema.Properties = null;
+            openApiSchema.Required = null;
+            openApiSchema.AdditionalProperties = null;
+            openApiSchema.Type = JsonSchemaType.Array;
+            openApiSchema.Items = new OpenApiSchema
+            {
+                Type = JsonSchemaType.String,
                 // TODO: Figure out how to make this an extensible enum
                 // Enum = [.. FlagsEnum<TEnum>.Model.Items.Select(v => (IOpenApiAny)new OpenApiString(v.Name))],
             };

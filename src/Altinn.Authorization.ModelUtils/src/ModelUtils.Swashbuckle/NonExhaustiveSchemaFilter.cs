@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Authorization.ModelUtils.Swashbuckle;
@@ -25,7 +25,7 @@ internal sealed class NonExhaustiveSchemaFilter
         });
     }
 
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         if (NonExhaustive.IsNonExhaustiveType(context.Type, out var innerType))
         {
@@ -33,30 +33,36 @@ internal sealed class NonExhaustiveSchemaFilter
         }
     }
 
-    private void Apply(OpenApiSchema schema, SchemaFilterContext context, Type innerType)
+    private void Apply(IOpenApiSchema schema, SchemaFilterContext context, Type innerType)
     {
         var generatorOptions = _options.Value();
 
-        schema.Type = null;
-        schema.Properties = null;
-        schema.AdditionalProperties = null;
-        schema.AdditionalPropertiesAllowed = true;
-        schema.OneOf = [
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
+
+        openApiSchema.Type = null;
+        openApiSchema.Properties = null;
+        openApiSchema.AdditionalProperties = null;
+        openApiSchema.AdditionalPropertiesAllowed = true;
+        openApiSchema.OneOf = new List<IOpenApiSchema>
+        {
             GetSchema(innerType, context, generatorOptions),
-            new OpenApiSchema { Type = "string" },
-        ];
-        schema.Example = null;
-        schema.Enum = null;
+            new OpenApiSchema { Type = JsonSchemaType.String },
+        };
+        openApiSchema.Example = null;
+        openApiSchema.Enum = null;
     }
 
-    private OpenApiSchema GetSchema(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private IOpenApiSchema GetSchema(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
         var schema = EnsureRef(type, context, options);
 
         return schema;
     }
 
-    private OpenApiSchema EnsureRef(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private IOpenApiSchema EnsureRef(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
         if (context.SchemaRepository.TryLookupByType(type, out var referenceSchema))
         {
@@ -67,19 +73,12 @@ internal sealed class NonExhaustiveSchemaFilter
         var schema = context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
         if (!context.SchemaRepository.Schemas.ContainsKey(id))
         {
-            referenceSchema = context.SchemaRepository.AddDefinition(id, schema);
+            referenceSchema = context.SchemaRepository.AddDefinition(id, (OpenApiSchema)schema);
             context.SchemaRepository.RegisterType(type, id);
         }
         else
         {
-            referenceSchema = new()
-            {
-                Reference = new()
-                {
-                    Type = ReferenceType.Schema,
-                    Id = id,
-                },
-            };
+            referenceSchema = new OpenApiSchemaReference(id, null);
         }
 
         return referenceSchema;
