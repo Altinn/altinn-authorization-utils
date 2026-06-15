@@ -219,8 +219,9 @@ internal class UrnSwaggerFilter
             schema.Properties ??= new Dictionary<string, IOpenApiSchema>();
 
             var mapping = new Dictionary<string, OpenApiSchemaReference>();
+            schema.OneOf ??= new List<IOpenApiSchema>();
             var oneOf = schema.OneOf;
-            oneOf?.Clear();
+            oneOf.Clear();
             schema.Discriminator = new OpenApiDiscriminator
             {
                 PropertyName = "type",
@@ -304,8 +305,9 @@ internal class UrnSwaggerFilter
             schema.AdditionalProperties = null;
             schema.Type = JsonSchemaType.String;
             schema.Format = "urn";
+            schema.OneOf ??= new List<IOpenApiSchema>();
             var oneOf = schema.OneOf;
-            oneOf?.Clear();
+            oneOf.Clear();
 
             foreach (var variant in TUrn.Variants)
             {
