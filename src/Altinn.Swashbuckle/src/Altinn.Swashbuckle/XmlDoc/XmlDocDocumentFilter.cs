@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Swashbuckle.XmlDoc;
@@ -47,13 +47,15 @@ internal sealed class XmlDocDocumentFilter
             var summaryNode = typeNode.SelectFirstChild("summary");
             if (summaryNode != null)
             {
-                swaggerDoc.Tags ??= [];
-
-                swaggerDoc.Tags.Add(new OpenApiTag
+                swaggerDoc.Tags ??= new HashSet<OpenApiTag>();
+                var name = nameAndType.Key;
+                var tag = swaggerDoc.Tags.FirstOrDefault(t => t.Name == name);
+                if (tag == null)
                 {
-                    Name = nameAndType.Key,
-                    Description = XmlCommentsTextHelper.Humanize(summaryNode.InnerXml),
-                });
+                    tag = new OpenApiTag { Name = name };
+                    swaggerDoc.Tags.Add(tag);
+                }
+                tag.Description = XmlCommentsTextHelper.Humanize(summaryNode.InnerXml);
             }
         }
     }

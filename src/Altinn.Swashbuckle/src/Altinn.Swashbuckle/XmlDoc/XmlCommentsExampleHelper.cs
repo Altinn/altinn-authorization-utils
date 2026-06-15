@@ -1,27 +1,32 @@
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Altinn.Swashbuckle.XmlDoc;
 
 internal static class XmlCommentsExampleHelper
 {
-    public static IOpenApiAny Create(
+    public static JsonNode? Create(
         SchemaRepository schemaRepository,
-        OpenApiSchema schema,
+        IOpenApiSchema schema,
         string exampleString)
     {
         var isStringType =
-            (schema?.ResolveType(schemaRepository) == "string") &&
+            (schema.Type & JsonSchemaType.String) == JsonSchemaType.String &&
             !string.Equals(exampleString, "null");
 
         var exampleAsJson = isStringType
                 ? JsonSerializer.Serialize(exampleString)
                 : exampleString;
 
-        var example = OpenApiAnyFactory.CreateFromJson(exampleAsJson);
-
-        return example;
+        try
+        {
+            return JsonNode.Parse(exampleAsJson);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }

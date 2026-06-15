@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Xml.XPath;
 
@@ -21,7 +21,7 @@ internal sealed class XmlDocSchemaFilter
     }
 
     /// <inheritdoc />
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         ApplyTypeTags(schema, context.Type);
 
@@ -31,7 +31,7 @@ internal sealed class XmlDocSchemaFilter
         }
     }
 
-    private void ApplyTypeTags(OpenApiSchema schema, Type type)
+    private void ApplyTypeTags(IOpenApiSchema schema, Type type)
     {
         if (!_documentationProvider.TryGetXmlDoc(type, out var typeNode))
         {
@@ -46,7 +46,7 @@ internal sealed class XmlDocSchemaFilter
         }
     }
 
-    private void ApplyMemberTags(OpenApiSchema schema, SchemaFilterContext context)
+    private void ApplyMemberTags(IOpenApiSchema schema, SchemaFilterContext context)
     {
         if (context.MemberInfo.DeclaringType is not null && _documentationProvider.TryGetXmlDoc(context.MemberInfo.DeclaringType, out var recordTypeNode))
         {
@@ -81,11 +81,13 @@ internal sealed class XmlDocSchemaFilter
         }
     }
 
-    private static void TrySetExample(OpenApiSchema schema, SchemaFilterContext context, string? example)
+    private static void TrySetExample(IOpenApiSchema schema, SchemaFilterContext context, string? example)
     {
         if (example == null)
             return;
+        if (schema is not OpenApiSchema openApiSchema)
+            return;
 
-        schema.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, schema, example);
+        openApiSchema.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, openApiSchema, example);
     }
 }

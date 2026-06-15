@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics.CodeAnalysis;
 
@@ -8,16 +8,20 @@ namespace Altinn.Swashbuckle.Filters;
 internal class SwaggerStringAttributeFilter
     : AttributeFilter<SwaggerStringAttribute>
 {
-    protected override void Apply(SwaggerStringAttribute attribute, OpenApiSchema schema, SchemaFilterContext context)
+    protected override void Apply(SwaggerStringAttribute attribute, IOpenApiSchema schema, SchemaFilterContext context)
     {
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
         // Reset the schema type to string
         // reset defaults
-        schema.Properties.Clear();
-        schema.Required.Clear();
-        schema.AdditionalPropertiesAllowed = false;
-        schema.AdditionalProperties = null;
-        schema.Type = "string";
-        schema.Format = attribute.Format;
-        schema.Pattern = attribute.Pattern;
+        openApiSchema.Properties?.Clear();
+        openApiSchema.Required?.Clear();
+        openApiSchema.AdditionalPropertiesAllowed = false;
+        openApiSchema.AdditionalProperties = null;
+        openApiSchema.Type = JsonSchemaType.String;
+        openApiSchema.Format = attribute.Format;
+        openApiSchema.Pattern = attribute.Pattern;
     }
 }

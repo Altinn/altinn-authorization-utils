@@ -1,10 +1,8 @@
-using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Any;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Altinn.Swashbuckle.Examples;
 
@@ -31,8 +29,8 @@ public sealed class OpenApiExampleProvider
     /// Gets an example for the specified type.
     /// </summary>
     /// <typeparam name="T">The type to get an example for.</typeparam>
-    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
-    public IEnumerable<IOpenApiAny>? GetExample<T>()
+    /// <returns>An enumerable of example data values.</returns>
+    public IEnumerable<JsonNode?>? GetExample<T>()
         => GetExample(typeof(T));
 
     /// <summary>
@@ -41,16 +39,16 @@ public sealed class OpenApiExampleProvider
     /// <typeparam name="T">The type to get an example for.</typeparam>
     /// <typeparam name="U">The mapped type.</typeparam>
     /// <param name="mapper">A mapper to apply to all example items.</param>
-    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
-    public IEnumerable<IOpenApiAny>? GetExample<T, U>(Func<T, U> mapper)
+    /// <returns>An enumerable of example data values.</returns>
+    public IEnumerable<JsonNode?>? GetExample<T, U>(Func<T, U> mapper)
         => GetExample(typeof(T), typeof(U), x => x is null ? null : mapper((T)x));
 
     /// <summary>
     /// Gets an example for the specified type.
     /// </summary>
     /// <param name="type">The type to get an example for.</param>
-    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
-    public IEnumerable<IOpenApiAny>? GetExample(Type type)
+    /// <returns>An enumerable of example data values.</returns>
+    public IEnumerable<JsonNode?>? GetExample(Type type)
     {
         var exampleDataOptions = _exampleDataOptions.CurrentValue ?? ExampleDataOptions.DefaultOptions;
         var jsonOptions = _jsonOptions.CurrentValue?.SerializerOptions ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
@@ -64,8 +62,8 @@ public sealed class OpenApiExampleProvider
     /// <param name="type">The type to get an example for.</param>
     /// <param name="mappedType">The type produced by the mapper.</param>
     /// <param name="mapper">A mapper to apply to all example items.</param>
-    /// <returns>An enumerable of <see cref="IOpenApiAny"/> example data.</returns>
-    public IEnumerable<IOpenApiAny>? GetExample(Type type, Type mappedType, Func<object?, object?> mapper)
+    /// <returns>An enumerable of example data values.</returns>
+    public IEnumerable<JsonNode?>? GetExample(Type type, Type mappedType, Func<object?, object?> mapper)
     {
         var exampleDataOptions = _exampleDataOptions.CurrentValue ?? ExampleDataOptions.DefaultOptions;
         var jsonOptions = _jsonOptions.CurrentValue?.SerializerOptions ?? new JsonSerializerOptions(JsonSerializerDefaults.Web);
@@ -73,7 +71,7 @@ public sealed class OpenApiExampleProvider
         return GetExample(type, mappedType, mapper, exampleDataOptions, jsonOptions);
     }
 
-    private static IEnumerable<IOpenApiAny>? GetExample(Type type, Type mappedType, Func<object?, object?>? mapper, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<JsonNode?>? GetExample(Type type, Type mappedType, Func<object?, object?>? mapper, ExampleDataOptions exampleDataOptions, JsonSerializerOptions jsonSerializerOptions)
     {
         var examples = ExampleData.GetExamples(type, exampleDataOptions);
         if (examples is null)
@@ -89,71 +87,11 @@ public sealed class OpenApiExampleProvider
         return ConvertExamples(examples, mappedType, jsonSerializerOptions);
     }
 
-    private static IEnumerable<IOpenApiAny> ConvertExamples(IEnumerable examples, Type type, JsonSerializerOptions jsonSerializerOptions)
+    private static IEnumerable<JsonNode?> ConvertExamples(IEnumerable examples, Type type, JsonSerializerOptions jsonSerializerOptions)
     {
         foreach (var example in examples)
         {
-            var doc = JsonSerializer.SerializeToDocument(example, type, jsonSerializerOptions);
-            if (doc is null)
-            {
-                continue;
-            }
-
-            yield return CreateFromJson(doc.RootElement);
+            yield return JsonSerializer.SerializeToNode(example, type, jsonSerializerOptions);
         }
-    }
-
-    private static IOpenApiAny CreateFromJson(JsonElement element)
-        => element.ValueKind switch
-        {
-            JsonValueKind.Null => new OpenApiNull(),
-            JsonValueKind.True => new OpenApiBoolean(true),
-            JsonValueKind.False => new OpenApiBoolean(false),
-            JsonValueKind.Number => CreateFromNumber(element),
-            JsonValueKind.String => new OpenApiString(element.GetString() ?? string.Empty),
-            JsonValueKind.Array => CreateFromArray(element),
-            JsonValueKind.Object => CreateFromObject(element),
-            _ => ThrowHelper.ThrowArgumentOutOfRangeException<IOpenApiAny>(nameof(element), "Invalid JsonValueKind"),
-        };
-
-    private static IOpenApiAny CreateFromNumber(JsonElement element)
-    {
-        if (element.TryGetInt32(out int intValue))
-            return new OpenApiInteger(intValue);
-
-        if (element.TryGetInt64(out long longValue))
-            return new OpenApiLong(longValue);
-
-        if (element.TryGetSingle(out float floatValue) && !float.IsInfinity(floatValue))
-            return new OpenApiFloat(floatValue);
-
-        if (element.TryGetDouble(out double doubleValue))
-            return new OpenApiDouble(doubleValue);
-
-        return ThrowHelper.ThrowArgumentException<IOpenApiAny>(nameof(element), "Could not get value from number element");
-    }
-
-    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Concrete type is an implementation detail")]
-    private static IOpenApiAny CreateFromArray(JsonElement element)
-    {
-        var array = new OpenApiArray();
-        foreach (var item in element.EnumerateArray())
-        {
-            array.Add(CreateFromJson(item));
-        }
-
-        return array;
-    }
-
-    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Concrete type is an implementation detail")]
-    private static IOpenApiAny CreateFromObject(JsonElement element)
-    {
-        var obj = new OpenApiObject();
-        foreach (var property in element.EnumerateObject())
-        {
-            obj[property.Name] = CreateFromJson(property.Value);
-        }
-
-        return obj;
     }
 }

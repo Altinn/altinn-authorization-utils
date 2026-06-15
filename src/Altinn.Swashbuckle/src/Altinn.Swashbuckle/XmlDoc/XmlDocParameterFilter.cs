@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Xml.XPath;
@@ -22,7 +22,7 @@ internal sealed class XmlDocParameterFilter
     }
 
     /// <inheritdoc />
-    public void Apply(OpenApiParameter parameter, ParameterFilterContext context)
+    public void Apply(IOpenApiParameter parameter, ParameterFilterContext context)
     {
         if (context.PropertyInfo != null)
         {
@@ -34,9 +34,13 @@ internal sealed class XmlDocParameterFilter
         }
     }
 
-    private void ApplyPropertyTags(OpenApiParameter parameter, ParameterFilterContext context)
+    private void ApplyPropertyTags(IOpenApiParameter parameter, ParameterFilterContext context)
     {
         if (!_documentationProvider.TryGetXmlDoc(context.PropertyInfo, out var propertyNode))
+        {
+            return;
+        }
+        if (parameter is not OpenApiParameter openApiParameter)
         {
             return;
         }
@@ -44,8 +48,11 @@ internal sealed class XmlDocParameterFilter
         var summaryNode = propertyNode.SelectFirstChild("summary");
         if (summaryNode != null)
         {
-            parameter.Description = XmlCommentsTextHelper.Humanize(summaryNode.InnerXml);
-            parameter.Schema.Description = null; // no need to duplicate
+            openApiParameter.Description = XmlCommentsTextHelper.Humanize(summaryNode.InnerXml);
+            if (openApiParameter.Schema is not null)
+            {
+                openApiParameter.Schema.Description = null; // no need to duplicate
+            }
         }
 
         var exampleNode = propertyNode.SelectFirstChild("example");
@@ -54,12 +61,19 @@ internal sealed class XmlDocParameterFilter
             return;
         }
 
-        parameter.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, parameter.Schema, exampleNode.ToString());
+        if (openApiParameter.Schema is not null)
+        {
+            openApiParameter.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, openApiParameter.Schema, exampleNode.ToString());
+        }
     }
 
-    private void ApplyParamTags(OpenApiParameter parameter, ParameterFilterContext context)
+    private void ApplyParamTags(IOpenApiParameter parameter, ParameterFilterContext context)
     {
         if (context.ParameterInfo.Member is not MethodInfo methodInfo)
+        {
+            return;
+        }
+        if (parameter is not OpenApiParameter openApiParameter)
         {
             return;
         }
@@ -83,7 +97,7 @@ internal sealed class XmlDocParameterFilter
 
         if (paramNode != null)
         {
-            parameter.Description = XmlCommentsTextHelper.Humanize(paramNode.InnerXml);
+            openApiParameter.Description = XmlCommentsTextHelper.Humanize(paramNode.InnerXml);
 
             var example = paramNode.GetAttribute("example");
             if (string.IsNullOrEmpty(example))
@@ -91,7 +105,10 @@ internal sealed class XmlDocParameterFilter
                 return;
             }
 
-            parameter.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, parameter.Schema, example);
+            if (openApiParameter.Schema is not null)
+            {
+                openApiParameter.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, openApiParameter.Schema, example);
+            }
         }
     }
 }

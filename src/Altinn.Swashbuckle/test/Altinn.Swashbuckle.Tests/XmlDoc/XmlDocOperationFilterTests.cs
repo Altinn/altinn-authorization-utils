@@ -1,7 +1,7 @@
 using Altinn.Swashbuckle.Tests.Fixtures;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Swashbuckle.Tests.XmlDoc;
@@ -17,7 +17,7 @@ public class XmlDocOperationFilterTests
             .GetMethod(nameof(FakeControllerWithXmlComments.ActionWithSummaryAndRemarksTags))!;
 
         var apiDescription = ApiDescriptionFactory.Create(methodInfo: methodInfo, groupName: "v1", httpMethod: "POST", relativePath: "resource");
-        var filterContext = new OperationFilterContext(apiDescription, null, null, methodInfo);
+        var filterContext = new OperationFilterContext(apiDescription, null, null, new OpenApiDocument(), methodInfo);
 
         Subject.Apply(operation, filterContext);
 
@@ -33,7 +33,7 @@ public class XmlDocOperationFilterTests
             .GetMethod(nameof(FakeConstructedControllerWithXmlComments.ActionWithSummaryAndResponseTags))!;
 
         var apiDescription = ApiDescriptionFactory.Create(methodInfo: methodInfo, groupName: "v1", httpMethod: "POST", relativePath: "resource");
-        var filterContext = new OperationFilterContext(apiDescription, null, null, methodInfo);
+        var filterContext = new OperationFilterContext(apiDescription, null, null, new OpenApiDocument(), methodInfo);
 
         Subject.Apply(operation, filterContext);
 
@@ -65,7 +65,7 @@ public class XmlDocOperationFilterTests
                 new ApiResponseType { StatusCode = 200 },
                 new ApiResponseType { StatusCode = 400 },
             ]);
-        var filterContext = new OperationFilterContext(apiDescription, null, null, methodInfo: methodInfo);
+        var filterContext = new OperationFilterContext(apiDescription, null, null, new OpenApiDocument(), methodInfo: methodInfo);
 
         Subject.Apply(operation, filterContext);
 

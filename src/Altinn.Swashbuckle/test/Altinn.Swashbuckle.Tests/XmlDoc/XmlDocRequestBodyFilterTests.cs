@@ -3,7 +3,7 @@ using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Swashbuckle.Tests.XmlDoc;
@@ -18,7 +18,7 @@ public class XmlDocRequestBodyFilterTests
         {
             Content = new Dictionary<string, OpenApiMediaType>
             {
-                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = "string" } }
+                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = JsonSchemaType.String } }
             }
         };
         var parameterInfo = typeof(FakeControllerWithXmlComments)
@@ -28,13 +28,13 @@ public class XmlDocRequestBodyFilterTests
         {
             ParameterDescriptor = new ControllerParameterDescriptor { ParameterInfo = parameterInfo }
         };
-        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null);
+        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
 
         requestBody.Description.ShouldBe("Description for param1");
         requestBody.Content["application/json"].Example.ShouldNotBeNull();
-        requestBody.Content["application/json"].Example.ToJson().ShouldBe("\"Example for \\\"param1\\\"\"");
+        ToJsonString(requestBody.Content["application/json"].Example).ShouldBe("\"Example for \\\"param1\\\"\"");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class XmlDocRequestBodyFilterTests
         {
             Content = new Dictionary<string, OpenApiMediaType>
             {
-                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = "string" } }
+                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = JsonSchemaType.String } }
             }
         };
         var parameterInfo = typeof(FakeConstructedControllerWithXmlComments)
@@ -54,13 +54,13 @@ public class XmlDocRequestBodyFilterTests
         {
             ParameterDescriptor = new ControllerParameterDescriptor { ParameterInfo = parameterInfo }
         };
-        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null);
+        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
 
         requestBody.Description.ShouldBe("Description for param1");
         requestBody.Content["application/json"].Example.ShouldNotBeNull();
-        requestBody.Content["application/json"].Example.ToJson().ShouldBe("\"Example for \\\"param1\\\"\"");
+        ToJsonString(requestBody.Content["application/json"].Example).ShouldBe("\"Example for \\\"param1\\\"\"");
     }
 
     [Fact]
@@ -70,20 +70,20 @@ public class XmlDocRequestBodyFilterTests
         {
             Content = new Dictionary<string, OpenApiMediaType>
             {
-                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = "string" } }
+                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = JsonSchemaType.String } }
             }
         };
         var bodyParameterDescription = new ApiParameterDescription
         {
             ModelMetadata = ModelMetadataFactory.CreateForProperty(typeof(XmlAnnotatedType), nameof(XmlAnnotatedType.StringProperty))
         };
-        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null);
+        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
 
         requestBody.Description.ShouldBe("Summary for StringProperty");
         requestBody.Content["application/json"].Example.ShouldNotBeNull();
-        requestBody.Content["application/json"].Example.ToJson().ShouldBe("\"Example for StringProperty\"");
+        ToJsonString(requestBody.Content["application/json"].Example).ShouldBe("\"Example for StringProperty\"");
     }
 
 
@@ -94,20 +94,20 @@ public class XmlDocRequestBodyFilterTests
         {
             Content = new Dictionary<string, OpenApiMediaType>
             {
-                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = "string" } }
+                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = JsonSchemaType.String } }
             }
         };
         var bodyParameterDescription = new ApiParameterDescription
         {
             ModelMetadata = ModelMetadataFactory.CreateForProperty(typeof(XmlAnnotatedType), nameof(XmlAnnotatedType.StringPropertyWithUri))
         };
-        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null);
+        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
 
         requestBody.Description.ShouldBe("Summary for StringPropertyWithUri");
         requestBody.Content["application/json"].Example.ShouldNotBeNull();
-        requestBody.Content["application/json"].Example.ToJson().ShouldBe("\"https://test.com/a?b=1&c=2\"");
+        ToJsonString(requestBody.Content["application/json"].Example).ShouldBe("\"https://test.com/a?b=1&c=2\"");
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class XmlDocRequestBodyFilterTests
         {
             Content = new Dictionary<string, OpenApiMediaType>
             {
-                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = "string" } }
+                ["application/json"] = new OpenApiMediaType { Schema = new OpenApiSchema { Type = JsonSchemaType.String } }
             }
         };
         var parameterInfo = typeof(FakeControllerWithXmlComments)
@@ -127,7 +127,7 @@ public class XmlDocRequestBodyFilterTests
         {
             ParameterDescriptor = new ControllerParameterDescriptor { ParameterInfo = parameterInfo }
         };
-        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null);
+        var filterContext = new RequestBodyFilterContext(bodyParameterDescription, null, null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
 
@@ -149,10 +149,10 @@ public class XmlDocRequestBodyFilterTests
                 {
                     Schema = new OpenApiSchema
                     {
-                        Type = "string",
-                        Properties = new Dictionary<string, OpenApiSchema>()
+                        Type = JsonSchemaType.String,
+                        Properties = new Dictionary<string, IOpenApiSchema>()
                         {
-                            [parameterInfo.Name!] = new()
+                            [parameterInfo.Name!] = new OpenApiSchema { Type = JsonSchemaType.String }
                         }
                     },
                 }
@@ -165,7 +165,7 @@ public class XmlDocRequestBodyFilterTests
             Name = parameterInfo.Name!,
             Source = BindingSource.Form
         };
-        var filterContext = new RequestBodyFilterContext(null, [bodyParameterDescription], null, null);
+        var filterContext = new RequestBodyFilterContext(null, [bodyParameterDescription], null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
 
