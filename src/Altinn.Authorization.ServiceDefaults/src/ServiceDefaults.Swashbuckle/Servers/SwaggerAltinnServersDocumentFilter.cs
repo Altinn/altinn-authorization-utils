@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -26,6 +26,7 @@ internal sealed class SwaggerAltinnServersDocumentFilter
         var options = _options.Get(context.DocumentName);
         var defaultOptions = _options.CurrentValue;
         var suffix = options.EnvironmentServerPathSuffix.HasValue ? options.EnvironmentServerPathSuffix : defaultOptions.EnvironmentServerPathSuffix;
+        swaggerDoc.Servers ??= [];
 
         if (options.IncludeLocalhostServer ?? defaultOptions.IncludeLocalhostServer ?? true)
         {

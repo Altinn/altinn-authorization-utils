@@ -80,12 +80,12 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Spectre.Console" Version="0.55.2" />
     <PackageVersion Include="Spectre.Console.Cli" Version="0.55.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="9.0.6" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="9.0.6" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.6" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.6" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="10" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="10" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10" />
     <PackageVersion Include="System.CommandLine" Version="2.0.8" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
     <PackageVersion Include="System.IO.Hashing" Version="9.0.16" />

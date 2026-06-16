@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Xml.XPath;
@@ -93,6 +93,7 @@ internal sealed class XmlDocOperationFilter
                 continue;
             }
 
+            operation.Responses ??= [];
             if (!operation.Responses.TryGetValue(code, out var response))
             {
                 response = new OpenApiResponse();

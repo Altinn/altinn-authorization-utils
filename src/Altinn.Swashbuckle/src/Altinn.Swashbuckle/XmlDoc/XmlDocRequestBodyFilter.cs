@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
@@ -21,8 +21,12 @@ internal sealed class XmlDocRequestBodyFilter
     }
 
     /// <inheritdoc />
-    public void Apply(OpenApiRequestBody requestBody, RequestBodyFilterContext context)
+    public void Apply(IOpenApiRequestBody requestBody, RequestBodyFilterContext context)
     {
+        if (requestBody is not OpenApiRequestBody openApiRequestBody)
+        {
+            return;
+        }
         var bodyParameterDescription = context.BodyParameterDescription;
 
         if (bodyParameterDescription is not null)
@@ -30,14 +34,14 @@ internal sealed class XmlDocRequestBodyFilter
             var propertyInfo = bodyParameterDescription.PropertyInfo();
             if (propertyInfo is not null)
             {
-                ApplyPropertyTagsForBody(requestBody, context, propertyInfo);
+                ApplyPropertyTagsForBody(openApiRequestBody, context, propertyInfo);
             }
             else
             {
                 var parameterInfo = bodyParameterDescription.ParameterInfo();
                 if (parameterInfo is not null)
                 {
-                    ApplyParamTagsForBody(requestBody, context, parameterInfo);
+                    ApplyParamTagsForBody(openApiRequestBody, context, parameterInfo);
                 }
             }
         }
@@ -69,9 +73,9 @@ internal sealed class XmlDocRequestBodyFilter
                     {
                         var (summary, example) = GetParamTags(parameterFromForm);
                         value.Description ??= summary;
-                        if (!string.IsNullOrEmpty(example))
+                        if (!string.IsNullOrEmpty(example) && value is OpenApiSchema openApiSchema)
                         {
-                            value.Example ??= XmlCommentsExampleHelper.Create(context.SchemaRepository, value, example);
+                            openApiSchema.Example ??= XmlCommentsExampleHelper.Create(context.SchemaRepository, openApiSchema, example);
                         }
                     }
                 }
@@ -114,7 +118,10 @@ internal sealed class XmlDocRequestBodyFilter
 
         foreach (var mediaType in requestBody.Content!.Values)
         {
-            mediaType.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, mediaType.Schema, example);
+            if (mediaType.Schema is not null)
+            {
+                mediaType.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, mediaType.Schema, example);
+            }
         }
     }
 
@@ -168,7 +175,10 @@ internal sealed class XmlDocRequestBodyFilter
 
         foreach (var mediaType in requestBody.Content!.Values)
         {
-            mediaType.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, mediaType.Schema, example);
+            if (mediaType.Schema is not null)
+            {
+                mediaType.Example = XmlCommentsExampleHelper.Create(context.SchemaRepository, mediaType.Schema, example);
+            }
         }
     }
 }

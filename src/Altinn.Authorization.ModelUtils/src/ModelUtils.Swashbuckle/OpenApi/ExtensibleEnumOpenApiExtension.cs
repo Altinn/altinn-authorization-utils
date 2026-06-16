@@ -1,6 +1,4 @@
 using Microsoft.OpenApi;
-using Microsoft.OpenApi.Interfaces;
-using Microsoft.OpenApi.Writers;
 using System.Collections;
 
 namespace Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;

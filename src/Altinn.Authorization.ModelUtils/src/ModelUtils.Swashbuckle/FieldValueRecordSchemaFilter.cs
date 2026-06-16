@@ -2,7 +2,7 @@ using Altinn.Authorization.ModelUtils.FieldValueRecords;
 using Altinn.Authorization.ModelUtils.FieldValueRecords.Converters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics;
 using System.Reflection;
@@ -49,7 +49,7 @@ internal sealed class FieldValueRecordSchemaFilter
         });
     }
 
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         var jsonOptions = _jsonSerializerOptions.Value();
         var generatorOptions = _options.Value();
@@ -76,16 +76,23 @@ internal sealed class FieldValueRecordSchemaFilter
         }
     }
 
-    private void Apply(OpenApiSchema schema, SchemaFilterContext context, IFieldValueRecordJsonConverter converter, SchemaGeneratorOptions options)
+    private void Apply(IOpenApiSchema schema, SchemaFilterContext context, IFieldValueRecordJsonConverter converter, SchemaGeneratorOptions options)
     {
-        var required = schema.Required;
         var props = schema.Properties switch
         {
-            Dictionary<string, OpenApiSchema> dict => dict,
-            _ => new Dictionary<string, OpenApiSchema>(schema.Properties),
+            Dictionary<string, IOpenApiSchema> dict => dict,
+            null => [],
+            _ => new Dictionary<string, IOpenApiSchema>(schema.Properties),
         };
 
-        schema.Properties = props;
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
+
+        openApiSchema.Properties = props;
+        openApiSchema.Required ??= new HashSet<string>();
+        var required = openApiSchema.Required;
 
         foreach (var name in props.Keys)
         {
@@ -108,11 +115,11 @@ internal sealed class FieldValueRecordSchemaFilter
 
         if (converter.Model.JsonExtensionDataProperty is not null)
         {
-            schema.AdditionalPropertiesAllowed = true;
+            openApiSchema.AdditionalPropertiesAllowed = true;
         }
     }
 
-    private OpenApiSchema GetSchema(IFieldValueRecordPropertyModel model, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private IOpenApiSchema GetSchema(IFieldValueRecordPropertyModel model, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
         var schema = EnsureRef(model.Type, context, options);
 
@@ -121,7 +128,7 @@ internal sealed class FieldValueRecordSchemaFilter
         return schema;
     }
 
-    private OpenApiSchema EnsureRef(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private IOpenApiSchema EnsureRef(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
         if (context.SchemaRepository.TryLookupByType(type, out var referenceSchema))
         {
@@ -132,19 +139,12 @@ internal sealed class FieldValueRecordSchemaFilter
         var schema = context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
         if (!context.SchemaRepository.Schemas.ContainsKey(id))
         {
-            referenceSchema = context.SchemaRepository.AddDefinition(id, schema);
+            referenceSchema = context.SchemaRepository.AddDefinition(id, (OpenApiSchema)schema);
             context.SchemaRepository.RegisterType(type, id);
         }
         else
         {
-            referenceSchema = new()
-            {
-                Reference = new()
-                {
-                    Type = ReferenceType.Schema,
-                    Id = id,
-                },
-            };
+            referenceSchema = new OpenApiSchemaReference(id, null);
         }
 
         return referenceSchema;

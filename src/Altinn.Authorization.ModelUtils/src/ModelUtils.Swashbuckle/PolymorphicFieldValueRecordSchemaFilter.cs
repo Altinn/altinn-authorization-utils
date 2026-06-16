@@ -4,8 +4,7 @@ using Altinn.Authorization.ModelUtils.FieldValueRecords.Polymorphic;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -56,7 +55,7 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         _computeDiscriminatorStringValue = ComputeDiscriminatorStringValue;
     }
 
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
         var jsonOptions = _jsonSerializerOptions.Value();
         var generatorOptions = _options.Value();
@@ -84,7 +83,7 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
     }
 
     private void Apply(
-        OpenApiSchema schema,
+        IOpenApiSchema schema,
         SchemaFilterContext context,
         IPolymorphicFieldValueRecordJsonConverter converter,
         SchemaGeneratorOptions options)
@@ -96,7 +95,12 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
             return;
         }
 
-        OpenApiSchema? propsSchema = null;
+        if (schema is not OpenApiSchema concreteSchema)
+        {
+            return;
+        }
+
+        IOpenApiSchema? propsSchema = null;
         if (converter.Model.Constructor is not null)
         {
             // We can construct this type directly, thus we need a props-type
@@ -105,47 +109,52 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
             ref var propsSchemaSlot = ref CollectionsMarshal.GetValueRefOrAddDefault(context.SchemaRepository.Schemas, propsSchemaId, out var exists);
             if (!exists)
             {
-                // clone generated schema
-                propsSchemaSlot = new(schema);
+                // Manually copy the generated schema properties into the props entry
+                var propsOpenApiSchema = new OpenApiSchema
+                {
+                    Type = concreteSchema.Type,
+                    Description = concreteSchema.Description,
+                    Properties = concreteSchema.Properties is not null
+                        ? new Dictionary<string, IOpenApiSchema>(concreteSchema.Properties)
+                        : null,
+                    Required = concreteSchema.Required is not null
+                        ? new HashSet<string>(concreteSchema.Required)
+                        : null,
+                    AdditionalPropertiesAllowed = concreteSchema.AdditionalPropertiesAllowed,
+                };
+                propsSchemaSlot = propsOpenApiSchema;
                 ApplyProps(propsSchemaSlot, context, converter, options);
             }
 
-            propsSchema = new OpenApiSchema
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.Schema,
-                    Id = propsSchemaId,
-                },
-            };
+            propsSchema = new OpenApiSchemaReference(propsSchemaId, null);
         }
 
-        schema.Properties.Clear();
-        schema.Required.Clear();
+        concreteSchema.Properties?.Clear();
+        concreteSchema.Required?.Clear();
 
-        var discriminator = schema.Discriminator ??= new();
+        var discriminator = concreteSchema.Discriminator ??= new OpenApiDiscriminator();
         var mapping = discriminator.Mapping switch
         {
-            Dictionary<string, string> dict => dict,
-            _ => new Dictionary<string, string>(),
+            Dictionary<string, OpenApiSchemaReference> dict => dict,
+            _ => new Dictionary<string, OpenApiSchemaReference>(),
         };
 
-        var oneOf = schema.OneOf switch
+        var oneOf = concreteSchema.OneOf switch
         {
-            List<OpenApiSchema> list => list,
-            _ => new(),
+            List<IOpenApiSchema> list => list,
+            _ => new List<IOpenApiSchema>(),
         };
 
-        schema.OneOf = oneOf;
+        concreteSchema.OneOf = oneOf;
         discriminator.Mapping = mapping;
 
         oneOf.Clear();
         mapping.Clear();
 
         discriminator.PropertyName = converter.DiscriminatorPropertyName;
-        schema.Required.Add(discriminator.PropertyName);
+        (concreteSchema.Required ??= new HashSet<string>()).Add(discriminator.PropertyName);
 
-        var seen = new Dictionary<string, OpenApiReference>();
+        var seen = new Dictionary<string, OpenApiSchemaReference>();
         foreach (var descendant in converter.Model.Descendants)
         {
             var descendantSchemaRef = GetPropsSchemaRef(descendant, context, options);
@@ -155,20 +164,17 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
                 ref var slot = ref CollectionsMarshal.GetValueRefOrAddDefault(mapping, stringValue, out var exists);
                 if (exists)
                 {
-                    ThrowHelper.ThrowInvalidOperationException($"Discriminator value '{stringValue}' is already registered for type '{slot}'. Discriminator values must be unique.");
+                    ThrowHelper.ThrowInvalidOperationException($"Discriminator value '{stringValue}' is already registered for type '{slot?.Reference?.Id}'. Discriminator values must be unique.");
                 }
 
-                slot = descendantSchemaRef.ReferenceV3;
-                seen[slot] = descendantSchemaRef;
+                slot = descendantSchemaRef;
+                seen[descendantSchemaRef.Reference!.ReferenceV3!] = descendantSchemaRef;
             }
         }
 
-        foreach (var reference in seen.Values)
+        foreach (var schemaRef in seen.Values)
         {
-            oneOf.Add(new OpenApiSchema
-            {
-                Reference = reference,
-            });
+            oneOf.Add(schemaRef);
         }
 
         if (propsSchema is not null)
@@ -178,19 +184,27 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
     }
 
     private void ApplyProps(
-        OpenApiSchema schema,
+        IOpenApiSchema schema,
         SchemaFilterContext context,
         IPolymorphicFieldValueRecordJsonConverter converter,
         SchemaGeneratorOptions options)
     {
-        var required = schema.Required;
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
+
+        openApiSchema.Required ??= new HashSet<string>();
+        var required = openApiSchema.Required;
         var props = schema.Properties switch
         {
-            Dictionary<string, OpenApiSchema> dict => dict,
-            _ => new Dictionary<string, OpenApiSchema>(schema.Properties),
+            Dictionary<string, IOpenApiSchema> dict => dict,
+            _ => schema.Properties is not null
+                ? new Dictionary<string, IOpenApiSchema>(schema.Properties)
+                : new Dictionary<string, IOpenApiSchema>(),
         };
 
-        schema.Properties = props;
+        openApiSchema.Properties = props;
 
         foreach (var name in props.Keys)
         {
@@ -222,7 +236,7 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
 
         if (converter.Model.JsonExtensionDataProperty is not null)
         {
-            schema.AdditionalPropertiesAllowed = true;
+            openApiSchema.AdditionalPropertiesAllowed = true;
         }
     }
 
@@ -230,18 +244,15 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         IPolymorphicFieldValueRecordModel model,
         IEnumerable<object> discriminatorValues)
     {
-        var oneOf = new List<OpenApiSchema>();
+        var oneOf = new List<IOpenApiSchema>();
 
         foreach (var value in discriminatorValues)
         {
             var stringValue = GetDiscriminatorStringValue(value);
             oneOf.Add(new OpenApiSchema
             {
-                Type = "string",
-                Enum = new List<IOpenApiAny>
-                {
-                    new OpenApiString(stringValue),
-                },
+                Type = JsonSchemaType.String,
+                Enum = [stringValue],
             });
         }
 
@@ -249,20 +260,20 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         {
             oneOf.Add(new OpenApiSchema
             {
-                Type = "string",
-                Example = new OpenApiString("other string value"),
+                Type = JsonSchemaType.String,
+                Example = "other string value",
             });
         }
 
         var schema = new OpenApiSchema
         {
-            Type = "string",
+            Type = JsonSchemaType.String,
             OneOf = oneOf,
         };
 
         if (model.IsRoot && model.IsNonExhaustive)
         {
-            schema.Example = new OpenApiString("other value");
+            schema.Example = "other value";
         }
 
         return schema;
@@ -284,12 +295,12 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         return stringDoc.RootElement.GetString()!;
     }
 
-    private OpenApiReference GetPropsSchemaRef(IPolymorphicFieldValueRecordModel model, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private OpenApiSchemaReference GetPropsSchemaRef(IPolymorphicFieldValueRecordModel model, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
         if (model.Descendants.Length == 0)
         {
             // leaf types are directly prop-types
-            return EnsureRef(model.Type, context, options).Reference!;
+            return EnsureRef(model.Type, context, options);
         }
 
         var baseId = options.SchemaIdSelector(model.Type);
@@ -299,23 +310,16 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
             EnsureRef(model.Type, context, options);
         }
 
-        return new()
-        {
-            Type = ReferenceType.Schema,
-            Id = propsId,
-        };
+        return new OpenApiSchemaReference(propsId, null);
     }
 
-    private OpenApiSchema GetSchema(IFieldValueRecordPropertyModel model, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private OpenApiSchemaReference GetSchema(IFieldValueRecordPropertyModel model, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
-        var schema = EnsureRef(model.Type, context, options);
-
         // TODO: nullability does not work properly with $ref schemas: https://stackoverflow.com/questions/40920441/how-to-specify-a-property-can-be-null-or-a-reference-with-swagger
-
-        return schema;
+        return EnsureRef(model.Type, context, options);
     }
 
-    private OpenApiSchema EnsureRef(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
+    private OpenApiSchemaReference EnsureRef(Type type, SchemaFilterContext context, SchemaGeneratorOptions options)
     {
         if (context.SchemaRepository.TryLookupByType(type, out var referenceSchema))
         {
@@ -326,21 +330,11 @@ internal sealed class PolymorphicFieldValueRecordSchemaFilter
         var schema = context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
         if (!context.SchemaRepository.Schemas.ContainsKey(id))
         {
-            referenceSchema = context.SchemaRepository.AddDefinition(id, schema);
+            referenceSchema = context.SchemaRepository.AddDefinition(id, (OpenApiSchema)schema);
             context.SchemaRepository.RegisterType(type, id);
-        }
-        else
-        {
-            referenceSchema = new()
-            {
-                Reference = new()
-                {
-                    Type = ReferenceType.Schema,
-                    Id = id,
-                },
-            };
+            return referenceSchema;
         }
 
-        return referenceSchema;
+        return new OpenApiSchemaReference(id, null);
     }
 }

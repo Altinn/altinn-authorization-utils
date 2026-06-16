@@ -1,5 +1,4 @@
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics;
@@ -66,15 +65,20 @@ public sealed class FooOrBar
     private sealed class SchemaFilter
         : ISchemaFilter
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
         {
-            schema.Type = null;
-            schema.Properties.Clear();
-            schema.Required.Clear();
+            if (schema is not OpenApiSchema openApiSchema)
+            {
+                return;
+            }
 
-            schema.OneOf = [
-                new OpenApiSchema { Type = "string", Enum = [ new OpenApiString("foo") ] },
-                new OpenApiSchema { Type = "string", Enum = [ new OpenApiString("bar") ] },
+            openApiSchema.Type = null;
+            openApiSchema.Properties?.Clear();
+            openApiSchema.Required?.Clear();
+
+            openApiSchema.OneOf = [
+                new OpenApiSchema { Type = JsonSchemaType.String, Enum = ["foo"] },
+                new OpenApiSchema { Type = JsonSchemaType.String, Enum = ["bar"] },
             ];
         }
     }

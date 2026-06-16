@@ -1,7 +1,7 @@
 using Altinn.Authorization.ModelUtils.Swashbuckle;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Swashbuckle.XmlDoc;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Altinn.Authorization.ModelUtils.Tests.Swashbuckle;
@@ -14,7 +14,7 @@ public class NonExhaustiveEnumSchemaFilterTests
     {
         var schema = new OpenApiSchema
         {
-            Properties = new Dictionary<string, OpenApiSchema>(),
+            Properties = new Dictionary<string, IOpenApiSchema>(),
         };
 
         var filterContext = new SchemaFilterContext(typeof(NonExhaustiveEnum<>).MakeGenericType(enumModel.Type), null, null, null);

@@ -2,9 +2,7 @@ using Altinn.Authorization.ModelUtils.Swashbuckle.OpenApi;
 using Altinn.Swashbuckle.XmlDoc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Extensions;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -53,11 +51,16 @@ internal sealed class NonExhaustiveEnumSchemaFilter
         });
     }
 
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
+
         if (NonExhaustiveEnum.IsNonExhaustiveEnumType(context.Type, out var enumType))
         {
-            Apply(schema, context, enumType);
+            Apply(openApiSchema, context, enumType);
         }
     }
 
@@ -67,7 +70,7 @@ internal sealed class NonExhaustiveEnumSchemaFilter
         var options = _jsonSerializerOptions.Value();
 
         var extensibleEnum = new ExtensibleEnumOpenApiExtension();
-        var oneOf = new List<OpenApiSchema>();
+        var oneOf = new List<IOpenApiSchema>();
 
         var wrapper = _wrappers.GetOrAdd(type, CreateWrapper);
         foreach (var enumVal in enumType.GetEnumValues().Cast<object>())
@@ -94,8 +97,8 @@ internal sealed class NonExhaustiveEnumSchemaFilter
 
             var valSchema = new OpenApiSchema
             {
-                Type = "string",
-                Enum = [new OpenApiString(stringValue)],
+                Type = JsonSchemaType.String,
+                Enum = [stringValue],
                 Title = title,
                 Description = description,
             };
@@ -113,8 +116,8 @@ internal sealed class NonExhaustiveEnumSchemaFilter
 
         oneOf.Add(new OpenApiSchema
         {
-            Type = "string",
-            Example = new OpenApiString("other string value"),
+            Type = JsonSchemaType.String,
+            Example = "other string value",
         });
 
         schema.Type = null;

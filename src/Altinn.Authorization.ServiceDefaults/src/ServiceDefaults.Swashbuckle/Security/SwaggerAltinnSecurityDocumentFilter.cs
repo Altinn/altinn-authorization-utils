@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics.CodeAnalysis;
 
@@ -21,10 +21,13 @@ internal sealed class SwaggerAltinnSecurityDocumentFilter
         var options = _options.Get(context.DocumentName);
         var defaultOptions = _options.CurrentValue;
 
+        swaggerDoc.Components ??= new OpenApiComponents();
+        swaggerDoc.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+
         if (options.EnableAltinnOidcScheme ?? defaultOptions.EnableAltinnOidcScheme ?? AltinnSecurityOptions.DefaultEnableAltinnOidcScheme)
         {
             var name = options.AltinnOidcSchemeName ?? defaultOptions.AltinnOidcSchemeName ?? AltinnSecurityOptions.DefaultAltinnOidcSchemeName;
-            swaggerDoc.Components.SecuritySchemes.Add(name, new OpenApiSecurityScheme
+            swaggerDoc.AddComponent(name, new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OpenIdConnect,
                 OpenIdConnectUrl = options.AltinnOidcConfigurationUri ?? defaultOptions.AltinnOidcConfigurationUri ?? AltinnSecurityOptions.DefaultAltinnOidcConfigurationUri,
@@ -34,7 +37,7 @@ internal sealed class SwaggerAltinnSecurityDocumentFilter
         if (options.EnablePlatformTokenScheme ?? defaultOptions.EnablePlatformTokenScheme ?? AltinnSecurityOptions.DefaultEnablePlatformTokenScheme)
         {
             var name = options.PlatformTokenSchemeName ?? defaultOptions.PlatformTokenSchemeName ?? AltinnSecurityOptions.DefaultPlatformTokenSchemeName;
-            swaggerDoc.Components.SecuritySchemes.Add(name, new OpenApiSecurityScheme
+            swaggerDoc.AddComponent(name, new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.ApiKey,
                 Name = "PlatformAccessToken",
@@ -45,7 +48,7 @@ internal sealed class SwaggerAltinnSecurityDocumentFilter
         if (options.EnableAPIMScheme ?? defaultOptions.EnableAPIMScheme ?? AltinnSecurityOptions.DefaultEnableAPIMSCheme)
         {
             var name = options.APIMSchemeName ?? defaultOptions.APIMSchemeName ?? AltinnSecurityOptions.DefaultAPIMSchemeName;
-            swaggerDoc.Components.SecuritySchemes.Add("apim", new OpenApiSecurityScheme
+            swaggerDoc.AddComponent(name, new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.ApiKey,
                 Name = "Ocp-Apim-Subscription-Key",

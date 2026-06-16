@@ -1,5 +1,5 @@
 using Altinn.Swashbuckle.Examples;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics.CodeAnalysis;
 
@@ -16,8 +16,12 @@ internal class SwaggerExampleFromExampleProviderFilter
         _provider = provider;
     }
 
-    protected override void Apply(SwaggerExampleFromExampleProviderAttribute attribute, OpenApiSchema schema, SchemaFilterContext context)
+    protected override void Apply(SwaggerExampleFromExampleProviderAttribute attribute, IOpenApiSchema schema, SchemaFilterContext context)
     {
-        schema.Example ??= _provider.GetExample(context.Type)?.FirstOrDefault();
+        if (schema is not OpenApiSchema openApiSchema)
+        {
+            return;
+        }
+        openApiSchema.Example ??= _provider.GetExample(context.Type)?.FirstOrDefault();
     }
 }

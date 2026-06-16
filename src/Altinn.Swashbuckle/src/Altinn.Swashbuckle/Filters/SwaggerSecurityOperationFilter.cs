@@ -1,5 +1,5 @@
 using Altinn.Swashbuckle.Security;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics.CodeAnalysis;
 
@@ -52,8 +52,8 @@ internal sealed class SwaggerSecurityOperationFilter
                 foreach (var (scheme, scopes) in req)
                 {
                     requirement.Add(
-                        new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = scheme } },
-                        scopes
+                        new OpenApiSecuritySchemeReference(scheme, context.Document),
+                        scopes.ToList()
                     );
                 }
 
