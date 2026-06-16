@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.NET.StringTools" ExcludeAssets="runtime" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+    <PackageReference Include="System.Security.Cryptography.Xml" PrivateAssets="all" />
     <PackageReference Include="Verify.SourceGenerators" />
     <PackageReference Include="Verify.XunitV3" />
   </ItemGroup>
