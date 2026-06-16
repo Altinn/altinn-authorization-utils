@@ -15,15 +15,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 [ExcludeFromCodeCoverage]
 public static class AltinnSwashbuckleServiceCollectionExtensions
 {
-    // TODO: https://github.com/dotnet/roslyn/issues/81217
-    // When this is resolved, un-comment all the <returns> tags in the XML comments below.
     /// <param name="services">The service collection.</param>
     extension(IServiceCollection services)
     {
         /// <summary>
         /// Add an <see cref="OpenApiExampleProvider"/> to the <see cref="IServiceCollection"/>.
         /// </summary>
-        /// <!--<returns><paramref name="services"/>.</returns>-->
+        /// <returns><paramref name="services"/>.</returns>
         public OptionsBuilder<ExampleDataOptions> AddOpenApiExampleProvider()
         {
             var builder = services.AddExampleDataOptions();
@@ -36,7 +34,7 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
         /// <summary>
         /// Add support for attributes implementing <see cref="ISchemaFilter"/> to take effect during schema generation.
         /// </summary>
-        /// <!--<returns><paramref name="services"/>.</returns>-->
+        /// <returns><paramref name="services"/>.</returns>
         public IServiceCollection AddSwaggerFilterAttributeSupport()
         {
             services.AddOpenApiExampleProvider();
@@ -59,7 +57,7 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
         /// <summary>
         /// Adds documentation to swagger documents based on automatically discovered XML documentation.
         /// </summary>
-        /// <!--<returns><paramref name="services"/>.</returns>-->
+        /// <returns><paramref name="services"/>.</returns>
         public IServiceCollection AddSwaggerAutoXmlDoc()
         {
             services.AddXmlDocProvider();
@@ -71,7 +69,7 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
         /// <summary>
         /// Adds the default XML documentation provider to the service collection.
         /// </summary>
-        /// <!--<returns><paramref name="services"/>.</returns>-->
+        /// <returns><paramref name="services"/>.</returns>
         public IServiceCollection AddXmlDocProvider()
         {
             services.TryAddSingleton<IXmlDocProvider, DefaultXmlDocProvider>();
@@ -82,7 +80,7 @@ public static class AltinnSwashbuckleServiceCollectionExtensions
         /// <summary>
         /// Adds OpenAPI security providers for authorization policies and operations.
         /// </summary>
-        /// <!--<returns><paramref name="services"/>.</returns>-->
+        /// <returns><paramref name="services"/>.</returns>
         public IServiceCollection AddOpenApiSecurityProvider()
         {
             services.TryAddSingleton<OpenApiSecurityProvider>();
