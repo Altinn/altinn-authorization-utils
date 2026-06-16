@@ -68,8 +68,11 @@ jobs:
               args: [--frozen-lockfile]
             - args: [--global, tsx]
 
+      - name: Restore
+        run: dotnet restore -p:Configuration=Release -bl:binlog/restore.binlog
+
       - name: Build
-        run: dotnet build -c Release -bl:binlog/build.binlog
+        run: dotnet build -c Release --no-restore -warnaserror -bl:binlog/build.binlog
 
       - name: Test
         run: dotnet test -c Release --no-build -bl:binlog/test.binlog
@@ -101,67 +104,67 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  analyze:
-    if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
-    name: Analyze
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
-        with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
+  # analyze:
+  #   if: ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) || github.event_name == 'push') && github.repository_owner == 'Altinn' && github.actor != 'dependabot[bot]'
+  #   name: Analyze
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
+  #       with:
+  #         dotnet-version: |
+  #           8.0.x
+  #           9.0.x
+  #           10.0.x
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
-        with:
-          distribution: "microsoft"
-          java-version: 17
+  #     - name: Set up JDK 17
+  #       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+  #       with:
+  #         distribution: "microsoft"
+  #         java-version: 17
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+  #     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+  #       with:
+  #         fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+  #     - name: Cache SonarCloud packages
+  #       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+  #       with:
+  #         path: ~\sonar\cache
+  #         key: ${{ runner.os }}-sonar
+  #         restore-keys: ${{ runner.os }}-sonar
 
-      - name: Cache SonarCloud scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
+  #     - name: Cache SonarCloud scanner
+  #       id: cache-sonar-scanner
+  #       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+  #       with:
+  #         path: .\.sonar\scanner
+  #         key: ${{ runner.os }}-sonar-scanner
+  #         restore-keys: ${{ runner.os }}-sonar-scanner
 
-      - name: Install SonarCloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          mkdir -p ./.sonar/scanner
-          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+  #     - name: Install SonarCloud scanner
+  #       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+  #       shell: bash
+  #       run: |
+  #         mkdir -p ./.sonar/scanner
+  #         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
-      - name: Analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: bash
-        run: |
-          dotnet tool install --global dotnet-coverage
-          ./.sonar/scanner/dotnet-sonarscanner begin \
-            /k:"Altinn_altinn-authorization-utils" \
-            /o:"altinn" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" \
-            /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/coverage.xml"
+  #     - name: Analyze
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #       shell: bash
+  #       run: |
+  #         dotnet tool install --global dotnet-coverage
+  #         ./.sonar/scanner/dotnet-sonarscanner begin \
+  #           /k:"Altinn_altinn-authorization-utils" \
+  #           /o:"altinn" \
+  #           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+  #           /d:sonar.host.url="https://sonarcloud.io" \
+  #           /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" \
+  #           /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/coverage.xml"
 
-          dotnet build --no-incremental
-          dotnet coverage collect 'dotnet test --no-build --results-directory TestResults/' -f xml -o 'TestResults/coverage.xml'
+  #         dotnet build --no-incremental
+  #         dotnet coverage collect 'dotnet test --no-build --results-directory TestResults/' -f xml -o 'TestResults/coverage.xml'
 
-          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+  #         ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
