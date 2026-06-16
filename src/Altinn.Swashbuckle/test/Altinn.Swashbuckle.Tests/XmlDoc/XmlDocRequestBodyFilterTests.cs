@@ -168,7 +168,7 @@ public class XmlDocRequestBodyFilterTests
         var filterContext = new RequestBodyFilterContext(null, [bodyParameterDescription], null, null, new OpenApiDocument());
 
         Subject.Apply(requestBody, filterContext);
-        
+
         requestBody.Content["multipart/form-data"].Schema!.Properties![parameterInfo.Name!].Description.ShouldBe("Parameter from form body");
     }
 
