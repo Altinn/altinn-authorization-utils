@@ -170,7 +170,7 @@ public class XmlDocSchemaFilterTests
 
         CultureInfo.CurrentCulture = defaultCulture;
 
-        schema.Example.GetValue<float>().ShouldBe(expectedValue);
+        schema.Example!.GetValue<float>().ShouldBe(expectedValue);
     }
 
     private ISchemaFilter Subject => new XmlDocSchemaFilter(Provider);

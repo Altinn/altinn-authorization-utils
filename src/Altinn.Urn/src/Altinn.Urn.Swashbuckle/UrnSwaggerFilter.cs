@@ -248,7 +248,7 @@ internal class UrnSwaggerFilter
                     referenceSchema = lookedUp;
                 }
 
-                oneOf?.Add(referenceSchema);
+                oneOf.Add(referenceSchema);
                 foreach (var prefix in TUrn.PrefixesFor(variant))
                 {
                     mapping.Add(prefix, referenceSchema);
@@ -314,12 +314,12 @@ internal class UrnSwaggerFilter
                 var variantType = TUrn.VariantTypeFor(variant);
                 if (context.SchemaRepository.TryLookupByType(variantType, out var referenceSchema))
                 {
-                    oneOf?.Add(referenceSchema);
+                    oneOf.Add(referenceSchema);
                     continue;
                 }
 
                 var variantSchema = context.SchemaGenerator.GenerateSchema(variantType, context.SchemaRepository);
-                oneOf?.Add(variantSchema);
+                oneOf.Add(variantSchema);
             }
 
             schema.Example = exampleProvider.GetExample(type)?.FirstOrDefault();

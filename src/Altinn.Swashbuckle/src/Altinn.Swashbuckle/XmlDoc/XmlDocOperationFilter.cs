@@ -93,6 +93,7 @@ internal sealed class XmlDocOperationFilter
                 continue;
             }
 
+            operation.Responses ??= [];
             if (!operation.Responses.TryGetValue(code, out var response))
             {
                 response = new OpenApiResponse();

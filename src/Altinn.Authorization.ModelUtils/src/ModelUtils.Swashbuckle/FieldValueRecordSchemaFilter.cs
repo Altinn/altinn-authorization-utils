@@ -78,10 +78,10 @@ internal sealed class FieldValueRecordSchemaFilter
 
     private void Apply(IOpenApiSchema schema, SchemaFilterContext context, IFieldValueRecordJsonConverter converter, SchemaGeneratorOptions options)
     {
-        var required = schema.Required;
         var props = schema.Properties switch
         {
             Dictionary<string, IOpenApiSchema> dict => dict,
+            null => [],
             _ => new Dictionary<string, IOpenApiSchema>(schema.Properties),
         };
 
@@ -91,6 +91,8 @@ internal sealed class FieldValueRecordSchemaFilter
         }
 
         openApiSchema.Properties = props;
+        openApiSchema.Required ??= new HashSet<string>();
+        var required = openApiSchema.Required;
 
         foreach (var name in props.Keys)
         {

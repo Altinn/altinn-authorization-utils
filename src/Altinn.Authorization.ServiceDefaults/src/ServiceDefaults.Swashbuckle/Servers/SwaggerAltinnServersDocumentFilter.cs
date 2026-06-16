@@ -26,6 +26,7 @@ internal sealed class SwaggerAltinnServersDocumentFilter
         var options = _options.Get(context.DocumentName);
         var defaultOptions = _options.CurrentValue;
         var suffix = options.EnvironmentServerPathSuffix.HasValue ? options.EnvironmentServerPathSuffix : defaultOptions.EnvironmentServerPathSuffix;
+        swaggerDoc.Servers ??= [];
 
         if (options.IncludeLocalhostServer ?? defaultOptions.IncludeLocalhostServer ?? true)
         {
