@@ -45,13 +45,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -75,13 +73,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -105,13 +101,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -135,13 +129,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -165,13 +157,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -195,13 +185,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -225,13 +213,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>

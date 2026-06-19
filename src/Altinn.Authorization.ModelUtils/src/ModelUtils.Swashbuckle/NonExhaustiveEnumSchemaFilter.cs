@@ -42,12 +42,7 @@ internal sealed class NonExhaustiveEnumSchemaFilter
                 return () => httpJsonOptions.CurrentValue.SerializerOptions;
             }
 
-#if NET9_0_OR_GREATER
             return () => JsonSerializerOptions.Web;
-#else
-            var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-            return () => options;
-#endif
         });
     }
 

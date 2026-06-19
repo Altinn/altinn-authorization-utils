@@ -4,11 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections.Immutable;
 using System.Security.Cryptography;
 
-#if NET9_0_OR_GREATER
 using Microsoft.Extensions.Caching.Hybrid;
-#else
-using Microsoft.Extensions.Caching.Memory;
-#endif
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Tests.Mocks;
 
@@ -20,11 +16,7 @@ internal sealed class TestPlatformAccessTokenSigningKeyProvider
 
     public TestPlatformAccessTokenSigningKeyProvider(
         PlatformAccessTokenSettings settings,
-#if NET9_0_OR_GREATER
         HybridCache cache
-#else
-        IMemoryCache cache
-#endif
         )
         : base(new TestOptionsMonitor<PlatformAccessTokenSettings>(settings), cache)
     {
@@ -33,11 +25,7 @@ internal sealed class TestPlatformAccessTokenSigningKeyProvider
     public TestPlatformAccessTokenSigningKeyProvider()
         : this(
               new PlatformAccessTokenSettings(),
-#if NET9_0_OR_GREATER
               new TestHybridCache()
-#else
-              new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions()))
-#endif
               )
     {
     }

@@ -19,11 +19,6 @@
         <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="9.10.0" />
       </ItemGroup>
     </When>
-    <When Condition=" '$(TargetFramework)' == 'net8.0' ">
-      <ItemGroup>
-        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.27" />
-      </ItemGroup>
-    </When>
   </Choose>
   <ItemGroup>
     <PackageVersion Include="Altinn.Common.AccessTokenClient" Version="3.2.8" />

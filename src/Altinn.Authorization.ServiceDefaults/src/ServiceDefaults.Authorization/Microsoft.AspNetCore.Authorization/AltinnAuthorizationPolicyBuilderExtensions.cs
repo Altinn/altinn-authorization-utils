@@ -15,7 +15,6 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
     extension(AuthorizationPolicyBuilder builder)
     {
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Adds a requirement to the authorization policy that at least one of the specified scopes must be present in the
         /// user's claims.
@@ -35,7 +34,6 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
             builder.Requirements.Add(new ScopeAnyOfAuthorizationRequirement(scopes));
             return builder;
         }
-#endif
 
         /// <summary>
         /// Adds a requirement to the authorization policy that at least one of the specified scopes must be present in the
@@ -77,7 +75,6 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
             return builder;
         }
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Adds a requirement to the authorization policy that at least one of the specified scopes must be present in the
         /// user's claims, *or* that a platform-access-token is included in the request.
@@ -118,7 +115,6 @@ public static class AltinnAuthorizationPolicyBuilderExtensions
             builder.Requirements.Add(new PlatformAccessTokenOrScopeAnyOfAuthorizationRequirement(approvedIssuers, scopes));
             return builder;
         }
-#endif
 
         /// <summary>
         /// Adds a requirement to the authorization policy that at least one of the specified scopes must be present in the

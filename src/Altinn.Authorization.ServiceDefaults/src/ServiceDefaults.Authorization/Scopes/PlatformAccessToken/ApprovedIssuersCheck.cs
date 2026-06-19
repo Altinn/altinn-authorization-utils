@@ -1,10 +1,6 @@
 using System.Runtime.InteropServices;
 
-#if NET9_0_OR_GREATER
 using System.Buffers;
-#else
-using System.Collections.Frozen;
-#endif
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
@@ -58,12 +54,7 @@ public abstract class ApprovedIssuersCheck
             return AllowAll;
         }
 
-#if NET9_0_OR_GREATER
         return new SearchValueApprovedIssuers(SearchValues.Create(approvedIssuers, StringComparison.Ordinal));
-#else
-        FrozenSet<string> frozenSet = approvedIssuers.ToArray().ToFrozenSet(StringComparer.Ordinal);
-        return new FrozenSetApprovedIssuers(frozenSet);
-#endif
     }
 
     /// <summary>
@@ -86,7 +77,6 @@ public abstract class ApprovedIssuersCheck
         public override bool Check(string issuer) => true;
     }
 
-#if NET9_0_OR_GREATER
 
     private sealed class SearchValueApprovedIssuers
         : ApprovedIssuersCheck
@@ -103,22 +93,4 @@ public abstract class ApprovedIssuersCheck
             => _approvedIssuers.Contains(issuer);
     }
 
-#else
-
-    private sealed class FrozenSetApprovedIssuers
-        : ApprovedIssuersCheck
-    {
-        private readonly FrozenSet<string> _approvedIssuers;
-
-        public FrozenSetApprovedIssuers(FrozenSet<string> approvedIssuers)
-        {
-            _approvedIssuers = approvedIssuers;
-        }
-
-        /// <inheritdoc/>
-        public override bool Check(string issuer)
-            => _approvedIssuers.Contains(issuer);
-    }
-
-#endif
 }

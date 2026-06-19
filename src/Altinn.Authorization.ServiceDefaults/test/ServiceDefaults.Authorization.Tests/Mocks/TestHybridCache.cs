@@ -1,4 +1,3 @@
-#if NET9_0_OR_GREATER
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Caching.Memory;
 using System.Buffers;
@@ -221,4 +220,3 @@ public sealed class TestHybridCache
         }
     }
 }
-#endif
