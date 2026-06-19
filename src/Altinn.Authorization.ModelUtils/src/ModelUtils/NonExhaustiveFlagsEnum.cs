@@ -1,7 +1,6 @@
 using Altinn.Authorization.ModelUtils.EnumUtils;
 using CommunityToolkit.Diagnostics;
 using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -113,17 +112,18 @@ public readonly struct NonExhaustiveFlagsEnum<T>
     private static readonly FlagsEnumModel<T> _model = FlagsEnumModel.Create<T>();
 
     private readonly T _value;
-    private readonly ImmutableArray<string> _unknowns;
+    private readonly ImmutableValueSet<string>? _unknowns;
 
     private NonExhaustiveFlagsEnum(T value)
     {
         _value = value;
-        _unknowns = default;
+        _unknowns = null;
     }
 
-    private NonExhaustiveFlagsEnum(T value, ImmutableArray<string> unknowns)
+    private NonExhaustiveFlagsEnum(T value, ImmutableValueSet<string> unknowns)
     {
-        if (unknowns.IsDefaultOrEmpty)
+        Guard.IsNotNull(unknowns);
+        if (unknowns.IsEmpty)
         {
             ThrowHelper.ThrowArgumentException(nameof(unknowns), "Unknown values cannot be empty.");
         }
@@ -142,7 +142,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
     /// Gets a value indicating whether this non-exhaustive contains only well-known values.
     /// </summary>
     public bool IsWellKnown
-        => _unknowns.IsDefault;
+        => _unknowns is null;
 
     /// <summary>
     /// Gets a value indicating whether this non-exhaustive contains no values (neither well-known nor unknown).
@@ -166,10 +166,8 @@ public readonly struct NonExhaustiveFlagsEnum<T>
     /// <summary>
     /// Gets the collection of values that were not recognized or mapped during parsing.
     /// </summary>
-    public ImmutableArray<string> UnknownValues
-        => _unknowns.IsDefault
-        ? []
-        : _unknowns;
+    public ImmutableValueSet<string> UnknownValues
+        => _unknowns ?? [];
 
     /// <summary>
     /// Attempts to retrieve the well-known value.
@@ -190,8 +188,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
             return _value.GetHashCode();
         }
 
-        // Note: _unknowns is order-insensitive, so we cannot use it's items without (an expensive) sorting. Instead, for cheap hash code, we just use the count of unknowns.
-        return HashCode.Combine(_value, _unknowns.Length);
+        return HashCode.Combine(_value, _unknowns);
     }
 
     /// <inheritdoc/>
@@ -242,13 +239,9 @@ public readonly struct NonExhaustiveFlagsEnum<T>
 
     private bool UnknownEquals(IEnumerable<string> other)
     {
-        Debug.Assert(!_unknowns.IsDefault);
+        Debug.Assert(_unknowns is not null);
 
-        // TODO: this could be optimized quire a bit by not constructing hashsets for every comparison, but it should be good enough for now as we don't expect many unknown values or comparisons.
-        var selfValues = new HashSet<string>(_unknowns);
-        var otherValues = new HashSet<string>(other);
-
-        return selfValues.SetEquals(otherValues);
+        return _unknowns.SetEquals(other);
     }
 
     private string DebuggerDisplay
@@ -265,7 +258,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
                 return _model.Format(_value);
             }
 
-            Debug.Assert(!_unknowns.IsDefaultOrEmpty);
+            Debug.Assert(_unknowns is not null);
             var sb = new StringBuilder();
             if (!_value.IsDefault())
             {
@@ -368,7 +361,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
             }
 
             T known = default;
-            ImmutableArray<string>.Builder? unknowns = null;
+            ImmutableValueSet<string>.Builder? unknowns = null;
 
             if (!reader.Read())
             {
@@ -387,11 +380,8 @@ public readonly struct NonExhaustiveFlagsEnum<T>
                     var value = _string.Read(ref reader, typeof(string), options)
                         ?? throw new JsonException("Unexpected null value", ex);
 
-                    unknowns ??= ImmutableArray.CreateBuilder<string>();
-                    if (!unknowns.Contains(value))
-                    {
-                        unknowns.Add(value);
-                    }
+                    unknowns ??= ImmutableValueSet.CreateBuilder<string>();
+                    unknowns.Add(value);
                 }
 
                 if (!reader.Read())
@@ -405,7 +395,7 @@ public readonly struct NonExhaustiveFlagsEnum<T>
                 return new(known);
             }
 
-            return new(known, unknowns.DrainToImmutable());
+            return new(known, unknowns.ToImmutable());
         }
 
         public override void Write(Utf8JsonWriter writer, NonExhaustiveFlagsEnum<T> value, JsonSerializerOptions options)

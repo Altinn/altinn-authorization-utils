@@ -242,6 +242,29 @@ public sealed partial class ImmutableValueSet<T>
     public bool SetEquals([NotNullWhen(true)] ImmutableValueSet<T>? other)
         => SetEquals(other, strict: false);
 
+    /// <summary>
+    /// Checks whether a given sequence of items entirely describe the contents of this set.
+    /// </summary>
+    /// <param name="other">The sequence of items to check against this set.</param>
+    /// <returns>A value indicating whether the sets are equal.</returns>
+    public bool SetEquals([NotNullWhen(true)] IEnumerable<T>? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (other is ImmutableValueSet<T> otherSet)
+        {
+            return SetEquals(otherSet, strict: false);
+        }
+
+        var builder = new Builder([], _comparer);
+        builder.UnionWith(other);
+
+        return SetEquals(builder.ToImmutable(), strict: false);
+    }
+
     private bool SetEquals([NotNullWhen(true)] ImmutableValueSet<T>? other, bool strict)
     {
         if (ReferenceEquals(this, other))
