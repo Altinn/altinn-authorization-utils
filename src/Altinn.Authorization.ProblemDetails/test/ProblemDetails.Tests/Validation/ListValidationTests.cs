@@ -49,11 +49,11 @@ public class ListValidationTests
 
         error.Errors[0].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/1"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
 
         error.Errors[1].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/3"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
     }
 
     [Fact]
@@ -100,11 +100,11 @@ public class ListValidationTests
 
         error.Errors[0].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/1"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
 
         error.Errors[1].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/3"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
     }
 
     [Fact]
@@ -151,11 +151,11 @@ public class ListValidationTests
 
         error.Errors[0].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/1"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
 
         error.Errors[1].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/3"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
     }
 
     [Fact]
@@ -177,11 +177,11 @@ public class ListValidationTests
 
         error.Errors[0].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/1"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
 
         error.Errors[1].ShouldSatisfyAllConditions(
             e => e.Paths.ShouldBe(["/3"], ignoreOrder: true),
-            e => e.ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required));
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode));
     }
 
     private record NonNullString(string Value);

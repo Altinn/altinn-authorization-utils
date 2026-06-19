@@ -181,7 +181,7 @@ public class ValidationTests
         builder.TryBuild(out var instance).ShouldBeTrue();
         instance.ShouldNotBeNull();
         instance.Errors.Length.ShouldBe(1);
-        instance.Errors[0].ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required);
+        instance.Errors[0].ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode);
         instance.Errors[0].Paths.ShouldBe(["/child"], ignoreOrder: true);
     }
 
