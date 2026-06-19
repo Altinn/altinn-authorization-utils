@@ -69,7 +69,7 @@ public class ResultTests
             result.Problem.ErrorCode.ShouldBe(StdProblemDescriptors.ErrorCodes.ValidationError);
             var problem = result.Problem.ShouldBeOfType<ValidationProblemInstance>();
             problem.Errors.Length.ShouldBe(1);
-            problem.Errors[0].ErrorCode.ShouldBe(StdValidationErrors.ErrorCodes.Required);
+            problem.Errors[0].ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode);
         }
         else
         {

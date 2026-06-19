@@ -30,16 +30,4 @@ public static class StdValidationErrors
     /// </remarks>
     public static ValidationErrorDescriptor InvalidValue { get; }
         = _factory.Create(2, "The value provided is invalid.");
-
-    /// <summary>
-    /// Standard problem descriptors' error codes.
-    /// </summary>
-    public static class ErrorCodes
-    {
-        /// <summary>
-        /// Gets the error code for a required validation-error.
-        /// </summary>
-        public static ErrorCode Required
-            => StdValidationErrors.Required.ErrorCode;
-    }
 }
