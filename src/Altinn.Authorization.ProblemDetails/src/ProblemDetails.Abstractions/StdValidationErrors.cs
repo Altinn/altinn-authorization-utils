@@ -22,6 +22,16 @@ public static class StdValidationErrors
         = _factory.Create(1, "A validation error occurred.");
 
     /// <summary>
+    /// Gets a validation error descriptor for an invalid value.
+    /// </summary>
+    /// <remarks>
+    /// Prefer more specific validation error descriptors where possible, such as <see cref="Required"/>,
+    /// or custom descriptors defined in the relevant domain.
+    /// </remarks>
+    public static ValidationErrorDescriptor InvalidValue { get; }
+        = _factory.Create(2, "The value provided is invalid.");
+
+    /// <summary>
     /// Standard problem descriptors' error codes.
     /// </summary>
     public static class ErrorCodes
