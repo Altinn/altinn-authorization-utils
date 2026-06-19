@@ -16,11 +16,7 @@ public class JsonSnapshotTests
     private static readonly ValidationErrorDescriptor _invalid = _validations.Create(0, "Invalid value");
 
     protected static JsonSerializerOptions Options { get; }
-#if NET9_0_OR_GREATER
         = JsonSerializerOptions.Web;
-#else
-        = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-#endif
 
     private static JsonWriterOptions WriterOptions { get; }
         = new JsonWriterOptions

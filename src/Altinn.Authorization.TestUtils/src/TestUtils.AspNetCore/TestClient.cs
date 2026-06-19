@@ -13,9 +13,6 @@ using System.Text.Encodings.Web;
 
 namespace Altinn.Authorization.TestUtils.AspNetCore;
 
-#if !NET9_0_OR_GREATER
-using Lock = System.Object;
-#endif
 
 /// <summary>
 /// Provides an HTTP client for integration testing ASP.NET Core applications using an in-memory test server. Enables

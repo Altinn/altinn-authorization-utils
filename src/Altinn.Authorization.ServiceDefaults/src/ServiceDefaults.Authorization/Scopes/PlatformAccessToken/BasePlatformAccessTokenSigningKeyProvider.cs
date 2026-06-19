@@ -3,11 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 
-#if NET9_0_OR_GREATER
 using Microsoft.Extensions.Caching.Hybrid;
-#else
-using Microsoft.Extensions.Caching.Memory;
-#endif
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
@@ -19,11 +15,7 @@ public abstract class BasePlatformAccessTokenSigningKeyProvider
 {
     private readonly IOptionsMonitor<PlatformAccessTokenSettings> _settings;
 
-#if NET9_0_OR_GREATER
     private readonly HybridCache _cache;
-#else
-    private readonly IMemoryCache _cache;
-#endif
 
     /// <summary>
     /// Initializes a new instance of the BasePlatformAccessTokenSigningKeyProvider class with the specified platform
@@ -31,11 +23,7 @@ public abstract class BasePlatformAccessTokenSigningKeyProvider
     /// </summary>
     protected BasePlatformAccessTokenSigningKeyProvider(
         IOptionsMonitor<PlatformAccessTokenSettings> settings,
-#if NET9_0_OR_GREATER
         HybridCache cache
-#else
-        IMemoryCache cache
-#endif
         )
     {
         _settings = settings;
@@ -51,24 +39,12 @@ public abstract class BasePlatformAccessTokenSigningKeyProvider
         var settings = _settings.CurrentValue;
         string? keyData;
 
-#if NET9_0_OR_GREATER
         keyData = await _cache.GetOrCreateAsync(
             key: cacheKey,
             state: (Self: this, Issuer: issuer),
             factory: (state, cancellationToken) => GetKeyData(state.Self, state.Issuer, cancellationToken),
             options: new HybridCacheEntryOptions { Expiration = TimeSpan.FromSeconds(settings.CacheCertLifetimeInSeconds) },
             cancellationToken: cancellationToken);
-#else
-        if (!_cache.TryGetValue(cacheKey, out keyData))
-        {
-            keyData = await GetKeyData(this, issuer, cancellationToken);
-            using var entry = _cache.CreateEntry(cacheKey);
-            entry
-                .SetPriority(CacheItemPriority.High)
-                .SetAbsoluteExpiration(TimeSpan.FromSeconds(settings.CacheCertLifetimeInSeconds))
-                .SetValue(keyData);
-        }
-#endif
 
         if (string.IsNullOrEmpty(keyData))
         {

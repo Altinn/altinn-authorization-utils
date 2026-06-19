@@ -24,13 +24,8 @@ public static class ValidationExtensions
             string path,
             TIn? input,
             [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
             where TIn : notnull, IInputModel<TOut>, allows ref struct
             where TOut : notnull
-#else
-            where TIn : notnull, IInputModel<TOut>
-            where TOut : notnull
-#endif
         {
             return context.TryValidateChild(
                 path,
@@ -66,13 +61,8 @@ public static class ValidationExtensions
     /// <typeparam name="TOut">The type of the validated model.</typeparam>
     /// <param name="model">The input model to validate.</param>
     extension<TIn, TOut>(TIn model)
-#if NET9_0_OR_GREATER
         where TIn : notnull, IInputModel<TOut>, allows ref struct
         where TOut : notnull
-#else
-        where TIn : notnull, IInputModel<TOut>
-        where TOut : notnull
-#endif
     {
         /// <summary>
         /// Tries to validate the input model and produce a validated output model.
@@ -107,14 +97,9 @@ public static class ValidationExtensions
     /// <typeparam name="TValidator">The type of the custom validator.</typeparam>
     /// <param name="validator">The custom validator to use.</param>
     extension<TIn, TOut, TValidator>(TValidator validator)
-#if NET9_0_OR_GREATER
         where TIn : allows ref struct
         where TOut : notnull
         where TValidator : IValidator<TIn, TOut>
-#else
-        where TOut : notnull
-        where TValidator : IValidator<TIn, TOut>
-#endif
     {
         /// <summary>
         /// Tries to validate the input model using the custom validator and produce a validated output model.
@@ -163,13 +148,8 @@ public static class ValidationExtensions
             string path,
             TIn? input,
             [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
             where TIn : notnull, IInputModel<TOut>, allows ref struct
             where TOut : notnull
-#else
-            where TIn : notnull, IInputModel<TOut>
-            where TOut : notnull
-#endif
         {
             return builder.TryValidate(
                 path,
@@ -195,14 +175,9 @@ public static class ValidationExtensions
             TIn input,
             TValidator validator,
             [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
             where TIn : allows ref struct
             where TOut : notnull
             where TValidator : IValidator<TIn, TOut>
-#else
-            where TOut : notnull
-            where TValidator : IValidator<TIn, TOut>
-#endif
         {
             return ValidationContext.TryValidate(
                 ref builder,
@@ -228,12 +203,8 @@ public static class ValidationExtensions
             TIn input,
             Validator<TIn, TOut> validator,
             [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
             where TIn : allows ref struct
             where TOut : notnull
-#else
-            where TOut : notnull
-#endif
         {
             return builder.TryValidate(
                 path,

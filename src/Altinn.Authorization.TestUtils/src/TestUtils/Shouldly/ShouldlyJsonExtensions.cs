@@ -505,10 +505,8 @@ public static class ShouldlyJsonExtensions
         private static readonly JsonSerializerOptions _writerOptions
             = new JsonSerializerOptions
             {
-#if NET9_0_OR_GREATER
                 IndentCharacter = ' ',
                 IndentSize = 2,
-#endif
                 WriteIndented = true,
             };
         private static string PrettyPrint(JsonElement element)

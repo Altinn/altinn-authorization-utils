@@ -205,10 +205,8 @@ public class ListValidationTests
 
     private readonly struct NonNullStringValidator
         : IValidator<string?, NonNullString>
-#if NET9_0_OR_GREATER
         // Note: this is here just to make sure it keeps compiling
         , IValidator<ReadOnlySpan<char>, NonNullString>
-#endif
     {
         public bool TryValidate(ref ValidationContext context, string? input, [NotNullWhen(true)] out NonNullString? validated)
         {

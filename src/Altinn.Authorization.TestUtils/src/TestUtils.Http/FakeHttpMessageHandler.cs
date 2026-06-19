@@ -5,9 +5,6 @@ using Xunit.Sdk;
 
 namespace Altinn.Authorization.TestUtils.Http;
 
-#if !NET9_0_OR_GREATER
-using Lock = System.Object;
-#endif
 
 /// <summary>
 /// A fake <see cref="HttpMessageHandler"/> that can be used for testing.

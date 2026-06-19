@@ -10,9 +10,7 @@ namespace Altinn.Authorization.ProblemDetails.Validation;
 /// <typeparam name="TOut">The type of the output model.</typeparam>
 public readonly struct DelegateValidator<TIn, TOut>
     : IValidator<TIn, TOut>
-#if NET9_0_OR_GREATER
         where TIn : allows ref struct
-#endif
         where TOut : notnull
 {
     private readonly Validator<TIn, TOut> _validator;

@@ -5,11 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-#if NET9_0_OR_GREATER
 using Microsoft.Extensions.Caching.Hybrid;
-#else
-using Microsoft.Extensions.Caching.Memory;
-#endif
 
 namespace Altinn.Authorization.ServiceDefaults.Authorization.Scopes.PlatformAccessToken;
 
@@ -22,11 +18,7 @@ internal sealed class DefaultPlatformAccessTokenSigningKeyProvider
     public DefaultPlatformAccessTokenSigningKeyProvider(
         IOptionsMonitor<PlatformAccessTokenSettings> settings,
         [FromKeyedServices(typeof(PlatformAccessTokenSettings))] SecretClient secretClient,
-#if NET9_0_OR_GREATER
         HybridCache cache
-#else
-        IMemoryCache cache
-#endif
         )
         : base(settings, cache)
     {
@@ -40,11 +32,7 @@ internal sealed class DefaultPlatformAccessTokenSigningKeyProvider
         var keyVaultSecret = await _secretClient.GetSecretAsync(secretName, cancellationToken: cancellationToken);
 
         X509Certificate2Collection certs = [];
-#if NET9_0_OR_GREATER
         certs.Add(X509CertificateLoader.LoadCertificate(Convert.FromBase64String(keyVaultSecret.Value.Value)));
-#else
-        certs.Import(Convert.FromBase64String(keyVaultSecret.Value.Value));
-#endif
 
         foreach (var cert in certs)
         {

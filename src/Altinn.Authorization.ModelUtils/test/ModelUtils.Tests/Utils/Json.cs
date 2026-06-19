@@ -9,11 +9,7 @@ namespace Altinn.Authorization.ModelUtils.Tests.Utils;
 
 public static class Json
 {
-#if NET9_0_OR_GREATER
     private readonly static JsonSerializerOptions _options = JsonSerializerOptions.Web;
-#else
-    private readonly static JsonSerializerOptions _options = new(JsonSerializerDefaults.Web);
-#endif
 
     public static JsonSerializerOptions Options => _options;
 

@@ -66,12 +66,10 @@ public static class Enums
     private static string GetExpected(object value, Type type, JsonNamingPolicy? namingPolicy)
     {
         var name = value.ToString().ShouldNotBeNull();
-#if NET9_0_OR_GREATER
         if (type.GetField(name, BindingFlags.Public | BindingFlags.Static)?.GetCustomAttribute<JsonStringEnumMemberNameAttribute>() is { } nameAttr)
         {
             return nameAttr.Name.ShouldNotBeNull();
         }
-#endif
 
         return namingPolicy?.ConvertName(name) ?? name;
     }
@@ -279,13 +277,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -309,13 +305,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -339,13 +333,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -369,13 +361,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -399,13 +389,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -429,13 +417,11 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 
     /// <summary>
@@ -459,12 +445,10 @@ public static class Enums
         /// </summary>
         OtherValue3,
 
-#if NET9_0_OR_GREATER
         /// <summary>
         /// Custom value 4.
         /// </summary>
         [JsonStringEnumMemberName("custom")]
         CustomValue4,
-#endif
     }
 }

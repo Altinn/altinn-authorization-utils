@@ -18,14 +18,9 @@ public ref struct ValidationContext
         TIn input,
         TValidator validator,
         [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
         where TIn : allows ref struct
         where TOut : notnull
         where TValidator : IValidator<TIn, TOut>
-#else
-        where TOut : notnull
-        where TValidator : IValidator<TIn, TOut>
-#endif
     {
         Guard.IsNotNull(validator);
         Guard.IsValidRootPath(path);
@@ -91,12 +86,8 @@ public ref struct ValidationContext
         TIn input,
         Validator<TIn, TOut> validator,
         [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
         where TIn : allows ref struct
         where TOut : notnull
-#else
-        where TOut : notnull
-#endif
         => TryValidateChild(path, input, new DelegateValidator<TIn, TOut>(validator), out validated);
 
     /// <summary>
@@ -116,14 +107,9 @@ public ref struct ValidationContext
         TIn input,
         TValidator validator,
         [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
         where TIn : allows ref struct
         where TOut : notnull
         where TValidator : IValidator<TIn, TOut>
-#else
-        where TOut : notnull
-        where TValidator : IValidator<TIn, TOut>
-#endif
     {
         Debug.Assert(!_state.HasFlag(ValidationState.IsDisposed));
         var parentHandle = _root.Acquire(_handle, path);
@@ -509,10 +495,6 @@ public delegate bool Validator<in TIn, TOut>(
     ref ValidationContext context,
     TIn input,
     [NotNullWhen(true)] out TOut? validated)
-#if NET9_0_OR_GREATER
     where TIn : allows ref struct
     where TOut : notnull, allows ref struct
-#else
-        where TOut : notnull
-#endif
     ;
