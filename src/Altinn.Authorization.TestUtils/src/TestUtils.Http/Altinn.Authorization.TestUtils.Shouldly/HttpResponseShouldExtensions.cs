@@ -1,3 +1,4 @@
+using Altinn.Authorization.TestUtils.Http;
 using Nerdbank.Streams;
 using System.Buffers;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
-namespace Altinn.Authorization.TestUtils.Http;
+namespace Altinn.Authorization.TestUtils.Shouldly;
 
 /// <summary>
 /// Extensions for <see cref="HttpResponseMessage"/> to provide Shouldly-like assertions.
