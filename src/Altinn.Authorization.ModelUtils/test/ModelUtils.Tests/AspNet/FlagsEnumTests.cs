@@ -2,7 +2,7 @@ using Altinn.Authorization.ModelUtils.AspNet;
 using Altinn.Authorization.ModelUtils.EnumUtils;
 using Altinn.Authorization.ModelUtils.Tests.Utils;
 using Altinn.Authorization.TestUtils.AspNetCore;
-using Altinn.Authorization.TestUtils.Http;
+using Altinn.Authorization.TestUtils.Shouldly;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
