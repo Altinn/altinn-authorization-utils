@@ -128,7 +128,7 @@ public readonly struct ErrorCode
     public static bool operator !=(ErrorCode left, ErrorCode right)
         => !left.Equals(right);
 
-    private sealed class ErrorCodeJsonConverter
+    internal sealed class ErrorCodeJsonConverter
         : JsonConverter<ErrorCode>
     {
         public override ErrorCode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

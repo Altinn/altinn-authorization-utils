@@ -216,4 +216,17 @@ public static class ProblemExtensions
         public T Throw<T>()
             => throw instance.ToException();
     }
+
+    /// <param name="instance">The <see cref="ValidationErrorInstance"/>.</param>
+    extension(ValidationErrorInstance instance)
+    {
+        /// <summary>
+        /// Converts the <see cref="ValidationErrorInstance"/> to an exception that carries the validation error information.
+        /// </summary>
+        /// <param name="innerException">An optional inner exception.</param>
+        /// <returns>An <see cref="Exception"/> that implements <see cref="IHasValidationError"/>.</returns>
+        /// <inheritdoc cref="ValidationErrorException" path="/remarks"/>
+        public Exception ToException(Exception? innerException = null)
+            => new ValidationErrorException(instance, innerException: innerException);
+    }
 }
