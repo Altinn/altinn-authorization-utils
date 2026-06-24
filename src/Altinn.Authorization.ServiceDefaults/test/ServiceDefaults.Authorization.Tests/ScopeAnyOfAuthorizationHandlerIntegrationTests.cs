@@ -1,6 +1,6 @@
 using Altinn.Authorization.ServiceDefaults.Authorization.Scopes;
 using Altinn.Authorization.TestUtils.AspNetCore;
-using Altinn.Authorization.TestUtils.Http;
+using Altinn.Authorization.TestUtils.Shouldly;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
