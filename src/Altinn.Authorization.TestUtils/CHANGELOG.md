@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.8.0...Altinn.Authorization.TestUtils-v4.0.0) (2026-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* move HttpResponseShouldExtensions to Altinn.Authorization.TestUtils.Shouldly namespace ([#599](https://github.com/Altinn/altinn-authorization-utils/issues/599))
+* Removes support for .NET 8 for all packages that still supported it
+
+### Bug Fixes
+
+* move HttpResponseShouldExtensions to Altinn.Authorization.TestUtils.Shouldly namespace ([#599](https://github.com/Altinn/altinn-authorization-utils/issues/599)) ([899542b](https://github.com/Altinn/altinn-authorization-utils/commit/899542b1aa9fe279c8989498e326c4bc96c6046f))
+
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#589](https://github.com/Altinn/altinn-authorization-utils/issues/589)) ([82dc3c7](https://github.com/Altinn/altinn-authorization-utils/commit/82dc3c70b3a878a90ef14576f348b7909b132d22))
+
 ## [3.8.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.TestUtils-v3.7.0...Altinn.Authorization.TestUtils-v3.8.0) (2026-05-31)
 
 
