@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.3.0...Altinn.Urn-v5.0.0) (2026-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Removes support for .NET 8 for all packages that still supported it
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580))
+
+### Features
+
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580)) ([db7e598](https://github.com/Altinn/altinn-authorization-utils/commit/db7e598365a202cca70d1981f1175263786de8d3))
+
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#589](https://github.com/Altinn/altinn-authorization-utils/issues/589)) ([82dc3c7](https://github.com/Altinn/altinn-authorization-utils/commit/82dc3c70b3a878a90ef14576f348b7909b132d22))
+
 ## [4.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Urn-v4.2.1...Altinn.Urn-v4.3.0) (2026-04-08)
 
 
