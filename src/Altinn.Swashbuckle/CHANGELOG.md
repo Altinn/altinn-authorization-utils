@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v3.1.0...Altinn.Swashbuckle-v4.0.0) (2026-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580))
+
+### Features
+
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580)) ([db7e598](https://github.com/Altinn/altinn-authorization-utils/commit/db7e598365a202cca70d1981f1175263786de8d3))
+
 ## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v3.0.0...Altinn.Swashbuckle-v3.1.0) (2025-12-02)
 
 
