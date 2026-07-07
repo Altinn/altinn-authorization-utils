@@ -35,7 +35,7 @@ public sealed class AltinnValidationError
     }
 
     [JsonConstructor]
-    private AltinnValidationError()
+    internal AltinnValidationError()
     {
     }
 

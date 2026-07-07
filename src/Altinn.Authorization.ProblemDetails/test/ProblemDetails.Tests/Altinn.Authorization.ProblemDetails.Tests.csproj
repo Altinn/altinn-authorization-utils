@@ -10,6 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils.Http\Altinn.Authorization.TestUtils.Http.csproj" />
+    <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils.AspNetCore\Altinn.Authorization.TestUtils.AspNetCore.csproj" />
     <ProjectReference Include="..\..\..\Altinn.Authorization.TestUtils\src\TestUtils\Altinn.Authorization.TestUtils.csproj" />
     <ProjectReference Include="..\..\src\ProblemDetails\Altinn.Authorization.ProblemDetails.csproj" />
     <ProjectReference Include="..\..\src\ProblemDetails.Validation\Altinn.Authorization.ProblemDetails.Validation.csproj" />

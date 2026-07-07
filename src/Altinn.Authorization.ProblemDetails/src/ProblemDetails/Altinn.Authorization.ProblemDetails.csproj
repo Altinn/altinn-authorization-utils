@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Altinn.Authorization.ProblemDetails.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Update="Microsoft.Build.Artifacts">
       <IncludeAssets>build; buildtransitive</IncludeAssets>
     </PackageReference>

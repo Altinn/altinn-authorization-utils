@@ -46,7 +46,7 @@ public class AltinnProblemDetails
     }
 
     [JsonConstructor]
-    private AltinnProblemDetails()
+    internal AltinnProblemDetails()
         : base()
     {
     }
