@@ -29,7 +29,7 @@ internal abstract class ValidationAttributeModelStateErrorProvider<TAttribute>(V
 
     private static bool IsValidationAttributeError(ValidationErrorContext context)
     {
-        if (context.DisplayName is null)
+        if (context.DisplayName is not { } displayName)
         {
             return false;
         }
@@ -39,7 +39,7 @@ internal abstract class ValidationAttributeModelStateErrorProvider<TAttribute>(V
             return IsValidationAttributeError(
                 context,
                 metadata.ValidatorMetadata.OfType<TAttribute>(),
-                context.DisplayName,
+                displayName,
                 context.ModelError);
         }
 
@@ -48,7 +48,7 @@ internal abstract class ValidationAttributeModelStateErrorProvider<TAttribute>(V
             return IsValidationAttributeError(
                 context,
                 GetValidationAttributes(memberInfo),
-                context.DisplayName,
+                displayName,
                 context.ModelError);
         }
 
@@ -57,7 +57,7 @@ internal abstract class ValidationAttributeModelStateErrorProvider<TAttribute>(V
             return IsValidationAttributeError(
                 context,
                 GetValidationAttributes(parameterInfo),
-                context.DisplayName,
+                displayName,
                 context.ModelError);
         }
 

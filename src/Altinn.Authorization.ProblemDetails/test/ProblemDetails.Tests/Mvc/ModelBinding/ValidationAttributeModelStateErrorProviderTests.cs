@@ -81,6 +81,7 @@ public class ValidationAttributeModelStateErrorProviderTests
             modelState[member.Name]!.Errors[0]);
 
         context.MemberInfo = member;
+        context.DisplayName = member.Name;
         context.Paths.Add($"/{member.Name}");
 
         return context;
