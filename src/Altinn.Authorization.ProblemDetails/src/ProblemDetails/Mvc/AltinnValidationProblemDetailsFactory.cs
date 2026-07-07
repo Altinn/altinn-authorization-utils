@@ -308,15 +308,16 @@ internal sealed class AltinnValidationProblemDetailsFactory
                 memberInfo = null; // TODO: get the indexer property
 
                 builder.AppendEscapeJsonPointer(segment.Value).Append('/');
+                var elementType = typeInfo.ElementType;
                 if (typeInfo.Kind is not JsonTypeInfoKind.Enumerable
-                    || typeInfo.ElementType is null
-                    || !jsonOptions.TryGetTypeInfo(typeInfo.ElementType, out typeInfo))
+                    || elementType is null
+                    || !jsonOptions.TryGetTypeInfo(elementType, out typeInfo))
                 {
                     BuildJsonPointerFromPathStringOnly(iterator.Remainder, builder);
                     return;
                 }
 
-                type = typeInfo.ElementType!;
+                type = elementType;
             }
             else
             {

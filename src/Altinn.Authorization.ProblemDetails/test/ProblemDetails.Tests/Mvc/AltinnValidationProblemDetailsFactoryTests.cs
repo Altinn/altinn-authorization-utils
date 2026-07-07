@@ -109,7 +109,6 @@ public class AltinnValidationProblemDetailsFactoryTests
         using var response = await Client.PostAsJsonAsync("/body/nested/required/by-attribute", new { }, CancellationToken);
         await response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
 
-        var json = await response.Content.ReadAsStringAsync(CancellationToken);
         var problemDetails = await response.Content.ReadFromJsonAsync<AltinnValidationProblemDetails>(cancellationToken: CancellationToken);
         problemDetails.ShouldNotBeNull();
 
@@ -247,7 +246,7 @@ public class AltinnValidationProblemDetailsFactoryTests
     [Fact]
     public async Task Invalid_CustomError_Returns_CustomError_ValidationProblemDetails()
     {
-        using var response = await Client.PostAsJsonAsync("/body/custom-error", new WithCustomErrorPoperty { Value = new() }, CancellationToken);
+        using var response = await Client.PostAsJsonAsync("/body/custom-error", new WithCustomErrorProperty { Value = new() }, CancellationToken);
         await response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
 
         var problemDetails = await response.Content.ReadFromJsonAsync<AltinnValidationProblemDetails>(cancellationToken: CancellationToken);
@@ -369,7 +368,7 @@ public class AltinnValidationProblemDetailsFactoryTests
         }
     }
 
-    public sealed record WithCustomErrorPoperty
+    public sealed record WithCustomErrorProperty
     {
         [JsonPropertyName("~c$u%s''t.o\"m[5]\\/")]
         public CustomJsonErrorValue? Value { get; init; }
@@ -571,13 +570,13 @@ public class AltinnValidationProblemDetailsFactoryTests
         }
 
         [HttpPost("body/custom-error")]
-        public IActionResult CustomError([FromBody] WithCustomErrorPoperty body)
+        public IActionResult CustomError([FromBody] WithCustomErrorProperty body)
         {
             return Ok();
         }
 
         [HttpPost("body/dict/custom-error")]
-        public IActionResult DictCustomError([FromBody] Dictionary<string, WithCustomErrorPoperty> body)
+        public IActionResult DictCustomError([FromBody] Dictionary<string, WithCustomErrorProperty> body)
         {
             return Ok();
         }
