@@ -33,7 +33,7 @@ public class ValidationAttributeModelStateErrorProviderTests
 
     [Theory]
     [MemberData(nameof(Providers))]
-    internal void BuildValidationError_MatchingAttributeError_SetsInvalidValue(
+    public void BuildValidationError_MatchingAttributeError_SetsInvalidValue(
         IModelStateErrorValidationErrorProvider provider,
         string propertyName,
         Type attributeType,
@@ -51,7 +51,7 @@ public class ValidationAttributeModelStateErrorProviderTests
 
     [Theory]
     [MemberData(nameof(Providers))]
-    internal void BuildValidationError_NonMatchingError_DoesNotSetDescriptor(
+    public void BuildValidationError_NonMatchingError_DoesNotSetDescriptor(
         IModelStateErrorValidationErrorProvider provider,
         string propertyName,
         Type attributeType,

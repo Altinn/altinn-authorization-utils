@@ -135,6 +135,57 @@ public sealed class ValidationErrorContext
     }
 
     /// <summary>
+    /// Gets MVC model metadata associated with this validation error, if any.
+    /// </summary>
+    public ModelMetadata? ModelMetadata
+    {
+        get => field;
+        internal set
+        {
+            if (field is not null)
+            {
+                ThrowHelper.ThrowInvalidOperationException("ModelMetadata has already been set.");
+            }
+
+            field = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the MVC model metadata provider associated with this validation error, if any.
+    /// </summary>
+    public IModelMetadataProvider? ModelMetadataProvider
+    {
+        get => field;
+        internal set
+        {
+            if (field is not null)
+            {
+                ThrowHelper.ThrowInvalidOperationException("ModelMetadataProvider has already been set.");
+            }
+
+            field = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the display name associated with this validation error, if any.
+    /// </summary>
+    public string? DisplayName
+    {
+        get => field;
+        internal set
+        {
+            if (field is not null)
+            {
+                ThrowHelper.ThrowInvalidOperationException("DisplayName has already been set.");
+            }
+
+            field = value;
+        }
+    }
+
+    /// <summary>
     /// Gets the property type associated with this validation error, if any.
     /// </summary>
     public Type? PropertyType

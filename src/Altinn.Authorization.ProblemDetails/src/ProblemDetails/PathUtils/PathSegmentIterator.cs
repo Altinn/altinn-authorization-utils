@@ -1,5 +1,4 @@
 using System.Buffers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Altinn.Authorization.ProblemDetails.PathUtils;
 
@@ -7,6 +6,9 @@ internal ref struct PathSegmentIterator
 {
     private static readonly SearchValues<char> _modelStateKeySeparators
         = SearchValues.Create(['.', '[', ']']);
+
+    private static readonly SearchValues<char> _propertySegmentSeparators
+        = SearchValues.Create(['.', '[']);
 
     public static ReadOnlySpan<char> GetInitialSegment(ReadOnlySpan<char> key)
     {
@@ -42,37 +44,43 @@ internal ref struct PathSegmentIterator
 
     public bool MoveNext()
     {
+        while (!_remaining.IsEmpty && _remaining[0] is '.' or ']')
+        {
+            _remaining = _remaining[1..];
+        }
+
         if (_remaining.IsEmpty)
         {
             return false;
         }
 
-        var index = _remaining.IndexOfAny(_modelStateKeySeparators);
-        while (index == 0)
+        var remainder = _remaining;
+        if (_remaining[0] is '[')
         {
-            _remaining = _remaining[1..];
-            index = _remaining.IndexOfAny(_modelStateKeySeparators);
+            var closingBracketIndex = _remaining[1..].IndexOf(']');
+            if (closingBracketIndex < 0)
+            {
+                _current = new PathSegment(_remaining[1..], PathSegmentType.Indexer, remainder);
+                _remaining = [];
+                return true;
+            }
+
+            closingBracketIndex += 1;
+            _current = new PathSegment(_remaining[1..closingBracketIndex], PathSegmentType.Indexer, remainder);
+            _remaining = _remaining[(closingBracketIndex + 1)..];
+            return true;
         }
 
+        var index = _remaining.IndexOfAny(_propertySegmentSeparators);
         if (index < 0)
         {
-            // assuming well-formated path, if we have no more separators, this should be a property name
-            // else, we should have a trailing ']'
-            _current = new PathSegment(_remaining, PathSegmentType.Property, _remaining);
+            _current = new PathSegment(_remaining, PathSegmentType.Property, remainder);
             _remaining = [];
             return true;
         }
 
-        // handle `].`
-        if (_remaining[index] == ']' && _remaining.Length > index + 1 && _remaining[index + 1] == '.')
-        {
-            _current = new PathSegment(_remaining[..index], PathSegmentType.Indexer, _remaining);
-            _remaining = _remaining[(index + 2)..];
-            return true;
-        }
-
-        _current = new PathSegment(_remaining[..index], PathSegmentType.Property, _remaining);
-        _remaining = _remaining[(index + 1)..];
+        _current = new PathSegment(_remaining[..index], PathSegmentType.Property, remainder);
+        _remaining = _remaining[index..];
         return true;
     }
 }

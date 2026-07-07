@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http.Json;
@@ -181,6 +182,69 @@ public class AltinnValidationProblemDetailsFactoryTests
     }
 
     [Fact]
+    public async Task Missing_ImplicitRequired_Returns_ValidationProblemDetails()
+    {
+        using var response = await Client.PostAsJsonAsync("/body/required/implicit", new { }, CancellationToken);
+        await response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<AltinnValidationProblemDetails>(cancellationToken: CancellationToken);
+        problemDetails.ShouldNotBeNull();
+
+        problemDetails.Errors.ShouldNotBeNull();
+        problemDetails.Errors.Count.ShouldBe(1);
+
+        var error = problemDetails.Errors.First();
+        error.ShouldSatisfyAllConditions([
+            e => e.Paths.ShouldBe(["/value"]),
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Required.ErrorCode),
+            e => e.Detail.ShouldBeNull(),
+        ]);
+    }
+
+    [Fact]
+    public async Task Invalid_DisplayNameAttribute_Returns_ValidationProblemDetails()
+    {
+        using var response = await Client.PostAsJsonAsync("/body/display-name", new { value = "abcd" }, CancellationToken);
+        await response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<AltinnValidationProblemDetails>(cancellationToken: CancellationToken);
+        problemDetails.ShouldNotBeNull();
+
+        problemDetails.Errors.ShouldNotBeNull();
+        problemDetails.Errors.Count.ShouldBe(1);
+
+        var error = problemDetails.Errors.First();
+        error.ShouldSatisfyAllConditions([
+            e => e.Paths.ShouldBe(["/value"]),
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.StringLength.ErrorCode),
+            e => e.Detail.ShouldBeNull(),
+        ]);
+    }
+
+    [Fact]
+    public async Task Invalid_CompareWithOtherPropertyDisplayName_Returns_ValidationProblemDetails()
+    {
+        using var response = await Client.PostAsJsonAsync(
+            "/body/compare-display-name",
+            new { compare = "left", compareTo = "right" },
+            CancellationToken);
+        await response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<AltinnValidationProblemDetails>(cancellationToken: CancellationToken);
+        problemDetails.ShouldNotBeNull();
+
+        problemDetails.Errors.ShouldNotBeNull();
+        problemDetails.Errors.Count.ShouldBe(1);
+
+        var error = problemDetails.Errors.First();
+        error.ShouldSatisfyAllConditions([
+            e => e.Paths.ShouldBe(["/compare"]),
+            e => e.ErrorCode.ShouldBe(StdValidationErrors.Compare.ErrorCode),
+            e => e.Detail.ShouldBeNull(),
+        ]);
+    }
+
+    [Fact]
     public async Task Invalid_CustomError_Returns_CustomError_ValidationProblemDetails()
     {
         using var response = await Client.PostAsJsonAsync("/body/custom-error", new WithCustomErrorPoperty { Value = new() }, CancellationToken);
@@ -337,6 +401,28 @@ public class AltinnValidationProblemDetailsFactoryTests
         public string? Value { get; init; }
     }
 
+    public sealed record ImplicitRequired
+    {
+        public string Value { get; init; } = null!;
+    }
+
+    public sealed record WithDisplayName
+    {
+        [DisplayName("Friendly Value")]
+        [StringLength(3)]
+        public string? Value { get; init; }
+    }
+
+    public sealed record CompareWithOtherPropertyDisplayName
+    {
+        [DisplayName("Left Value")]
+        [Compare(nameof(CompareTo))]
+        public string? Compare { get; init; }
+
+        [DisplayName("Right Value")]
+        public string? CompareTo { get; init; }
+    }
+
     public sealed record NestedRequiredByAttribute
     {
         [Required]
@@ -420,6 +506,24 @@ public class AltinnValidationProblemDetailsFactoryTests
 
         [HttpPost("body/required/with-length")]
         public IActionResult RequiredWithLength([FromBody] RequiredWithLength body)
+        {
+            return Ok();
+        }
+
+        [HttpPost("body/required/implicit")]
+        public IActionResult ImplicitRequired([FromBody] ImplicitRequired body)
+        {
+            return Ok();
+        }
+
+        [HttpPost("body/display-name")]
+        public IActionResult DisplayName([FromBody] WithDisplayName body)
+        {
+            return Ok();
+        }
+
+        [HttpPost("body/compare-display-name")]
+        public IActionResult CompareWithOtherPropertyDisplayName([FromBody] CompareWithOtherPropertyDisplayName body)
         {
             return Ok();
         }

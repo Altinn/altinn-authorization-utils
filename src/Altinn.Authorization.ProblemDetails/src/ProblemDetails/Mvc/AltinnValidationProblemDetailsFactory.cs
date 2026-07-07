@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -10,6 +11,7 @@ using Altinn.Authorization.ProblemDetails.PathUtils;
 using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -141,7 +143,21 @@ internal sealed class AltinnValidationProblemDetailsFactory
             context.ParameterDescriptor = parameterDescriptor;
 
             EnrichContextFromParameter(context, parameterDescriptor, remainderPath);
+            EnrichContextFromModelMetadata(context);
             return;
+        }
+
+        if (context.ModelMetadata is { } metadata)
+        {
+            context.DisplayName ??= metadata.GetDisplayName();
+        }
+        else if (context.MemberInfo is { } memberInfo)
+        {
+            context.DisplayName ??= GetDisplayName(memberInfo);
+        }
+        else if (context.ParameterDescriptor is ControllerParameterDescriptor { ParameterInfo: { } parameterInfo })
+        {
+            context.DisplayName ??= GetDisplayName(parameterInfo);
         }
 
         if (context.Paths.Count > 0)
@@ -158,6 +174,48 @@ internal sealed class AltinnValidationProblemDetailsFactory
         }
 
         context.Paths.Add(builder.ToString());
+    }
+
+    private static void EnrichContextFromModelMetadata(ValidationErrorContext context)
+    {
+        if (context.ActionContext.HttpContext.RequestServices.GetService<IModelMetadataProvider>() is not { } metadataProvider)
+        {
+            return;
+        }
+
+        context.ModelMetadataProvider = metadataProvider;
+        context.ModelMetadata = GetModelMetadata(metadataProvider, context);
+        context.DisplayName = context.ModelMetadata?.GetDisplayName();
+    }
+
+    private static ModelMetadata? GetModelMetadata(
+        IModelMetadataProvider metadataProvider,
+        ValidationErrorContext context)
+    {
+        if (metadataProvider is ModelMetadataProvider provider)
+        {
+            if (context.MemberInfo is PropertyInfo propertyInfo)
+            {
+                return provider.GetMetadataForProperty(propertyInfo, context.PropertyType ?? propertyInfo.PropertyType);
+            }
+
+            if (context.ParameterDescriptor is ControllerParameterDescriptor { ParameterInfo: { } parameterInfo }
+                && context.MemberInfo is null)
+            {
+                return provider.GetMetadataForParameter(parameterInfo);
+            }
+        }
+
+        if (context.MemberInfo is PropertyInfo { DeclaringType: { } declaringType, Name: var propertyName })
+        {
+            return metadataProvider
+                .GetMetadataForProperties(declaringType)
+                .FirstOrDefault(metadata => string.Equals(metadata.PropertyName, propertyName, StringComparison.Ordinal));
+        }
+
+        return context.PropertyType is { } propertyType
+            ? metadataProvider.GetMetadataForType(propertyType)
+            : null;
     }
 
     private void EnrichContextFromParameter(
@@ -365,6 +423,14 @@ internal sealed class AltinnValidationProblemDetailsFactory
         remainderPath = [];
         return false;
     }
+
+    private static string GetDisplayName(MemberInfo member)
+        => member.GetCustomAttribute<DisplayAttribute>()?.GetName()
+            ?? member.Name;
+
+    private static string? GetDisplayName(ParameterInfo parameter)
+        => parameter.GetCustomAttribute<DisplayAttribute>()?.GetName()
+            ?? parameter.Name;
 
     private static bool TryGetValidationErrorFromException(Exception? exception, [NotNullWhen(true)] out ValidationErrorInstance? validationError)
     {
