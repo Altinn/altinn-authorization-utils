@@ -7,6 +7,7 @@ namespace Altinn.Authorization.ProblemDetails;
 /// </summary>
 public class ProblemInstanceException
     : InvalidOperationException
+    , IHasProblem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstanceException"/> class.
@@ -46,7 +47,7 @@ public class ProblemInstanceException
     }
 
     /// <summary>
-    /// Gets the <see cref="Problem"/>.
+    /// Gets the <see cref="ProblemInstance"/>.
     /// </summary>
     public ProblemInstance Problem { get; }
 
