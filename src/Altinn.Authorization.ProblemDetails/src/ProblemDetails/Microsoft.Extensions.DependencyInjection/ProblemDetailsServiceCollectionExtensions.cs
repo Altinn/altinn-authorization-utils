@@ -43,7 +43,7 @@ public static class ProblemDetailsServiceCollectionExtensions
             {
                 o.SerializerOptions.TypeInfoResolverChain.Insert(0, new AltinnProblemDetailsJsonContext());
             });
-            services.MoveMvcProblemDetailsWriterToEnd();
+            services.Insert(0, ServiceDescriptor.Singleton<IProblemDetailsWriter, AltinnProblemDetailsWriter>());
             services.AddSingleton<IConfigureOptions<ApiBehaviorOptions>, ConfigureApiBehaviorOptionsForProblemDetails>();
             services.AddSingleton<AltinnValidationProblemDetailsFactory>();
             services.AddSingleton<IModelStateErrorValidationErrorProvider, RequiredModelStateErrorProvider>();
@@ -63,21 +63,6 @@ public static class ProblemDetailsServiceCollectionExtensions
             services.AddSingleton<IModelStateErrorValidationErrorProvider, Base64StringModelStateErrorProvider>();
 
             return new Builder(services);
-        }
-
-        private void MoveMvcProblemDetailsWriterToEnd()
-        {
-            for (var i = 0; i < services.Count; i++)
-            {
-                var descriptor = services[i];
-                if (descriptor.ServiceType == typeof(IProblemDetailsWriter)
-                    && descriptor.ImplementationType?.FullName == "Microsoft.AspNetCore.Mvc.Infrastructure.DefaultApiProblemDetailsWriter")
-                {
-                    services.RemoveAt(i);
-                    services.Add(descriptor);
-                    return;
-                }
-            }
         }
     }
 
