@@ -1,15 +1,11 @@
+using Altinn.Authorization.TestUtils.AspNetCore.Authentication;
 using CommunityToolkit.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Reflection;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace Altinn.Authorization.TestUtils.AspNetCore;
 
@@ -34,34 +30,36 @@ public class TestClient
     /// <remarks>The returned <see cref="TestClient"/> uses a default timeout of 200 seconds and is configured
     /// with the test server's base address. The host is started asynchronously and will honor the current test
     /// context's cancellation token.</remarks>
-    /// <param name="configureHost">An action that configures the <see cref="IWebHostBuilder"/> for the test host. Use this to set up services,
-    /// middleware, and other host-level options.</param>
-    /// <param name="configureApplication">An optional action that configures the application's request pipeline. Receives the <see
-    /// cref="WebHostBuilderContext"/> and <see cref="IApplicationBuilder"/> for further customization. If <see
-    /// langword="null"/>, no additional application configuration is applied.</param>
+    /// <param name="configureBuilder">An optional action that configures the <see cref="WebApplicationBuilder"/> for the test host. Use this to set up services,
+    /// middleware, host options, and web host options.</param>
+    /// <param name="configureApplication">An optional action that configures the application's request pipeline. If <see langword="null"/>, no additional
+    /// application configuration is applied.</param>
+    /// <param name="configureTestServer">An optional action that configures the test server options.</param>
     /// <returns>A <see cref="TestClient"/> instance connected to the started test server, ready to send requests.</returns>
     public static async Task<TestClient> Create(
-        Action<IWebHostBuilder> configureHost,
-        Action<WebHostBuilderContext, IApplicationBuilder>? configureApplication = null)
+        Action<WebApplicationBuilder>? configureBuilder = null,
+        Action<WebApplication>? configureApplication = null,
+        Action<TestServerOptions>? configureTestServer = null)
     {
         var cancellationToken = TestContext.Current.CancellationToken;
-        var host = new HostBuilder()
-            .ConfigureWebHost(builder =>
-            {
-                builder.UseTestServer();
-                builder.Configure((ctx, app) =>
-                {
-                    configureApplication?.Invoke(ctx, app);
-                });
-                configureHost(builder);
-            })
-            .Build();
+        var builder = WebApplication.CreateSlimBuilder();
 
-        await host.StartAsync(cancellationToken);
-        var server = host.GetTestServer();
+        configureBuilder?.Invoke(builder);
+        builder.WebHost.UseTestServer(options =>
+        {
+            configureTestServer?.Invoke(options);
+        });
+
+        var app = builder.Build();
+        configureApplication?.Invoke(app);
+
+        await app.StartAsync(cancellationToken);
+
+        var server = app.GetTestServer();
         var handler = server.CreateHandler();
         var userHandler = new UserMessageHandler(handler);
-        return new TestClient(userHandler, host)
+
+        return new TestClient(userHandler, app)
         {
             BaseAddress = server.BaseAddress,
             Timeout = TimeSpan.FromSeconds(200),
@@ -78,49 +76,44 @@ public class TestClient
     /// <typeparam name="TController">The controller type to be hosted by the test client. Must be a non-abstract class.</typeparam>
     /// <param name="configureMvc">An optional delegate to further configure MVC services during application setup. Can be used to add filters,
     /// formatters, or other MVC options.</param>
-    /// <param name="configureHost">An optional delegate to configure the web host builder before the application is built. Allows customization of
-    /// host-level settings such as environment or configuration sources.</param>
-    /// <param name="configureApplication">An optional delegate to configure the application's middleware pipeline. Receives the host context and
-    /// application builder for advanced customization.</param>
+    /// <param name="configureBuilder">An optional delegate to configure the application builder before the application is built. Allows customization of
+    /// services, host settings, web host settings, or configuration sources.</param>
+    /// <param name="configureApplication">An optional delegate to configure the application's middleware pipeline.</param>
+    /// <param name="configureTestServer">An optional action that configures the test server options.</param>
     /// <returns>A task that represents the asynchronous operation. The result contains a test client instance configured with
     /// the specified controller and customizations.</returns>
     public static Task<TestClient> CreateControllerClient<TController>(
         Action<IMvcBuilder>? configureMvc = null,
-        Action<IWebHostBuilder>? configureHost = null,
-        Action<WebHostBuilderContext, IApplicationBuilder>? configureApplication = null)
+        Action<WebApplicationBuilder>? configureBuilder = null,
+        Action<WebApplication>? configureApplication = null,
+        Action<TestServerOptions>? configureTestServer = null)
         where TController : class
     {
         return Create(
             builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    var mvcBuilder = services.AddMvc();
-                    var partManager = mvcBuilder.PartManager;
+                var mvcBuilder = builder.Services.AddMvc()
+                    .AddTestController<TController>();
 
-                    TypeInfo type = typeof(TController).GetTypeInfo();
-                    partManager.ApplicationParts.Add(new TestControllerApplicationPart(type));
-                    partManager.FeatureProviders.Add(TestControllerApplicationFeatureProvider.Instance);
+                builder.Services.AddAuthentication("TestClient")
+                    .AddTestAuthentication("TestClient");
 
-                    services.AddAuthentication("TestClient")
-                        .AddScheme<TestSchemeOptions, TestSchemeHandler>("TestClient", configureOptions: null);
+                configureMvc?.Invoke(mvcBuilder);
 
-                    configureMvc?.Invoke(mvcBuilder);
-                });
-
-                configureHost?.Invoke(builder);
+                configureBuilder?.Invoke(builder);
             },
-            (ctx, app) =>
+            app =>
             {
                 app.UseAuthentication();
 
                 app.UseRouting();
                 app.UseAuthorization();
 
-                configureApplication?.Invoke(ctx, app);
+                configureApplication?.Invoke(app);
 
-                app.UseEndpoints(builder => builder.MapControllers());
-            });
+                app.MapControllers();
+            },
+            configureTestServer);
     }
 
     private readonly IHost _host;
@@ -198,43 +191,5 @@ public class TestClient
 
             return base.SendAsync(request, cancellationToken);
         }
-    }
-
-    private sealed class TestSchemeOptions
-        : AuthenticationSchemeOptions
-    {
-    }
-
-    private sealed class TestSchemeHandler(IOptionsMonitor<TestSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
-        : AuthenticationHandler<TestSchemeOptions>(options, logger, encoder)
-    {
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            if (Request.Headers.TryGetValue("X-TestClient-User", out var value) && value.Count == 1)
-            {
-                var user = Json.Deserialize<JsonClaimsPrincipal>(value[0]!);
-                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(user!.ToPrincipal(), Scheme.Name)));
-            }
-
-            return Task.FromResult(AuthenticateResult.NoResult());
-        }
-    }
-
-    private sealed record JsonClaim(string Type, string Value, string? ValueType, string? Issuer)
-    {
-        public static JsonClaim FromClaim(Claim claim) => new(claim.Type, claim.Value, claim.ValueType, claim.Issuer);
-        public Claim ToClaim() => new(type: Type, value: Value, valueType: ValueType, issuer: Issuer);
-    }
-
-    private sealed record JsonClaimsIdentity(IEnumerable<JsonClaim> Claims, string? AuthenticationType)
-    {
-        public static JsonClaimsIdentity FromIdentity(ClaimsIdentity identity) => new(identity.Claims.Select(JsonClaim.FromClaim), identity.AuthenticationType);
-        public ClaimsIdentity ToIdentity() => new(Claims.Select(c => c.ToClaim()), AuthenticationType);
-    }
-
-    private sealed record JsonClaimsPrincipal(IEnumerable<JsonClaimsIdentity> Identities)
-    {
-        public static JsonClaimsPrincipal FromPrincipal(ClaimsPrincipal principal) => new(principal.Identities.Select(JsonClaimsIdentity.FromIdentity));
-        public ClaimsPrincipal ToPrincipal() => new(Identities.Select(i => i.ToIdentity()));
     }
 }
