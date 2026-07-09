@@ -21,7 +21,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <PackageVersion Include="coverlet.collector" Version="8.0.1" />
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="coverlet.mtp" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
     <PackageVersion Include="Microsoft.Build.Framework" Version="18.7.1" />
