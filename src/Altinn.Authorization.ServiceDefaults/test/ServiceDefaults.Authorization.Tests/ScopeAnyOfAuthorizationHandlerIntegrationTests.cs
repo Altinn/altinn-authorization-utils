@@ -37,15 +37,12 @@ public abstract class ScopeAnyOfAuthorizationHandlerIntegrationTests<TController
     protected async Task<TestClient> CreateClient(string scopeString)
     {
         var client = await TestClient.CreateControllerClient<TController>(
-            configureHost: builder =>
+            configureBuilder: builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddAuthorization();
-                    services.AddAltinnScopesAuthorizationHandlers();
+                builder.Services.AddAuthorization();
+                builder.Services.AddAltinnScopesAuthorizationHandlers();
 
-                    ConfigureServices(services);
-                });
+                ConfigureServices(builder.Services);
             });
 
         client.User = new ClaimsPrincipal(
