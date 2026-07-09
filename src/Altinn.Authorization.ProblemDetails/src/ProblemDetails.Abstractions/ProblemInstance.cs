@@ -14,27 +14,21 @@ public record class ProblemInstance
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
+    /// <param name="detail">The detail message.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor)
-        => new ProblemInstance(descriptor, detail: null, [], exception: null);
+    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail = null, ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail, [], exception: null, source);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="exception"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, Exception exception)
-        => new ProblemInstance(descriptor, detail: null, [], exception);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="detail"/>.
-    /// </summary>
-    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    /// <param name="detail">The detail message.</param>
-    /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail)
-        => new ProblemInstance(descriptor, detail, [], exception: null);
+    public static ProblemInstance Create(ProblemDescriptor descriptor, Exception exception, ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail: null, [], exception, source);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, and <paramref name="exception"/>.
@@ -42,28 +36,25 @@ public record class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="detail">The detail message.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, Exception exception)
-        => new ProblemInstance(descriptor, detail, [], exception);
+    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, Exception exception, ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail, [], exception, source);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
-    /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, ProblemExtensionData extensions)
-        => new ProblemInstance(descriptor, detail: null, extensions, exception: null);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="extensions"/>, and <paramref name="exception"/>.
-    /// </summary>
-    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    /// <param name="extensions">The extensions.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, ProblemExtensionData extensions, Exception exception)
-        => new ProblemInstance(descriptor, detail: null, extensions, exception);
+    public static ProblemInstance Create(
+        ProblemDescriptor descriptor,
+        ProblemExtensionData extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail: null, extensions, exception, source);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, and <paramref name="extensions"/>.
@@ -71,39 +62,31 @@ public record class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="detail">The detail message.</param>
     /// <param name="extensions">The extensions.</param>
-    /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions)
-        => new ProblemInstance(descriptor, detail, extensions, exception: null);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, <paramref name="extensions"/>, and <paramref name="exception"/>.
-    /// </summary>
-    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    /// <param name="detail">The detail message.</param>
-    /// <param name="extensions">The extensions.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions, Exception exception)
-        => new ProblemInstance(descriptor, detail, extensions, exception);
+    public static ProblemInstance Create(
+        ProblemDescriptor descriptor,
+        string? detail,
+        ProblemExtensionData extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail, extensions, exception, source);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/> and <paramref name="extensions"/>.
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="extensions">The extensions.</param>
-    /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
-        => new ProblemInstance(descriptor, detail: null, [.. extensions], exception: null);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="extensions"/>, and <paramref name="exception"/>.
-    /// </summary>
-    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    /// <param name="extensions">The extensions.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions, Exception exception)
-        => new ProblemInstance(descriptor, detail: null, [.. extensions], exception);
+    public static ProblemInstance Create(
+        ProblemDescriptor descriptor,
+        IReadOnlyDictionary<string, string> extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail: null, [.. extensions], exception, source);
 
     /// <summary>
     /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, and <paramref name="extensions"/>.
@@ -111,26 +94,23 @@ public record class ProblemInstance
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     /// <param name="detail">The detail message.</param>
     /// <param name="extensions">The extensions.</param>
-    /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions)
-        => new ProblemInstance(descriptor, detail, [.. extensions], exception: null);
-
-    /// <summary>
-    /// Creates a new <see cref="ProblemInstance"/> with the specified <paramref name="descriptor"/>, <paramref name="detail"/>, <paramref name="extensions"/>, and <paramref name="exception"/>.
-    /// </summary>
-    /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
-    /// <param name="detail">The detail message.</param>
-    /// <param name="extensions">The extensions.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     /// <returns>A <see cref="ProblemInstance"/>.</returns>
-    public static ProblemInstance Create(ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions, Exception exception)
-        => new ProblemInstance(descriptor, detail, [.. extensions], exception);
+    public static ProblemInstance Create(
+        ProblemDescriptor descriptor,
+        string? detail,
+        IReadOnlyDictionary<string, string> extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => new ProblemInstance(descriptor, detail, [.. extensions], exception, source);
 
     private readonly ProblemDescriptor _descriptor;
     private readonly string? _detail;
     private readonly ProblemExtensionData _extensions;
     private readonly string? _traceId = Activity.Current?.Id;
     private readonly EqualityIgnoredOptional<Exception> _exception;
+    private readonly ProblemInstance? _source;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProblemInstance"/> class.
@@ -139,16 +119,19 @@ public record class ProblemInstance
     /// <param name="detail">The detail message.</param>
     /// <param name="extensions">The extensions.</param>
     /// <param name="exception">The exception.</param>
+    /// <param name="source">The source problem instance.</param>
     internal ProblemInstance(
         ProblemDescriptor descriptor,
         string? detail,
         ProblemExtensionData extensions,
-        Exception? exception)
+        Exception? exception,
+        ProblemInstance? source)
     {
         _descriptor = descriptor;
         _detail = detail;
         _extensions = extensions;
         _exception = exception;
+        _source = source;
     }
 
     /// <summary>
@@ -189,6 +172,11 @@ public record class ProblemInstance
     /// </summary>
     internal Exception? Exception => _exception.Value;
 
+    /// <summary>
+    /// Gets the source problem instance, if any.
+    /// </summary>
+    public ProblemInstance? Source => _source;
+
     internal virtual void AddExceptionDetails(StringBuilder builder, string indent)
     {
         if (!_extensions.IsDefaultOrEmpty)
@@ -205,5 +193,5 @@ public record class ProblemInstance
     /// </summary>
     /// <param name="descriptor">The <see cref="ProblemDescriptor"/>.</param>
     public static implicit operator ProblemInstance(ProblemDescriptor descriptor)
-        => new ProblemInstance(descriptor, detail: null, extensions: [], exception: null);
+        => new ProblemInstance(descriptor, detail: null, extensions: [], exception: null, source: null);
 }

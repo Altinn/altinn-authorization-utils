@@ -1,0 +1,16 @@
+﻿{
+  "type": "urn:altinn:error:SNAP-00000",
+  "title": "Simple error",
+  "status": 507,
+  "detail": "Instance",
+  "code": "SNAP-00000",
+  "statusDescription": "Insufficient Storage",
+  "source": {
+    "type": "urn:altinn:error:SNAP-00000",
+    "title": "Simple error",
+    "status": 507,
+    "detail": "Source",
+    "code": "SNAP-00000",
+    "statusDescription": "Insufficient Storage"
+  }
+}

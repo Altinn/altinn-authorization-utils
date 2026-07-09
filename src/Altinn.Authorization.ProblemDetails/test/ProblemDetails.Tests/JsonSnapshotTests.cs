@@ -16,7 +16,10 @@ public class JsonSnapshotTests
     private static readonly ValidationErrorDescriptor _invalid = _validations.Create(0, "Invalid value");
 
     protected static JsonSerializerOptions Options { get; }
-        = JsonSerializerOptions.Web;
+        = new JsonSerializerOptions(JsonSerializerOptions.Web)
+        {
+            TypeInfoResolverChain = { AltinnProblemDetailsJsonContext.Default },
+        };
 
     private static JsonWriterOptions WriterOptions { get; }
         = new JsonWriterOptions
@@ -92,6 +95,70 @@ public class JsonSnapshotTests
                 "statusDescription": "Insufficient Storage",
                 "ext1": "1",
                 "ext2": "2"
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task Simple_WithSource_Simple()
+    {
+        var source = _simple.Create(detail: "Source");
+        var instance = _simple.Create(source: source, detail: "Instance");
+
+        await VerifyJson(
+            instance.ToProblemDetails(),
+            """
+            {
+                "type": "urn:altinn:error:SNAP-00000",
+                "title": "Simple error",
+                "detail": "Instance",
+                "status": 507,
+                "code": "SNAP-00000",
+                "statusDescription": "Insufficient Storage",
+                "source": {
+                    "type": "urn:altinn:error:SNAP-00000",
+                    "title": "Simple error",
+                    "detail": "Source",
+                    "status": 507,
+                    "code": "SNAP-00000",
+                    "statusDescription": "Insufficient Storage"
+                }
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task Simple_WithSource_Validation()
+    {
+        ValidationProblemBuilder builder = default;
+        builder.Add(_invalid);
+        builder.TryBuild(out var source).ShouldBeTrue();
+        var instance = _simple.Create(source: source, detail: "Instance");
+
+        await VerifyJson(
+            instance.ToProblemDetails(),
+            """
+            {
+                "type": "urn:altinn:error:SNAP-00000",
+                "title": "Simple error",
+                "detail": "Instance",
+                "status": 507,
+                "code": "SNAP-00000",
+                "statusDescription": "Insufficient Storage",
+                "source": {
+                    "type": "urn:altinn:error:STD-00000",
+                    "title": "One or more validation errors occurred.",
+                    "status": 400,
+                    "code": "STD-00000",
+                    "statusDescription": "Bad Request",
+                    "validationErrors": [
+                        {
+                        "code": "SNAP.VLD-00000",
+                        "title": "Invalid value",
+                        "paths": []
+                        }
+                    ]
+                }
             }
             """);
     }
