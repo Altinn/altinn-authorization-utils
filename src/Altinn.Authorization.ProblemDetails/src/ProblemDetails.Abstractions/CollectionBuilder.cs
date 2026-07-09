@@ -125,6 +125,63 @@ internal struct CollectionBuilder<T>
     }
 
     /// <summary>
+    /// Merges the contents of another <see cref="CollectionBuilder{T}" /> into this one.
+    /// </summary>
+    /// <param name="other">The other <see cref="CollectionBuilder{T}" /> to merge into this one.</param>
+    /// <remarks>
+    /// This clears <paramref name="other" /> after merging.
+    /// </remarks>
+    public void MergeWith(ref CollectionBuilder<T> other)
+    {
+        if (other._itemCount == 0)
+        {
+            return;
+        }
+
+        if (_itemCount == 0)
+        {
+            this = other;
+            other.Clear();
+            return;
+        }
+
+        var newCount = _itemCount + other._itemCount;
+        if (_overflowItems is null && newCount <= InlineItems.Length)
+        {
+            ((ReadOnlySpan<T>)other._inlineItems).Slice(0, other._itemCount).CopyTo(((Span<T>)_inlineItems).Slice(_itemCount));
+            _itemCount = newCount;
+            other.Clear();
+        }
+        else
+        {
+            AddToOverflow(ref this, ref other);
+        }
+
+        // Adds an item to the overflow list. Slow path outlined from Add to maximize
+        // the chance for the fast path to be inlined.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void AddToOverflow(ref CollectionBuilder<T> self, ref CollectionBuilder<T> other)
+        {
+            var newCount = self._itemCount + other._itemCount;
+
+            if (self._overflowItems is null)
+            {
+                var minLength = Math.Max(newCount, InlineItems.Length + OverflowAdditionalCapacity);
+                self._overflowItems = new T[minLength];
+                ((ReadOnlySpan<T>)self._inlineItems).CopyTo(self._overflowItems);
+            }
+            else if (newCount > self._overflowItems.Length)
+            {
+                Array.Resize(ref self._overflowItems, newCount + OverflowAdditionalCapacity);
+            }
+
+            other.Items.CopyTo(self._overflowItems.AsSpan(self._itemCount));
+            self._itemCount = newCount;
+            other.Clear();
+        }
+    }
+
+    /// <summary>
     /// Copies the contents of this into a destination <paramref name="destination" /> span.
     /// </summary>
     /// <param name="destination">The destination <see cref="Span{T}"/>.</param>

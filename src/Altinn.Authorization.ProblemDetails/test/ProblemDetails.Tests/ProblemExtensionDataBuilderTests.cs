@@ -80,4 +80,62 @@ public class ProblemExtensionDataBuilderTests
         list.ShouldNotContainKey(key);
         list.Remove(key).ShouldBeFalse();
     }
+
+    [Theory]
+    [MemberData(nameof(MergeCounts))]
+    public void MergeWith_MergesItems_AndClearsOther(int leftCount, int rightCount)
+    {
+        var leftItems = CreateArray(leftCount);
+        var rightItems = CreateArray(rightCount);
+        var left = Create(leftItems);
+        var right = Create(rightItems);
+
+        left.MergeWith(ref right);
+
+        left.Count.ShouldBe(leftCount + rightCount);
+        right.Count.ShouldBe(0);
+
+        foreach (var (key, value) in leftItems.Concat(rightItems))
+        {
+            left[key].ShouldBe(value);
+        }
+    }
+
+    [Fact]
+    public void MergeWith_UsesOtherValue_WhenKeysOverlap()
+    {
+        var left = ProblemExtensionData.CreateBuilder();
+        var right = ProblemExtensionData.CreateBuilder();
+
+        left.Add("shared", "left");
+        left.Add("left-only", "left-value");
+        right.Add("shared", "right");
+        right.Add("right-only", "right-value");
+
+        left.MergeWith(ref right);
+
+        left.Count.ShouldBe(3);
+        left["shared"].ShouldBe("right");
+        left["left-only"].ShouldBe("left-value");
+        left["right-only"].ShouldBe("right-value");
+        right.Count.ShouldBe(0);
+    }
+
+    public static TheoryData<int, int> MergeCounts => new()
+    {
+        { 0, 0 },
+        { 0, 1 },
+        { 1, 0 },
+        { 0, 9 },
+        { 9, 0 },
+        { 4, 4 },
+        { 8, 1 },
+        { 1, 8 },
+        { 9, 1 },
+        { 1, 9 },
+        { 9, 9 },
+        { 50, 1 },
+        { 1, 50 },
+        { 50, 50 },
+    };
 }

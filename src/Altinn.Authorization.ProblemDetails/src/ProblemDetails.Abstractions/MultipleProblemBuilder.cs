@@ -36,6 +36,22 @@ public struct MultipleProblemBuilder
     }
 
     /// <summary>
+    /// Merges the contents of another <see cref="MultipleProblemBuilder"/> into this one.
+    /// </summary>
+    /// <param name="other">The other <see cref="MultipleProblemBuilder"/> to merge into this one.</param>
+    /// <remarks>
+    /// This clears <paramref name="other"/> after merging.
+    /// </remarks>
+    public void MergeWith(ref MultipleProblemBuilder other)
+    {
+        _problems.MergeWith(ref other._problems);
+        _extensions.MergeWith(ref other._extensions);
+        _detail ??= other._detail;
+
+        other._detail = null; // _problems and _extensions are cleared by their MergeWith
+    }
+
+    /// <summary>
     /// Gets or sets the detailed description or additional information associated with the object.
     /// </summary>
     public string? Detail
