@@ -36,6 +36,22 @@ public struct ValidationProblemBuilder
     }
 
     /// <summary>
+    /// Merges the contents of another <see cref="ValidationProblemBuilder"/> into this one.
+    /// </summary>
+    /// <param name="other">The other <see cref="ValidationProblemBuilder"/> to merge into this one.</param>
+    /// <remarks>
+    /// This clears <paramref name="other"/> after merging.
+    /// </remarks>
+    public void MergeWith(ref ValidationProblemBuilder other)
+    {
+        _errors.MergeWith(ref other._errors);
+        _extensions.MergeWith(ref other._extensions);
+        _detail ??= other._detail;
+
+        other._detail = null; // _errors and _extensions are cleared by their MergeWith
+    }
+
+    /// <summary>
     /// Gets or sets the detailed description or additional information associated with the object.
     /// </summary>
     public string? Detail

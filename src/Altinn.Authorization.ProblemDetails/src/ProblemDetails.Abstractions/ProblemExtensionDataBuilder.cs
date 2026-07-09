@@ -101,6 +101,23 @@ public struct ProblemExtensionDataBuilder
         _extensions.Add(new(key, value));
     }
 
+    /// <summary>
+    /// Merges the contents of another <see cref="ProblemExtensionDataBuilder" /> into this one.
+    /// </summary>
+    /// <param name="other">The other <see cref="ProblemExtensionDataBuilder" /> to merge into this one.</param>
+    /// <remarks>
+    /// This clears <paramref name="other" /> after merging.
+    /// </remarks>
+    public void MergeWith(ref ProblemExtensionDataBuilder other)
+    {
+        foreach (var (key, value) in other._extensions.Items)
+        {
+            this[key] = value;
+        }
+
+        other.Clear();
+    }
+
     /// <inheritdoc/>
     public bool Remove(string key)
     {
