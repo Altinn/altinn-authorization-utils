@@ -107,6 +107,8 @@ public static class AltinnServiceDefaultsExtensions
         }
 
         builder.Services.AddMetricsProvider();
+        builder.Services.AddAltinnProblemDetails();
+        builder.Services.AddExceptionHandler<AltinnExceptionHandler>();
         builder.Services.AddSingleton<AltinnServiceResourceDetector>();
         builder.Services.AddSingleton<HttpStandardResilienceTelemetry>();
         builder.Services.AddOptions<AltinnClusterInfo>().BindConfiguration("Altinn:ClusterInfo");
@@ -216,9 +218,8 @@ public static class AltinnServiceDefaultsExtensions
     /// Requires that <see cref="AddAltinnServiceDefaults(IHostApplicationBuilder, string, Action{AltinnServiceDefaultOptions})"/> has been called.
     /// </remarks>
     /// <param name="app">The <see cref="WebApplication"/>.</param>
-    /// <param name="errorHandlingPath">The path to use for error handling in production environments.</param>
     /// <returns><paramref name="app"/>.</returns>
-    public static WebApplication AddDefaultAltinnMiddleware(this WebApplication app, string errorHandlingPath)
+    public static WebApplication AddDefaultAltinnMiddleware(this WebApplication app)
     {
         var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AltinnServiceDefaultsExtensions));
         var otel = app.Services.GetService<LoggerProvider>()?.GetResource();
@@ -234,7 +235,7 @@ public static class AltinnServiceDefaultsExtensions
         {
             logger.LogInformation("Production => Using exception handler");
 
-            app.UseExceptionHandler(errorHandlingPath);
+            app.UseExceptionHandler();
         }
 
         if (otel is not null)

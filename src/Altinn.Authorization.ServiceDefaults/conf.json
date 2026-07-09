@@ -1,3 +1,7 @@
 {
-  "deps": ["pkg:Altinn.Authorization.TestUtils", "pkg:Altinn.Swashbuckle"]
+  "deps": [
+    "pkg:Altinn.Authorization.TestUtils",
+    "pkg:Altinn.Swashbuckle",
+    "pkg:Altinn.Authorization.ProblemDetails"
+  ]
 }
