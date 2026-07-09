@@ -141,6 +141,7 @@ internal struct CollectionBuilder<T>
         if (_itemCount == 0)
         {
             this = other;
+            other._overflowItems = null;
             other.Clear();
             return;
         }

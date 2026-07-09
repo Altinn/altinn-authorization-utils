@@ -1,6 +1,6 @@
 namespace Altinn.Authorization.ProblemDetails.Tests;
 
-public class ValidationErrorBuilderTests
+public class ValidationProblemBuilderTests
     : CollectionTests<ValidationErrorInstance, ValidationProblemBuilder, CollectionBuilderEnumerator<ValidationErrorInstance>>
 {
     private readonly ValidationErrorDescriptorFactory _factory = ValidationErrorDescriptorFactory.New("TEST");
