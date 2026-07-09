@@ -26,12 +26,9 @@ public class AltinnValidationProblemDetailsFactoryTests
     public async ValueTask InitializeAsync()
     {
         _client = await TestClient.CreateControllerClient<TestController>(
-            configureHost: builder =>
+            configureBuilder: builder =>
             {
-                builder.ConfigureServices((IServiceCollection services) =>
-                {
-                    services.AddAltinnProblemDetails();
-                });
+                builder.Services.AddAltinnProblemDetails();
             });
     }
 
