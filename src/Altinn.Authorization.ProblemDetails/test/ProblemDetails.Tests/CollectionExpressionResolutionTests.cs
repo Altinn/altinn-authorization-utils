@@ -8,20 +8,48 @@ public static class CollectionExpressionResolutionTests
 
     public static void ProblemDescriptor_Create()
     {
+        var source = ProblemInstance.Create(StdProblemDescriptors.ValidationError);
+
         _ = StdProblemDescriptors.ValidationError.Create();
+        _ = StdProblemDescriptors.ValidationError.Create(source: source);
         _ = StdProblemDescriptors.ValidationError.Create([KeyValuePair.Create("foo", "bar")]);
+        _ = StdProblemDescriptors.ValidationError.Create([KeyValuePair.Create("foo", "bar")], source: source);
 
         _ = StdProblemDescriptors.ValidationError.Create("detail");
+        _ = StdProblemDescriptors.ValidationError.Create("detail", source);
         _ = StdProblemDescriptors.ValidationError.Create("detail", [KeyValuePair.Create("foo", "bar")]);
+        _ = StdProblemDescriptors.ValidationError.Create("detail", [KeyValuePair.Create("foo", "bar")], source: source);
     }
 
     public static void ProblemInstance_Create()
     {
+        var source = ProblemInstance.Create(StdProblemDescriptors.ValidationError);
+
         _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError);
+        _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, source: source);
         _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, [KeyValuePair.Create("foo", "bar")]);
+        _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, [KeyValuePair.Create("foo", "bar")], source: source);
 
         _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, "detail");
+        _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, "detail", source);
         _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, "detail", [KeyValuePair.Create("foo", "bar")]);
+        _ = ProblemInstance.Create(StdProblemDescriptors.ValidationError, "detail", [KeyValuePair.Create("foo", "bar")], source: source);
+    }
+
+    public static void MultipleProblems_Add()
+    {
+        MultipleProblemBuilder problems = default;
+        var source = ProblemInstance.Create(StdProblemDescriptors.ValidationError);
+
+        problems.Add(StdProblemDescriptors.ValidationError);
+        problems.Add(StdProblemDescriptors.ValidationError, source: source);
+        problems.Add(StdProblemDescriptors.ValidationError, [KeyValuePair.Create("foo", "bar")]);
+        problems.Add(StdProblemDescriptors.ValidationError, [KeyValuePair.Create("foo", "bar")], source: source);
+
+        problems.Add(StdProblemDescriptors.ValidationError, "detail");
+        problems.Add(StdProblemDescriptors.ValidationError, "detail", source);
+        problems.Add(StdProblemDescriptors.ValidationError, "detail", [KeyValuePair.Create("foo", "bar")]);
+        problems.Add(StdProblemDescriptors.ValidationError, "detail", [KeyValuePair.Create("foo", "bar")], source: source);
     }
 
     public static void ValidationErrorDescriptor_Create()

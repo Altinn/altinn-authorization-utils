@@ -22,6 +22,30 @@ public class ProblemInstanceTests
     }
 
     [Fact]
+    public void Source_Is_Preserved()
+    {
+        var source = ProblemInstance.Create(TestErrors.NotFound);
+        var instance = ProblemInstance.Create(TestErrors.BadRequest, source: source);
+
+        instance.Source.ShouldBe(source);
+    }
+
+    [Fact]
+    public void Equality_Includes_Source()
+    {
+        var source1 = ProblemInstance.Create(TestErrors.NotFound);
+        var source2 = ProblemInstance.Create(TestErrors.InternalServerError);
+        var withoutSource = ProblemInstance.Create(TestErrors.BadRequest);
+        var withSource1 = ProblemInstance.Create(TestErrors.BadRequest, source: source1);
+        var withSource2 = ProblemInstance.Create(TestErrors.BadRequest, source: source2);
+
+        withoutSource.ShouldNotBe(withSource1);
+        withSource1.ShouldBe(ProblemInstance.Create(TestErrors.BadRequest, source: source1));
+        withSource1.ShouldNotBe(withSource2);
+        withoutSource.GetHashCode().ShouldNotBe(withSource1.GetHashCode());
+    }
+
+    [Fact]
     public void ToException_Returns_ProblemInstanceException()
     {
         var innerException = new InvalidOperationException("boom");

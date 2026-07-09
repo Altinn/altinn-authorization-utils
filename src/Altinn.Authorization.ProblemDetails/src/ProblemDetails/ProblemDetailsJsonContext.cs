@@ -8,7 +8,7 @@ namespace Altinn.Authorization.ProblemDetails;
 [JsonSerializable(typeof(AltinnProblemDetails))]
 [JsonSerializable(typeof(AltinnValidationProblemDetails))]
 [JsonSerializable(typeof(AltinnMultipleProblemDetails))]
-internal sealed partial class AltinnProblemDetailsJsonContext
+public sealed partial class AltinnProblemDetailsJsonContext
     : JsonSerializerContext
 {
 }

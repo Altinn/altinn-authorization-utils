@@ -6,6 +6,8 @@ namespace Altinn.Authorization.ProblemDetails;
 /// <summary>
 /// A <see cref="Microsoft.AspNetCore.Mvc.ProblemDetails"/> with an <see cref="ErrorCode"/>.
 /// </summary>
+[JsonDerivedType(typeof(AltinnMultipleProblemDetails))]
+[JsonDerivedType(typeof(AltinnValidationProblemDetails))]
 public class AltinnProblemDetails
     : Microsoft.AspNetCore.Mvc.ProblemDetails
     , IJsonOnDeserializing
@@ -43,6 +45,11 @@ public class AltinnProblemDetails
         {
             Extensions = instance.Extensions;
         }
+
+        if (instance.Source is { } source)
+        {
+            Source = source.ToProblemDetails();
+        }
     }
 
     [JsonConstructor]
@@ -78,6 +85,14 @@ public class AltinnProblemDetails
         get => _statusDescription ??= StatusDescriptions.GetStatusDescription(Status);
         set => _statusDescription = value;
     }
+
+    /// <summary>
+    /// Gets or sets the source problem details that caused this problem details to be generated.
+    /// </summary>
+    [JsonPropertyName("source")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyOrder(3)]
+    public AltinnProblemDetails? Source { get; set; }
 
     /// <inheritdoc/>
     void IJsonOnDeserializing.OnDeserializing()

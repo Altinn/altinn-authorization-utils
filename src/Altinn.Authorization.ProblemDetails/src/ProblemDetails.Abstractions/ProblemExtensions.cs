@@ -11,53 +11,55 @@ namespace Altinn.Authorization.ProblemDetails;
 public static class ProblemExtensions
 {
     #region ProblemDescriptor.Create
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor)
-        => ProblemInstance.Create(descriptor);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemInstance?)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail = null, ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, detail, source);
 
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, Exception)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, Exception exception)
-        => ProblemInstance.Create(descriptor, exception);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, Exception, ProblemInstance?)"/>
+    public static ProblemInstance Create(this ProblemDescriptor descriptor, Exception exception, ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, exception, source);
 
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail)
-        => ProblemInstance.Create(descriptor, detail);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, Exception, ProblemInstance?)"/>
+    public static ProblemInstance Create(
+        this ProblemDescriptor descriptor,
+        string? detail,
+        Exception exception,
+        ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, detail, exception, source);
 
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, Exception)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, Exception exception)
-        => ProblemInstance.Create(descriptor, detail, exception);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, ProblemExtensionData, Exception?, ProblemInstance?)"/>
+    public static ProblemInstance Create(
+        this ProblemDescriptor descriptor,
+        ProblemExtensionData extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, extensions, exception, source);
 
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, ProblemExtensionData)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, ProblemExtensionData extensions)
-        => ProblemInstance.Create(descriptor, extensions);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemExtensionData, Exception?, ProblemInstance?)"/>
+    public static ProblemInstance Create(
+        this ProblemDescriptor descriptor,
+        string? detail,
+        ProblemExtensionData extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, detail, extensions, exception, source);
 
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, ProblemExtensionData, Exception)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, ProblemExtensionData extensions, Exception exception)
-        => ProblemInstance.Create(descriptor, extensions, exception);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, IReadOnlyDictionary{string, string}, Exception?, ProblemInstance?)"/>
+    public static ProblemInstance Create(
+        this ProblemDescriptor descriptor,
+        IReadOnlyDictionary<string, string> extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, extensions, exception, source);
 
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemExtensionData)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions)
-        => ProblemInstance.Create(descriptor, detail, extensions);
-
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, ProblemExtensionData, Exception)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, ProblemExtensionData extensions, Exception exception)
-        => ProblemInstance.Create(descriptor, detail, extensions, exception);
-
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, IReadOnlyDictionary{string, string})"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions)
-        => ProblemInstance.Create(descriptor, extensions);
-
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, IReadOnlyDictionary{string, string}, Exception)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, IReadOnlyDictionary<string, string> extensions, Exception exception)
-        => ProblemInstance.Create(descriptor, extensions, exception);
-
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, IReadOnlyDictionary{string, string})"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions)
-        => ProblemInstance.Create(descriptor, detail, extensions);
-
-    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, IReadOnlyDictionary{string, string}, Exception)"/>
-    public static ProblemInstance Create(this ProblemDescriptor descriptor, string? detail, IReadOnlyDictionary<string, string> extensions, Exception exception)
-        => ProblemInstance.Create(descriptor, detail, extensions, exception);
+    /// <inheritdoc cref="ProblemInstance.Create(ProblemDescriptor, string?, IReadOnlyDictionary{string, string}, Exception?, ProblemInstance?)"/>
+    public static ProblemInstance Create(
+        this ProblemDescriptor descriptor,
+        string? detail,
+        IReadOnlyDictionary<string, string> extensions,
+        Exception? exception = null,
+        ProblemInstance? source = null)
+        => ProblemInstance.Create(descriptor, detail, extensions, exception, source);
     #endregion
 
     #region ValidationErrorDescriptor.Create
@@ -157,15 +159,9 @@ public static class ProblemExtensions
     #region ValidationErrorInstance.ToProblemInstance
     /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/summary"/>
     /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='validationError']"/>
-    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/returns"/>
-    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError)
-        => validationError.ToProblemInstance(detail: null, extensions: default);
-
-    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/summary"/>
     /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='detail']"/>
-    /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/param[@name='validationError']"/>
     /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/returns"/>
-    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, string? detail)
+    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, string? detail = null)
         => validationError.ToProblemInstance(detail, extensions: default);
 
     /// <inheritdoc cref="ToProblemInstance(ValidationErrorInstance, string?, ProblemExtensionData)" path="/summary"/>
@@ -182,7 +178,10 @@ public static class ProblemExtensions
     /// <param name="detail">The detail message.</param>
     /// <param name="extensions">The extensions.</param>
     /// <returns>A new <see cref="ValidationProblemInstance"/>.</returns>
-    public static ValidationProblemInstance ToProblemInstance(this ValidationErrorInstance validationError, string? detail, ProblemExtensionData extensions)
+    public static ValidationProblemInstance ToProblemInstance(
+        this ValidationErrorInstance validationError,
+        string? detail,
+        ProblemExtensionData extensions)
         => new([validationError], detail: detail, extensions: extensions);
     #endregion
 
