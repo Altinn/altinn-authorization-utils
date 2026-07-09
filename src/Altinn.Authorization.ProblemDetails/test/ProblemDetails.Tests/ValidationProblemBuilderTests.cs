@@ -127,6 +127,25 @@ public class ValidationProblemBuilderTests
         right.Detail.ShouldBeNull();
     }
 
+    [Fact]
+    public void MergeWith_FromOverflowSourceIntoEmptyTarget_DoesNotAliasSource()
+    {
+        var sourceErrors = CreateArray(9);
+        var replacement = CreateDistinctItem();
+        var target = ValidationProblemInstance.CreateBuilder();
+        var source = Create(sourceErrors);
+
+        target.MergeWith(ref source);
+        source.Add(replacement);
+
+        target.Count.ShouldBe(sourceErrors.Length);
+        target.ShouldContain(sourceErrors[0]);
+        target.ShouldNotContain(replacement);
+
+        source.Count.ShouldBe(1);
+        source.ShouldContain(replacement);
+    }
+
     public static TheoryData<int, int> MergeCounts => new()
     {
         { 0, 0 },

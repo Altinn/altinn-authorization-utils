@@ -178,6 +178,25 @@ public class MultipleProblemBuilderTests
         right.Detail.ShouldBeNull();
     }
 
+    [Fact]
+    public void MergeWith_FromOverflowSourceIntoEmptyTarget_DoesNotAliasSource()
+    {
+        var sourceProblems = CreateArray(9);
+        var replacement = CreateDistinctItem();
+        var target = MultipleProblemInstance.CreateBuilder();
+        var source = Create(sourceProblems);
+
+        target.MergeWith(ref source);
+        source.Add(replacement);
+
+        target.Count.ShouldBe(sourceProblems.Length);
+        target.ShouldContain(sourceProblems[0]);
+        target.ShouldNotContain(replacement);
+
+        source.Count.ShouldBe(1);
+        source.ShouldContain(replacement);
+    }
+
     public static TheoryData<int, int> MergeCounts => new()
     {
         { 0, 0 },

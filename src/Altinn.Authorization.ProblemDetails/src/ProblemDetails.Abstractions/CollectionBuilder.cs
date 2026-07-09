@@ -140,9 +140,10 @@ internal struct CollectionBuilder<T>
 
         if (_itemCount == 0)
         {
+            // swap the values - not using a tuple here to avoid copying 2 large structs
+            var temp = this;
             this = other;
-            other._overflowItems = null;
-            other.Clear();
+            other = temp;
             return;
         }
 
