@@ -9,16 +9,16 @@
   <Choose>
     <When Condition=" '$(TargetFramework)' == 'net10.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
-        <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.9" />
-        <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.9" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
+        <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.10" />
+        <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.10" />
       </ItemGroup>
     </When>
     <When Condition=" '$(TargetFramework)' == 'net9.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.17" />
-        <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.17" />
-        <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.9" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.18" />
+        <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.18" />
+        <PackageVersion Include="System.Linq.AsyncEnumerable" Version="10.0.10" />
       </ItemGroup>
     </When>
   </Choose>
@@ -27,7 +27,7 @@
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="coverlet.mtp" Version="10.0.1" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.15.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="10.2.3" />
