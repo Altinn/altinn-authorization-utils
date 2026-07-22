@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.Linq.Expressions;
 using System.Reflection;
+using Altinn.Authorization.CommandLine.Results;
 using Altinn.Authorization.CommandLine.XmlDoc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ internal sealed class CommandHandlerDelegateFactoryContext
     // Options
     public required IServiceProvider ServiceProvider { get; init; }
     public required IXmlDocProvider XmlDocProvider { get; init; }
+    public required CommandResultHandler ResultHandler { get; init; }
     public required IServiceProviderIsService? ServiceProviderIsService { get; init; }
     public List<Option> Options { get; } = new List<Option>();
     public List<Argument> Arguments { get; } = new List<Argument>();

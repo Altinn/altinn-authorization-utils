@@ -1,9 +1,9 @@
 namespace Altinn.Authorization.CommandLine.Results;
 
 internal sealed class IntResultHandler
-    : ICommandResultHandler<int>
+    : CommandResultHandler<int>
 {
-    public Task HandleResult(int result, CommandInvocationContext context, CancellationToken cancellationToken = default)
+    protected override Task HandleResult(int result, CommandInvocationContext context, CancellationToken cancellationToken = default)
     {
         context.ReturnCode = result;
         return Task.CompletedTask;

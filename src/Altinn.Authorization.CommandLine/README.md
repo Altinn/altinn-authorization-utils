@@ -103,7 +103,7 @@ nullability metadata.
 Handlers can return:
 
 - `void`, `Task`, or `ValueTask`.
-- `T`, `Task<T>`, or `ValueTask<T>` when an `ICommandResultHandler<T>` is registered.
+- `T`, `Task<T>`, or `ValueTask<T>` when an `ICommandResultHandlerResolver` can resolve a handler for `T`.
 - `ICommandResult`, which is executed directly.
 
 An `int` result handler is registered by default and maps the returned value to the command return code.

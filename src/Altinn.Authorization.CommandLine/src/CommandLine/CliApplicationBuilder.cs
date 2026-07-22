@@ -57,7 +57,8 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddSingleton<IXmlDocProvider, DefaultXmlDocProvider>();
 
         // result handlers
-        hostBuilder.Services.AddSingleton<ICommandResultHandler<int>, IntResultHandler>();
+        hostBuilder.Services.AddSingleton<CommandResultHandler>();
+        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, IntResultHandler>();
 
         // console
         hostBuilder.Services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();

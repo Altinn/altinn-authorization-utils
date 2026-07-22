@@ -172,13 +172,11 @@ public static partial class CommandHandlerDelegateFactory
                 CancellationTokenExpr);
         }
 
-        var handlerType = typeof(ICommandResultHandler<>).MakeGenericType(resultType);
-        if (factoryContext.ServiceProviderIsService is { } isServiceService && !isServiceService.IsService(handlerType))
+        if (!factoryContext.ResultHandler.TryResolve(resultType, out _))
         {
-            ThrowHelper.ThrowInvalidOperationException($"The return type '{TypeNameHelper.GetTypeDisplayName(resultType, fullName: false)}' is not supported. The return type must be 'void', implement '{TypeNameHelper.GetTypeDisplayName(typeof(ICommandResult), fullName: false)}', or have a registered handler implementing '{TypeNameHelper.GetTypeDisplayName(handlerType, fullName: false)}'.");
+            ThrowHelper.ThrowInvalidOperationException($"The return type '{TypeNameHelper.GetTypeDisplayName(resultType, fullName: false)}' is not supported. The return type must be 'void', implement '{TypeNameHelper.GetTypeDisplayName(typeof(ICommandResult), fullName: false)}', or have a registered handler resolver implementing '{TypeNameHelper.GetTypeDisplayName(typeof(ICommandResultHandlerResolver), fullName: false)}'.");
         }
 
-        // if we don't have access to a service-check, we assume the handler is registered and will throw an exception if it is not.
         return Expression.Call(
             Generic.ForType(resultType).HandleResultMethod,
             commandResultExpr,
@@ -583,6 +581,7 @@ public static partial class CommandHandlerDelegateFactory
         {
             ServiceProvider = serviceProvider,
             ServiceProviderIsService = serviceProvider.GetService<IServiceProviderIsService>(),
+            ResultHandler = serviceProvider.GetRequiredService<CommandResultHandler>(),
             XmlDocProvider = serviceProvider.GetRequiredService<IXmlDocProvider>(),
         };
     }
@@ -673,8 +672,13 @@ public static partial class CommandHandlerDelegateFactory
 
         public static async Task HandleHandlerResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
         {
-            var handler = invocationContext.ServiceProvider.GetRequiredService<ICommandResultHandler<T>>();
             var result = await commandResult;
+            var resultHandler = invocationContext.ServiceProvider.GetRequiredService<CommandResultHandler>();
+            if (!resultHandler.TryResolve(typeof(T), out var handler))
+            {
+                ThrowHelper.ThrowInvalidOperationException($"The return type '{TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: false)}' was not resolved during execution, but was resolved during command building.");
+            }
+
             await handler.HandleResult(result, invocationContext, cancellationToken);
         }
     }

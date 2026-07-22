@@ -157,8 +157,8 @@ public class CommandHandlerDelegateFactoryTests
         using var services = CreateServices(s =>
         {
             s.AddSingleton(sink);
-            s.AddSingleton<ICommandResultHandler<int>, IntResultHandler>();
-            s.AddSingleton<ICommandResultHandler<string>, CaptureResultHandler<string>>();
+            s.AddSingleton<ICommandResultHandlerResolver, IntResultHandler>();
+            s.AddSingleton<ICommandResultHandlerResolver, CaptureResultHandler<string>>();
         });
 
         await Invoke((Action)sink.Increment, services);
@@ -191,6 +191,24 @@ public class CommandHandlerDelegateFactoryTests
             () => CommandHandlerDelegateFactory.Create(handler, services));
 
         exception.Message.ShouldContain("The return type 'UnsupportedResult' is not supported.");
+    }
+
+    [Fact]
+    public async Task CommandResultHandler_ForMatchingType_ResolvesSelfAndHandlesTypedValue()
+    {
+        var sink = new ResultSink();
+        var resolver = new CaptureResultHandler<string>(sink);
+
+        var resolved = ((ICommandResultHandlerResolver)resolver).TryResolve(typeof(string), out var handler);
+
+        resolved.ShouldBeTrue();
+        handler.ShouldBeSameAs(resolver);
+
+        using var services = CreateServices();
+        await handler.HandleResult("value", CreateContext(new(static (_, _) => Task.CompletedTask, [], []), services), TestContext.Current.CancellationToken);
+
+        sink.StringResults.ShouldBe(["value"]);
+        ((ICommandResultHandlerResolver)resolver).TryResolve(typeof(int), out _).ShouldBeFalse();
     }
 
     [Fact]
@@ -302,6 +320,7 @@ public class CommandHandlerDelegateFactoryTests
         services.AddSingleton<IXmlDocProvider, NullXmlDocProvider>();
         services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();
         services.AddSingleton<IConsole, CommandConsole>();
+        services.AddSingleton<CommandResultHandler>();
         configure?.Invoke(services);
 
         return services.BuildServiceProvider(validateScopes: true);
@@ -364,9 +383,9 @@ public class CommandHandlerDelegateFactoryTests
     }
 
     private sealed class CaptureResultHandler<T>(ResultSink sink)
-        : ICommandResultHandler<T>
+        : CommandResultHandler<T>
     {
-        public Task HandleResult(T result, CommandInvocationContext context, CancellationToken cancellationToken = default)
+        protected override Task HandleResult(T result, CommandInvocationContext context, CancellationToken cancellationToken = default)
         {
             sink.StringResults.Add(result?.ToString() ?? string.Empty);
             return Task.CompletedTask;
