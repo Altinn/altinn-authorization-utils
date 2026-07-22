@@ -12,11 +12,6 @@
         <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
       </ItemGroup>
     </When>
-    <When Condition=" '$(TargetFramework)' == 'net9.0' ">
-      <ItemGroup>
-        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.18" />
-      </ItemGroup>
-    </When>
   </Choose>
   <ItemGroup>
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
