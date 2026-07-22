@@ -26,6 +26,6 @@ internal static class LinqExtensions
         where T : class
     {
         public IEnumerable<T> NotNull()
-            => source.Where(static x => x is not null)!;
+            => source.OfType<T>();
     }
 }

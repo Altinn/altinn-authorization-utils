@@ -23,9 +23,6 @@ public static partial class CommandHandlerDelegateFactory
     private static readonly MethodInfo GetArgumentValueMethod = typeof(ArgumentResult).GetMethod(nameof(ArgumentResult.GetValueOrDefault))!;
     private static readonly MethodInfo GetOptionValueMethod = typeof(OptionResult).GetMethod(nameof(OptionResult.GetValueOrDefault))!;
 
-    private static readonly MethodInfo CommandResultExecute = GetMethodInfo<Func<Task<ICommandResult>, CommandInvocationContext, CancellationToken, Task>>(
-        static (commandResult, invocationContext, cancellationToken) => Handle.HandleCommandResult(commandResult, invocationContext, cancellationToken));
-
     private static readonly MethodInfo ValueTaskAsTaskMethod = typeof(ValueTask).GetMethod(nameof(ValueTask.AsTask))!;
 
     private static readonly MethodInfo CheckSymbolResultIsNotNullMethod = GetMethodInfo<Action<SymbolResult?, string, string, string>>(
@@ -169,7 +166,7 @@ public static partial class CommandHandlerDelegateFactory
         if (resultType.IsAssignableTo(typeof(ICommandResult)))
         {
             return Expression.Call(
-                CommandResultExecute,
+                Generic.ForType(resultType).CommandResultExecute,
                 commandResultExpr,
                 InvocationContextExpr,
                 CancellationTokenExpr);
@@ -612,6 +609,8 @@ public static partial class CommandHandlerDelegateFactory
         public abstract MethodInfo GetRequiredServiceMethod { get; }
 
         public abstract MethodInfo GetRequiredKeyedServiceMethod { get; }
+
+        public abstract MethodInfo CommandResultExecute { get; }
     }
 
     private sealed class Generic<T>
@@ -640,6 +639,9 @@ public static partial class CommandHandlerDelegateFactory
 
         public override MethodInfo GetRequiredKeyedServiceMethod { get; } = GetMethodInfo<Func<IServiceProvider, object, T>>(
             static (sp, key) => sp.GetRequiredKeyedService<T>(key));
+
+        public override MethodInfo CommandResultExecute { get; } = GetMethodInfo<Func<Task<T>, CommandInvocationContext, CancellationToken, Task>>(
+            static (commandResult, invocationContext, cancellationToken) => Handle.HandleCommandResult(commandResult, invocationContext, cancellationToken));
     }
 
     private static partial class Check
@@ -663,10 +665,10 @@ public static partial class CommandHandlerDelegateFactory
 
     private static partial class Handle
     {
-        public static async Task HandleCommandResult(Task<ICommandResult> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+        public static async Task HandleCommandResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
         {
             var result = await commandResult;
-            await result.Execute(invocationContext, cancellationToken);
+            await ((ICommandResult)result!).Execute(invocationContext, cancellationToken);
         }
 
         public static async Task HandleHandlerResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)

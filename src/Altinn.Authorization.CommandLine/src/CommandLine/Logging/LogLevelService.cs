@@ -136,7 +136,7 @@ internal sealed class LogLevelService
 
     private void FireChangeToken()
     {
-        CancellationTokenSource? tcs = Interlocked.Exchange(ref _cancellationTokenSource, null);
+        using CancellationTokenSource? tcs = Interlocked.Exchange(ref _cancellationTokenSource, null);
         tcs?.Cancel();
     }
 
