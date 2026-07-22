@@ -9,7 +9,7 @@ namespace Altinn.Swashbuckle.XmlDoc;
 /// <summary>
 /// Default implementation of <see cref="IXmlDocProvider"/>.
 /// </summary>
-public class DefaultXmlDocProvider
+internal sealed class DefaultXmlDocProvider
     : IXmlDocProvider
 {
     private readonly ConcurrentDictionary<Assembly, IReadOnlyDictionary<string, XPathNavigator>?> _cache = new();
