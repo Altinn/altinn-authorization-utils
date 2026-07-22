@@ -1,0 +1,5 @@
+{
+    "deps": [
+        "pkg:Altinn.Authorization.CommandLine"
+    ]
+}
