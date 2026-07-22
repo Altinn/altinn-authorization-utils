@@ -15,7 +15,7 @@
     </When>
     <When Condition=" '$(TargetFramework)' == 'net9.0' ">
       <ItemGroup>
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.18" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
         <PackageVersion Include="System.Security.Cryptography.Xml" Version="9.0.18" />
       </ItemGroup>
     </When>
