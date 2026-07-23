@@ -13,14 +13,17 @@ public sealed class CommandHandlerDelegateResult
     /// <param name="commandHandlerDelegate">See <see cref="Delegate"/>.</param>
     /// <param name="options">See <see cref="Options"/>.</param>
     /// <param name="arguments">See <see cref="Arguments"/>.</param>
+    /// <param name="metadata">See <see cref="Metadata"/>.</param>
     public CommandHandlerDelegateResult(
         CommandHandlerDelegate commandHandlerDelegate,
         IReadOnlyList<Option> options,
-        IReadOnlyList<Argument> arguments)
+        IReadOnlyList<Argument> arguments,
+        IReadOnlyList<object> metadata)
     {
         Delegate = commandHandlerDelegate;
         Options = options;
         Arguments = arguments;
+        Metadata = metadata;
     }
 
     /// <summary>
@@ -37,4 +40,9 @@ public sealed class CommandHandlerDelegateResult
     /// Gets the list of <see cref="Argument"/> instances that were created by the factory for the command handler.
     /// </summary>
     public IReadOnlyList<Argument> Arguments { get; }
+
+    /// <summary>
+    /// Gets the list of metadata objects that were created by the factory for the command handler.
+    /// </summary>
+    public IReadOnlyList<object> Metadata { get; }
 }

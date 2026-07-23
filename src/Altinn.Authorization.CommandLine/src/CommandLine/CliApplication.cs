@@ -169,6 +169,10 @@ public sealed class CliApplication
         => _rootBuilder.Middleware;
 
     /// <inheritdoc/>
+    public IList<object> Metadata
+        => _rootBuilder.Metadata;
+
+    /// <inheritdoc/>
     CommandHandlerDelegate? ICommandBuilder.CommandHandler
     {
         get => _rootBuilder.CommandHandler;

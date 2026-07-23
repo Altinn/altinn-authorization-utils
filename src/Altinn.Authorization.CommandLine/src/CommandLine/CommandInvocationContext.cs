@@ -7,11 +7,13 @@ namespace Altinn.Authorization.CommandLine;
 /// Represents the context of a command invocation, including the parse result, service provider, console, and cancellation token.
 /// </summary>
 public sealed class CommandInvocationContext
+    : CommandContext
 {
     internal CommandInvocationContext(
         ParseResult parseResult,
         IServiceProvider serviceProvider,
         IConsole console)
+        : base(parseResult.CommandResult.Command)
     {
         ParseResult = parseResult;
         ServiceProvider = serviceProvider;

@@ -44,6 +44,11 @@ public interface ICommandBuilder
     public IList<CommandHandlerMiddlewareDelegate> Middleware { get; }
 
     /// <summary>
+    /// Gets the command metadata.
+    /// </summary>
+    public IList<object> Metadata { get; }
+
+    /// <summary>
     /// Gets or sets the <see cref="CommandHandlerDelegate"/> invoked by this command.
     /// </summary>
     public CommandHandlerDelegate? CommandHandler { get; set; }
