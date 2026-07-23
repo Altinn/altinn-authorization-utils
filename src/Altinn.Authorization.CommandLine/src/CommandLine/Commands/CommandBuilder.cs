@@ -9,6 +9,7 @@ internal sealed class CommandBuilder
 {
     private readonly CliApplication _application;
     private readonly Command _command;
+    private readonly CommandExtensions _extensions;
     private readonly ConventionsCollection _conventions;
     private readonly List<CommandHandlerMiddlewareDelegate> _middleware = new();
 
@@ -33,6 +34,7 @@ internal sealed class CommandBuilder
 
         _application = application;
         _command = command;
+        _extensions = CommandExtensions.For(command);
         _conventions = conventions;
 
         application.Add(this);
@@ -58,6 +60,9 @@ internal sealed class CommandBuilder
 
     public IList<CommandHandlerMiddlewareDelegate> Middleware
         => _middleware;
+
+    public IList<object> Metadata
+        => _extensions.Metadata;
 
     public CommandHandlerDelegate? CommandHandler { get; set; }
 

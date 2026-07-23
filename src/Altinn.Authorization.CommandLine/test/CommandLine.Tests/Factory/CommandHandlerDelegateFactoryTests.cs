@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml.XPath;
+using Altinn.Authorization.CommandLine.Commands;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Results;
@@ -205,7 +206,7 @@ public class CommandHandlerDelegateFactoryTests
         handler.ShouldBeSameAs(resolver);
 
         using var services = CreateServices();
-        await handler!.HandleResult("value", CreateContext(new(static (_, _) => Task.CompletedTask, [], []), services), TestContext.Current.CancellationToken);
+        await handler!.HandleResult("value", CreateContext(new(static (_, _) => Task.CompletedTask, [], [], []), services), TestContext.Current.CancellationToken);
 
         sink.StringResults.ShouldBe(["value"]);
         ((ICommandResultHandlerResolver)resolver).TryResolve(typeof(int), out _).ShouldBeFalse();
@@ -341,6 +342,12 @@ public class CommandHandlerDelegateFactoryTests
         foreach (var option in result.Options)
         {
             command.Options.Add(option);
+        }
+
+        var commandMetadata = CommandExtensions.For(command).Metadata;
+        foreach (var metadata in result.Metadata)
+        {
+            commandMetadata.Add(metadata);
         }
 
         return new CommandInvocationContext(

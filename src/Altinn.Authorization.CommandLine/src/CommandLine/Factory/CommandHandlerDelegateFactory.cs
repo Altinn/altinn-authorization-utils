@@ -79,8 +79,9 @@ public static partial class CommandHandlerDelegateFactory
 
         return new(
             finalCommandHandlerDelegate,
-            [.. factoryContext.Options],
-            [.. factoryContext.Arguments]);
+            factoryContext.Options,
+            factoryContext.Arguments,
+            factoryContext.Metadata);
     }
 
     /// <summary>
@@ -126,8 +127,9 @@ public static partial class CommandHandlerDelegateFactory
 
         return new(
             finalCommandHandlerDelegate,
-            [.. factoryContext.Options],
-            [.. factoryContext.Arguments]);
+            factoryContext.Options,
+            factoryContext.Arguments,
+            factoryContext.Metadata);
     }
 
     private static Lazy<Func<object?, CommandInvocationContext, CancellationToken, Task>> CreateTargetableInvocationDelegate(
@@ -158,6 +160,7 @@ public static partial class CommandHandlerDelegateFactory
 
     private static Expression HandleCommandResult(Expression commandResultExpr, Type resultType, CommandHandlerDelegateFactoryContext factoryContext)
     {
+        factoryContext.Metadata.Add(new ResultTypeMetadata(resultType));
         if (resultType == typeof(void))
         {
             return commandResultExpr;
@@ -172,11 +175,12 @@ public static partial class CommandHandlerDelegateFactory
                 CancellationTokenExpr);
         }
 
-        if (!factoryContext.ResultHandler.TryResolve(resultType, out _))
+        if (!factoryContext.ResultHandler.TryResolve(resultType, out var handler))
         {
             ThrowHelper.ThrowInvalidOperationException($"The return type '{TypeNameHelper.GetTypeDisplayName(resultType, fullName: false)}' is not supported. The return type must be 'void', implement '{TypeNameHelper.GetTypeDisplayName(typeof(ICommandResult), fullName: false)}', or have a registered handler resolver implementing '{TypeNameHelper.GetTypeDisplayName(typeof(ICommandResultHandlerResolver), fullName: false)}'.");
         }
 
+        factoryContext.Metadata.Add(new ResultHandlerMetadata(handler));
         return Expression.Call(
             Generic.ForType(resultType).HandleResultMethod,
             commandResultExpr,
@@ -673,11 +677,8 @@ public static partial class CommandHandlerDelegateFactory
         public static async Task HandleHandlerResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
         {
             var result = await commandResult;
-            var resultHandler = invocationContext.ServiceProvider.GetRequiredService<CommandResultHandler>();
-            if (!resultHandler.TryResolve(typeof(T), out var handler))
-            {
-                ThrowHelper.ThrowInvalidOperationException($"The return type '{TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: false)}' was not resolved during execution, but was resolved during command building.");
-            }
+            var handler = invocationContext.Metadata.OfType<ResultHandlerMetadata>().SingleOrDefault()?.Handler
+                ?? ThrowHelper.ThrowInvalidOperationException<ICommandResultHandler>($"The command {invocationContext.Command.Name} did not have a {nameof(ResultHandlerMetadata)} registered in its metadata.");
 
             await handler.HandleResult(result, invocationContext, cancellationToken);
         }

@@ -16,6 +16,7 @@ internal sealed class CommandHandlerDelegateFactoryContext
     public required IServiceProviderIsService? ServiceProviderIsService { get; init; }
     public List<Option> Options { get; } = new List<Option>();
     public List<Argument> Arguments { get; } = new List<Argument>();
+    public List<object> Metadata { get; } = new List<object>();
 
     // Temporary State
     public List<ParameterExpression> ExtraLocals { get; } = new();

@@ -86,6 +86,11 @@ public static class CliApplicationExtensions
                 builder.Arguments.Add(argument);
             }
 
+            foreach (var metadata in result.Metadata)
+            {
+                builder.Metadata.Add(metadata);
+            }
+
             builder.CommandHandler = result.Delegate;
         }
 
