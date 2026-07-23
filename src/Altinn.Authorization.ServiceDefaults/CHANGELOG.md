@@ -1,5 +1,28 @@
 # Changelog
 
+## [6.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.5.0...Altinn.Authorization.ServiceDefaults-v6.0.0) (2026-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* removes net9 support
+* Overloads for creating problem instances (and derivatives) have been consolidated to use optional parameters. This should mostly be source-compatible, but binary breaking.
+* `AddDefaultAltinnMiddleware` no longer uses a error-path. Errors are instead handled directly in `AddAltinnServiceDefaults`/`AltinnHost.CreateWebApplicationBuilder`
+* Removes support for .NET 8 for all packages that still supported it
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580))
+
+### Features
+
+* add optional source to problems ([#618](https://github.com/Altinn/altinn-authorization-utils/issues/618)) ([645f36e](https://github.com/Altinn/altinn-authorization-utils/commit/645f36e19fa5c48473b428166f08c8aa0f486d43))
+* improve error handling using Altinn ProblemDetails ([#616](https://github.com/Altinn/altinn-authorization-utils/issues/616)) ([7b5da79](https://github.com/Altinn/altinn-authorization-utils/commit/7b5da79ea53ad47b3412a5975af437e5c3b6c6e3))
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580)) ([db7e598](https://github.com/Altinn/altinn-authorization-utils/commit/db7e598365a202cca70d1981f1175263786de8d3))
+
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#589](https://github.com/Altinn/altinn-authorization-utils/issues/589)) ([82dc3c7](https://github.com/Altinn/altinn-authorization-utils/commit/82dc3c70b3a878a90ef14576f348b7909b132d22))
+* drop net9 support ([#628](https://github.com/Altinn/altinn-authorization-utils/issues/628)) ([843ad55](https://github.com/Altinn/altinn-authorization-utils/commit/843ad55d842eaeea662f4b7b370949a3b8ca69ab))
+
 ## [5.5.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.4.0...Altinn.Authorization.ServiceDefaults-v5.5.0) (2026-05-22)
 
 
