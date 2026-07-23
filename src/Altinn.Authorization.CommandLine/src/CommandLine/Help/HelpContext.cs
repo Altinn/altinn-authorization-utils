@@ -1,4 +1,6 @@
 using System.CommandLine;
+using System.CommandLine.Parsing;
+using CommunityToolkit.Diagnostics;
 using Spectre.Console;
 
 namespace Altinn.Authorization.CommandLine.Help;
@@ -9,16 +11,20 @@ namespace Altinn.Authorization.CommandLine.Help;
 public class HelpContext
 {
     /// <param name="helpBuilder">The current help builder.</param>
-    /// <param name="command">The command for which help is being formatted.</param>
+    /// <param name="commandResult">The command result for which help is being formatted.</param>
     /// <param name="profile">The console profile.</param>
     public HelpContext(
         IHelpBuilder helpBuilder,
-        Command command,
+        CommandResult commandResult,
         Profile profile)
     {
-        HelpBuilder = helpBuilder ?? throw new ArgumentNullException(nameof(helpBuilder));
-        Command = command ?? throw new ArgumentNullException(nameof(command));
-        Profile = profile ?? throw new ArgumentNullException(nameof(profile));
+        Guard.IsNotNull(helpBuilder);
+        Guard.IsNotNull(commandResult);
+        Guard.IsNotNull(profile);
+
+        HelpBuilder = helpBuilder;
+        CommandResult = commandResult;
+        Profile = profile;
     }
 
     /// <summary>
@@ -27,9 +33,14 @@ public class HelpContext
     public IHelpBuilder HelpBuilder { get; }
 
     /// <summary>
+    /// The command result for which help is being formatted.
+    /// </summary>
+    public CommandResult CommandResult { get; }
+
+    /// <summary>
     /// The command for which help is being formatted.
     /// </summary>
-    public Command Command { get; }
+    public Command Command => CommandResult.Command;
 
     /// <summary>
     /// A text writer to write output to.

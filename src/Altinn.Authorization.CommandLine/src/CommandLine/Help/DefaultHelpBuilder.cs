@@ -2,6 +2,7 @@ using System.Collections;
 using System.CommandLine;
 using System.CommandLine.Completions;
 using System.CommandLine.Help;
+using System.CommandLine.Parsing;
 using System.Diagnostics;
 using Altinn.Authorization.CommandLine.Utils;
 using CommunityToolkit.Diagnostics;
@@ -79,7 +80,7 @@ public class DefaultHelpBuilder
     /// <returns>The title section as an <see cref="IRenderable"/> or null if not applicable.</returns>
     protected virtual IRenderable? BuildTitleSection(HelpContext context)
     {
-        RootCommand? rootCmd = context.Command.ParentCommands(includeSelf: true)
+        RootCommand? rootCmd = context.CommandResult.InvocationPath()
             .OfType<RootCommand>()
             .FirstOrDefault();
 
@@ -111,7 +112,7 @@ public class DefaultHelpBuilder
     /// <returns>The command usage section as an <see cref="IRenderable"/> or null if not applicable.</returns>
     protected virtual IRenderable? BuildCommandUsageSection(HelpContext context)
     {
-        return Section.Optional("USAGE", GetUsage(context.Command));
+        return Section.Optional("USAGE", GetUsage(context.CommandResult));
     }
 
     /// <summary>
@@ -121,7 +122,7 @@ public class DefaultHelpBuilder
     /// <returns>The command arguments section as an <see cref="IRenderable"/> or null if not applicable.</returns>
     protected virtual IRenderable? BuildCommandArgumentsSection(HelpContext context)
     {
-        return Section.Optional("ARGUMENTS", GetArguments(context.Command));
+        return Section.Optional("ARGUMENTS", GetArguments(context.CommandResult));
     }
 
     /// <summary>
@@ -157,12 +158,12 @@ public class DefaultHelpBuilder
     /// <summary>
     /// Gets the usage information for the specified command.
     /// </summary>
-    /// <param name="command">The command.</param>
+    /// <param name="commandResult">The command result.</param>
     /// <returns>The usage information as an <see cref="IRenderable"/> or null if not applicable.</returns>
-    protected virtual IRenderable? GetUsage(Command command)
+    protected virtual IRenderable? GetUsage(CommandResult commandResult)
     {
         Paragraph usage = new();
-        var parts = GetUsageParts(command);
+        var parts = GetUsageParts(commandResult);
 
         if (!parts.MoveNext())
         {
@@ -178,12 +179,12 @@ public class DefaultHelpBuilder
 
         return usage;
 
-        static IEnumerator<(string Text, Style? Style)> GetUsageParts(Command command)
+        static IEnumerator<(string Text, Style? Style)> GetUsageParts(CommandResult commandResult)
         {
             bool displayOptionTitle = false;
 
             IEnumerable<Command> parentCommands =
-                command.ParentCommands(includeSelf: true).Reverse();
+                commandResult.InvocationPath().Reverse();
 
             var first = true;
             foreach (var parentCommand in parentCommands)
@@ -213,6 +214,7 @@ public class DefaultHelpBuilder
                 }
             }
 
+            var command = commandResult.Command;
             var hasCommandWithHelp = command.Subcommands.Any(x => !x.Hidden);
 
             if (hasCommandWithHelp)
@@ -269,11 +271,11 @@ public class DefaultHelpBuilder
     /// <summary>
     /// Gets the arguments for the specified command, including those of its parent commands.
     /// </summary>
-    /// <param name="command">The command for which to get arguments.</param>
+    /// <param name="commandResult">The command for which to get arguments.</param>
     /// <returns>An IRenderable representing the arguments, or null if there are none.</returns>
-    protected virtual IRenderable? GetArguments(Command command)
+    protected virtual IRenderable? GetArguments(CommandResult commandResult)
     {
-        var arguments = command.ParentCommands(includeSelf: true)
+        var arguments = commandResult.InvocationPath()
             .SelectMany(x => x.Arguments.Where(arg => !arg.Hidden))
             .DistinctBy(arg => arg.Name)
             .ToList();

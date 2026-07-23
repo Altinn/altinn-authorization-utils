@@ -22,7 +22,7 @@ public sealed class ExtendedHelpAction(IServiceScopeFactory scopeFactory)
         var builder = services.GetRequiredService<IHelpBuilder>();
 
         var output = parseResult.Errors.Count > 0 ? console.StdErr : console.StdOut;
-        var helpContext = new HelpContext(builder, parseResult.CommandResult.Command, output.Profile);
+        var helpContext = new HelpContext(builder, parseResult.CommandResult, output.Profile);
 
         var help = builder.Build(helpContext);
         output.Write(help);

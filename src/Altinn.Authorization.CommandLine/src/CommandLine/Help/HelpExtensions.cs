@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.CommandLine.Parsing;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Diagnostics;
@@ -35,21 +36,20 @@ public static class HelpExtensions
         }
     }
 
-    extension(Command command)
+    extension(CommandResult commandResult)
     {
         /// <summary>
         /// Gets the parent commands of the specified command, optionally including the command itself.
         /// </summary>
-        /// <param name="includeSelf">Whether to include the command itself in the returned sequence.</param>
         /// <returns>An enumerable of parent commands.</returns>
-        internal IEnumerable<Command> ParentCommands(bool includeSelf = false)
+        internal IEnumerable<Command> InvocationPath()
         {
-            if (includeSelf)
-                yield return command;
-
-            foreach (var parent in command.Parents.OfType<Command>())
+            for (SymbolResult? current = commandResult; current is not null; current = current.Parent)
             {
-                yield return parent;
+                if (current is CommandResult command)
+                {
+                    yield return command.Command;
+                }
             }
         }
     }
