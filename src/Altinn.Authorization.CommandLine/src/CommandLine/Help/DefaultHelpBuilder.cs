@@ -545,13 +545,13 @@ public class DefaultHelpBuilder
         foreach (var argument in symbol.GetParameters().Where(static arg => !arg.Hidden))
         {
             if (argument.TryGetHelpCustomization(out var customization)
-                && customization.DisplayArgument?.Hidden is true)
+                && customization.Argument?.ShouldDisplay is false)
             {
                 continue;
             }
 
             IEnumerator<TextSegment> argumentUsage;
-            if (customization?.DisplayArgument?.CustomDisplay is { } customDisplay)
+            if (customization?.Argument?.CustomDisplay is { } customDisplay)
             {
                 argumentUsage = customDisplay().GetEnumerator();
             }

@@ -10,9 +10,9 @@ public sealed class HelpCustomization
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the argument should be displayed in the help text.
+    /// Gets or sets customization for displaying the argument in the help text.
     /// </summary>
-    public HelpDisplayArgumentCustomization? DisplayArgument { get; set; }
+    public HelpDisplayArgumentCustomization? Argument { get; set; }
 
     /// <summary>
     /// Gets or sets a function that returns the default value of the argument to be displayed in the help text.

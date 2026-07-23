@@ -45,7 +45,7 @@ internal sealed class LogLevelService
             Recursive = true,
             HelpCustomization =
             {
-                DisplayArgument = HelpDisplayArgumentCustomization.Create([
+                Argument = HelpDisplayArgumentCustomization.Create([
                     "q[uiet]",
                     "m[inimal]",
                     "n[ormal]",
@@ -58,23 +58,23 @@ internal sealed class LogLevelService
 
         _verboseOption = new Option<byte>("--verbose", "-v")
         {
-            Description = "Increment the log verbosity - mutually exclusive with --verbosity and --quiet",
+            Description = "Increment the log verbosity (repeatable up to 2 times) - mutually exclusive with --verbosity and --quiet",
             Arity = new ArgumentArity(0, 2),
             Recursive = true,
             HelpCustomization =
             {
-                DisplayArgument = false,
+                Argument = HelpDisplayArgumentCustomization.Hidden,
             },
         };
 
         _quietOption = new Option<byte>("--quiet", "-q")
         {
-            Description = "Decrement the log verbosity - mutually exclusive with --verbosity and --verbose",
+            Description = "Decrement the log verbosity (repeatable up to 3 times) - mutually exclusive with --verbosity and --verbose",
             Arity = new ArgumentArity(0, 3),
             Recursive = true,
             HelpCustomization =
             {
-                DisplayArgument = false,
+                Argument = HelpDisplayArgumentCustomization.Hidden,
             },
         };
 
