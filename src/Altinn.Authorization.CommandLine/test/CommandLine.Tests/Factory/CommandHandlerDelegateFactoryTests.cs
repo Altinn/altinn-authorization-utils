@@ -205,7 +205,7 @@ public class CommandHandlerDelegateFactoryTests
         handler.ShouldBeSameAs(resolver);
 
         using var services = CreateServices();
-        await handler.HandleResult("value", CreateContext(new(static (_, _) => Task.CompletedTask, [], []), services), TestContext.Current.CancellationToken);
+        await handler!.HandleResult("value", CreateContext(new(static (_, _) => Task.CompletedTask, [], []), services), TestContext.Current.CancellationToken);
 
         sink.StringResults.ShouldBe(["value"]);
         ((ICommandResultHandlerResolver)resolver).TryResolve(typeof(int), out _).ShouldBeFalse();
@@ -384,6 +384,7 @@ public class CommandHandlerDelegateFactoryTests
 
     private sealed class CaptureResultHandler<T>(ResultSink sink)
         : CommandResultHandler<T>
+        where T : notnull
     {
         protected override Task HandleResult(T result, CommandInvocationContext context, CancellationToken cancellationToken = default)
         {
