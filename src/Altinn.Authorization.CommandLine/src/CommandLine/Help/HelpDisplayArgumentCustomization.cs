@@ -8,8 +8,10 @@ namespace Altinn.Authorization.CommandLine.Help;
 /// </summary>
 public sealed class HelpDisplayArgumentCustomization
 {
-    private static readonly HelpDisplayArgumentCustomization DisplayDefault = new(hidden: false, customDisplay: null);
-    private static readonly HelpDisplayArgumentCustomization DisplayHidden = new(hidden: true, customDisplay: null);
+    /// <summary>
+    /// Gets a <see cref="HelpDisplayArgumentCustomization"/> instance that indicates the argument should be hidden in the help text.
+    /// </summary>
+    public static readonly HelpDisplayArgumentCustomization Hidden = new(shouldDisplay: false, customDisplay: null);
 
     /// <summary>
     /// Creates a new instance of <see cref="HelpDisplayArgumentCustomization"/> with the specified hidden state and custom display function.
@@ -34,34 +36,27 @@ public sealed class HelpDisplayArgumentCustomization
         items.Add(">");
 
         var immutable = items.ToImmutable();
-        return new(hidden: false, customDisplay: () => immutable);
+        return new(shouldDisplay: false, customDisplay: () => immutable);
     }
 
-    private readonly bool _hidden;
+    private readonly bool _shouldDisplay;
     private readonly Func<IEnumerable<TextSegment>>? _customDisplay;
 
-    private HelpDisplayArgumentCustomization(bool hidden, Func<IEnumerable<TextSegment>>? customDisplay)
+    private HelpDisplayArgumentCustomization(bool shouldDisplay, Func<IEnumerable<TextSegment>>? customDisplay)
     {
-        _hidden = hidden;
+        _shouldDisplay = shouldDisplay;
         _customDisplay = customDisplay;
     }
 
     /// <summary>
     /// Whether the argument should be hidden in the help text.
     /// </summary>
-    public bool Hidden
-        => _hidden;
+    public bool ShouldDisplay
+        => _shouldDisplay;
 
     /// <summary>
     /// Gets a function that returns a custom display for the argument in the help text.
     /// </summary>
     public Func<IEnumerable<TextSegment>>? CustomDisplay
         => _customDisplay;
-
-    /// <summary>
-    /// Creates an implicit conversion from a boolean to a <see cref="HelpDisplayArgumentCustomization"/>.
-    /// </summary>
-    /// <param name="display">Whether or not the argument should be hidden in the help text.</param>
-    public static implicit operator HelpDisplayArgumentCustomization(bool display)
-        => !display ? DisplayHidden : DisplayDefault;
 }

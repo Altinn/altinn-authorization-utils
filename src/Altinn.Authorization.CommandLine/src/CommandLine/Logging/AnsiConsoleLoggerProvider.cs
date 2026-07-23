@@ -61,6 +61,11 @@ internal sealed class AnsiConsoleLoggerProvider
             ThrowHelper.ThrowArgumentException("At least one formatter must be provided.", nameof(formatters));
         }
 
+        if (!cd.ContainsKey(ConsoleFormatterNames.Simple))
+        {
+            ThrowHelper.ThrowArgumentException($"A formatter with the name '{ConsoleFormatterNames.Simple}' must be provided.", nameof(formatters));
+        }
+
         _formatters = cd;
     }
 

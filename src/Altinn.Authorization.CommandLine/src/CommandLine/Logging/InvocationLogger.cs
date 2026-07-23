@@ -44,31 +44,12 @@ internal sealed partial class InvocationLogger(ILogger<InvocationLogger> logger,
         }
     }
 
-    private readonly struct CommandScope(string commandName)
-        : IReadOnlyList<KeyValuePair<string, object>>
-    {
-        public int Count => 1;
-
-        public KeyValuePair<string, object> this[int index] => index switch
-        {
-            0 => new("command.name", commandName),
-            _ => throw new IndexOutOfRangeException(),
-        };
-
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            yield return new("command.name", commandName);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-    }
-
     private static partial class Log
     {
         [LoggerMessage(EventId = 1, Level = LogLevel.Debug, Message = "Invoking command '{CommandName}'")]
         public static partial void InvokingCommand(ILogger logger, string commandName);
 
-        [LoggerMessage(EventId = 2, Level = LogLevel.Debug, Message = "Command '{CommandName}' invoked in {Duration}ms with return code {ReturnCode}")]
+        [LoggerMessage(EventId = 2, Level = LogLevel.Debug, Message = "Command '{CommandName}' invoked in {Duration} with return code {ReturnCode}")]
         public static partial void CommandInvoked(ILogger logger, string commandName, TimeSpan duration, int returnCode);
 
         [LoggerMessage(EventId = 3, Level = LogLevel.Trace, Message = "{TokenType} token: {TokenValue}")]
