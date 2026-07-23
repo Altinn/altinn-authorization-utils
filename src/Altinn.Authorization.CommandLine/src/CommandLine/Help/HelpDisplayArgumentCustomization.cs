@@ -36,7 +36,7 @@ public sealed class HelpDisplayArgumentCustomization
         items.Add(">");
 
         var immutable = items.ToImmutable();
-        return new(shouldDisplay: false, customDisplay: () => immutable);
+        return new(shouldDisplay: true, customDisplay: () => immutable);
     }
 
     private readonly bool _shouldDisplay;

@@ -132,7 +132,7 @@ public class DefaultHelpBuilder
     /// <returns>The options section as an <see cref="IRenderable"/> or null if not applicable.</returns>
     protected virtual IRenderable? BuildOptionsSection(HelpContext context)
     {
-        return Section.Optional("OPTIONS", GetOptions(context.Command, target: OptionsTarget.InstanceOptions));
+        return Section.Optional("OPTIONS", GetOptions(context.CommandResult, target: OptionsTarget.InstanceOptions));
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public class DefaultHelpBuilder
     /// <returns>The options section as an <see cref="IRenderable"/> or null if not applicable.</returns>
     protected virtual IRenderable? BuildAdditionalOptionsSection(HelpContext context)
     {
-        return Section.Optional("ADDITIONAL OPTIONS", GetOptions(context.Command, target: OptionsTarget.RecursiveOptions));
+        return Section.Optional("ADDITIONAL OPTIONS", GetOptions(context.CommandResult, target: OptionsTarget.RecursiveOptions));
     }
 
     /// <summary>
@@ -319,11 +319,13 @@ public class DefaultHelpBuilder
     /// <summary>
     /// Gets the subcommands for the specified command.
     /// </summary>
-    /// <param name="command">The command for which to get subcommands.</param>
+    /// <param name="commandResult">The command result for which to get subcommands.</param>
     /// <param name="target">Specifies whether to include subcommands from the current command, parent commands, or both.</param>
     /// <returns>An IRenderable representing the subcommands, or null if there are none.</returns>
-    protected virtual IRenderable? GetOptions(Command command, OptionsTarget target)
+    protected virtual IRenderable? GetOptions(CommandResult commandResult, OptionsTarget target)
     {
+        var command = commandResult.Command;
+
         List<Option> options = new();
         if (target.HasFlag(OptionsTarget.InstanceOptions))
         {
@@ -343,32 +345,20 @@ public class DefaultHelpBuilder
                 .Where(static o => !o.Hidden && o.Recursive && o is not HelpOption)
                 .OrderBy(static o => o is VersionOption));
 
-            Command? current = command;
-            while (current is not null)
+            foreach (var current in commandResult.InvocationPath())
             {
-                Command? parentCommand = null;
-                foreach (Symbol parent in current.Parents)
+                if (current.Options.Any())
                 {
-                    if ((parentCommand = parent as Command) is not null)
+                    foreach (var option in current.Options)
                     {
-                        if (parentCommand.Options.Any())
+                        // global help aliases may be duplicated, we just ignore them
+                        if (option is { Recursive: true, Hidden: false } and not HelpOption
+                            && !options.Any(o => o.Name == option.Name))
                         {
-                            foreach (var option in parentCommand.Options)
-                            {
-                                // global help aliases may be duplicated, we just ignore them
-                                if (option is { Recursive: true, Hidden: false } and not HelpOption
-                                    && !options.Any(o => o.Name == option.Name))
-                                {
-                                    options.Add(option);
-                                }
-                            }
+                            options.Add(option);
                         }
-
-                        break;
                     }
                 }
-
-                current = parentCommand;
             }
         }
 
