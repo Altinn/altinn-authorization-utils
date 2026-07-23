@@ -1,5 +1,24 @@
 # Changelog
 
+## [4.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v3.1.0...Altinn.Swashbuckle-v4.0.0) (2026-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* removes net9 support
+* make DefaultXmlDocProvider internal ([#624](https://github.com/Altinn/altinn-authorization-utils/issues/624))
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580))
+
+### Features
+
+* update Swashbuckle to v10 ([#580](https://github.com/Altinn/altinn-authorization-utils/issues/580)) ([db7e598](https://github.com/Altinn/altinn-authorization-utils/commit/db7e598365a202cca70d1981f1175263786de8d3))
+
+
+### Miscellaneous Chores
+
+* drop net9 support ([#628](https://github.com/Altinn/altinn-authorization-utils/issues/628)) ([843ad55](https://github.com/Altinn/altinn-authorization-utils/commit/843ad55d842eaeea662f4b7b370949a3b8ca69ab))
+* make DefaultXmlDocProvider internal ([#624](https://github.com/Altinn/altinn-authorization-utils/issues/624)) ([838c1d4](https://github.com/Altinn/altinn-authorization-utils/commit/838c1d4266b825c5c1d9da3b78050d4ca6b3c99a))
+
 ## [3.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Swashbuckle-v3.0.0...Altinn.Swashbuckle-v3.1.0) (2025-12-02)
 
 
