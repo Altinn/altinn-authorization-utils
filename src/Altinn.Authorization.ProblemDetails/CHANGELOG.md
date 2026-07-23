@@ -1,5 +1,31 @@
 # Changelog
 
+## [6.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.4.0...Altinn.Authorization.ProblemDetails-v6.0.0) (2026-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* removes net9 support
+* Overloads for creating problem instances (and derivatives) have been consolidated to use optional parameters. This should mostly be source-compatible, but binary breaking.
+* remove ErrorCodes nested class from StdValidationErrors ([#597](https://github.com/Altinn/altinn-authorization-utils/issues/597))
+* Removes support for .NET 8 for all packages that still supported it
+
+### Features
+
+* add a std validation-error for "invalid value" ([#590](https://github.com/Altinn/altinn-authorization-utils/issues/590)) ([d85f49b](https://github.com/Altinn/altinn-authorization-utils/commit/d85f49b7d62daa5793d6fa64da3c5b893ba67de3))
+* add HttpProblemDescriptors for getting generic http problem details ([#598](https://github.com/Altinn/altinn-authorization-utils/issues/598)) ([be4ee0f](https://github.com/Altinn/altinn-authorization-utils/commit/be4ee0f26093114dce4d0016edfe6b170b18636d))
+* add IHasProblem interface for extracting problems from exceptions ([#611](https://github.com/Altinn/altinn-authorization-utils/issues/611)) ([8338866](https://github.com/Altinn/altinn-authorization-utils/commit/8338866f549fad9394d21208d44cb85e14d28a56))
+* add merge for problem-details builders ([#619](https://github.com/Altinn/altinn-authorization-utils/issues/619)) ([8114868](https://github.com/Altinn/altinn-authorization-utils/commit/811486896281666ed8d5a473bf5ae61671178063))
+* add optional source to problems ([#618](https://github.com/Altinn/altinn-authorization-utils/issues/618)) ([645f36e](https://github.com/Altinn/altinn-authorization-utils/commit/645f36e19fa5c48473b428166f08c8aa0f486d43))
+* mvc integration ([#609](https://github.com/Altinn/altinn-authorization-utils/issues/609)) ([dc924c9](https://github.com/Altinn/altinn-authorization-utils/commit/dc924c90f510dc69517603d0593855c58c0aa84d))
+
+
+### Miscellaneous Chores
+
+* drop .NET 8 support ([#589](https://github.com/Altinn/altinn-authorization-utils/issues/589)) ([82dc3c7](https://github.com/Altinn/altinn-authorization-utils/commit/82dc3c70b3a878a90ef14576f348b7909b132d22))
+* drop net9 support ([#628](https://github.com/Altinn/altinn-authorization-utils/issues/628)) ([843ad55](https://github.com/Altinn/altinn-authorization-utils/commit/843ad55d842eaeea662f4b7b370949a3b8ca69ab))
+* remove ErrorCodes nested class from StdValidationErrors ([#597](https://github.com/Altinn/altinn-authorization-utils/issues/597)) ([d845b0b](https://github.com/Altinn/altinn-authorization-utils/commit/d845b0b9417cf690ac6cb9f7fffaab08f7a89908))
+
 ## [5.4.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ProblemDetails-v5.3.0...Altinn.Authorization.ProblemDetails-v5.4.0) (2026-04-24)
 
 
