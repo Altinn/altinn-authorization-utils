@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v2.0.0...Altinn.Cli-v3.0.0) (2026-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* removes net9 support
+
+### Miscellaneous Chores
+
+* drop net9 support ([#628](https://github.com/Altinn/altinn-authorization-utils/issues/628)) ([843ad55](https://github.com/Altinn/altinn-authorization-utils/commit/843ad55d842eaeea662f4b7b370949a3b8ca69ab))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Cli-v1.3.0...Altinn.Cli-v2.0.0) (2025-07-31)
 
 
