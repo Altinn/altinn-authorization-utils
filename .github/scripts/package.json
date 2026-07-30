@@ -8,7 +8,7 @@
   "devDependencies": {
     "@octokit/action": "^8.0.4",
     "@types/node": "^26.1.1",
-    "chalk": "^5.6.2",
+    "chalk": "^6.0.0",
     "globby": "^16.2.2",
     "slugify": "^1.6.9",
     "tsx": "^4.23.1",
