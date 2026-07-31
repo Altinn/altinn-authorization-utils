@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace Altinn.Authorization.CommandLine.Formatting.Json;
 
 /// <summary>
-/// Options to configure JSON serialization settings.
+/// Options to configure JSON serialization settings for <see cref="JsonFormat"/>.
 /// </summary>
 public sealed class JsonFormatOptions
 {

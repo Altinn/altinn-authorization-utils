@@ -1,6 +1,7 @@
 using System.CommandLine;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Factory;
+using Altinn.Authorization.CommandLine.Formatting;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.CommandLine.Logging;
 using Altinn.Authorization.CommandLine.Results;
@@ -59,6 +60,13 @@ public sealed class CliApplicationBuilder
         // result handlers
         hostBuilder.Services.AddSingleton<CommandResultHandler>();
         hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, IntResultHandler>();
+        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, JsonResultHandler>();
+
+        // formatting
+        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, FormatResultResolver>();
+        hostBuilder.Services.AddSingleton(typeof(FormatResolver<>));
+        hostBuilder.Services.AddOutputFormat<RichFormat>();
+        hostBuilder.Services.AddOutputFormat<JsonFormat>();
 
         // console
         hostBuilder.Services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();
