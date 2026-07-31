@@ -181,6 +181,11 @@ public static partial class CommandHandlerDelegateFactory
         }
 
         factoryContext.Metadata.Add(new ResultHandlerMetadata(handler));
+        if (handler is IAdditionalOptionsMetadata additionalOptionsMetadata)
+        {
+            factoryContext.Options.AddRange(additionalOptionsMetadata.AdditionalOptions);
+        }
+
         return Expression.Call(
             Generic.ForType(resultType).HandleResultMethod,
             commandResultExpr,
@@ -671,16 +676,45 @@ public static partial class CommandHandlerDelegateFactory
         public static async Task HandleCommandResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
         {
             var result = await commandResult;
-            await ((ICommandResult)result!).Execute(invocationContext, cancellationToken);
+            try
+            {
+                await ((ICommandResult)result!).Execute(invocationContext, cancellationToken);
+            }
+            finally
+            {
+                if (result is IAsyncDisposable asyncDisposable)
+                {
+                    await asyncDisposable.DisposeAsync();
+                }
+                else if (result is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
         }
 
         public static async Task HandleHandlerResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
         {
             var result = await commandResult;
-            var handler = invocationContext.Metadata.OfType<ResultHandlerMetadata>().SingleOrDefault()?.Handler
-                ?? ThrowHelper.ThrowInvalidOperationException<ICommandResultHandler>($"The command {invocationContext.Command.Name} did not have a {nameof(ResultHandlerMetadata)} registered in its metadata.");
 
-            await handler.HandleResult(result, invocationContext, cancellationToken);
+            try
+            {
+                var handler = invocationContext.Metadata.OfType<ResultHandlerMetadata>().SingleOrDefault()?.Handler
+                    ?? ThrowHelper.ThrowInvalidOperationException<ICommandResultHandler>($"The command {invocationContext.Command.Name} did not have a {nameof(ResultHandlerMetadata)} registered in its metadata.");
+
+                await handler.HandleResult(result, invocationContext, cancellationToken);
+            }
+            finally
+            {
+                if (result is IAsyncDisposable asyncDisposable)
+                {
+                    await asyncDisposable.DisposeAsync();
+                }
+                else if (result is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
         }
     }
 }

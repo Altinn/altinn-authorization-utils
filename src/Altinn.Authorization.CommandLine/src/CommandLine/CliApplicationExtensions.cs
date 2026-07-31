@@ -2,7 +2,10 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Reflection;
 using Altinn.Authorization.CommandLine.Factory;
+using Altinn.Authorization.CommandLine.Formatting;
 using CommunityToolkit.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Altinn.Authorization.CommandLine;
 
@@ -114,5 +117,19 @@ public static class CliApplicationExtensions
         public ICommandConventionBuilder AddCommand<T>(string name, string description)
             where T : class
             => builder.AddCommand(name, description, b => b.SetHandler<T>());
+    }
+
+    extension(IServiceCollection services)
+    {
+        /// <summary>
+        /// Adds an output format to the service collection.
+        /// </summary>
+        /// <typeparam name="T">The output format type.</typeparam>
+        public void AddOutputFormat<T>()
+            where T : class, IFormat
+        {
+            services.TryAddSingleton<T>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IFormat, T>(s => s.GetRequiredService<T>()));
+        }
     }
 }
