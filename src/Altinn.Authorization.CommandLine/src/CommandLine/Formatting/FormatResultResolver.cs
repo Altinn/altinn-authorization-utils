@@ -127,25 +127,27 @@ internal sealed class FormatResultResolver
 
         public override async Task HandleResult(object value, CommandInvocationContext context, CancellationToken cancellationToken = default)
         {
-            var writer = new FormatWriter(context.Console, context.ServiceProvider);
+            var writer = new FormatWriter(context.Console, context.ApplicationServices);
             await _formatter.Format(value, _format, writer, cancellationToken);
         }
     }
 
     private sealed class CommandResultHandler
         : ICommandResultHandler
-        , IAdditionalOptionsMetadata
+        , ICommandResultBinder
     {
         private readonly ImmutableArray<ResolvedFormatter> _formatters;
         private readonly Option<ResolvedFormatter> _formatOption;
-
-        IEnumerable<Option> IAdditionalOptionsMetadata.AdditionalOptions
-            => [_formatOption];
 
         public CommandResultHandler(ImmutableArray<ResolvedFormatter> formatters, OptionFactory optionFactory)
         {
             _formatters = formatters;
             _formatOption = CreateFormatOption(formatters, optionFactory);
+        }
+
+        public void Bind(ICommandHandlerBinderContext context)
+        {
+            context.Add(_formatOption);
         }
 
         public Task HandleResult(object? result, CommandInvocationContext context, CancellationToken cancellationToken = default)

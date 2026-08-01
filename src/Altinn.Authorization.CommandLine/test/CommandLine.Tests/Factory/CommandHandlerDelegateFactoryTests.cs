@@ -310,7 +310,21 @@ public class CommandHandlerDelegateFactoryTests
         var exception = await Should.ThrowAsync<InvalidOperationException>(
             () => result.Delegate(context, TestContext.Current.CancellationToken));
 
-        exception.Message.ShouldContain("Required parameter 'string value' was not provided from argument.");
+        exception.Message.ShouldContain("Required argument 'string value' did not produce a non-null value.");
+    }
+
+    [Fact]
+    public async Task Invoke_WhenRequiredReferenceOptionBindsNull_Throws()
+    {
+        using var services = CreateServices();
+        Delegate handler = ([NullOption] string value) => { };
+        var result = CommandHandlerDelegateFactory.Create(handler, services);
+        var context = CreateContext(result, services);
+
+        var exception = await Should.ThrowAsync<InvalidOperationException>(
+            () => result.Delegate(context, TestContext.Current.CancellationToken));
+
+        exception.Message.ShouldContain("Required option 'string value' did not produce a non-null value.");
     }
 
     private static ServiceProvider CreateServices(Action<IServiceCollection>? configure = null)
@@ -322,6 +336,7 @@ public class CommandHandlerDelegateFactoryTests
         services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();
         services.AddSingleton<IConsole, CommandConsole>();
         services.AddSingleton<CommandResultHandler>();
+        services.AddSingleton<CommandHandlerParameterBinderResolver>();
         configure?.Invoke(services);
 
         return services.BuildServiceProvider(validateScopes: true);
@@ -488,6 +503,23 @@ public class CommandHandlerDelegateFactoryTests
             StrongBox<object?>? defaultValueBox)
         {
             return new Argument<string>(parameterName)
+            {
+                DefaultValueFactory = _ => null!,
+            };
+        }
+    }
+
+    private sealed class NullOptionAttribute
+        : Attribute
+        , IFromOptionMetadata
+    {
+        public Option CreateOption(
+            IServiceProvider serviceProvider,
+            Type parameterType,
+            string parameterName,
+            StrongBox<object?>? defaultValueBox)
+        {
+            return new Option<string>($"--{parameterName}")
             {
                 DefaultValueFactory = _ => null!,
             };
