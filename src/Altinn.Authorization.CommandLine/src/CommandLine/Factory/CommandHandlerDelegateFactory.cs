@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using System.CommandLine;
-using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine.Console;
+using Altinn.Authorization.CommandLine.Factory.Resolvers;
 using Altinn.Authorization.CommandLine.Results;
 using Altinn.Authorization.CommandLine.XmlDoc;
 using CommunityToolkit.Diagnostics;
@@ -18,24 +18,18 @@ namespace Altinn.Authorization.CommandLine.Factory;
 /// </summary>
 public static partial class CommandHandlerDelegateFactory
 {
-    private static readonly MethodInfo GetArgumentResultMethod = typeof(ParseResult).GetMethod(nameof(ParseResult.GetResult), [typeof(Argument)])!;
-    private static readonly MethodInfo GetOptionResultMethod = typeof(ParseResult).GetMethod(nameof(ParseResult.GetResult), [typeof(Option)])!;
-    private static readonly MethodInfo GetArgumentValueMethod = typeof(ArgumentResult).GetMethod(nameof(ArgumentResult.GetValueOrDefault))!;
-    private static readonly MethodInfo GetOptionValueMethod = typeof(OptionResult).GetMethod(nameof(OptionResult.GetValueOrDefault))!;
-
     private static readonly MethodInfo ValueTaskAsTaskMethod = typeof(ValueTask).GetMethod(nameof(ValueTask.AsTask))!;
-
-    private static readonly MethodInfo CheckSymbolResultIsNotNullMethod = GetMethodInfo<Action<SymbolResult?, string, string, string>>(
-        static (symbolResult, parameterType, parameterName, sourceValue) => Check.SymbolResultIsNotNull(symbolResult, parameterType, parameterName, sourceValue));
+    private static readonly MethodInfo ParameterResolverResolveMethod = typeof(ICommandHandlerParameterResolver).GetMethod(nameof(ICommandHandlerParameterResolver.ResolveParameterValue))!;
+    private static readonly MethodInfo HandleInvokeMethod = typeof(Handle).GetMethod(nameof(Handle.Invoke))!;
 
     private static readonly ParameterExpression TargetExpr = Expression.Parameter(typeof(object), "target");
     private static readonly ParameterExpression InvocationContextExpr = Expression.Parameter(typeof(CommandInvocationContext), "invocationContext");
     private static readonly ParameterExpression CancellationTokenExpr = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
 
-    private static readonly MemberExpression ParseResultExpr = Expression.Property(InvocationContextExpr, typeof(CommandInvocationContext).GetProperty(nameof(CommandInvocationContext.ParseResult))!);
-    private static readonly MemberExpression ServiceProviderExpr = Expression.Property(InvocationContextExpr, typeof(CommandInvocationContext).GetProperty(nameof(CommandInvocationContext.ServiceProvider))!);
-    private static readonly MemberExpression ConsoleExpr = Expression.Property(InvocationContextExpr, typeof(CommandInvocationContext).GetProperty(nameof(CommandInvocationContext.Console))!);
     private static readonly MemberExpression TaskCompletedTaskExpr = Expression.Property(null, typeof(Task).GetProperty(nameof(Task.CompletedTask))!);
+
+    private static readonly Expression EmptyObjectTaskArrayExpr = Expression.Call(
+        typeof(Array).GetMethod(nameof(Array.Empty), BindingFlags.Static | BindingFlags.Public)!.MakeGenericMethod(typeof(Task<object>)));
 
     private static MethodInfo GetMethodInfo<T>(Expression<T> expr)
     {
@@ -107,7 +101,7 @@ public static partial class CommandHandlerDelegateFactory
         var objectFactory = ActivatorUtilities.CreateFactory(handler, []);
         CommandHandlerDelegate finalCommandHandlerDelegate = async (invocationContext, cancellationToken) =>
         {
-            var target = objectFactory(invocationContext.ServiceProvider, []);
+            var target = objectFactory(invocationContext.ApplicationServices, []);
             try
             {
                 await targetableInvocationDelegate.Value.Invoke(target, invocationContext, cancellationToken);
@@ -138,24 +132,43 @@ public static partial class CommandHandlerDelegateFactory
         CommandHandlerDelegateFactoryContext factoryContext)
     {
         factoryContext.ArgumentExpressions ??= CreateArguments(methodInfo.GetParameters(), factoryContext);
-        var methodCall = CreateMethodCall(methodInfo, targetExpression, factoryContext.ArgumentExpressions);
+        var innerHandler = CreateInnerHandler(methodInfo, targetExpression, factoryContext);
+
+        var arrayExpression = factoryContext.ArgumentExpressions.Length > 0
+            ? Expression.NewArrayInit(typeof(Task<object?>), factoryContext.ArgumentExpressions)
+            : EmptyObjectTaskArrayExpr;
+
+        var body = Expression.Call(
+            HandleInvokeMethod,
+            TargetExpr,
+            arrayExpression,
+            innerHandler);
+
+        var lambda = Expression.Lambda<Func<object?, CommandInvocationContext, CancellationToken, Task>>(body, [TargetExpr, InvocationContextExpr, CancellationTokenExpr]);
+        return new(lambda.Compile);
+    }
+
+    private static Expression CreateInnerHandler(
+        MethodInfo methodInfo,
+        Expression? targetExpression,
+        CommandHandlerDelegateFactoryContext factoryContext)
+    {
+        var arrayParameter = Expression.Parameter(typeof(object[]), "args");
+        var args = new Expression[factoryContext.ArgumentExpressions!.Length];
+        for (var i = 0; i < factoryContext.ArgumentExpressions.Length; i++)
+        {
+            args[i] = Expression.Convert(
+                Expression.ArrayIndex(arrayParameter, Expression.Constant(i)),
+                factoryContext.ArgumentTypes[i]);
+        }
+
+        var methodCall = CreateMethodCall(methodInfo, targetExpression, args);
         var returnType = methodInfo.ReturnType;
 
         var commandResultExpr = ConvertToTask(methodCall, ref returnType);
         var handleResultExpr = HandleCommandResult(commandResultExpr, returnType, factoryContext);
 
-        var body = Expression.Block(
-            factoryContext.ExtraLocals,
-            [
-                .. factoryContext.ResultAssignments,
-                .. factoryContext.ResultCheckExpressions,
-                .. factoryContext.ParamAssignments,
-                .. factoryContext.ParamCheckExpressions,
-                handleResultExpr
-            ]);
-
-        var lambda = Expression.Lambda<Func<object?, CommandInvocationContext, CancellationToken, Task>>(body, [TargetExpr, InvocationContextExpr, CancellationTokenExpr]);
-        return new(lambda.Compile);
+        return Expression.Lambda<Func<object?, object?[], Task>>(handleResultExpr, TargetExpr, arrayParameter);
     }
 
     private static Expression HandleCommandResult(Expression commandResultExpr, Type resultType, CommandHandlerDelegateFactoryContext factoryContext)
@@ -181,9 +194,9 @@ public static partial class CommandHandlerDelegateFactory
         }
 
         factoryContext.Metadata.Add(new ResultHandlerMetadata(handler));
-        if (handler is IAdditionalOptionsMetadata additionalOptionsMetadata)
+        if (handler is ICommandResultBinder resultBinder)
         {
-            factoryContext.Options.AddRange(additionalOptionsMetadata.AdditionalOptions);
+            resultBinder.Bind(new BinderBuilder(factoryContext));
         }
 
         return Expression.Call(
@@ -258,14 +271,12 @@ public static partial class CommandHandlerDelegateFactory
 
         var args = new Expression[parameters.Length];
         factoryContext.ArgumentTypes = new Type[parameters.Length];
-        factoryContext.BoxedArgs = new Expression[parameters.Length];
         factoryContext.Parameters = new List<ParameterInfo>(parameters);
 
         for (var i = 0; i < parameters.Length; i++)
         {
             args[i] = CreateArgument(parameters[i], factoryContext);
             factoryContext.ArgumentTypes[i] = parameters[i].ParameterType;
-            factoryContext.BoxedArgs[i] = Expression.Convert(args[i], typeof(object));
         }
 
         return args;
@@ -296,194 +307,117 @@ public static partial class CommandHandlerDelegateFactory
             ThrowHelper.ThrowNotSupportedException($"The by reference parameter '{attribute} {TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)} {parameter.Name}' is not supported.");
         }
 
+        var resolver = GetParameterResolver(parameter, factoryContext);
+        var resolverExpression = Expression.Constant(resolver, typeof(ICommandHandlerParameterResolver));
+        return Expression.Call(
+            resolverExpression,
+            ParameterResolverResolveMethod,
+            InvocationContextExpr,
+            CancellationTokenExpr);
+    }
+
+    private static ICommandHandlerParameterResolver GetParameterResolver(
+        ParameterInfo parameter,
+        CommandHandlerDelegateFactoryContext factoryContext)
+    {
         var parameterCustomAttributes = parameter.GetCustomAttributes();
+        var isOptional = IsOptionalParameter(parameter, factoryContext);
+
+        if (parameterCustomAttributes.OfType<ICommandHandlerParameterBinder>().FirstOrDefault() is { } parameterHandler)
+        {
+            return BindParameter(parameterHandler, parameter, factoryContext, isOptional);
+        }
+
         if (parameterCustomAttributes.OfType<IFromArgumentMetadata>().FirstOrDefault() is { } argumentMetadata)
         {
-            var isOptional = IsOptionalParameter(parameter, factoryContext);
             var argument = CreateCliArgument(factoryContext, parameter, argumentMetadata, isOptional);
 
             Debug.Assert(argument is not null);
             Debug.Assert(argument.ValueType == parameter.ParameterType);
 
-            var argumentResultExpr = Expression.Call(ParseResultExpr, GetArgumentResultMethod, Expression.Constant(argument));
-            return BindParameterFromArgumentResult(parameter, argumentResultExpr, isOptional, factoryContext, "argument");
+            return ArgumentParameterResolver.Create(parameter, argument, isRequired: !isOptional);
         }
 
         if (parameterCustomAttributes.OfType<IFromOptionMetadata>().FirstOrDefault() is { } optionMetadata)
         {
-            var isOptional = IsOptionalParameter(parameter, factoryContext);
             var option = CreateCliOption(factoryContext, parameter, optionMetadata, isOptional);
 
             Debug.Assert(option is not null);
             Debug.Assert(option.ValueType == parameter.ParameterType);
 
-            var optionResultExpr = Expression.Call(ParseResultExpr, GetOptionResultMethod, Expression.Constant(option));
-            return BindParameterFromOptionResult(parameter, optionResultExpr, isOptional, factoryContext, "option");
+            return OptionParameterResolver.Create(parameter, option, isRequired: !isOptional);
         }
 
         if (parameterCustomAttributes.OfType<IFromServiceMetadata>().FirstOrDefault() is { } serviceMetadata)
         {
-            return BindParameterFromService(parameter, serviceMetadata.ServiceKey, factoryContext);
+            return new ServiceParameterResolver(parameter.ParameterType, serviceMetadata.ServiceKey, !isOptional);
+        }
+
+        if (factoryContext.ParameterBinderResolver.TryResolve(parameter, out var parameterBinder))
+        {
+            return BindParameter(parameterBinder, parameter, factoryContext, isOptional);
         }
 
         if (parameter.ParameterType == typeof(CommandInvocationContext))
         {
-            return InvocationContextExpr;
+            return CommandInvocationContextParameterResolver.Instance;
         }
 
         if (parameter.ParameterType == typeof(CancellationToken))
         {
-            return CancellationTokenExpr;
+            return CancellationTokenParameterResolver.Instance;
         }
 
         if (parameter.ParameterType == typeof(IConsole))
         {
-            return ConsoleExpr;
+            return ConsoleParameterResolver.Instance;
         }
 
         if (parameter.ParameterType == typeof(ParseResult))
         {
-            return ParseResultExpr;
+            return ParseResultParameterResolver.Instance;
         }
 
         if (parameter.ParameterType == typeof(IServiceProvider))
         {
-            return ServiceProviderExpr;
+            return ApplicationServicesParameterResolver.Instance;
         }
 
         if (factoryContext.ServiceProviderIsService is { } isServiceService
             && isServiceService.IsService(parameter.ParameterType))
         {
-            return BindParameterFromService(parameter, null, factoryContext);
+            return new ServiceParameterResolver(parameter.ParameterType, serviceKey: null, !isOptional);
         }
 
-        return ThrowHelper.ThrowNotSupportedException<Expression>($"The parameter '{TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)} {parameter.Name}' is not supported. Parameters must be bound from an argument, option, service, or be of a known type.");
+        return ThrowHelper.ThrowNotSupportedException<ICommandHandlerParameterResolver>($"The parameter '{TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)} {parameter.Name}' is not supported. Parameters must be bound from an argument, option, service, or be of a known type.");
     }
 
-    private static Expression BindParameterFromService(
+    private static ICommandHandlerParameterResolver BindParameter(
+        ICommandHandlerParameterBinder parameterBinder,
         ParameterInfo parameter,
-        object? serviceKey,
-        CommandHandlerDelegateFactoryContext factoryContext)
+        CommandHandlerDelegateFactoryContext factoryContext,
+        bool isOptional)
     {
-        var isOptional = IsOptionalParameter(parameter, factoryContext);
-
+        StrongBox<object?>? defaultValueBox = null;
         if (isOptional)
         {
-            return serviceKey is null
-                ? Expression.Call(
-                    Generic.ForType(parameter.ParameterType).GetServiceMethod,
-                    ServiceProviderExpr)
-                : Expression.Call(
-                    Generic.ForType(parameter.ParameterType).GetKeyedServiceMethod,
-                    ServiceProviderExpr,
-                    Expression.Constant(serviceKey));
+            defaultValueBox = new();
+
+            if (parameter.HasDefaultValue)
+            {
+                defaultValueBox.Value = parameter.DefaultValue;
+            }
         }
 
-        return serviceKey is null
-            ? Expression.Call(
-                Generic.ForType(parameter.ParameterType).GetRequiredServiceMethod,
-                ServiceProviderExpr)
-            : Expression.Call(
-                Generic.ForType(parameter.ParameterType).GetRequiredKeyedServiceMethod,
-                ServiceProviderExpr,
-                Expression.Constant(serviceKey));
-    }
+        string? argumentDescription = null;
 
-    private static Expression BindParameterFromArgumentResult(
-        ParameterInfo parameter,
-        Expression argumentResultExpr,
-        bool isOptional,
-        CommandHandlerDelegateFactoryContext factoryContext,
-        string source)
-    {
-        var result = Expression.Variable(typeof(ArgumentResult), $"{parameter.Name}Result");
-        factoryContext.ExtraLocals.Add(result);
-        factoryContext.ResultAssignments.Add(Expression.Assign(result, argumentResultExpr));
-
-        var parameterTypeNameConstant = Expression.Constant(TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false));
-        var parameterNameConstant = Expression.Constant(parameter.Name);
-        var sourceConstant = Expression.Constant(source);
-        factoryContext.ResultCheckExpressions.Add(
-            Expression.Call(
-                CheckSymbolResultIsNotNullMethod,
-                result,
-                parameterTypeNameConstant,
-                parameterNameConstant,
-                sourceConstant));
-
-        var getArgumentValueMethod = GetArgumentValueMethod.MakeGenericMethod(parameter.ParameterType);
-        var valueExpr = Expression.Call(result, getArgumentValueMethod);
-
-        return BindParameterFromValueExpression(
-            parameter,
-            valueExpr,
-            isOptional,
-            factoryContext,
-            parameterTypeNameConstant,
-            parameterNameConstant,
-            sourceConstant);
-    }
-
-    private static Expression BindParameterFromOptionResult(
-        ParameterInfo parameter,
-        Expression optionResultExpr,
-        bool isOptional,
-        CommandHandlerDelegateFactoryContext factoryContext,
-        string source)
-    {
-        var result = Expression.Variable(typeof(OptionResult), $"{parameter.Name}Result");
-        factoryContext.ExtraLocals.Add(result);
-        factoryContext.ResultAssignments.Add(Expression.Assign(result, optionResultExpr));
-
-        var parameterTypeNameConstant = Expression.Constant(TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false));
-        var parameterNameConstant = Expression.Constant(parameter.Name);
-        var sourceConstant = Expression.Constant(source);
-        factoryContext.ResultCheckExpressions.Add(
-            Expression.Call(
-                CheckSymbolResultIsNotNullMethod,
-                result,
-                parameterTypeNameConstant,
-                parameterNameConstant,
-                sourceConstant));
-
-        var getOptionValueMethod = GetOptionValueMethod.MakeGenericMethod(parameter.ParameterType);
-        var valueExpr = Expression.Call(result, getOptionValueMethod);
-
-        return BindParameterFromValueExpression(
-            parameter,
-            valueExpr,
-            isOptional,
-            factoryContext,
-            parameterTypeNameConstant,
-            parameterNameConstant,
-            sourceConstant);
-    }
-
-    private static Expression BindParameterFromValueExpression(
-        ParameterInfo parameter,
-        Expression valueExpression,
-        bool isOptional,
-        CommandHandlerDelegateFactoryContext factoryContext,
-        ConstantExpression parameterTypeNameConstant,
-        ConstantExpression parameterNameConstant,
-        ConstantExpression sourceConstant)
-    {
-        var argument = Expression.Variable(parameter.ParameterType, $"{parameter.Name}Value");
-        factoryContext.ExtraLocals.Add(argument);
-        factoryContext.ParamAssignments.Add(Expression.Assign(argument, valueExpression));
-
-        if (!isOptional && !parameter.ParameterType.IsValueType)
+        if (factoryContext.XmlDocProvider.TryGetXmlDoc(parameter, out var xmlDoc))
         {
-            factoryContext.ParamCheckExpressions.Add(
-                Expression.Call(
-                Generic.ForType(parameter.ParameterType).CheckParameterIsNotNullMethod,
-                argument,
-                parameterTypeNameConstant,
-                parameterNameConstant,
-                sourceConstant));
+            argumentDescription = XmlCommentsTextHelper.Humanize(xmlDoc.InnerXml);
         }
 
-        return argument;
+        var builder = new ParameterBinderBuilder(parameter, factoryContext);
+        return parameterBinder.Bind(builder, defaultValueBox, argumentDescription);
     }
 
     private static bool IsOptionalParameter(ParameterInfo parameter, CommandHandlerDelegateFactoryContext factoryContext)
@@ -591,8 +525,46 @@ public static partial class CommandHandlerDelegateFactory
             ServiceProvider = serviceProvider,
             ServiceProviderIsService = serviceProvider.GetService<IServiceProviderIsService>(),
             ResultHandler = serviceProvider.GetRequiredService<CommandResultHandler>(),
+            ParameterBinderResolver = serviceProvider.GetRequiredService<CommandHandlerParameterBinderResolver>(),
             XmlDocProvider = serviceProvider.GetRequiredService<IXmlDocProvider>(),
         };
+    }
+
+    private class BinderBuilder(CommandHandlerDelegateFactoryContext factoryContext)
+        : ICommandHandlerBinderContext
+    {
+        public IServiceProvider ApplicationServices
+            => factoryContext.ServiceProvider;
+
+        public void Add(Option option)
+        {
+            if (factoryContext.Options.Any(o => o.Name == option.Name))
+            {
+                ThrowHelper.ThrowInvalidOperationException($"An option with the name '{option.Name}' has already been added to the command.");
+            }
+
+            factoryContext.Options.Add(option);
+        }
+
+        public void Add(Argument argument)
+        {
+            if (factoryContext.Arguments.Any(a => a.Name == argument.Name))
+            {
+                ThrowHelper.ThrowInvalidOperationException($"An argument with the name '{argument.Name}' has already been added to the command.");
+            }
+
+            factoryContext.Arguments.Add(argument);
+        }
+    }
+
+    private sealed class ParameterBinderBuilder(
+        ParameterInfo parameter,
+        CommandHandlerDelegateFactoryContext factoryContext)
+        : BinderBuilder(factoryContext)
+        , ICommandHandlerParameterBinderContext
+    {
+        public ParameterInfo Parameter
+            => parameter;
     }
 
     private abstract class Generic
@@ -602,21 +574,11 @@ public static partial class CommandHandlerDelegateFactory
         public static Generic ForType(Type type)
             => _factories.GetOrAdd(type, t => (Generic)Activator.CreateInstance(typeof(Generic<>).MakeGenericType(t))!);
 
-        public abstract MethodInfo CheckParameterIsNotNullMethod { get; }
-
         public abstract MethodInfo ValueTaskAsTaskMethod { get; }
 
         public abstract MethodInfo TaskFromResultMethod { get; }
 
         public abstract MethodInfo HandleResultMethod { get; }
-
-        public abstract MethodInfo GetServiceMethod { get; }
-
-        public abstract MethodInfo GetKeyedServiceMethod { get; }
-
-        public abstract MethodInfo GetRequiredServiceMethod { get; }
-
-        public abstract MethodInfo GetRequiredKeyedServiceMethod { get; }
 
         public abstract MethodInfo CommandResultExecute { get; }
     }
@@ -625,9 +587,6 @@ public static partial class CommandHandlerDelegateFactory
         : Generic
         where T : notnull
     {
-        public override MethodInfo CheckParameterIsNotNullMethod { get; } = GetMethodInfo<Action<T?, string, string, string>>(
-            static (parameterValue, parameterTypeName, parameterName, source) => Check.ParameterIsNotNull(parameterValue, parameterTypeName, parameterName, source));
-
         public override MethodInfo ValueTaskAsTaskMethod { get; } = typeof(ValueTask<T>).GetMethod(nameof(ValueTask<>.AsTask))!;
 
         public override MethodInfo TaskFromResultMethod { get; } = GetMethodInfo<Func<T, Task<T>>>(
@@ -636,43 +595,18 @@ public static partial class CommandHandlerDelegateFactory
         public override MethodInfo HandleResultMethod { get; } = GetMethodInfo<Func<Task<T>, CommandInvocationContext, CancellationToken, Task>>(
             static (commandResult, invocationContext, cancellationToken) => Handle.HandleHandlerResult(commandResult, invocationContext, cancellationToken));
 
-        public override MethodInfo GetServiceMethod { get; } = GetMethodInfo<Func<IServiceProvider, T?>>(
-            static (sp) => sp.GetService<T>());
-
-        public override MethodInfo GetKeyedServiceMethod { get; } = GetMethodInfo<Func<IServiceProvider, object, T?>>(
-            static (sp, key) => sp.GetKeyedService<T>(key));
-
-        public override MethodInfo GetRequiredServiceMethod { get; } = GetMethodInfo<Func<IServiceProvider, T>>(
-            static (sp) => sp.GetRequiredService<T>());
-
-        public override MethodInfo GetRequiredKeyedServiceMethod { get; } = GetMethodInfo<Func<IServiceProvider, object, T>>(
-            static (sp, key) => sp.GetRequiredKeyedService<T>(key));
-
         public override MethodInfo CommandResultExecute { get; } = GetMethodInfo<Func<Task<T>, CommandInvocationContext, CancellationToken, Task>>(
             static (commandResult, invocationContext, cancellationToken) => Handle.HandleCommandResult(commandResult, invocationContext, cancellationToken));
     }
 
-    private static partial class Check
-    {
-        public static void SymbolResultIsNotNull(SymbolResult? symbolResult, string parameterTypeName, string parameterName, string source)
-        {
-            if (symbolResult is null)
-            {
-                ThrowHelper.ThrowInvalidOperationException($"Required symbol '{parameterTypeName} {parameterName}' was not provided from {source}.");
-            }
-        }
-
-        public static void ParameterIsNotNull<T>(T? parameterValue, string parameterTypeName, string parameterName, string source)
-        {
-            if (parameterValue is null)
-            {
-                ThrowHelper.ThrowInvalidOperationException($"Required parameter '{parameterTypeName} {parameterName}' was not provided from {source}.");
-            }
-        }
-    }
-
     private static partial class Handle
     {
+        public static async Task Invoke(object? target, Task<object?>[] argumentTasks, Func<object?, object?[], Task> handler)
+        {
+            var args = await Task.WhenAll(argumentTasks);
+            await handler(target, args);
+        }
+
         public static async Task HandleCommandResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)
         {
             var result = await commandResult;

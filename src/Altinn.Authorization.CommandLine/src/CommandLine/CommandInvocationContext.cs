@@ -11,12 +11,12 @@ public sealed class CommandInvocationContext
 {
     internal CommandInvocationContext(
         ParseResult parseResult,
-        IServiceProvider serviceProvider,
+        IServiceProvider applicationServices,
         IConsole console)
         : base(parseResult.CommandResult.Command)
     {
         ParseResult = parseResult;
-        ServiceProvider = serviceProvider;
+        ApplicationServices = applicationServices;
         Console = console;
         ReturnCode = 0;
     }
@@ -29,7 +29,7 @@ public sealed class CommandInvocationContext
     /// <summary>
     /// Gets the service provider for the command invocation.
     /// </summary>
-    public IServiceProvider ServiceProvider { get; }
+    public IServiceProvider ApplicationServices { get; }
 
     /// <summary>
     /// Gets the console for the command invocation.

@@ -49,7 +49,7 @@ public class OptionAttribute
     public string? Description { get; init; }
 
     /// <summary>
-    /// Indicates whether the option is required. If null, the option will be optional.
+    /// Indicates whether the option is required. If not set, requiredness is inferred from the parameter.
     /// </summary>
     public bool IsRequired
     {
@@ -62,6 +62,6 @@ public class OptionAttribute
     {
         var factory = serviceProvider.GetRequiredService<OptionFactory>();
 
-        return factory.Create(parameterType, Name ?? $"--{parameterName}", Aliases ?? [], Description, IsRequired, defaultValueBox);
+        return factory.Create(parameterType, Name ?? $"--{parameterName}", Aliases ?? [], Description, _isRequired ?? defaultValueBox is null, defaultValueBox);
     }
 }
