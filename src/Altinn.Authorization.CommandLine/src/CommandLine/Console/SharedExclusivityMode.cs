@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using CommunityToolkit.Diagnostics;
 using Spectre.Console;
 
 namespace Altinn.Authorization.CommandLine.Console;
@@ -13,10 +11,7 @@ internal sealed class SharedExclusivityMode
     public T Run<T>(Func<T> func)
     {
         // Try acquiring the exclusivity semaphore
-        if (!_semaphore.Wait(0))
-        {
-            ThrowExclusivityException();
-        }
+        _semaphore.Wait();
 
         try
         {
@@ -31,10 +26,7 @@ internal sealed class SharedExclusivityMode
     public async Task<T> RunAsync<T>(Func<Task<T>> func)
     {
         // Try acquiring the exclusivity semaphore
-        if (!await _semaphore.WaitAsync(0).ConfigureAwait(false))
-        {
-            ThrowExclusivityException();
-        }
+        await _semaphore.WaitAsync().ConfigureAwait(false);
 
         try
         {
@@ -44,15 +36,6 @@ internal sealed class SharedExclusivityMode
         {
             _semaphore.Release(1);
         }
-    }
-
-    [DoesNotReturn]
-    private static void ThrowExclusivityException()
-    {
-        ThrowHelper.ThrowInvalidOperationException(
-            "Trying to run one or more interactive functions concurrently. " +
-            "Operations with dynamic displays (e.g. a prompt and a progress display) " +
-            "cannot be running at the same time.");
     }
 
     public void Dispose()
