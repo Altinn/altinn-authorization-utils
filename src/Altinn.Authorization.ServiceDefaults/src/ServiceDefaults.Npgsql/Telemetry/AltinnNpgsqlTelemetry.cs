@@ -1,7 +1,6 @@
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NpgsqlTypes;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
@@ -354,7 +353,7 @@ internal sealed partial class AltinnNpgsqlTelemetry
             { typeof(TimeSpan), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(Enum), NpgsqlTelemetryParameterFilterResult.Include },
             { typeof(string), NpgsqlTelemetryParameterFilterResult.Ignore },
-            { typeof(NpgsqlCidr), NpgsqlTelemetryParameterFilterResult.Ignore },
+            { typeof(IPNetwork), NpgsqlTelemetryParameterFilterResult.Ignore },
             { typeof(IPAddress), NpgsqlTelemetryParameterFilterResult.Ignore },
             { typeof(PhysicalAddress), NpgsqlTelemetryParameterFilterResult.Ignore },
         };
