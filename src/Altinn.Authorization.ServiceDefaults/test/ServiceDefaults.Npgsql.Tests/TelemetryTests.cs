@@ -1,6 +1,7 @@
 using Altinn.Authorization.ServiceDefaults.Npgsql.Telemetry;
 using Npgsql;
 using NpgsqlTypes;
+using System.Diagnostics;
 
 namespace Altinn.Authorization.ServiceDefaults.Npgsql.Tests;
 
@@ -24,7 +25,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        activities.ShouldBeEmpty();
+        ShouldHaveOnlyConnectActivity(activities);
     }
 
     [Fact]
@@ -35,7 +36,7 @@ public class TelemetryTests(DbFixture fixture)
         await ctx.Database.ExecuteScalar<int>("SELECT 1");
 
         var activities = ctx.Activities;
-        activities.ShouldBeEmpty();
+        ShouldHaveOnlyConnectActivity(activities);
     }
 
     [Fact]
@@ -52,7 +53,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        activities.ShouldBeEmpty();
+        ShouldHaveOnlyConnectActivity(activities);
     }
 
     [Fact]
@@ -69,7 +70,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        activities.ShouldHaveSingleItem();
+        ShouldHaveCommandActivity(activities);
     }
 
     [Fact]
@@ -86,7 +87,7 @@ public class TelemetryTests(DbFixture fixture)
         await ctx.Database.ExecuteScalar<int>("SELECT 22"); // should be included
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.DisplayName.ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 22").HexString);
     }
@@ -106,7 +107,7 @@ public class TelemetryTests(DbFixture fixture)
         await ctx.Database.ExecuteScalar<int>("SELECT 11"); // should be included
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.DisplayName.ShouldBe(AltinnNpgsqlTelemetry.QueryHasher.ComputeHashAndString("SELECT 11").HexString);
     }
@@ -119,11 +120,12 @@ public class TelemetryTests(DbFixture fixture)
         await ctx.Database.ExecuteScalar<int>("SELECT 2");
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.connection_id").ShouldBeNull();
         activity.GetTagItem("db.connection_string").ShouldBeNull();
         activity.GetTagItem("db.name").ShouldBeNull();
+        activity.GetTagItem("db.namespace").ShouldBeNull();
         activity.GetTagItem("db.user").ShouldBeNull();
         activity.GetTagItem("net.peer.ip").ShouldBeNull();
         activity.GetTagItem("net.peer.name").ShouldBeNull();
@@ -149,11 +151,12 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.connection_id").ShouldBeNull();
         activity.GetTagItem("db.connection_string").ShouldBeNull();
         activity.GetTagItem("db.name").ShouldBeNull();
+        activity.GetTagItem("db.namespace").ShouldBeNull();
         activity.GetTagItem("db.user").ShouldBeNull();
         activity.GetTagItem("net.peer.ip").ShouldBeNull();
         activity.GetTagItem("net.peer.name").ShouldBeNull();
@@ -180,11 +183,12 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.connection_id").ShouldBeNull();
         activity.GetTagItem("db.connection_string").ShouldBeNull();
         activity.GetTagItem("db.name").ShouldBeNull();
+        activity.GetTagItem("db.namespace").ShouldBeNull();
         activity.GetTagItem("db.user").ShouldBeNull();
         activity.GetTagItem("net.peer.ip").ShouldBeNull();
         activity.GetTagItem("net.peer.name").ShouldBeNull();
@@ -212,7 +216,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.query.summary").ShouldBe("test summary");
         activity.DisplayName.ShouldBe("test summary");
@@ -229,7 +233,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.DisplayName.ShouldBe("test name");
     }
@@ -261,7 +265,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.query.parameters.num").ShouldBe(inNumber);
         activity.GetTagItem("db.query.parameters.guid").ShouldBe(inGuid);
@@ -299,7 +303,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.query.parameters.num").ShouldBe(inNumber);
         activity.GetTagItem("db.query.parameters.guid").ShouldBe(inGuid);
@@ -338,7 +342,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.GetTagItem("db.query.parameters.num").ShouldBe(inNumber);
         activity.GetTagItem("db.query.parameters.guid").ShouldBe(inGuid);
@@ -385,7 +389,7 @@ public class TelemetryTests(DbFixture fixture)
         }
 
         var activities = ctx.Activities;
-        var activity = activities.ShouldHaveSingleItem();
+        var activity = ShouldHaveCommandActivity(activities);
 
         activity.DisplayName.ShouldBe("test span name");
         activity.GetTagItem("db.query.summary").ShouldBe("test summary");
@@ -395,6 +399,36 @@ public class TelemetryTests(DbFixture fixture)
         activity.GetTagItem("db.query.parameters.dateTime").ShouldBe(inDateTime);
         activity.GetTagItem("db.query.parameters.string1").ShouldBeNull();
         activity.GetTagItem("db.query.parameters.string2").ShouldBe(inString2);
+    }
+
+    private static void ShouldHaveOnlyConnectActivity(IReadOnlyList<Activity> activities)
+    {
+        var activity = activities.ShouldHaveSingleItem();
+        AssertConnectActivity(activity);
+    }
+
+    private static Activity ShouldHaveCommandActivity(IReadOnlyList<Activity> activities)
+    {
+        activities.Count.ShouldBe(2);
+
+        var connect = activities.SingleOrDefault(IsConnectActivity);
+        connect.ShouldNotBeNull();
+        AssertConnectActivity(connect);
+
+        return activities.Single(activity => !ReferenceEquals(activity, connect));
+    }
+
+    private static bool IsConnectActivity(Activity activity)
+        => activity.Source.Name == "Npgsql"
+           && activity.Kind == ActivityKind.Client
+           && activity.DisplayName.StartsWith("CONNECT ", StringComparison.Ordinal);
+
+    private static void AssertConnectActivity(Activity activity)
+    {
+        activity.Source.Name.ShouldBe("Npgsql");
+        activity.Kind.ShouldBe(ActivityKind.Client);
+        activity.DisplayName.ShouldStartWith("CONNECT ");
+        activity.GetTagItem("db.namespace").ShouldNotBeNull();
     }
 
     private static async Task Drain(NpgsqlDataReader reader)
