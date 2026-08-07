@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
-    <PackageVersion Include="Nerdbank.Streams" Version="2.13.16" />
+    <PackageVersion Include="Nerdbank.Streams" Version="2.13.31" />
     <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.15.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="xunit.v3.assert" Version="3.2.2" />
