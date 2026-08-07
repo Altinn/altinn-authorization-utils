@@ -13,6 +13,7 @@ internal sealed class CommandHandlerDelegateFactoryContext
     public required IServiceProvider ServiceProvider { get; init; }
     public required IXmlDocProvider XmlDocProvider { get; init; }
     public required CommandResultHandler ResultHandler { get; init; }
+    public required CommandHandlerParameterBinderResolver ParameterBinderResolver { get; init; }
     public required IServiceProviderIsService? ServiceProviderIsService { get; init; }
     public List<Option> Options { get; } = new List<Option>();
     public List<Argument> Arguments { get; } = new List<Argument>();
@@ -27,7 +28,6 @@ internal sealed class CommandHandlerDelegateFactoryContext
     public NullabilityInfoContext NullabilityContext { get; } = new();
     public Type[] ArgumentTypes { get; set; } = [];
     public Expression[]? ArgumentExpressions { get; set; }
-    public Expression[] BoxedArgs { get; set; } = [];
 
     public List<ParameterInfo> Parameters { get; set; } = new();
 }
