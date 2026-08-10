@@ -27,10 +27,24 @@ public sealed class JsonFormat
     /// <inheritdoc/>
     public ValueTask Write<T>(T value, IFormatWriter writer, CancellationToken cancellationToken = default)
     {
+        if (typeof(T) == typeof(JsonDocument))
+        {
+            return WriteDoc((JsonDocument)(object)value!, writer, cancellationToken);
+        }
+
         var options = _options.CurrentValue.SerializerOptions;
         var json = JsonSerializer.SerializeToUtf8Bytes(value, options);
 
         var jsonWidget = JsonWithCommentsText.Create(json, options);
+        writer.Write(jsonWidget);
+        writer.WriteAnsi(w => w.WriteLine());
+
+        return ValueTask.CompletedTask;
+    }
+
+    private static ValueTask WriteDoc(JsonDocument doc, IFormatWriter writer, CancellationToken cancellationToken)
+    {
+        var jsonWidget = JsonWithCommentsText.Create(doc);
         writer.Write(jsonWidget);
         writer.WriteAnsi(w => w.WriteLine());
 

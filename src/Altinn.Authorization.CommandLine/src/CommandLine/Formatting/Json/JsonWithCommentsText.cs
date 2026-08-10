@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -22,9 +23,15 @@ internal sealed class JsonWithCommentsText
         var node = JsonWithCommentsReader.Read(ref reader);
         return new JsonWithCommentsText(node, options);
     }
-    public static JsonWithCommentsText Create(Memory<byte> json, JsonSerializerOptions? options = null)
+    public static JsonWithCommentsText Create(ReadOnlyMemory<byte> json, JsonSerializerOptions? options = null)
     {
         var reader = new Utf8JsonReader(json.Span, ReaderOptions);
+        return Create(ref reader, options);
+    }
+
+    public static JsonWithCommentsText Create(ReadOnlySpan<byte> json, JsonSerializerOptions? options = null)
+    {
+        var reader = new Utf8JsonReader(json, ReaderOptions);
         return Create(ref reader, options);
     }
 
@@ -41,7 +48,7 @@ internal sealed class JsonWithCommentsText
     }
 
     public static JsonWithCommentsText Create(JsonElement json, JsonSerializerOptions? options = null)
-        => Create(json.GetRawText(), options);
+        => Create(JsonMarshal.GetRawUtf8Value(json), options);
 
     public static JsonWithCommentsText Create(JsonDocument json, JsonSerializerOptions? options = null)
         => Create(json.RootElement, options);
