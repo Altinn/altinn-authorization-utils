@@ -1,47 +1,70 @@
-using System.CommandLine;
 using Altinn.Authorization.CommandLine;
-using Altinn.Authorization.CommandLine.Results;
-using Microsoft.Extensions.Logging;
-using Spectre.Console;
+using Altinn.Authorization.CommandLine.Factory;
+using Altinn.Authorization.CommandLine.Formatting;
+using Altinn.Authorization.RepoCtl.Binding;
+using Altinn.Authorization.RepoCtl.Checks;
+using Altinn.Authorization.RepoCtl.Formatting;
+using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Options;
+using Altinn.Authorization.RepoCtl.Solutions;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = CliApplication.CreateBuilder("Altinn Authorization Repository Manager (repoctl)");
-var cli = builder.Build();
+builder.Services.AddSingleton<AltinnRepositoryResolver>();
+builder.Services.AddSingleton<IConfigureOption, ConfigureAltinnVerticalKindOptions>();
+builder.Services.AddSingleton<ICommandHandlerParameterBinderResolver, AltinnRepositoryBinderResolver>();
+builder.Services.AddSingleton<AltinnRepositoryLoader>();
+builder.Services.AddSingleton<SolutionService>();
 
-cli.AddCommand("test", "Test command", (
-    [Argument] string arg,
-    ILogger<Program> logger) =>
+builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<SolutionService>());
+
+builder.Services.AddOutputFormatter<RichFormat, AltinnVerticalSetFormatter>();
+builder.Services.AddOutputFormatter<JsonFormat, AltinnVerticalSetFormatter>();
+builder.Services.AddOutputFormatter<RichFormat, CheckResultListFormatter>();
+builder.Services.AddOutputFormatter<JsonFormat, CheckResultListFormatter>();
+
+var cli = builder.Build();
+cli.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>().Configure(cli);
+
+cli.AddCommand("verticals", "Operate on verticals", (builder) =>
 {
-    logger.LogInformation("Test command executed with argument: {arg}", arg);
+    builder.AddCommand("list", "List all verticals in the repository", (AltinnVerticalSet verticals) => verticals);
 });
 
-cli.AddCommand<OtherCommand>("other", "The other command");
-
-return await cli.RunAsync(args);
-
-internal sealed class OtherCommand(ILogger<OtherCommand> logger)
+cli.AddCommand("solutions", "Operate on solutions", (builder) =>
 {
-    /// <summary>
-    /// Executes the other command with the specified parameters.
-    /// </summary>
-    /// <param name="times">The number of times to print the message.</param>
-    /// <param name="message">The message to log.</param>
-    public TestCommandResult Invoke([Option("--times", "-t")] int times = 5, [Argument] string message = "Hello, world!")
+    builder.AddCommand("update", "Update the solutions in this repository", async (AltinnRepository repository, SolutionService solutionService, CancellationToken cancellationToken) =>
     {
-        for (int i = 0; i < times; i++)
+        await solutionService.UpdateSolutions(repository, cancellationToken);
+    });
+
+    builder.AddCommand("check", "Check the solutions in this repository", async (CommandInvocationContext ctx, AltinnRepository repository, SolutionService solutionService, CancellationToken cancellationToken) =>
+    {
+        var result = await solutionService.Check(repository, cancellationToken);
+        if (!result.IsSuccess)
         {
-            logger.LogInformation("Other command executed: {message}", message);
+            ctx.ReturnCode = 1;
         }
 
-        return new TestCommandResult(message);
-    }
-}
+        return result;
+    });
+});
 
-internal sealed class TestCommandResult(string message)
-    : ICommandResult
+cli.AddCommand("check", "Pre-commit/pre-merge checks for the repository", async (CommandInvocationContext ctx, AltinnRepository repository, IEnumerable<IRepositoryCheck> checks, CancellationToken cancellationToken) =>
 {
-    public Task Execute(CommandInvocationContext context, CancellationToken cancellationToken = default)
+    var results = new List<CheckResult>();
+    foreach (var check in checks)
     {
-        context.Console.WriteLine(message);
-        return Task.CompletedTask;
+        var checkResult = await check.Check(repository, cancellationToken);
+        results.Add(checkResult);
+
+        if (!checkResult.IsSuccess)
+        {
+            ctx.ReturnCode += 1;
+        }
     }
-}
+
+    return results;
+});
+
+return await cli.RunAsync(args);

@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
 
@@ -9,12 +11,14 @@ namespace Altinn.Authorization.RepoCtl.Model;
 /// Represents the identifier of a vertical in Altinn.
 /// </summary>
 [DebuggerDisplay("{ToString(),nq}")]
+[JsonConverter(typeof(AltinnVerticalId.JsonConverter))]
 public readonly record struct AltinnVerticalId
     : IEquatable<AltinnVerticalId>
     , IFormattable
     , ISpanFormattable
     , IParsable<AltinnVerticalId>
     , ISpanParsable<AltinnVerticalId>
+    , IComparable<AltinnVerticalId>
 {
     /// <inheritdoc/>
     public static AltinnVerticalId Parse(string s, IFormatProvider? provider)
@@ -145,6 +149,43 @@ public readonly record struct AltinnVerticalId
 
             charsWritten += nameCharsWritten;
             return true;
+        }
+    }
+
+    /// <inheritdoc/>
+    public int CompareTo(AltinnVerticalId other)
+    {
+        var kindComparison = _kind.CompareTo(other._kind);
+        if (kindComparison != 0)
+        {
+            return kindComparison;
+        }
+
+        return string.Compare(_name, other._name, StringComparison.Ordinal);
+    }
+
+    internal sealed class JsonConverter
+        : JsonConverter<AltinnVerticalId>
+    {
+        public override AltinnVerticalId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var stringValue = reader.GetString();
+            if (stringValue is null)
+            {
+                throw new JsonException($"Expected an AltinnVerticalId, but got null.");
+            }
+
+            if (!AltinnVerticalId.TryParse(stringValue, provider: null, out var result))
+            {
+                throw new JsonException($"The value '{stringValue}' is not a valid AltinnVerticalId.");
+            }
+
+            return result;
+        }
+
+        public override void Write(Utf8JsonWriter writer, AltinnVerticalId value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

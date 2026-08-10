@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <ProjectReference Include="../../src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+  </ItemGroup>
+
+</Project>

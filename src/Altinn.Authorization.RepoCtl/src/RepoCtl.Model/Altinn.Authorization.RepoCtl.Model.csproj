@@ -2,8 +2,22 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Diagnostics" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Locator" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Semver" />
+    <PackageReference Include="System.IO.Hashing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../Altinn.Authorization.ModelUtils/src/ModelUtils/Altinn.Authorization.ModelUtils.csproj" />
+    <ProjectReference Include="../../../Altinn.Authorization.ProblemDetails/src/ProblemDetails.Abstractions/Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+    <ProjectReference Include="../../../Altinn.Authorization.ProblemDetails/src/ProblemDetails.Validation/Altinn.Authorization.ProblemDetails.Validation.csproj" />
   </ItemGroup>
 
 </Project>
