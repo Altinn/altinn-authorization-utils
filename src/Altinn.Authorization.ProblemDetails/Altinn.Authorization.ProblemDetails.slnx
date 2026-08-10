@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/deps/" />
+  <Folder Name="/deps/TestUtils/">
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/ProblemDetails/Altinn.Authorization.ProblemDetails.csproj" />
+    <Project Path="src/ProblemDetails.Abstractions/Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+    <Project Path="src/ProblemDetails.Validation/Altinn.Authorization.ProblemDetails.Validation.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/ProblemDetails.Tests/Altinn.Authorization.ProblemDetails.Tests.csproj" />
+  </Folder>
+</Solution>

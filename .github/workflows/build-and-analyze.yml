@@ -29,15 +29,11 @@ jobs:
 
           dotnet tool install --global Altinn.Authorization.RepoCtl \
             --add-source "$RUNNER_TEMP/repoctl-packages"
+          
+          repoctl --version
 
-      - name: Check formatting
-        run: dotnet format --verify-no-changes
-
-      # - name: Update all sln files
-      #   run: repoctl solutions update
-
-      - name: Assert that no sln files have changed
-        run: git diff --exit-code
+      - name: Check repository
+        run: repoctl check
 
   build-and-test:
     name: Build and Test

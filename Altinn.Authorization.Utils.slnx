@@ -1,0 +1,95 @@
+<Solution>
+  <Folder Name="/Altinn.Authorization.CommandLine/" />
+  <Folder Name="/Altinn.Authorization.CommandLine/src/">
+    <Project Path="src/Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <Project Path="src/Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.CommandLine/test/">
+    <Project Path="src/Altinn.Authorization.CommandLine/test/CommandLine.Tests/Altinn.Authorization.CommandLine.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ModelUtils/" />
+  <Folder Name="/Altinn.Authorization.ModelUtils/sample/">
+    <Project Path="src/Altinn.Authorization.ModelUtils/sample/ModelUtils.Sample.Api/Altinn.Authorization.ModelUtils.Sample.Api.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ModelUtils/src/">
+    <Project Path="src/Altinn.Authorization.ModelUtils/src/ModelUtils/Altinn.Authorization.ModelUtils.csproj" />
+    <Project Path="src/Altinn.Authorization.ModelUtils/src/ModelUtils.AspNet/Altinn.Authorization.ModelUtils.AspNet.csproj" />
+    <Project Path="src/Altinn.Authorization.ModelUtils/src/ModelUtils.Swashbuckle/Altinn.Authorization.ModelUtils.Swashbuckle.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ModelUtils/test/">
+    <Project Path="src/Altinn.Authorization.ModelUtils/test/ModelUtils.Tests/Altinn.Authorization.ModelUtils.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ProblemDetails/" />
+  <Folder Name="/Altinn.Authorization.ProblemDetails/src/">
+    <Project Path="src/Altinn.Authorization.ProblemDetails/src/ProblemDetails/Altinn.Authorization.ProblemDetails.csproj" />
+    <Project Path="src/Altinn.Authorization.ProblemDetails/src/ProblemDetails.Abstractions/Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+    <Project Path="src/Altinn.Authorization.ProblemDetails/src/ProblemDetails.Validation/Altinn.Authorization.ProblemDetails.Validation.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ProblemDetails/test/">
+    <Project Path="src/Altinn.Authorization.ProblemDetails/test/ProblemDetails.Tests/Altinn.Authorization.ProblemDetails.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.RepoCtl/" />
+  <Folder Name="/Altinn.Authorization.RepoCtl/src/">
+    <Project Path="src/Altinn.Authorization.RepoCtl/src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <Project Path="src/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.RepoCtl/test/">
+    <Project Path="src/Altinn.Authorization.RepoCtl/test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ServiceDefaults/" />
+  <Folder Name="/Altinn.Authorization.ServiceDefaults/sample/">
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/sample/ServiceDefaults.Sample.Api/Altinn.Authorization.ServiceDefaults.Sample.Api.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ServiceDefaults/src/">
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults/Altinn.Authorization.ServiceDefaults.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Abstractions/Altinn.Authorization.ServiceDefaults.Abstractions.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Authorization/Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.HttpClient/Altinn.Authorization.ServiceDefaults.HttpClient.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.HttpClient.MaskinPorten/Altinn.Authorization.ServiceDefaults.HttpClient.MaskinPorten.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Npgsql/Altinn.Authorization.ServiceDefaults.Npgsql.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Npgsql.TestSeed/Altinn.Authorization.ServiceDefaults.Npgsql.TestSeed.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Npgsql.Yuniql/Altinn.Authorization.ServiceDefaults.Npgsql.Yuniql.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Swashbuckle/Altinn.Authorization.ServiceDefaults.Swashbuckle.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/src/ServiceDefaults.Telemetry/Altinn.Authorization.ServiceDefaults.Telemetry.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.ServiceDefaults/test/">
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/test/ServiceDefaults.Authorization.Tests/Altinn.Authorization.ServiceDefaults.Authorization.Tests.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/test/ServiceDefaults.HttpClient.MaskinPorten.Tests/Altinn.Authorization.ServiceDefaults.HttpClient.MaskinPorten.Tests.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/test/ServiceDefaults.Npgsql.Tests/Altinn.Authorization.ServiceDefaults.Npgsql.Tests.csproj" />
+    <Project Path="src/Altinn.Authorization.ServiceDefaults/test/ServiceDefaults.Tests/Altinn.Authorization.ServiceDefaults.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Authorization.TestUtils/" />
+  <Folder Name="/Altinn.Authorization.TestUtils/src/">
+    <Project Path="src/Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
+    <Project Path="src/Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <Project Path="src/Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
+    <Project Path="src/Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Cli/" />
+  <Folder Name="/Altinn.Cli/src/">
+    <Project Path="src/Altinn.Cli/src/Altinn.Cli.Jwks/Altinn.Cli.Jwks.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Swashbuckle/" />
+  <Folder Name="/Altinn.Swashbuckle/src/">
+    <Project Path="src/Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
+    <Project Path="src/Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Swashbuckle/test/">
+    <Project Path="src/Altinn.Swashbuckle/test/Altinn.Swashbuckle.Tests/Altinn.Swashbuckle.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Urn/" />
+  <Folder Name="/Altinn.Urn/sample/">
+    <Project Path="src/Altinn.Urn/sample/Altinn.Urn.Sample.Api/Altinn.Urn.Sample.Api.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Urn/src/">
+    <Project Path="src/Altinn.Urn/src/Altinn.Urn/Altinn.Urn.csproj" />
+    <Project Path="src/Altinn.Urn/src/Altinn.Urn.SourceGenerator/Altinn.Urn.SourceGenerator.csproj" />
+    <Project Path="src/Altinn.Urn/src/Altinn.Urn.Swashbuckle/Altinn.Urn.Swashbuckle.csproj" />
+  </Folder>
+  <Folder Name="/Altinn.Urn/test/">
+    <Project Path="src/Altinn.Urn/test/Altinn.Urn.SourceGenerator.IntegrationTests/Altinn.Urn.SourceGenerator.IntegrationTests.csproj" />
+    <Project Path="src/Altinn.Urn/test/Altinn.Urn.SourceGenerator.Tests/Altinn.Urn.SourceGenerator.Tests.csproj" />
+    <Project Path="src/Altinn.Urn/test/Altinn.Urn.Swashbuckle.Tests/Altinn.Urn.Swashbuckle.Tests.csproj" />
+    <Project Path="src/Altinn.Urn/test/Altinn.Urn.Tests/Altinn.Urn.Tests.csproj" />
+  </Folder>
+</Solution>

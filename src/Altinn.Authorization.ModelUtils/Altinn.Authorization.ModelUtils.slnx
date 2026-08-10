@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/deps/" />
+  <Folder Name="/deps/TestUtils/">
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
+  </Folder>
+  <Folder Name="/deps/Swashbuckle/">
+    <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
+    <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/ModelUtils.Sample.Api/Altinn.Authorization.ModelUtils.Sample.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/ModelUtils/Altinn.Authorization.ModelUtils.csproj" />
+    <Project Path="src/ModelUtils.AspNet/Altinn.Authorization.ModelUtils.AspNet.csproj" />
+    <Project Path="src/ModelUtils.Swashbuckle/Altinn.Authorization.ModelUtils.Swashbuckle.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/ModelUtils.Tests/Altinn.Authorization.ModelUtils.Tests.csproj" />
+  </Folder>
+</Solution>

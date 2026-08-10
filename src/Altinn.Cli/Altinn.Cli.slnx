@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Altinn.Cli.Jwks/Altinn.Cli.Jwks.csproj" />
+  </Folder>
+</Solution>

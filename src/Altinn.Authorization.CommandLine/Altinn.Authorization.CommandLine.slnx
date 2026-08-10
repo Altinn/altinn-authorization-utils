@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <Project Path="src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/CommandLine.Tests/Altinn.Authorization.CommandLine.Tests.csproj" />
+  </Folder>
+</Solution>
