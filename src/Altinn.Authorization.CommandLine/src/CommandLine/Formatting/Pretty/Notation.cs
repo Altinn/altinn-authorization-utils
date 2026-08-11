@@ -39,6 +39,11 @@ public sealed class Notation
     public static Notation HardLine { get; } = new(Kind.MustBreak, left: Newline);
 
     /// <summary>
+    /// Gets a <see cref="Notation"/> that represents an empty text segment.
+    /// </summary>
+    public static Notation Empty { get; } = Text(string.Empty);
+
+    /// <summary>
     /// Gets a <see cref="Notation"/> that represents a text segment with the specified text and style.
     /// </summary>
     /// <param name="text">The text of the segment.</param>
@@ -47,7 +52,7 @@ public sealed class Notation
     /// </remarks>
     /// <returns>A <see cref="Notation"/> representing the text segment.</returns>
     public static Notation Text(string text)
-        => Text(text, default(Style));
+        => Text(text, Style.Plain);
 
     /// <summary>
     /// Gets a <see cref="Notation"/> that represents a text segment with the specified text and style.

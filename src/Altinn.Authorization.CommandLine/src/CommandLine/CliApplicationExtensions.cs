@@ -125,11 +125,30 @@ public static class CliApplicationExtensions
         /// Adds an output format to the service collection.
         /// </summary>
         /// <typeparam name="T">The output format type.</typeparam>
-        public void AddOutputFormat<T>()
+        public IServiceCollection AddOutputFormat<T>()
             where T : class, IFormat
         {
             services.TryAddSingleton<T>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IFormat, T>(s => s.GetRequiredService<T>()));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds an output formatter to the service collection.
+        /// </summary>
+        /// <typeparam name="TFormat">The output format type.</typeparam>
+        /// <typeparam name="TFormatter">The formatter type.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddOutputFormatter<TFormat, TFormatter>()
+            where TFormat : class, IFormat
+            where TFormatter : class, IFormatter<TFormat>
+        {
+            services.AddOutputFormat<TFormat>();
+            services.TryAddSingleton<TFormatter>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IFormatter<TFormat>, TFormatter>(static s => s.GetRequiredService<TFormatter>()));
+
+            return services;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Altinn.Authorization.CommandLine.Formatting.Json;
 
@@ -30,6 +31,7 @@ public sealed class JsonFormatOptions
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
+        options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower));
         options.MakeReadOnly();
         return options;
     }
