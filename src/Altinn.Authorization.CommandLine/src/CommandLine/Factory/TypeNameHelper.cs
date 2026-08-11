@@ -7,7 +7,7 @@ namespace Altinn.Authorization.CommandLine.Factory;
 /// <summary>
 /// Helper class for pretty printing type names.
 /// </summary>
-internal static class TypeNameHelper
+public static class TypeNameHelper
 {
     private const char DefaultNestedTypeDelimiter = '+';
 

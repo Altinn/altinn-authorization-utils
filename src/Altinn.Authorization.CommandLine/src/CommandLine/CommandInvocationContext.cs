@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Altinn.Authorization.CommandLine.Console;
+using Altinn.Authorization.CommandLine.Extensions;
 
 namespace Altinn.Authorization.CommandLine;
 
@@ -15,6 +16,7 @@ public sealed class CommandInvocationContext
         IConsole console)
         : base(parseResult.CommandResult.Command)
     {
+        Extensions = new ContextExtensions();
         ParseResult = parseResult;
         ApplicationServices = applicationServices;
         Console = console;
@@ -35,6 +37,11 @@ public sealed class CommandInvocationContext
     /// Gets the console for the command invocation.
     /// </summary>
     public IConsole Console { get; }
+
+    /// <summary>
+    /// Gets the extensions for the command invocation.
+    /// </summary>
+    public IContextExtensions Extensions { get; }
 
     /// <summary>
     /// Gets or sets the return code for the command invocation.
