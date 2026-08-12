@@ -524,7 +524,7 @@ public static partial class CommandHandlerDelegateFactory
         {
             ServiceProvider = serviceProvider,
             ServiceProviderIsService = serviceProvider.GetService<IServiceProviderIsService>(),
-            ResultHandler = serviceProvider.GetRequiredService<CommandResultHandler>(),
+            ResultHandler = serviceProvider.GetRequiredService<CommandResultHandlerResolver>(),
             ParameterBinderResolver = serviceProvider.GetRequiredService<CommandHandlerParameterBinderResolver>(),
             XmlDocProvider = serviceProvider.GetRequiredService<IXmlDocProvider>(),
         };

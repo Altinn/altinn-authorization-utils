@@ -335,7 +335,7 @@ public class CommandHandlerDelegateFactoryTests
         services.AddSingleton<IXmlDocProvider, NullXmlDocProvider>();
         services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();
         services.AddSingleton<IConsole, CommandConsole>();
-        services.AddSingleton<CommandResultHandler>();
+        services.AddSingleton<CommandResultHandlerResolver>();
         services.AddSingleton<CommandHandlerParameterBinderResolver>();
         configure?.Invoke(services);
 
