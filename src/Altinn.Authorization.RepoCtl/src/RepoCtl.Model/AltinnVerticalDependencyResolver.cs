@@ -55,6 +55,7 @@ internal static class AltinnVerticalDependencyResolver
 
         // 2. solve full dependency graph
         ResolveAllDependencies(verticals, ref problems);
+        ResolveAllDependents(verticals);
 
         if (problems.TryBuild(out var problem))
         {
@@ -72,6 +73,26 @@ internal static class AltinnVerticalDependencyResolver
         }
 
         return validDependencyKinds.Contains(dependency.Kind);
+    }
+
+    private static void ResolveAllDependents(AltinnVerticalSet verticals)
+    {
+        var builders = verticals.AsEnumerable().ToDictionary(
+            static v => v.Id,
+            static _ => ImmutableArray.CreateBuilder<AltinnVertical>());
+
+        foreach (var dependent in verticals)
+        {
+            foreach (var dependency in dependent.AllDependencies)
+            {
+                builders[dependency.Id].Add(dependent);
+            }
+        }
+
+        foreach (var vertical in verticals)
+        {
+            vertical.Dependents = AltinnVerticalSet.Create(builders[vertical.Id]);
+        }
     }
 
     private static void ResolveAllDependencies(AltinnVerticalSet verticals, ref MultipleProblemBuilder problems)

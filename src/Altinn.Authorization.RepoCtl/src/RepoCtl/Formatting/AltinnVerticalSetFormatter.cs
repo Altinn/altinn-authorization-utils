@@ -64,7 +64,7 @@ internal sealed class AltinnVerticalSetFormatter
         {
             id = v.Id,
             kind = v.Kind,
-            name = v.Name,
+            name = v.FullName,
             version = v.Version.ToString(),
             deps = ((IEnumerable<AltinnVertical>)v.AllDependencies).Select(static d => d.Id),
             projects = v.Projects.Select(static p => new

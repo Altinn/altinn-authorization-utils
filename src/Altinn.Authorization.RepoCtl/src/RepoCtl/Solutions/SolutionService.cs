@@ -196,7 +196,7 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
             tests.Add(testLibs.Build());
         }
 
-        var builder = Solution.Folder.CreateBuilder(vertical.Name);
+        var builder = Solution.Folder.CreateBuilder(vertical.FullName);
         builder.AddOpt(deps?.Build());
         builder.AddOpt(samples?.Build());
         builder.AddOpt(srcs?.Build());
