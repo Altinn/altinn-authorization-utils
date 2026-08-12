@@ -15,13 +15,17 @@ builder.Services.AddSingleton<IConfigureOption, ConfigureAltinnVerticalKindOptio
 builder.Services.AddSingleton<ICommandHandlerParameterBinderResolver, AltinnRepositoryBinderResolver>();
 builder.Services.AddSingleton<AltinnRepositoryLoader>();
 builder.Services.AddSingleton<SolutionService>();
+builder.Services.AddSingleton<Checker>();
+builder.Services.AddSingleton<RepositoryChecker>();
+builder.Services.AddCommandResultHandlerResolver<CheckCommandResultHandlerResolver>();
 
 builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<SolutionService>());
+builder.Services.AddSingleton<IRepositoryCheck, DotnetFormatCheck>();
 
 builder.Services.AddOutputFormatter<RichFormat, AltinnVerticalSetFormatter>();
 builder.Services.AddOutputFormatter<JsonFormat, AltinnVerticalSetFormatter>();
-builder.Services.AddOutputFormatter<RichFormat, CheckResultListFormatter>();
-builder.Services.AddOutputFormatter<JsonFormat, CheckResultListFormatter>();
+builder.Services.AddOutputFormatter<RichFormat, CheckRunFormatter>();
+builder.Services.AddOutputFormatter<JsonFormat, CheckRunFormatter>();
 
 var cli = builder.Build();
 cli.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>().Configure(cli);
@@ -38,33 +42,15 @@ cli.AddCommand("solutions", "Operate on solutions", (builder) =>
         await solutionService.UpdateSolutions(repository, cancellationToken);
     });
 
-    builder.AddCommand("check", "Check the solutions in this repository", async (CommandInvocationContext ctx, AltinnRepository repository, SolutionService solutionService, CancellationToken cancellationToken) =>
+    builder.AddCommand("check", "Check the solutions in this repository", (Checker checker, AltinnRepository repository, SolutionService solutionService) =>
     {
-        var result = await solutionService.Check(repository, cancellationToken);
-        if (!result.IsSuccess)
-        {
-            ctx.ReturnCode = 1;
-        }
-
-        return result;
+        return CheckCommandResult.Partial(checker, repository, [solutionService]);
     });
 });
 
-cli.AddCommand("check", "Pre-commit/pre-merge checks for the repository", async (CommandInvocationContext ctx, AltinnRepository repository, IEnumerable<IRepositoryCheck> checks, CancellationToken cancellationToken) =>
+cli.AddCommand("check", "Pre-commit/pre-merge checks for the repository", (RepositoryChecker checker, AltinnRepository repository) =>
 {
-    var results = new List<CheckResult>();
-    foreach (var check in checks)
-    {
-        var checkResult = await check.Check(repository, cancellationToken);
-        results.Add(checkResult);
-
-        if (!checkResult.IsSuccess)
-        {
-            ctx.ReturnCode += 1;
-        }
-    }
-
-    return results;
+    return CheckCommandResult.Full(checker, repository);
 });
 
 return await cli.RunAsync(args);

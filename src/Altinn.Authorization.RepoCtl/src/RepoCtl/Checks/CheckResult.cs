@@ -1,49 +1,33 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
-using Altinn.Authorization.ModelUtils;
 
 namespace Altinn.Authorization.RepoCtl.Checks;
 
-internal sealed record CheckResult
+internal sealed class CheckResult
 {
-    private readonly ImmutableValueArray<Issue> _issues;
+    public static CheckResult Success(IRepositoryCheck check)
+        => Create(check, []);
 
-    public static Builder CreateBuilder(string name)
-        => new(name);
+    public static CheckResult Create(IRepositoryCheck check, ImmutableArray<CheckIssue> issues)
+        => new(id: check.CheckId, name: check.CheckDisplayName, issues);
 
+    [JsonPropertyName("id")]
+    public string Id { get; }
+
+    [JsonPropertyName("name")]
     public string Name { get; }
 
-    public ImmutableArray<Issue> Issues => _issues.ToImmutableArray();
+    [JsonPropertyName("issues")]
+    public ImmutableArray<CheckIssue> Issues { get; }
 
-    [JsonIgnore]
+    [JsonPropertyName("success")]
     public bool IsSuccess => Issues.IsEmpty;
 
-    private CheckResult(string name, ImmutableValueArray<Issue> issues)
+    private CheckResult(string id, string name, ImmutableArray<CheckIssue> issues)
     {
         Name = name;
-        _issues = issues;
-    }
+        Id = id;
 
-    internal sealed record Issue(string File, string Message);
-
-    public sealed class Builder
-    {
-        private readonly string _name;
-        private readonly ImmutableArray<Issue>.Builder _issues;
-
-        internal Builder(string name)
-        {
-            _name = name;
-            _issues = ImmutableArray.CreateBuilder<Issue>();
-        }
-
-        public Builder AddIssue(string file, string message)
-        {
-            _issues.Add(new Issue(file, message));
-            return this;
-        }
-
-        public CheckResult Build()
-            => new CheckResult(_name, _issues.DrainToImmutableValueArray());
+        Issues = issues;
     }
 }

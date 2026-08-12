@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using Altinn.Authorization.ModelUtils;
@@ -26,12 +27,14 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
         }
     }
 
-    public async Task<CheckResult> Check(AltinnRepository repository, CancellationToken cancellationToken)
-    {
-        var builder = CheckResult.CreateBuilder("Solution files");
+    string IRepositoryCheck.CheckId => "slnx-files";
+    string IRepositoryCheck.CheckDisplayName => "Solution files";
 
+    public async IAsyncEnumerable<CheckIssue> Check(AltinnRepository repository, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
         foreach (var (solutionFile, solution) in GetSolutions(repository))
         {
+            CheckIssue? issue = null;
             try
             {
                 await using var fs = solutionFile.OpenRead();
@@ -43,16 +46,19 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
 
                 if (!wanted.AsReadOnlySequence.SequenceEqual(actual.AsReadOnlySequence))
                 {
-                    builder.AddIssue(GetRelativePath(repository.RootDirectory.FullName, solutionFile.FullName), "Solution file is out of date.");
+                    issue = CheckIssue.CreateFile(GetRelativePath(repository.RootDirectory.FullName, solutionFile.FullName), "Solution file is out of date.");
                 }
             }
             catch (FileNotFoundException)
             {
-                builder.AddIssue(GetRelativePath(repository.RootDirectory.FullName, solutionFile.FullName), "Solution file does not exist.");
+                issue = CheckIssue.CreateFile(GetRelativePath(repository.RootDirectory.FullName, solutionFile.FullName), "Solution file does not exist.");
+            }
+
+            if (issue is not null)
+            {
+                yield return issue;
             }
         }
-
-        return builder.Build();
     }
 
     private IEnumerable<(FileInfo File, Solution Solution)> GetSolutions(AltinnRepository repository)
