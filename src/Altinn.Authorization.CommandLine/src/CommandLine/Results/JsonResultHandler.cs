@@ -10,7 +10,7 @@ internal sealed class JsonResultHandler
     : ICommandResultHandler
     , ICommandResultHandlerResolver
 {
-    bool ICommandResultHandlerResolver.TryResolve(CommandResultHandlerResolver resolver, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
+    bool ICommandResultHandlerResolver.TryResolve(ICommandResultHandlerResolver resolver, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
     {
         if (type == typeof(JsonDocument))
         {

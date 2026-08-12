@@ -72,7 +72,7 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddSingleton<IConfigureOption>(static s => s.GetRequiredService<ParsableConfigureArgument>());
 
         // formatting
-        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, FormatResultResolver>();
+        hostBuilder.Services.AddCommandResultHandlerResolver<FormatResultResolver>();
         hostBuilder.Services.AddSingleton(typeof(FormatResolver<>));
         hostBuilder.Services.AddOutputFormat<RichFormat>();
         hostBuilder.Services.AddOutputFormat<JsonFormat>();

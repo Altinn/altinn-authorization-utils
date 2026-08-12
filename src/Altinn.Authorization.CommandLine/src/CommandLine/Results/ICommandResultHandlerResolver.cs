@@ -14,5 +14,5 @@ public interface ICommandResultHandlerResolver
     /// <param name="type">The result type.</param>
     /// <param name="handler">The resolved handler, when available.</param>
     /// <returns><see langword="true"/> if a handler was resolved; otherwise, <see langword="false"/>.</returns>
-    bool TryResolve(CommandResultHandlerResolver resolvers, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler);
+    bool TryResolve(ICommandResultHandlerResolver resolvers, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler);
 }

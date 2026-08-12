@@ -9,6 +9,7 @@ namespace Altinn.Authorization.CommandLine.Results;
 public sealed class CommandResultHandlerResolver
 {
     private readonly ImmutableArray<ICommandResultHandlerResolver> _resolvers;
+    private readonly Shim _shim;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandResultHandlerResolver"/> class.
@@ -17,6 +18,7 @@ public sealed class CommandResultHandlerResolver
     public CommandResultHandlerResolver(IEnumerable<ICommandResultHandlerResolver> resolvers)
     {
         _resolvers = [.. resolvers];
+        _shim = new Shim(this);
     }
 
     /// <summary>
@@ -29,7 +31,7 @@ public sealed class CommandResultHandlerResolver
     {
         foreach (var resolver in _resolvers)
         {
-            if (resolver.TryResolve(this, type, out handler))
+            if (resolver.TryResolve(_shim, type, out handler))
             {
                 return true;
             }
@@ -37,5 +39,19 @@ public sealed class CommandResultHandlerResolver
 
         handler = null!;
         return false;
+    }
+
+    private sealed class Shim
+        : ICommandResultHandlerResolver
+    {
+        private readonly CommandResultHandlerResolver _resolver;
+
+        public Shim(CommandResultHandlerResolver resolver)
+        {
+            _resolver = resolver;
+        }
+
+        public bool TryResolve(ICommandResultHandlerResolver resolvers, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
+            => _resolver.TryResolve(type, out handler);
     }
 }

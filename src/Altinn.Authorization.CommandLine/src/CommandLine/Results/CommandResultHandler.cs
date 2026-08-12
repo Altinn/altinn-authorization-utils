@@ -19,7 +19,7 @@ public abstract class CommandResultHandler<T>
         return HandleResult((T)result!, context, cancellationToken);
     }
 
-    bool ICommandResultHandlerResolver.TryResolve(CommandResultHandlerResolver resolvers, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
+    bool ICommandResultHandlerResolver.TryResolve(ICommandResultHandlerResolver resolvers, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
     {
         if (type == typeof(T))
         {
