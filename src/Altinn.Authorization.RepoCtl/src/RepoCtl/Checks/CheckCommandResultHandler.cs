@@ -57,7 +57,9 @@ internal sealed class CheckCommandResultHandlerResolver
                 await RunChecks(checkResult, collector, cancellationToken);
             }
 
-            await formatHandler.HandleResult(collector.Build(), context, cancellationToken);
+            var runResult = collector.Build();
+            context.ReturnCode = runResult.CheckResults.Sum(static r => r.Issues.Length);
+            await formatHandler.HandleResult(runResult, context, cancellationToken);
         }
 
         private Task RunChecks(CheckCommandResult result, ICheckReporter reporter, CancellationToken cancellationToken)

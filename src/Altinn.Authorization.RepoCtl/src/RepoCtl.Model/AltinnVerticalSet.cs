@@ -17,8 +17,31 @@ public sealed class AltinnVerticalSet
     {
         verticals.SortBy(static v => v.Id);
 
-        // TODO: remove duplicates
+        RemoveDuplicates(verticals);
         return new(verticals.DrainToImmutable());
+
+        static void RemoveDuplicates(ImmutableArray<AltinnVertical>.Builder verticals)
+        {
+            if (verticals.Count < 2)
+            {
+                return;
+            }
+
+            var write = 1;
+            for (var read = 1; read < verticals.Count; read++)
+            {
+                if (verticals[write - 1].Id != verticals[read].Id)
+                {
+                    verticals[write++] = verticals[read];
+                }
+            }
+
+            var removed = verticals.Count - write;
+            for (var i = 0; i < removed; i++)
+            {
+                verticals.RemoveAt(verticals.Count - 1);
+            }
+        }
     }
 
     private readonly ImmutableArray<AltinnVertical> _verticals;

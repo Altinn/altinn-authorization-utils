@@ -83,7 +83,7 @@ public class AltinnVerticalKindSetTests
         ShouldHaveItems(left.Intersect(right), AltinnVerticalKind.Library);
         ShouldHaveItems(left.Except(right), AltinnVerticalKind.Application, AltinnVerticalKind.Package);
         ShouldHaveItems(left.SymmetricExcept(right), AltinnVerticalKind.Application, AltinnVerticalKind.Package, AltinnVerticalKind.Tool);
-        ShouldHaveItems(left.Union(right), AltinnVerticalKind.Application, AltinnVerticalKind.Library, AltinnVerticalKind.Package, AltinnVerticalKind.Tool);
+        ShouldHaveItems(left.Union(right), AltinnVerticalKind.Application, AltinnVerticalKind.Package, AltinnVerticalKind.Tool, AltinnVerticalKind.Library);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class AltinnVerticalKindSetTests
             .Add(AltinnVerticalKind.Application)
             .Add(AltinnVerticalKind.Library);
 
-        set.ToString().ShouldBe("app, lib, pkg, tool");
+        set.ToString().ShouldBe("app, pkg, tool, lib");
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class AltinnVerticalKindSetTests
         var success = set.TryFormat(destination, out var charsWritten, default, provider: null);
 
         success.ShouldBeTrue();
-        destination[..charsWritten].ToString().ShouldBe("app, lib, pkg");
+        destination[..charsWritten].ToString().ShouldBe("app, pkg, lib");
     }
 
     [Fact]
