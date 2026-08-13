@@ -3,6 +3,7 @@ using System.CommandLine.Parsing;
 using System.Reflection;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Formatting;
+using Altinn.Authorization.CommandLine.Results;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -121,6 +122,20 @@ public static class CliApplicationExtensions
 
     extension(IServiceCollection services)
     {
+        /// <summary>
+        /// Adds a command result handler resolver to the service collection.
+        /// </summary>
+        /// <typeparam name="TResolver">The resolver type.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddCommandResultHandlerResolver<TResolver>()
+            where TResolver : class, ICommandResultHandlerResolver
+        {
+            services.TryAddSingleton<TResolver>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<ICommandResultHandlerResolver, TResolver>(s => s.GetRequiredService<TResolver>()));
+
+            return services;
+        }
+
         /// <summary>
         /// Adds an output format to the service collection.
         /// </summary>

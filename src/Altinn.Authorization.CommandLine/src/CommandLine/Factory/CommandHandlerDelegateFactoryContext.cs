@@ -12,7 +12,7 @@ internal sealed class CommandHandlerDelegateFactoryContext
     // Options
     public required IServiceProvider ServiceProvider { get; init; }
     public required IXmlDocProvider XmlDocProvider { get; init; }
-    public required CommandResultHandler ResultHandler { get; init; }
+    public required CommandResultHandlerResolver ResultHandler { get; init; }
     public required CommandHandlerParameterBinderResolver ParameterBinderResolver { get; init; }
     public required IServiceProviderIsService? ServiceProviderIsService { get; init; }
     public List<Option> Options { get; } = new List<Option>();

@@ -62,9 +62,9 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddSingleton<CommandHandlerParameterBinderResolver>();
 
         // result handlers
-        hostBuilder.Services.AddSingleton<CommandResultHandler>();
-        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, IntResultHandler>();
-        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, JsonResultHandler>();
+        hostBuilder.Services.AddSingleton<CommandResultHandlerResolver>();
+        hostBuilder.Services.AddCommandResultHandlerResolver<IntResultHandler>();
+        hostBuilder.Services.AddCommandResultHandlerResolver<JsonResultHandler>();
 
         // option/argument handlers
         hostBuilder.Services.AddSingleton<ParsableConfigureArgument>();
@@ -72,7 +72,7 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddSingleton<IConfigureOption>(static s => s.GetRequiredService<ParsableConfigureArgument>());
 
         // formatting
-        hostBuilder.Services.AddSingleton<ICommandResultHandlerResolver, FormatResultResolver>();
+        hostBuilder.Services.AddCommandResultHandlerResolver<FormatResultResolver>();
         hostBuilder.Services.AddSingleton(typeof(FormatResolver<>));
         hostBuilder.Services.AddOutputFormat<RichFormat>();
         hostBuilder.Services.AddOutputFormat<JsonFormat>();

@@ -200,7 +200,7 @@ public class CommandHandlerDelegateFactoryTests
         var sink = new ResultSink();
         var resolver = new CaptureResultHandler<string>(sink);
 
-        var resolved = ((ICommandResultHandlerResolver)resolver).TryResolve(typeof(string), out var handler);
+        var resolved = ((ICommandResultHandlerResolver)resolver).TryResolve(resolver, typeof(string), out var handler);
 
         resolved.ShouldBeTrue();
         handler.ShouldBeSameAs(resolver);
@@ -209,7 +209,7 @@ public class CommandHandlerDelegateFactoryTests
         await handler!.HandleResult("value", CreateContext(new(static (_, _) => Task.CompletedTask, [], [], []), services), TestContext.Current.CancellationToken);
 
         sink.StringResults.ShouldBe(["value"]);
-        ((ICommandResultHandlerResolver)resolver).TryResolve(typeof(int), out _).ShouldBeFalse();
+        ((ICommandResultHandlerResolver)resolver).TryResolve(resolver, typeof(int), out _).ShouldBeFalse();
     }
 
     [Fact]
@@ -335,7 +335,7 @@ public class CommandHandlerDelegateFactoryTests
         services.AddSingleton<IXmlDocProvider, NullXmlDocProvider>();
         services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();
         services.AddSingleton<IConsole, CommandConsole>();
-        services.AddSingleton<CommandResultHandler>();
+        services.AddSingleton<CommandResultHandlerResolver>();
         services.AddSingleton<CommandHandlerParameterBinderResolver>();
         configure?.Invoke(services);
 

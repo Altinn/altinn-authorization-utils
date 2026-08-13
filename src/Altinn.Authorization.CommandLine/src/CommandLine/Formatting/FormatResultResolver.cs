@@ -45,7 +45,7 @@ internal sealed class FormatResultResolver
     }
 
     /// <inheritdoc/>
-    public bool TryResolve(Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
+    public bool TryResolve(ICommandResultHandlerResolver resolver, Type type, [NotNullWhen(true)] out ICommandResultHandler? handler)
     {
         var builder = ImmutableArray.CreateBuilder<ResolvedFormatter>();
         foreach (var format in _formats)
