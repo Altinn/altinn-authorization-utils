@@ -42,11 +42,7 @@ internal sealed class AnsiConsoleLogger
         LogEntry<TState> logEntry = new LogEntry<TState>(logLevel, _name, eventId, state, exception, formatter);
         var renderable = Formatter.Format(in logEntry, ScopeProvider);
 
-        _console.ExclusivityMode.Run(() =>
-        {
-            _console.StdErr.Write(renderable);
-            return 0;
-        });
+        _console.StdErr.Write(renderable);
     }
 
     /// <inheritdoc/>

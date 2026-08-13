@@ -48,20 +48,12 @@ internal sealed class ConsoleWriter
             return;
         }
 
-        _console.ExclusivityMode.Run(() =>
-        {
-            _console.Write(value);
-            return 0;
-        });
+        _console.Write(value);
     }
 
     public void Write(IRenderable renderable)
     {
-        _console.ExclusivityMode.Run(() =>
-        {
-            _console.Write(renderable);
-            return 0;
-        });
+        _console.Write(renderable);
     }
 
     public sealed override void Write(object? value)
@@ -132,12 +124,8 @@ internal sealed class ConsoleWriter
 
     public void WriteLine(IRenderable renderable)
     {
-        _console.ExclusivityMode.Run(() =>
-        {
-            _console.Write(renderable);
-            _console.WriteLine();
-            return 0;
-        });
+        _console.Write(renderable);
+        _console.WriteLine();
     }
 
     public sealed override void WriteLine(object? value)
