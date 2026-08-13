@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/deps/" />
+  <Folder Name="/deps/TestUtils/">
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
+  </Folder>
+  <Folder Name="/deps/Swashbuckle/">
+    <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
+    <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/Altinn.Urn.Sample.Api/Altinn.Urn.Sample.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Altinn.Urn/Altinn.Urn.csproj" />
+    <Project Path="src/Altinn.Urn.SourceGenerator/Altinn.Urn.SourceGenerator.csproj" />
+    <Project Path="src/Altinn.Urn.Swashbuckle/Altinn.Urn.Swashbuckle.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Altinn.Urn.SourceGenerator.IntegrationTests/Altinn.Urn.SourceGenerator.IntegrationTests.csproj" />
+    <Project Path="test/Altinn.Urn.SourceGenerator.Tests/Altinn.Urn.SourceGenerator.Tests.csproj" />
+    <Project Path="test/Altinn.Urn.Swashbuckle.Tests/Altinn.Urn.Swashbuckle.Tests.csproj" />
+    <Project Path="test/Altinn.Urn.Tests/Altinn.Urn.Tests.csproj" />
+  </Folder>
+</Solution>

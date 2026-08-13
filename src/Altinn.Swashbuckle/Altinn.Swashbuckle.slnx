@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
+    <Project Path="src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Altinn.Swashbuckle.Tests/Altinn.Swashbuckle.Tests.csproj" />
+  </Folder>
+</Solution>

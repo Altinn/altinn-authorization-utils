@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
+    <Project Path="src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <Project Path="src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
+    <Project Path="src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
+  </Folder>
+</Solution>

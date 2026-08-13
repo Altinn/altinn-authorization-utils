@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/deps/" />
+  <Folder Name="/deps/CommandLine/">
+    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
+  </Folder>
+  <Folder Name="/deps/ModelUtils/">
+    <Project Path="../Altinn.Authorization.ModelUtils/src/ModelUtils/Altinn.Authorization.ModelUtils.csproj" />
+    <Project Path="../Altinn.Authorization.ModelUtils/src/ModelUtils.AspNet/Altinn.Authorization.ModelUtils.AspNet.csproj" />
+    <Project Path="../Altinn.Authorization.ModelUtils/src/ModelUtils.Swashbuckle/Altinn.Authorization.ModelUtils.Swashbuckle.csproj" />
+  </Folder>
+  <Folder Name="/deps/ProblemDetails/">
+    <Project Path="../Altinn.Authorization.ProblemDetails/src/ProblemDetails/Altinn.Authorization.ProblemDetails.csproj" />
+    <Project Path="../Altinn.Authorization.ProblemDetails/src/ProblemDetails.Abstractions/Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
+    <Project Path="../Altinn.Authorization.ProblemDetails/src/ProblemDetails.Validation/Altinn.Authorization.ProblemDetails.Validation.csproj" />
+  </Folder>
+  <Folder Name="/deps/TestUtils/">
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
+    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
+  </Folder>
+  <Folder Name="/deps/Swashbuckle/">
+    <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
+    <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <Project Path="src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
+  </Folder>
+</Solution>
