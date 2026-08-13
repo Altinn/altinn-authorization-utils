@@ -137,6 +137,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B031EC5F-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.CommandLine.Tests", "src\Altinn.Authorization.CommandLine\test\CommandLine.Tests\Altinn.Authorization.CommandLine.Tests.csproj", "{E9BC663D-D7D5-48D1-8E07-3E55CEFF0463}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Authorization.CommandLine.Shell", "src\Altinn.Authorization.CommandLine\src\CommandLine.Shell\Altinn.Authorization.CommandLine.Shell.csproj", "{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -651,6 +653,18 @@ Global
 		{E9BC663D-D7D5-48D1-8E07-3E55CEFF0463}.Release|x64.Build.0 = Release|Any CPU
 		{E9BC663D-D7D5-48D1-8E07-3E55CEFF0463}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9BC663D-D7D5-48D1-8E07-3E55CEFF0463}.Release|x86.Build.0 = Release|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Debug|x64.Build.0 = Debug|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Debug|x86.Build.0 = Debug|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Release|x64.ActiveCfg = Release|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Release|x64.Build.0 = Release|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Release|x86.ActiveCfg = Release|Any CPU
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -715,6 +729,7 @@ Global
 		{7745B2D6-691B-4B0F-866C-076C286E1EA7} = {47FA3AE1-29C2-310D-B68A-59E107BE500F}
 		{B031EC5F-FDA7-87FA-E72A-2A1AC8881CB0} = {BC0ADF53-8127-2072-5604-C6018C050138}
 		{E9BC663D-D7D5-48D1-8E07-3E55CEFF0463} = {B031EC5F-FDA7-87FA-E72A-2A1AC8881CB0}
+		{68F57F11-4FB4-4AC0-974D-79F2D8353FFD} = {47FA3AE1-29C2-310D-B68A-59E107BE500F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD1F9C4B-7DD4-49B6-8DC2-881E80966634}
