@@ -1,0 +1,7 @@
+{
+    "deps": [
+        "pkg:Altinn.Authorization.CommandLine",
+        "pkg:Altinn.Authorization.ProblemDetails",
+        "pkg:Altinn.Authorization.ModelUtils"
+    ]
+}
