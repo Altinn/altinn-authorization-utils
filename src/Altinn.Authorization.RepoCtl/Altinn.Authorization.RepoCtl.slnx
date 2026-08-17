@@ -2,6 +2,8 @@
   <Folder Name="/deps/" />
   <Folder Name="/deps/CommandLine/">
     <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Azure/Altinn.Authorization.CommandLine.Azure.csproj" />
+    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Azure.KeyVault/Altinn.Authorization.CommandLine.Azure.KeyVault.csproj" />
     <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
   </Folder>
   <Folder Name="/deps/ModelUtils/">

@@ -5,6 +5,7 @@ using Altinn.Authorization.CommandLine.Factory.ArgumentParsing;
 using Altinn.Authorization.CommandLine.Formatting;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.CommandLine.Logging;
+using Altinn.Authorization.CommandLine.PreProcessing;
 using Altinn.Authorization.CommandLine.Results;
 using Altinn.Authorization.CommandLine.XmlDoc;
 using Microsoft.Extensions.Configuration;
@@ -64,12 +65,18 @@ public sealed class CliApplicationBuilder
         // result handlers
         hostBuilder.Services.AddSingleton<CommandResultHandlerResolver>();
         hostBuilder.Services.AddCommandResultHandlerResolver<IntResultHandler>();
+        hostBuilder.Services.AddCommandResultHandlerResolver<BoolResultHandler>();
         hostBuilder.Services.AddCommandResultHandlerResolver<JsonResultHandler>();
 
         // option/argument handlers
         hostBuilder.Services.AddSingleton<ParsableConfigureArgument>();
         hostBuilder.Services.AddSingleton<IConfigureArgument>(static s => s.GetRequiredService<ParsableConfigureArgument>());
         hostBuilder.Services.AddSingleton<IConfigureOption>(static s => s.GetRequiredService<ParsableConfigureArgument>());
+
+        // argument preprocessing
+        hostBuilder.Services.AddSingleton<ArgumentPreProcessor>();
+        hostBuilder.Services.AddArgumentPreProcessor<ArgumentSubstitutorPreProcessor>();
+        hostBuilder.Services.AddArgumentUriResolver<EnvironmentVariableSubstitutor>();
 
         // formatting
         hostBuilder.Services.AddCommandResultHandlerResolver<FormatResultResolver>();
