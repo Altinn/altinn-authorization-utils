@@ -4,6 +4,7 @@ using Altinn.Authorization.CommandLine.Commands;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.CommandLine.Logging;
+using Altinn.Authorization.CommandLine.PreProcessing;
 using Altinn.Authorization.CommandLine.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,7 @@ public sealed class CliApplication
     private readonly IHost _host;
     private readonly RootCommand _rootCommand;
     private readonly CommandBuilder _rootBuilder;
+    private readonly ArgumentPreProcessor _argumentPreProcessor;
     private readonly AtomicBool _built;
     private readonly ConventionsCollection _conventions;
     private readonly CommandPipeline _pipeline;
@@ -55,6 +57,7 @@ public sealed class CliApplication
         _conventions = new ConventionsCollection(_built);
         _pipeline = new CommandPipeline(host.Services.GetRequiredService<IServiceScopeFactory>());
         _rootBuilder = new CommandBuilder(this, _rootCommand, _conventions);
+        _argumentPreProcessor = host.Services.GetRequiredService<ArgumentPreProcessor>();
 
         AddDefaultConventions(_conventions, _host.Services);
     }
@@ -92,6 +95,7 @@ public sealed class CliApplication
 
         try
         {
+            args = await _argumentPreProcessor.Preprocess(args, cancellationToken);
             var parseResult = _rootCommand.Parse(args, _host.Services.GetService<ParserConfiguration>());
 
             await _host.StartAsync(cancellationToken);

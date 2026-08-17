@@ -3,6 +3,7 @@ using System.CommandLine.Parsing;
 using System.Reflection;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Formatting;
+using Altinn.Authorization.CommandLine.PreProcessing;
 using Altinn.Authorization.CommandLine.Results;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -162,6 +163,70 @@ public static class CliApplicationExtensions
             services.AddOutputFormat<TFormat>();
             services.TryAddSingleton<TFormatter>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IFormatter<TFormat>, TFormatter>(static s => s.GetRequiredService<TFormatter>()));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds an argument preprocessor to the service collection.
+        /// </summary>
+        /// <typeparam name="TPreProcessor">The argument preprocessor type.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddArgumentPreProcessor<TPreProcessor>()
+            where TPreProcessor : class, IArgumentPreProcessor
+        {
+            services.TryAddSingleton<TPreProcessor>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IArgumentPreProcessor, TPreProcessor>(s => s.GetRequiredService<TPreProcessor>()));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds an argument substitutor to the service collection.
+        /// </summary>
+        /// <typeparam name="TSubstitutor">The argument substitutor.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddArgumentSubstitutor<TSubstitutor>()
+            where TSubstitutor : class, IArgumentSubstitutor
+        {
+            services.TryAddSingleton<TSubstitutor>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IArgumentSubstitutor, TSubstitutor>(s => s.GetRequiredService<TSubstitutor>()));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds an environment variable substitutor to the service collection.
+        /// </summary>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddEnvironmentVariableSubstitutor()
+        {
+            services.AddArgumentSubstitutor<EnvironmentVariableSubstitutor>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds a URI variable substitutor to the service collection.
+        /// </summary>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddUriVariableSubstitutor()
+        {
+            services.AddArgumentSubstitutor<UriVariableSubstitutor>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds an argument URI resolver to the service collection.
+        /// </summary>
+        /// <typeparam name="TResolver">The argument URI resolver type.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddArgumentUriResolver<TResolver>()
+            where TResolver : class, IArgumentUriResolver
+        {
+            services.TryAddSingleton<TResolver>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IArgumentUriResolver, TResolver>(s => s.GetRequiredService<TResolver>()));
 
             return services;
         }

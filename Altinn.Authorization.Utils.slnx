@@ -2,6 +2,8 @@
   <Folder Name="/Altinn.Authorization.CommandLine/" />
   <Folder Name="/Altinn.Authorization.CommandLine/src/">
     <Project Path="src/Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <Project Path="src/Altinn.Authorization.CommandLine/src/CommandLine.Azure/Altinn.Authorization.CommandLine.Azure.csproj" />
+    <Project Path="src/Altinn.Authorization.CommandLine/src/CommandLine.Azure.KeyVault/Altinn.Authorization.CommandLine.Azure.KeyVault.csproj" />
     <Project Path="src/Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
   </Folder>
   <Folder Name="/Altinn.Authorization.CommandLine/test/">

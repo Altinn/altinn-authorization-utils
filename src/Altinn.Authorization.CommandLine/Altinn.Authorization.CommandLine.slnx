@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <Project Path="src/CommandLine.Azure/Altinn.Authorization.CommandLine.Azure.csproj" />
+    <Project Path="src/CommandLine.Azure.KeyVault/Altinn.Authorization.CommandLine.Azure.KeyVault.csproj" />
     <Project Path="src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
   </Folder>
   <Folder Name="/test/">
