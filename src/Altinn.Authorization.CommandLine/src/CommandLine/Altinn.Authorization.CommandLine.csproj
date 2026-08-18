@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Diagnostics" />
+    <PackageReference Include="Microsoft.Extensions.AsyncState" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Nerdbank.Streams" />
     <PackageReference Include="Spectre.Console" />

@@ -64,6 +64,8 @@ public sealed class CliApplication
 
     private void AddDefaultConventions(ICommandConventionBuilder builder, IServiceProvider serviceProvider)
     {
+        CommandInvocationContextAccessor.Configure(builder);
+
         // logging
         serviceProvider.GetRequiredService<LogLevelService>().Configure(builder);
         serviceProvider.GetRequiredService<InvocationLogger>().Configure(builder);
