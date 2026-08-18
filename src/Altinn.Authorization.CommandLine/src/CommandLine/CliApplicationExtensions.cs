@@ -124,6 +124,34 @@ public static class CliApplicationExtensions
     extension(IServiceCollection services)
     {
         /// <summary>
+        /// Adds a <see cref="IConfigureOption"/> service to the service collection.
+        /// </summary>
+        /// <typeparam name="TConfigureOption">The configure option type.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddConfigureOption<TConfigureOption>()
+            where TConfigureOption : class, IConfigureOption
+        {
+            services.TryAddSingleton<TConfigureOption>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOption, TConfigureOption>(s => s.GetRequiredService<TConfigureOption>()));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="IConfigureArgument"/> service to the service collection.
+        /// </summary>
+        /// <typeparam name="TConfigureArgument">The configure argument type.</typeparam>
+        /// <returns>The service collection.</returns>
+        public IServiceCollection AddConfigureArgument<TConfigureArgument>()
+            where TConfigureArgument : class, IConfigureArgument
+        {
+            services.TryAddSingleton<TConfigureArgument>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureArgument, TConfigureArgument>(s => s.GetRequiredService<TConfigureArgument>()));
+
+            return services;
+        }
+
+        /// <summary>
         /// Adds a command result handler resolver to the service collection.
         /// </summary>
         /// <typeparam name="TResolver">The resolver type.</typeparam>

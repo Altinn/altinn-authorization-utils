@@ -9,14 +9,20 @@ internal sealed class Console
     private readonly IAnsiConsole _stdOut;
     private readonly IAnsiConsole _stdErr;
 
-    public Console(IExclusivityMode exclusivityMode)
+    public Console(IExclusivityMode exclusivityMode, IEnumerable<IProfileEnricher> enrichers)
     {
+        ProfileEnrichment profileEnrichment = new()
+        {
+            Enrichers = [.. enrichers]
+        };
+
         _stdOut = AnsiConsole.Create(new AnsiConsoleSettings
         {
             Ansi = AnsiSupport.Detect,
             ColorSystem = ColorSystemSupport.Detect,
             ExclusivityMode = exclusivityMode,
             Out = new AnsiConsoleOutput(System.Console.Out),
+            Enrichment = profileEnrichment,
         });
 
         _stdErr = AnsiConsole.Create(new AnsiConsoleSettings
@@ -25,6 +31,7 @@ internal sealed class Console
             ColorSystem = ColorSystemSupport.Detect,
             ExclusivityMode = exclusivityMode,
             Out = new AnsiConsoleOutput(System.Console.Error),
+            Enrichment = profileEnrichment,
         });
     }
 
