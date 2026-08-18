@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Altinn.Authorization.CommandLine.AsyncState;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Factory.ArgumentParsing;
@@ -8,6 +9,7 @@ using Altinn.Authorization.CommandLine.Logging;
 using Altinn.Authorization.CommandLine.PreProcessing;
 using Altinn.Authorization.CommandLine.Results;
 using Altinn.Authorization.CommandLine.XmlDoc;
+using Microsoft.Extensions.AsyncState;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -55,6 +57,7 @@ public sealed class CliApplicationBuilder
 
         hostBuilder.Services.AddSingleton<OptionFactory, DefaultOptionFactory>();
         hostBuilder.Services.AddSingleton<ArgumentFactory, DefaultArgumentFactory>();
+        hostBuilder.Services.AddSingleton<ICommandInvocationContextAccessor, CommandInvocationContextAccessor>();
 
         // documentation generation
         hostBuilder.Services.AddSingleton<IXmlDocProvider, DefaultXmlDocProvider>();
@@ -83,6 +86,10 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddSingleton(typeof(FormatResolver<>));
         hostBuilder.Services.AddOutputFormat<RichFormat>();
         hostBuilder.Services.AddOutputFormat<JsonFormat>();
+
+        // async state
+        hostBuilder.Services.AddAsyncState();
+        hostBuilder.Services.AddSingleton(typeof(IAsyncContext<>), typeof(AsyncContextCommandInvocationContext<>));
 
         // console
         hostBuilder.Services.AddSingleton<IExclusivityMode, SharedExclusivityMode>();
