@@ -4,4 +4,8 @@
     <PackageReference Include="CommunityToolkit.Diagnostics" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../CommandLine/Altinn.Authorization.CommandLine.csproj" />
+  </ItemGroup>
+
 </Project>
