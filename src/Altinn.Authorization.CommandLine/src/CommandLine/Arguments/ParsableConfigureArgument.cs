@@ -1,9 +1,10 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Reflection;
+using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Utils;
 
-namespace Altinn.Authorization.CommandLine.Factory.ArgumentParsing;
+namespace Altinn.Authorization.CommandLine.Arguments;
 
 internal sealed class ParsableConfigureArgument
     : IConfigureArgument

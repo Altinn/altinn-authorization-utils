@@ -1,8 +1,8 @@
 using System.CommandLine;
+using Altinn.Authorization.CommandLine.Arguments;
 using Altinn.Authorization.CommandLine.AsyncState;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Factory;
-using Altinn.Authorization.CommandLine.Factory.ArgumentParsing;
 using Altinn.Authorization.CommandLine.Formatting;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.CommandLine.Logging;
@@ -72,9 +72,10 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddCommandResultHandlerResolver<JsonResultHandler>();
 
         // option/argument handlers
-        hostBuilder.Services.AddSingleton<ParsableConfigureArgument>();
-        hostBuilder.Services.AddSingleton<IConfigureArgument>(static s => s.GetRequiredService<ParsableConfigureArgument>());
-        hostBuilder.Services.AddSingleton<IConfigureOption>(static s => s.GetRequiredService<ParsableConfigureArgument>());
+        hostBuilder.Services.AddConfigureOption<ParsableConfigureArgument>();
+        hostBuilder.Services.AddConfigureArgument<ParsableConfigureArgument>();
+        hostBuilder.Services.AddConfigureOption<ArgumentEnumConfigureArgument>();
+        hostBuilder.Services.AddConfigureArgument<ArgumentEnumConfigureArgument>();
 
         // argument preprocessing
         hostBuilder.Services.AddSingleton<ArgumentPreProcessor>();
