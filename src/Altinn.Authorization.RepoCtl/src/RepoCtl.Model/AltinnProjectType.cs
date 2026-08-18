@@ -87,5 +87,11 @@ public static class AltinnProjectTypeExtensions
         /// </summary>
         public bool CanBeReferencedByOtherProjects
             => type is AltinnProjectType.InternalLibrary or AltinnProjectType.PackageLibrary;
+
+        /// <summary>
+        /// Gets a value indicating whether the project can be packed as a NuGet package.
+        /// </summary>
+        public bool IsPackable
+            => type is AltinnProjectType.Tool or AltinnProjectType.PackageLibrary;
     }
 }

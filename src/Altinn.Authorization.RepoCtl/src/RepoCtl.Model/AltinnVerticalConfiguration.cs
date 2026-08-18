@@ -20,6 +20,7 @@ public sealed partial record AltinnVerticalConfiguration
     {
         Dependencies = [],
         DisplayName = null,
+        Infrastructure = null,
     };
 
     /// <summary>
@@ -76,6 +77,11 @@ public sealed partial record AltinnVerticalConfiguration
     /// </summary>
     public required string? DisplayName { get; init; }
 
+    /// <summary>
+    /// Gets the infrastructure configuration of the vertical.
+    /// </summary>
+    public required AltinnVerticalInfrastructureConfiguration? Infrastructure { get; init; }
+
     internal record InputModel
         : IInputModel<AltinnVerticalConfiguration>
     {
@@ -92,16 +98,89 @@ public sealed partial record AltinnVerticalConfiguration
             init => DisplayName ??= value;
         }
 
+        [JsonPropertyName("infra")]
+        public InfrastructureInputModel? Infrastructure { get; init; }
+
         public bool TryValidate(ref ValidationContext context, [NotNullWhen(true)] out AltinnVerticalConfiguration? validated)
         {
             ImmutableValueSet<AltinnVerticalId> dependencies = Dependencies is not null
                 ? [.. Dependencies]
                 : [];
 
+            AltinnVerticalInfrastructureConfiguration? infrastructure = null;
+            if (Infrastructure is not null)
+            {
+                context.TryValidateChild("/infra", Infrastructure, out infrastructure);
+            }
+
+            if (context.HasErrors)
+            {
+                validated = null;
+                return false;
+            }
+
             validated = new AltinnVerticalConfiguration
             {
                 Dependencies = dependencies,
                 DisplayName = DisplayName,
+                Infrastructure = infrastructure,
+            };
+            return true;
+        }
+    }
+
+    internal record InfrastructureInputModel
+        : IInputModel<AltinnVerticalInfrastructureConfiguration>
+    {
+        [JsonPropertyName("terraform")]
+        public TerraformInputModel? Terraform { get; init; }
+
+        public bool TryValidate(ref ValidationContext context, [NotNullWhen(true)] out AltinnVerticalInfrastructureConfiguration? validated)
+        {
+            context.TryValidateChild("/terraform", Terraform, out AltinnVerticalTerraformConfiguration? terraform);
+
+            if (context.HasErrors)
+            {
+                validated = null;
+                return false;
+            }
+
+            Debug.Assert(terraform is not null);
+            validated = new AltinnVerticalInfrastructureConfiguration
+            {
+                Terraform = terraform,
+            };
+            return true;
+        }
+    }
+
+    internal record TerraformInputModel
+        : IInputModel<AltinnVerticalTerraformConfiguration>
+    {
+        [JsonPropertyName("stateFile")]
+        public string? StateFile { get; init; }
+
+        public bool TryValidate(ref ValidationContext context, [NotNullWhen(true)] out AltinnVerticalTerraformConfiguration? validated)
+        {
+            if (string.IsNullOrEmpty(StateFile))
+            {
+                context.AddChildProblem(StdValidationErrors.Required, "/stateFile");
+            }
+            else if (StateFile.Length < 10)
+            {
+                context.AddChildProblem(StdValidationErrors.MinLength, "/stateFile", detail: "The state file path must be at least 10 characters long.");
+            }
+
+            if (context.HasErrors)
+            {
+                validated = null;
+                return false;
+            }
+
+            Debug.Assert(StateFile is not null);
+            validated = new AltinnVerticalTerraformConfiguration
+            {
+                StateFile = StateFile!,
             };
             return true;
         }

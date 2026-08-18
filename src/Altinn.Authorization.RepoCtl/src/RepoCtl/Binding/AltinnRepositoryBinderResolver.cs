@@ -5,8 +5,11 @@ using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Help;
+using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
+using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.Binding;
 
@@ -26,6 +29,18 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
         if (parameter.ParameterType == typeof(AltinnVerticalSet))
         {
             parameterBinder = new VerticalSetBinder();
+            return true;
+        }
+
+        if (parameter.ParameterType == typeof(AltinnVertical))
+        {
+            parameterBinder = new VerticalBinder();
+            return true;
+        }
+
+        if (parameter.ParameterType == typeof(GitHubContext))
+        {
+            parameterBinder = new GitHubContextBinder();
             return true;
         }
 
@@ -61,21 +76,31 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
             string? description)
         {
             var factory = context.ApplicationServices.GetRequiredService<OptionFactory>();
-            var option = factory.Create<AltinnVerticalKindSet>(
+            var kindOption = factory.Create<AltinnVerticalKindSet>(
                 name: "--kind",
                 aliases: [],
                 description: "Limit the verticals to those of the specified kinds.",
                 isRequired: false,
                 defaultValueBox: new(AltinnVerticalKindSet.All));
 
-            option.HelpCustomization.GetDefaultValue = () => ["all"];
+            kindOption.HelpCustomization.GetDefaultValue = () => [new("all", Color.Cyan)];
 
-            context.Add(option);
-            return new VerticalSetResolver(option);
+            var dirOption = factory.Create<string?>(
+                name: "--dir",
+                aliases: [],
+                description: "Sub-directory of the repository (either relative or absolute) to limit the verticals to.",
+                isRequired: false,
+                defaultValueBox: new());
+
+            dirOption.HelpCustomization.GetDefaultValue = () => [new("./", Color.Cyan)];
+
+            context.Add(kindOption);
+            context.Add(dirOption);
+            return new VerticalSetResolver(kindOption, dirOption);
         }
     }
 
-    private sealed class VerticalSetResolver(Option<AltinnVerticalKindSet> option)
+    private sealed class VerticalSetResolver(Option<AltinnVerticalKindSet> kindOption, Option<string?> dirOption)
         : ICommandHandlerParameterResolver
     {
         public async Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
@@ -84,8 +109,134 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
             var repo = await repoResolver.ResolveParameterValue(invocationContext, cancellationToken);
             repo.EnsureSuccess();
 
-            var kinds = invocationContext.ParseResult.GetRequiredValue(option);
-            return repo.Value.Verticals.OfKind(kinds);
+            var kinds = invocationContext.ParseResult.GetRequiredValue(kindOption);
+            var set = repo.Value.Verticals.OfKind(kinds);
+
+            if (invocationContext.ParseResult.GetRequiredValue(dirOption) is { } dir)
+            {
+                dir = Path.GetFullPath(dir, repoResolver.GetWorkingDirectory(invocationContext).FullName);
+                set = set.InDirectory(new(dir));
+            }
+
+            return set;
+        }
+    }
+
+    private sealed class VerticalBinder
+        : ICommandHandlerParameterBinder
+    {
+        public ICommandHandlerParameterResolver Bind(
+            ICommandHandlerParameterBinderContext context,
+            StrongBox<object?>? defaultValueBox,
+            string? description)
+        {
+            var factory = context.ApplicationServices.GetRequiredService<ArgumentFactory>();
+            var verticalArgument = factory.Create<string>(
+                name: "vertical",
+                description: "The vertical to operate on.",
+                defaultValueBox: null);
+
+            context.Add(verticalArgument);
+            return new VerticalResolver(verticalArgument);
+        }
+    }
+
+    private sealed class VerticalResolver(Argument<string> verticalArgument)
+        : ICommandHandlerParameterResolver
+    {
+        public async Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+        {
+            var repoResolver = invocationContext.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>();
+            var repo = await repoResolver.ResolveParameterValue(invocationContext, cancellationToken);
+            repo.EnsureSuccess();
+
+            var lookup = invocationContext.ParseResult.GetRequiredValue(verticalArgument);
+
+            // First, we try to interpret the argument as a vertical ID
+            if (AltinnVerticalId.TryParse(lookup, null, out var verticalId)
+                && repo.Value.Verticals.TryGet(verticalId, out var vertical))
+            {
+                return vertical;
+            }
+
+            // if not, interpret it as a directory path
+            var dir = Path.GetFullPath(lookup, repoResolver.GetWorkingDirectory(invocationContext).FullName);
+            var candidates = repo.Value.Verticals.InDirectory(new(dir));
+
+            if (candidates.Count == 0)
+            {
+                invocationContext.Console.StdErr.WriteLine($"No vertical found in directory '{dir}'.");
+                invocationContext.ReturnCode = 1;
+                return null;
+            }
+
+            if (candidates.Count > 1)
+            {
+                invocationContext.Console.StdErr.WriteLine($"Multiple verticals found in directory '{dir}':");
+                foreach (var candidate in candidates)
+                {
+                    invocationContext.Console.StdErr.WriteLine($"  {candidate.Id}");
+                }
+
+                invocationContext.ReturnCode = 1;
+                return null;
+            }
+
+            return candidates.AsEnumerable().First();
+        }
+    }
+
+    private sealed class GitHubContextBinder
+        : ICommandHandlerParameterBinder
+    {
+        public ICommandHandlerParameterResolver Bind(
+            ICommandHandlerParameterBinderContext context,
+            StrongBox<object?>? defaultValueBox,
+            string? description)
+        {
+            var factory = context.ApplicationServices.GetRequiredService<OptionFactory>();
+
+            var repoOption = factory.Create<string?>(
+                name: "--repo",
+                aliases: [],
+                description: "The name of the GitHub repository.",
+                isRequired: false,
+                defaultValueBox: null);
+
+            repoOption.HelpCustomization.GetDefaultValue = () => ["From ", "$", new("GITHUB_REPOSITORY", Color.Cyan)];
+
+            context.Add(repoOption);
+            return new GitHubContextResolver(repoOption);
+        }
+    }
+
+    private sealed class GitHubContextResolver(Option<string?> repoOption)
+        : ICommandHandlerParameterResolver
+    {
+        public Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+        {
+            var value = invocationContext.ParseResult.GetValue(repoOption);
+            if (value is null)
+            {
+                value = Environment.GetEnvironmentVariable("GITHUB_REPOSITORY");
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                ThrowHelper.ThrowInvalidOperationException("GitHub repository name must be specified via the --repo option or the GITHUB_REPOSITORY environment variable.");
+            }
+
+            var parts = value.Split('/', 2);
+            if (parts.Length != 2)
+            {
+                ThrowHelper.ThrowInvalidOperationException("GitHub repository name must be in the format 'owner/repo'.");
+            }
+
+            return Task.FromResult<object?>(new GitHubContext
+            {
+                RepositoryOwner = parts[0],
+                RepositoryName = parts[1],
+            });
         }
     }
 }

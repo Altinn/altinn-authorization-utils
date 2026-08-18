@@ -49,10 +49,15 @@ internal sealed class AltinnRepositoryResolver
         commandBuilder.Options.Add(_workingDirectoryOption);
     }
 
+    public DirectoryInfo GetWorkingDirectory(CommandInvocationContext invocationContext)
+    {
+        return invocationContext.ParseResult.GetRequiredValue(_workingDirectoryOption);
+    }
+
     public Task<Result<AltinnRepository>> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
     {
         var loader = invocationContext.ApplicationServices.GetRequiredService<AltinnRepositoryLoader>();
-        var cwd = invocationContext.ParseResult.GetRequiredValue(_workingDirectoryOption);
+        var cwd = GetWorkingDirectory(invocationContext);
 
         var state = invocationContext.Extensions.GetOrAdd((loader, cwd), static arg => new AltinnRepositoryLoaderState(arg.loader, arg.cwd));
         return state.RepositoryTask.WaitAsync(cancellationToken);

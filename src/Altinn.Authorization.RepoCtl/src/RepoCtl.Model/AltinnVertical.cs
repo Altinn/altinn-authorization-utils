@@ -60,6 +60,12 @@ public sealed class AltinnVertical
         => _id.Name;
 
     /// <summary>
+    /// Gets a shortened string representation of the vertical.
+    /// </summary>
+    public string DisplayId
+        => $"{_id.Kind}: {_displayName}";
+
+    /// <summary>
     /// Gets the display name of the vertical.
     /// </summary>
     public string DisplayName
