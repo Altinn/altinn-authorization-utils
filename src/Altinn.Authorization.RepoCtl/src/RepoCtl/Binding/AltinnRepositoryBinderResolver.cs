@@ -185,7 +185,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 var builder = new StringBuilder($"Multiple verticals found in directory '{dir}':");
                 foreach (var candidate in candidates)
                 {
-                    builder.AppendLine($"  {candidate.Id}");
+                    builder.AppendLine().Append("  - ").Append(candidate.Id);
                 }
 
                 context.AddError(builder.ToString());
@@ -234,13 +234,15 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
 
             if (string.IsNullOrEmpty(value))
             {
-                ThrowHelper.ThrowInvalidOperationException("GitHub repository name must be specified via the --repo option or the GITHUB_REPOSITORY environment variable.");
+                context.AddError("GitHub repository name must be specified via the --repo option or the GITHUB_REPOSITORY environment variable.");
+                return Task.CompletedTask;
             }
 
-            var parts = value.Split('/', 2);
+            var parts = value.Split('/', 3);
             if (parts.Length != 2)
             {
-                ThrowHelper.ThrowInvalidOperationException("GitHub repository name must be in the format 'owner/repo'.");
+                context.AddError($"GitHub repository name '{value}' is not in the format 'owner/repo'.");
+                return Task.CompletedTask;
             }
 
             context.SetParameterValue(new GitHubContext

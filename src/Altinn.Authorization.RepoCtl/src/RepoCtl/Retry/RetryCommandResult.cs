@@ -28,8 +28,18 @@ internal sealed class RetryCommandResult
     {
         CommandInvocationContext child = null!;
 
-        for (var attempt = 1; attempt <= _maxRetries; attempt++)
+        for (var attempt = 0; attempt < _maxRetries; attempt++)
         {
+            if (attempt > 0)
+            {
+                var delay = _delayFactory(attempt);
+                context.Console.StdErr.WriteLine();
+                context.Console.StdErr.Write(Markup.FromInterpolated($"[gray]# {attempt} failed with return code {child.ReturnCode}. Retrying in {delay.TotalSeconds} seconds...[/]\n"));
+
+                var timeProvider = context.ApplicationServices.GetRequiredService<TimeProvider>();
+                await Task.Delay(delay, timeProvider, cancellationToken);
+            }
+
             child = context.CreateChildContext();
             await _inner.Execute(child, cancellationToken);
 
@@ -37,13 +47,6 @@ internal sealed class RetryCommandResult
             {
                 return;
             }
-
-            var delay = _delayFactory(attempt);
-            context.Console.StdErr.WriteLine();
-            context.Console.StdErr.Write(Markup.FromInterpolated($"[gray]# {attempt} failed with return code {child.ReturnCode}. Retrying in {delay.TotalSeconds} seconds...[/]\n"));
-
-            var timeProvider = context.ApplicationServices.GetRequiredService<TimeProvider>();
-            await Task.Delay(delay, timeProvider, cancellationToken);
         }
 
         // if we reach this point, all attempts have failed. Propagate the return code from the last attempt.
