@@ -2,8 +2,10 @@ using System.Collections.Immutable;
 using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Results;
+using Altinn.Authorization.RepoCtl.Retry;
 using Altinn.Authorization.RepoCtl.Utils;
 using CommunityToolkit.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Octokit;
 using Spectre.Console;
@@ -55,24 +57,43 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor)
             await context.Console.StdErr.Status()
                 .StartAsync("Uploading packages to GitHub release...", async status =>
                 {
-                    await UploadPackages(context.Console, status, cancellationToken);
+                    await UploadPackages(context, status, cancellationToken);
                 });
         }
 
-        private async Task UploadPackages(IConsole console, StatusContext status, CancellationToken cancellationToken)
+        private async Task UploadPackages(CommandInvocationContext context, StatusContext status, CancellationToken cancellationToken)
         {
+            var timeProvider = context.ApplicationServices.GetRequiredService<TimeProvider>();
+            var console = context.Console;
+
             foreach (var file in files)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                for (var attempt = 1; attempt <= 5; attempt++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                await using var fs = File.OpenRead(file);
-                var fileName = Path.GetFileName(file);
-                status.Status($"Uploading [blue]{fileName}[/]...");
+                    await using var fs = File.OpenRead(file);
+                    var fileName = Path.GetFileName(file);
+                    status.Status($"Uploading [blue]{fileName}[/]...");
 
-                var assetUplod = new ReleaseAssetUpload(fileName, contentType: "application/octet-stream", fs, timeout: null);
-                var asset = await githubClient.Repository.Release.UploadAsset(release, assetUplod, cancellationToken);
+                    var assetUpload = new ReleaseAssetUpload(fileName, contentType: "application/octet-stream", fs, timeout: null);
 
-                console.Write(Markup.FromInterpolated($"Uploaded [blue]{fileName}[/] to release [cyan]{release.TagName}[/] as asset [green]{asset.Name}[/].\n"));
+                    try
+                    {
+                        var asset = await githubClient.Repository.Release.UploadAsset(release, assetUpload, cancellationToken);
+
+                        console.Write(Markup.FromInterpolated($"Uploaded [blue]{fileName}[/] to release [cyan]{release.TagName}[/] as asset [green]{asset.Name}[/].\n"));
+                        break; // exit the retry loop on success
+                    }
+                    catch (Exception)
+                    {
+                        console.Write(Markup.FromInterpolated($"[red]Attempt {attempt} failed to upload [blue]{fileName}[/].[/]\n"));
+
+                        var delay = RetryCommandResult.DefaultDelay(attempt);
+                        console.Write(Markup.FromInterpolated($"[gray]Retrying in {delay.TotalSeconds} seconds...[/]\n"));
+                        await Task.Delay(delay, timeProvider, cancellationToken);
+                    }
+                }
             }
         }
     }

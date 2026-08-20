@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.Results;
 using Altinn.Authorization.CommandLine.Shell;
+using Altinn.Authorization.RepoCtl.Retry;
 using Altinn.Authorization.RepoCtl.Utils;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Spectre.Console;
@@ -41,7 +42,7 @@ internal sealed class NuGetService(AltinnRepositoryAccessor repositoryAccessor)
                 var cmd = Command.Create("dotnet", ["nuget", "push", "--skip-duplicate", file, .. args]);
                 console.Write(Markup.FromInterpolated($"Publishing [cyan]\"{file}\"[/]\n"));
 
-                await cmd.ToResult(echo: false).Execute(context, cancellationToken);
+                await cmd.ToResult(echo: false).Retry(5).Execute(context, cancellationToken);
                 if (context.ReturnCode is not 0)
                 {
                     return;
