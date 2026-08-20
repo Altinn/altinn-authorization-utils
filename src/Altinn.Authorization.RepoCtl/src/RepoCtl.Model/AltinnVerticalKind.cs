@@ -41,6 +41,11 @@ public readonly record struct AltinnVerticalKind
     /// </summary>
     public static readonly AltinnVerticalKind Tool = new(AltinnVerticalKindSet.Tool);
 
+    /// <summary>
+    /// Gets the set of vertical kinds that can be packed into a package.
+    /// </summary>
+    private static readonly AltinnVerticalKindSet _packableKinds = [Package, Tool];
+
     /// <inheritdoc/>
     public static AltinnVerticalKind Parse(string s, IFormatProvider? provider)
         => TryParse(s, provider, out var result)
@@ -96,6 +101,11 @@ public readonly record struct AltinnVerticalKind
     /// </summary>
     public bool HasValue => _value.Count == 1;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance is packable (i.e., can be packed into a package).
+    /// </summary>
+    public bool IsPackable => _packableKinds.Contains(this);
+
     /// <inheritdoc/>
     public override int GetHashCode()
         => _value.GetHashCode();
@@ -148,9 +158,13 @@ public readonly record struct AltinnVerticalKind
         }
     }
 
-    internal sealed class JsonConverter
+    /// <summary>
+    /// Json converter for <see cref="AltinnVerticalKind"/>.
+    /// </summary>
+    public sealed class JsonConverter
         : JsonConverter<AltinnVerticalKind>
     {
+        /// <inheritdoc/>
         public override AltinnVerticalKind Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var value = reader.GetString();
@@ -167,6 +181,7 @@ public readonly record struct AltinnVerticalKind
             return result;
         }
 
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, AltinnVerticalKind value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString());

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
+using Slugify;
 
 namespace Altinn.Authorization.RepoCtl.Model;
 
@@ -111,6 +112,7 @@ public readonly record struct AltinnVerticalId
         {
             "k" => _kind.ToString(),
             "n" => _name,
+            "s" => Slugify(ToString()),
             "" or null => ToString(),
             _ => ThrowHelper.ThrowFormatException<string>($"The format string '{format}' is not supported."),
         };
@@ -123,6 +125,7 @@ public readonly record struct AltinnVerticalId
         {
             "k" => _kind.TryFormat(destination, out charsWritten, "", provider),
             "n" => _name.AsSpan().TryCopyTo(destination, out charsWritten),
+            "s" => ToString("s", provider).AsSpan().TryCopyTo(destination, out charsWritten),
             "" => TryFormatInner(in this, destination, out charsWritten),
             _ => ThrowHelper.ThrowFormatException<bool>($"The format string '{format}' is not supported."),
         };
@@ -162,6 +165,14 @@ public readonly record struct AltinnVerticalId
         }
 
         return string.Compare(_name, other._name, StringComparison.Ordinal);
+    }
+
+    private static string Slugify(string value)
+    {
+        var builder = new SlugHelperForNonAsciiLanguages();
+        builder.Config.StringReplacements["."] = "-";
+        builder.Config.StringReplacements[":"] = "-";
+        return builder.GenerateSlug(value);
     }
 
     internal sealed class JsonConverter

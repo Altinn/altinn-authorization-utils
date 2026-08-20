@@ -49,21 +49,31 @@ internal sealed class AltinnRepositoryResolver
         commandBuilder.Options.Add(_workingDirectoryOption);
     }
 
-    public Task<Result<AltinnRepository>> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+    public DirectoryInfo GetWorkingDirectory(CommandInvocationContext invocationContext)
+    {
+        return invocationContext.ParseResult.GetRequiredValue(_workingDirectoryOption);
+    }
+
+    public Task<Result<AltinnRepository>> GetRepository(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
     {
         var loader = invocationContext.ApplicationServices.GetRequiredService<AltinnRepositoryLoader>();
-        var cwd = invocationContext.ParseResult.GetRequiredValue(_workingDirectoryOption);
+        var cwd = GetWorkingDirectory(invocationContext);
 
         var state = invocationContext.Extensions.GetOrAdd((loader, cwd), static arg => new AltinnRepositoryLoaderState(arg.loader, arg.cwd));
         return state.RepositoryTask.WaitAsync(cancellationToken);
     }
 
-    async Task<object?> ICommandHandlerParameterResolver.ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+    async Task ICommandHandlerParameterResolver.ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
     {
-        var result = await ResolveParameterValue(invocationContext, cancellationToken);
-        result.EnsureSuccess();
-
-        return result.Value;
+        var result = await GetRepository(context.InvocationContext, cancellationToken);
+        if (result.IsProblem)
+        {
+            context.AddError(result.Problem.ToString());
+        }
+        else
+        {
+            context.SetParameterValue(result.Value);
+        }
     }
 
     private sealed class AltinnRepositoryLoaderState(AltinnRepositoryLoader loader, DirectoryInfo cwd)

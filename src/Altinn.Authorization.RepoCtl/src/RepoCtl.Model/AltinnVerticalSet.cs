@@ -111,6 +111,14 @@ public sealed class AltinnVerticalSet
     public AltinnVerticalSet OfKind(AltinnVerticalKindSet kinds)
         => Filter(vertical => kinds.Contains(vertical.Kind));
 
+    /// <summary>
+    /// Filters the verticals in this set to only those that are descendants of the specified directory.
+    /// </summary>
+    /// <param name="directory">The directory to filter by.</param>
+    /// <returns>A new <see cref="AltinnVerticalSet"/> containing only the verticals in the specified directory.</returns>
+    public AltinnVerticalSet InDirectory(DirectoryInfo directory)
+        => Filter(vertical => vertical.Directory.IsDescendantOf(directory));
+
     private AltinnVerticalSet Filter(Func<AltinnVertical, bool> predicate)
     {
         var newSet = _verticals.RemoveAll(v => !predicate(v));

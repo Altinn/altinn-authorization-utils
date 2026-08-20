@@ -49,22 +49,6 @@ jobs:
             9.0.x
             10.0.x
 
-      # Not used here - but used in the release job
-      # If this breaks, make sure to update both here
-      # and in the release job - otherwise next release
-      # will fail
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version-file: .github/scripts/.node-version
-
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-        with:
-          version: 11
-          run_install: |
-            - cwd: .github/scripts
-              args: [--frozen-lockfile]
-            - args: [--global, tsx]
-
       - name: Restore
         run: dotnet restore -p:Configuration=Release -bl:binlog/restore.binlog
 
