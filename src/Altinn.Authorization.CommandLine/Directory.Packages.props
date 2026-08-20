@@ -4,14 +4,14 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.301" PrivateAssets="all" />
+    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400" PrivateAssets="all" />
     <GlobalPackageReference Include="DotNet.ReproducibleBuilds" Version="2.0.5" PrivateAssets="all" />
   </ItemGroup>
   <Choose>
     <When Condition=" '$(TargetFramework)' == 'net10.0' ">
       <ItemGroup>
         <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.11" />
-        <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Abstractions" Version="10.8.0" />
+        <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Abstractions" Version="10.9.0" />
       </ItemGroup>
     </When>
   </Choose>
@@ -23,13 +23,13 @@
     <PackageVersion Include="coverlet.mtp" Version="10.0.1" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
     <PackageVersion Include="Microsoft.Extensions.AsyncState" Version="10.9.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.13.31" />
-    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.16.0" />
+    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.16.1" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Spectre.Console" Version="0.57.2" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.10" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.11" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="xunit.v3.assert" Version="3.2.2" />
     <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.2" />
