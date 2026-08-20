@@ -300,31 +300,39 @@ public class CommandHandlerDelegateFactoryTests
     }
 
     [Fact]
-    public async Task Invoke_WhenRequiredReferenceParameterBindsNull_Throws()
+    public async Task Invoke_WhenRequiredReferenceParameterBindsNull_ReportsErrorAndSkipsHandler()
     {
         using var services = CreateServices();
-        Delegate handler = ([NullArgument] string value) => { };
+        var invoked = false;
+        Delegate handler = ([NullArgument] string value) =>
+        {
+            invoked = true;
+        };
         var result = CommandHandlerDelegateFactory.Create(handler, services);
         var context = CreateContext(result, services);
 
-        var exception = await Should.ThrowAsync<InvalidOperationException>(
-            () => result.Delegate(context, TestContext.Current.CancellationToken));
+        await result.Delegate(context, TestContext.Current.CancellationToken);
 
-        exception.Message.ShouldContain("Required argument 'string value' did not produce a non-null value.");
+        invoked.ShouldBeFalse();
+        context.ReturnCode.ShouldBe(1);
     }
 
     [Fact]
-    public async Task Invoke_WhenRequiredReferenceOptionBindsNull_Throws()
+    public async Task Invoke_WhenRequiredReferenceOptionBindsNull_ReportsErrorAndSkipsHandler()
     {
         using var services = CreateServices();
-        Delegate handler = ([NullOption] string value) => { };
+        var invoked = false;
+        Delegate handler = ([NullOption] string value) =>
+        {
+            invoked = true;
+        };
         var result = CommandHandlerDelegateFactory.Create(handler, services);
         var context = CreateContext(result, services);
 
-        var exception = await Should.ThrowAsync<InvalidOperationException>(
-            () => result.Delegate(context, TestContext.Current.CancellationToken));
+        await result.Delegate(context, TestContext.Current.CancellationToken);
 
-        exception.Message.ShouldContain("Required option 'string value' did not produce a non-null value.");
+        invoked.ShouldBeFalse();
+        context.ReturnCode.ShouldBe(1);
     }
 
     private static ServiceProvider CreateServices(Action<IServiceCollection>? configure = null)

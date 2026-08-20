@@ -9,12 +9,12 @@ namespace Altinn.Authorization.CommandLine.Factory.Resolvers;
 internal abstract class CommandInvocationContextItemParameterResolver
     : ICommandHandlerParameterResolver
 {
-    protected abstract object? GetValue(CommandInvocationContext invocationContext);
+    private protected abstract void SetValue(CommandHandlerParameterResolverContext context);
 
-    public Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+    public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
     {
-        var value = GetValue(invocationContext);
-        return Task.FromResult(value);
+        SetValue(context);
+        return Task.CompletedTask;
     }
 }
 
@@ -26,8 +26,8 @@ internal sealed class CommandInvocationContextParameterResolver
 {
     public static readonly CommandInvocationContextParameterResolver Instance = new();
 
-    protected override object? GetValue(CommandInvocationContext invocationContext)
-        => invocationContext;
+    private protected override void SetValue(CommandHandlerParameterResolverContext context)
+        => context.SetParameterValue(context.InvocationContext);
 }
 
 /// <summary>
@@ -38,8 +38,8 @@ internal sealed class ConsoleParameterResolver
 {
     public static readonly ConsoleParameterResolver Instance = new();
 
-    protected override object? GetValue(CommandInvocationContext invocationContext)
-        => invocationContext.Console;
+    private protected override void SetValue(CommandHandlerParameterResolverContext context)
+        => context.SetParameterValue(context.InvocationContext.Console);
 }
 
 /// <summary>
@@ -50,8 +50,8 @@ internal sealed class ApplicationServicesParameterResolver
 {
     public static readonly ApplicationServicesParameterResolver Instance = new();
 
-    protected override object? GetValue(CommandInvocationContext invocationContext)
-        => invocationContext.ApplicationServices;
+    private protected override void SetValue(CommandHandlerParameterResolverContext context)
+        => context.SetParameterValue(context.InvocationContext.ApplicationServices);
 }
 
 /// <summary>
@@ -62,6 +62,6 @@ internal sealed class ParseResultParameterResolver
 {
     public static readonly ParseResultParameterResolver Instance = new();
 
-    protected override object? GetValue(CommandInvocationContext invocationContext)
-        => invocationContext.ParseResult;
+    private protected override void SetValue(CommandHandlerParameterResolverContext context)
+        => context.SetParameterValue(context.InvocationContext.ParseResult);
 }

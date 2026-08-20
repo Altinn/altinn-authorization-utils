@@ -5,32 +5,55 @@ namespace Altinn.Authorization.CommandLine.Factory.Resolvers;
 /// <summary>
 /// Defines a parameter resolver that resolves the value of a service parameter from the <see cref="IServiceProvider"/>.
 /// </summary>
-internal sealed class ServiceParameterResolver
+internal abstract class ServiceParameterResolver
     : ICommandHandlerParameterResolver
 {
-    private readonly Type _serviceType;
-    private readonly object? _serviceKey;
-    private readonly bool _isRequired;
-
-    public ServiceParameterResolver(Type serviceType, object? serviceKey, bool isRequired)
-    {
-        _serviceType = serviceType;
-        _serviceKey = serviceKey;
-        _isRequired = isRequired;
-    }
-
-    public Task<object?> ResolveParameterValue(
-        CommandInvocationContext invocationContext,
-        CancellationToken cancellationToken)
-    {
-        var service = (_isRequired, _serviceKey) switch
+    public static ServiceParameterResolver Create(Type serviceType, object? serviceKey, bool isRequired)
+        => (isRequired, serviceKey) switch
         {
-            (false, null) => invocationContext.ApplicationServices.GetService(_serviceType),
-            (false, _) => invocationContext.ApplicationServices.GetKeyedService(_serviceType, _serviceKey),
-            (true, null) => invocationContext.ApplicationServices.GetRequiredService(_serviceType),
-            (true, _) => invocationContext.ApplicationServices.GetRequiredKeyedService(_serviceType, _serviceKey),
+            (true, null) => (ServiceParameterResolver)Activator.CreateInstance(typeof(RequiredService<>).MakeGenericType(serviceType))!,
+            (false, null) => (ServiceParameterResolver)Activator.CreateInstance(typeof(Service<>).MakeGenericType(serviceType))!,
+            (true, _) => (ServiceParameterResolver)Activator.CreateInstance(typeof(RequiredKeyedService<>).MakeGenericType(serviceType), serviceKey)!,
+            (false, _) => (ServiceParameterResolver)Activator.CreateInstance(typeof(KeyedService<>).MakeGenericType(serviceType), serviceKey)!,
         };
 
-        return Task.FromResult(service);
+    private protected abstract void SetValue(CommandHandlerParameterResolverContext context);
+
+    public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
+    {
+        SetValue(context);
+        return Task.CompletedTask;
+    }
+
+    private sealed class Service<T>
+        : ServiceParameterResolver
+        where T : notnull
+    {
+        private protected override void SetValue(CommandHandlerParameterResolverContext context)
+            => context.SetParameterValue(context.ApplicationServices.GetService<T>());
+    }
+
+    private sealed class RequiredService<T>
+        : ServiceParameterResolver
+        where T : notnull
+    {
+        private protected override void SetValue(CommandHandlerParameterResolverContext context)
+            => context.SetParameterValue(context.ApplicationServices.GetRequiredService<T>());
+    }
+
+    private sealed class KeyedService<T>(object? serviceKey)
+        : ServiceParameterResolver
+        where T : notnull
+    {
+        private protected override void SetValue(CommandHandlerParameterResolverContext context)
+            => context.SetParameterValue(context.ApplicationServices.GetKeyedService<T>(serviceKey));
+    }
+
+    private sealed class RequiredKeyedService<T>(object? serviceKey)
+        : ServiceParameterResolver
+        where T : notnull
+    {
+        private protected override void SetValue(CommandHandlerParameterResolverContext context)
+            => context.SetParameterValue(context.ApplicationServices.GetRequiredKeyedService<T>(serviceKey));
     }
 }
