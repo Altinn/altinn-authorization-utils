@@ -2,7 +2,7 @@ using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Altinn.Authorization.CommandLine;
+using System.Text;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.RepoCtl.GitHub;
@@ -103,22 +103,27 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
     private sealed class VerticalSetResolver(Option<AltinnVerticalKindSet> kindOption, Option<string?> dirOption)
         : ICommandHandlerParameterResolver
     {
-        public async Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+        public async Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
         {
-            var repoResolver = invocationContext.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>();
-            var repo = await repoResolver.ResolveParameterValue(invocationContext, cancellationToken);
-            repo.EnsureSuccess();
+            var repoResolver = context.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>();
+            var repo = await repoResolver.GetRepository(context.InvocationContext, cancellationToken);
 
-            var kinds = invocationContext.ParseResult.GetRequiredValue(kindOption);
+            if (repo.IsProblem)
+            {
+                context.AddError(repo.Problem.ToString());
+                return;
+            }
+
+            var kinds = context.ParseResult.GetRequiredValue(kindOption);
             var set = repo.Value.Verticals.OfKind(kinds);
 
-            if (invocationContext.ParseResult.GetRequiredValue(dirOption) is { } dir)
+            if (context.ParseResult.GetRequiredValue(dirOption) is { } dir)
             {
-                dir = Path.GetFullPath(dir, repoResolver.GetWorkingDirectory(invocationContext).FullName);
+                dir = Path.GetFullPath(dir, repoResolver.GetWorkingDirectory(context.InvocationContext).FullName);
                 set = set.InDirectory(new(dir));
             }
 
-            return set;
+            context.SetParameterValue(set);
         }
     }
 
@@ -144,45 +149,51 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
     private sealed class VerticalResolver(Argument<string> verticalArgument)
         : ICommandHandlerParameterResolver
     {
-        public async Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+        public async Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
         {
-            var repoResolver = invocationContext.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>();
-            var repo = await repoResolver.ResolveParameterValue(invocationContext, cancellationToken);
-            repo.EnsureSuccess();
+            var repoResolver = context.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>();
+            var repo = await repoResolver.GetRepository(context.InvocationContext, cancellationToken);
 
-            var lookup = invocationContext.ParseResult.GetRequiredValue(verticalArgument);
+            if (repo.IsProblem)
+            {
+                context.AddError(repo.Problem.ToString());
+                return;
+            }
+
+            var lookup = context.ParseResult.GetRequiredValue(verticalArgument);
 
             // First, we try to interpret the argument as a vertical ID
             if (AltinnVerticalId.TryParse(lookup, null, out var verticalId)
                 && repo.Value.Verticals.TryGet(verticalId, out var vertical))
             {
-                return vertical;
+                context.SetParameterValue(vertical);
+                return;
             }
 
             // if not, interpret it as a directory path
-            var dir = Path.GetFullPath(lookup, repoResolver.GetWorkingDirectory(invocationContext).FullName);
+            var dir = Path.GetFullPath(lookup, repoResolver.GetWorkingDirectory(context.InvocationContext).FullName);
             var candidates = repo.Value.Verticals.InDirectory(new(dir));
 
             if (candidates.Count == 0)
             {
-                invocationContext.Console.StdErr.WriteLine($"No vertical found in directory '{dir}'.");
-                invocationContext.ReturnCode = 1;
-                return null;
+                context.AddError($"No vertical found in directory '{dir}'.");
+                return;
             }
 
             if (candidates.Count > 1)
             {
-                invocationContext.Console.StdErr.WriteLine($"Multiple verticals found in directory '{dir}':");
+                var builder = new StringBuilder($"Multiple verticals found in directory '{dir}':");
                 foreach (var candidate in candidates)
                 {
-                    invocationContext.Console.StdErr.WriteLine($"  {candidate.Id}");
+                    builder.AppendLine($"  {candidate.Id}");
                 }
 
-                invocationContext.ReturnCode = 1;
-                return null;
+                context.AddError(builder.ToString());
+                return;
             }
 
-            return candidates.AsEnumerable().First();
+            context.SetParameterValue(candidates.AsEnumerable().First());
+            return;
         }
     }
 
@@ -213,9 +224,9 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
     private sealed class GitHubContextResolver(Option<string?> repoOption)
         : ICommandHandlerParameterResolver
     {
-        public Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+        public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
         {
-            var value = invocationContext.ParseResult.GetValue(repoOption);
+            var value = context.ParseResult.GetValue(repoOption);
             if (value is null)
             {
                 value = Environment.GetEnvironmentVariable("GITHUB_REPOSITORY");
@@ -232,11 +243,13 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 ThrowHelper.ThrowInvalidOperationException("GitHub repository name must be in the format 'owner/repo'.");
             }
 
-            return Task.FromResult<object?>(new GitHubContext
+            context.SetParameterValue(new GitHubContext
             {
                 RepositoryOwner = parts[0],
                 RepositoryName = parts[1],
             });
+
+            return Task.CompletedTask;
         }
     }
 }

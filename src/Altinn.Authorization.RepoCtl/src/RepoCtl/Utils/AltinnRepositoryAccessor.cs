@@ -16,7 +16,7 @@ internal sealed class AltinnRepositoryAccessor(
             throw new InvalidOperationException("No command invocation context is available.");
         }
 
-        var result = await repositoryResolver.ResolveParameterValue(context, cancellationToken);
+        var result = await repositoryResolver.GetRepository(context, cancellationToken);
         result.EnsureSuccess();
 
         return result.Value;
