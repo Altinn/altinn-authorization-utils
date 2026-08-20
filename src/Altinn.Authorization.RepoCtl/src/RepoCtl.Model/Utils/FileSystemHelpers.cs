@@ -6,10 +6,11 @@ internal static class FileSystemHelpers
     {
         public bool IsDescendantOf(DirectoryInfo ancestor)
         {
+            var ancestorFullName = Path.TrimEndingDirectorySeparator(ancestor.FullName);
             var current = directory;
             while (current is not null)
             {
-                if (current.FullName == ancestor.FullName)
+                if (Path.TrimEndingDirectorySeparator(current.FullName) == ancestorFullName)
                 {
                     return true;
                 }
