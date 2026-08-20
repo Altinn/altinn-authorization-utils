@@ -7,7 +7,6 @@ using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
