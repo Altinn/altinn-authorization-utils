@@ -15,8 +15,8 @@ internal sealed class CommandExtensions
         return _extensions.GetOrAdd(command, static _ => new());
     }
 
-    private readonly List<object> _metadat = new();
+    private readonly List<object> _metadata = new();
 
     public List<object> Metadata
-        => _metadat;
+        => _metadata;
 }

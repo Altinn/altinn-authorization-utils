@@ -1,7 +1,6 @@
 using System.CommandLine;
 using System.Diagnostics;
 using System.Reflection;
-using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Authorization.CommandLine.Factory.Resolvers;
 
@@ -16,7 +15,7 @@ internal static class ArgumentParameterResolver
         Debug.Assert(argument.ValueType == parameter.ParameterType);
 
         var resolverType = typeof(ArgumentParameterResolver<>).MakeGenericType(parameter.ParameterType);
-        return (ICommandHandlerParameterResolver)Activator.CreateInstance(resolverType, parameter, argument, isRequired)!;
+        return (ICommandHandlerParameterResolver)Activator.CreateInstance(resolverType, argument, isRequired)!;
     }
 }
 
@@ -27,36 +26,33 @@ internal static class ArgumentParameterResolver
 internal sealed class ArgumentParameterResolver<T>
     : ICommandHandlerParameterResolver
 {
-    private readonly ParameterInfo _parameter;
     private readonly Argument<T> _argument;
     private readonly bool _isRequired;
 
-    public ArgumentParameterResolver(ParameterInfo parameter, Argument<T> argument, bool isRequired)
+    public ArgumentParameterResolver(Argument<T> argument, bool isRequired)
     {
-        _parameter = parameter;
         _argument = argument;
         _isRequired = isRequired;
     }
 
-    public Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+    public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
     {
-        var result = invocationContext.ParseResult.GetResult(_argument);
+        var result = context.ParseResult.GetResult(_argument);
         if (result is null)
         {
-            var parameterName = _parameter.Name!;
-            var parameterTypeName = TypeNameHelper.GetTypeDisplayName(_parameter.ParameterType, fullName: false);
-            ThrowHelper.ThrowInvalidOperationException($"Required argument '{parameterTypeName} {parameterName}' was not provided.");
+            context.AddError($"Required argument '{_argument.Name}' was not provided.");
+            return Task.CompletedTask;
         }
 
         var value = result.GetValueOrDefault<T>();
 
         if (_isRequired && value is null)
         {
-            var parameterName = _parameter.Name!;
-            var parameterTypeName = TypeNameHelper.GetTypeDisplayName(_parameter.ParameterType, fullName: false);
-            ThrowHelper.ThrowInvalidOperationException($"Required argument '{parameterTypeName} {parameterName}' did not produce a non-null value.");
+            context.AddError($"Required argument '{_argument.Name}' did not produce a non-null value.");
+            return Task.CompletedTask;
         }
 
-        return Task.FromResult<object?>(value);
+        context.SetParameterValue(value);
+        return Task.CompletedTask;
     }
 }

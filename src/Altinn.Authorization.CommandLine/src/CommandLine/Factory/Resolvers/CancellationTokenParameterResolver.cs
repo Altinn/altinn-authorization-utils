@@ -8,8 +8,9 @@ internal sealed class CancellationTokenParameterResolver
 {
     public static readonly CancellationTokenParameterResolver Instance = new();
 
-    public Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+    public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
     {
-        return Task.FromResult<object?>(cancellationToken);
+        context.SetParameterValue(cancellationToken);
+        return Task.CompletedTask;
     }
 }

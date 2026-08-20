@@ -19,17 +19,18 @@ namespace Altinn.Authorization.CommandLine.Factory;
 public static partial class CommandHandlerDelegateFactory
 {
     private static readonly MethodInfo ValueTaskAsTaskMethod = typeof(ValueTask).GetMethod(nameof(ValueTask.AsTask))!;
-    private static readonly MethodInfo ParameterResolverResolveMethod = typeof(ICommandHandlerParameterResolver).GetMethod(nameof(ICommandHandlerParameterResolver.ResolveParameterValue))!;
     private static readonly MethodInfo HandleInvokeMethod = typeof(Handle).GetMethod(nameof(Handle.Invoke))!;
 
     private static readonly ParameterExpression TargetExpr = Expression.Parameter(typeof(object), "target");
     private static readonly ParameterExpression InvocationContextExpr = Expression.Parameter(typeof(CommandInvocationContext), "invocationContext");
     private static readonly ParameterExpression CancellationTokenExpr = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
 
+    private static readonly Expression ArgumentSlotsArrayExpr = Expression.Variable(typeof(CommandHandlerParameterResolverContext[]), "slots");
+
     private static readonly MemberExpression TaskCompletedTaskExpr = Expression.Property(null, typeof(Task).GetProperty(nameof(Task.CompletedTask))!);
 
-    private static readonly Expression EmptyObjectTaskArrayExpr = Expression.Call(
-        typeof(Array).GetMethod(nameof(Array.Empty), BindingFlags.Static | BindingFlags.Public)!.MakeGenericMethod(typeof(Task<object>)));
+    private static readonly Expression EmptyCommandHandlerParameterResolverContextArrayExpr = Expression.Call(
+        typeof(Array).GetMethod(nameof(Array.Empty), BindingFlags.Static | BindingFlags.Public)!.MakeGenericMethod(typeof(CommandHandlerParameterResolverContext)));
 
     private static MethodInfo GetMethodInfo<T>(Expression<T> expr)
     {
@@ -131,18 +132,21 @@ public static partial class CommandHandlerDelegateFactory
         Expression? targetExpression,
         CommandHandlerDelegateFactoryContext factoryContext)
     {
-        factoryContext.ArgumentExpressions ??= CreateArguments(methodInfo.GetParameters(), factoryContext);
+        var parameters = methodInfo.GetParameters();
+        factoryContext.ParameterResolverContextExpressions ??= CreateArguments(parameters, factoryContext);
         var innerHandler = CreateInnerHandler(methodInfo, targetExpression, factoryContext);
 
-        var arrayExpression = factoryContext.ArgumentExpressions.Length > 0
-            ? Expression.NewArrayInit(typeof(Task<object?>), factoryContext.ArgumentExpressions)
-            : EmptyObjectTaskArrayExpr;
+        var parameterResolverContextsExpression = factoryContext.ParameterResolverContextExpressions.Length > 0
+            ? Expression.NewArrayInit(typeof(CommandHandlerParameterResolverContext), factoryContext.ParameterResolverContextExpressions)
+            : EmptyCommandHandlerParameterResolverContextArrayExpr;
 
         var body = Expression.Call(
             HandleInvokeMethod,
             TargetExpr,
-            arrayExpression,
-            innerHandler);
+            parameterResolverContextsExpression,
+            innerHandler,
+            InvocationContextExpr,
+            CancellationTokenExpr);
 
         var lambda = Expression.Lambda<Func<object?, CommandInvocationContext, CancellationToken, Task>>(body, [TargetExpr, InvocationContextExpr, CancellationTokenExpr]);
         return new(lambda.Compile);
@@ -154,8 +158,8 @@ public static partial class CommandHandlerDelegateFactory
         CommandHandlerDelegateFactoryContext factoryContext)
     {
         var arrayParameter = Expression.Parameter(typeof(object[]), "args");
-        var args = new Expression[factoryContext.ArgumentExpressions!.Length];
-        for (var i = 0; i < factoryContext.ArgumentExpressions.Length; i++)
+        var args = new Expression[factoryContext.ParameterResolverContextExpressions!.Length];
+        for (var i = 0; i < factoryContext.ParameterResolverContextExpressions.Length; i++)
         {
             args[i] = Expression.Convert(
                 Expression.ArrayIndex(arrayParameter, Expression.Constant(i)),
@@ -168,7 +172,9 @@ public static partial class CommandHandlerDelegateFactory
         var commandResultExpr = ConvertToTask(methodCall, ref returnType);
         var handleResultExpr = HandleCommandResult(commandResultExpr, returnType, factoryContext);
 
-        return Expression.Lambda<Func<object?, object?[], Task>>(handleResultExpr, TargetExpr, arrayParameter);
+        return Expression.Lambda<Func<object?, object?[], CommandInvocationContext, CancellationToken, Task>>(
+            body: handleResultExpr,
+            parameters: [TargetExpr, arrayParameter, InvocationContextExpr, CancellationTokenExpr]);
     }
 
     private static Expression HandleCommandResult(Expression commandResultExpr, Type resultType, CommandHandlerDelegateFactoryContext factoryContext)
@@ -307,21 +313,25 @@ public static partial class CommandHandlerDelegateFactory
             ThrowHelper.ThrowNotSupportedException($"The by reference parameter '{attribute} {TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)} {parameter.Name}' is not supported.");
         }
 
-        var resolver = GetParameterResolver(parameter, factoryContext);
+        var isOptional = IsOptionalParameter(parameter, factoryContext);
+        var resolver = GetParameterResolver(parameter, factoryContext, isOptional: isOptional);
         var resolverExpression = Expression.Constant(resolver, typeof(ICommandHandlerParameterResolver));
-        return Expression.Call(
-            resolverExpression,
-            ParameterResolverResolveMethod,
+        var parameterInfoExpression = Expression.Constant(parameter, typeof(ParameterInfo));
+        var contextExpression = Expression.Call(
+            Generic.ForType(parameter.ParameterType).CreateCommandHandlerParameterResolverContextMethod,
             InvocationContextExpr,
-            CancellationTokenExpr);
+            parameterInfoExpression,
+            resolverExpression);
+
+        return contextExpression;
     }
 
     private static ICommandHandlerParameterResolver GetParameterResolver(
         ParameterInfo parameter,
-        CommandHandlerDelegateFactoryContext factoryContext)
+        CommandHandlerDelegateFactoryContext factoryContext,
+        bool isOptional)
     {
         var parameterCustomAttributes = parameter.GetCustomAttributes();
-        var isOptional = IsOptionalParameter(parameter, factoryContext);
 
         if (parameterCustomAttributes.OfType<ICommandHandlerParameterBinder>().FirstOrDefault() is { } parameterHandler)
         {
@@ -350,7 +360,7 @@ public static partial class CommandHandlerDelegateFactory
 
         if (parameterCustomAttributes.OfType<IFromServiceMetadata>().FirstOrDefault() is { } serviceMetadata)
         {
-            return new ServiceParameterResolver(parameter.ParameterType, serviceMetadata.ServiceKey, !isOptional);
+            return ServiceParameterResolver.Create(parameter.ParameterType, serviceMetadata.ServiceKey, !isOptional);
         }
 
         if (factoryContext.ParameterBinderResolver.TryResolve(parameter, out var parameterBinder))
@@ -386,7 +396,7 @@ public static partial class CommandHandlerDelegateFactory
         if (factoryContext.ServiceProviderIsService is { } isServiceService
             && isServiceService.IsService(parameter.ParameterType))
         {
-            return new ServiceParameterResolver(parameter.ParameterType, serviceKey: null, !isOptional);
+            return ServiceParameterResolver.Create(parameter.ParameterType, serviceKey: null, !isOptional);
         }
 
         return ThrowHelper.ThrowNotSupportedException<ICommandHandlerParameterResolver>($"The parameter '{TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)} {parameter.Name}' is not supported. Parameters must be bound from an argument, option, service, or be of a known type.");
@@ -581,6 +591,8 @@ public static partial class CommandHandlerDelegateFactory
         public abstract MethodInfo HandleResultMethod { get; }
 
         public abstract MethodInfo CommandResultExecute { get; }
+
+        public abstract MethodInfo CreateCommandHandlerParameterResolverContextMethod { get; }
     }
 
     private sealed class Generic<T>
@@ -597,14 +609,46 @@ public static partial class CommandHandlerDelegateFactory
 
         public override MethodInfo CommandResultExecute { get; } = GetMethodInfo<Func<Task<T>, CommandInvocationContext, CancellationToken, Task>>(
             static (commandResult, invocationContext, cancellationToken) => Handle.HandleCommandResult(commandResult, invocationContext, cancellationToken));
+
+        public override MethodInfo CreateCommandHandlerParameterResolverContextMethod { get; } = GetMethodInfo<Func<CommandInvocationContext, ParameterInfo, ICommandHandlerParameterResolver, CommandHandlerParameterResolverContext>>(
+            static (invocationContext, parameterInfo, parameterResolver) => CommandHandlerParameterResolverContext.Create<T>(invocationContext, parameterInfo, parameterResolver));
     }
 
     private static partial class Handle
     {
-        public static async Task Invoke(object? target, Task<object?>[] argumentTasks, Func<object?, object?[], Task> handler)
+        public static async Task Invoke(
+            object? target,
+            CommandHandlerParameterResolverContext[] contexts,
+            Func<object?, object?[], CommandInvocationContext, CancellationToken, Task> handler,
+            CommandInvocationContext invocationContext,
+            CancellationToken cancellationToken)
         {
-            var args = await Task.WhenAll(argumentTasks);
-            await handler(target, args);
+            var tasks = new Task[contexts.Length];
+            var args = new object?[contexts.Length];
+
+            for (var i = 0; i < contexts.Length; i++)
+            {
+                var argumentContext = contexts[i];
+                tasks[i] = argumentContext.ResolveParameterValue(cancellationToken);
+            }
+
+            await Task.WhenAll(tasks);
+
+            Dictionary<ParameterInfo, IReadOnlyList<string>>? errors = null;
+            for (var i = 0; i < contexts.Length; i++)
+            {
+                var argumentContext = contexts[i];
+                argumentContext.Populate(out args[i], ref errors);
+            }
+
+            if (errors is { Count: > 0 })
+            {
+                ParameterResolverHelper.WriteErrors(invocationContext.Console.StdErr, errors);
+                invocationContext.ReturnCode = errors.Count;
+                return;
+            }
+
+            await handler(target, args, invocationContext, cancellationToken);
         }
 
         public static async Task HandleCommandResult<T>(Task<T> commandResult, CommandInvocationContext invocationContext, CancellationToken cancellationToken)

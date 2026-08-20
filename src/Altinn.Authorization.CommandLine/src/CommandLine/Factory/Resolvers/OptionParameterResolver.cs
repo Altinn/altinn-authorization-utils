@@ -1,7 +1,6 @@
 using System.CommandLine;
 using System.Diagnostics;
 using System.Reflection;
-using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Authorization.CommandLine.Factory.Resolvers;
 
@@ -16,7 +15,7 @@ internal static class OptionParameterResolver
         Debug.Assert(option.ValueType == parameter.ParameterType);
 
         var resolverType = typeof(OptionParameterResolver<>).MakeGenericType(parameter.ParameterType);
-        return (ICommandHandlerParameterResolver)Activator.CreateInstance(resolverType, parameter, option, isRequired)!;
+        return (ICommandHandlerParameterResolver)Activator.CreateInstance(resolverType, option, isRequired)!;
     }
 }
 
@@ -27,36 +26,33 @@ internal static class OptionParameterResolver
 internal sealed class OptionParameterResolver<T>
     : ICommandHandlerParameterResolver
 {
-    private readonly ParameterInfo _parameter;
     private readonly Option<T> _option;
     private readonly bool _isRequired;
 
-    public OptionParameterResolver(ParameterInfo parameter, Option<T> option, bool isRequired)
+    public OptionParameterResolver(Option<T> option, bool isRequired)
     {
-        _parameter = parameter;
         _option = option;
         _isRequired = isRequired;
     }
 
-    public Task<object?> ResolveParameterValue(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
+    public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
     {
-        var result = invocationContext.ParseResult.GetResult(_option);
+        var result = context.ParseResult.GetResult(_option);
         if (result is null)
         {
-            var parameterName = _parameter.Name!;
-            var parameterTypeName = TypeNameHelper.GetTypeDisplayName(_parameter.ParameterType, fullName: false);
-            ThrowHelper.ThrowInvalidOperationException($"Required option '{parameterTypeName} {parameterName}' was not provided.");
+            context.AddError($"Required option '{_option.Name}' was not provided.");
+            return Task.CompletedTask;
         }
 
         var value = result.GetValueOrDefault<T>();
 
         if (_isRequired && value is null)
         {
-            var parameterName = _parameter.Name!;
-            var parameterTypeName = TypeNameHelper.GetTypeDisplayName(_parameter.ParameterType, fullName: false);
-            ThrowHelper.ThrowInvalidOperationException($"Required option '{parameterTypeName} {parameterName}' did not produce a non-null value.");
+            context.AddError($"Required option '{_option.Name}' did not produce a non-null value.");
+            return Task.CompletedTask;
         }
 
-        return Task.FromResult<object?>(value);
+        context.SetParameterValue(value);
+        return Task.CompletedTask;
     }
 }

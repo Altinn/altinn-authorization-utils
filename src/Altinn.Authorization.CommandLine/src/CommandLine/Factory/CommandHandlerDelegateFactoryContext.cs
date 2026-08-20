@@ -27,7 +27,7 @@ internal sealed class CommandHandlerDelegateFactoryContext
     public List<Expression> ParamCheckExpressions { get; } = new();
     public NullabilityInfoContext NullabilityContext { get; } = new();
     public Type[] ArgumentTypes { get; set; } = [];
-    public Expression[]? ArgumentExpressions { get; set; }
+    public Expression[]? ParameterResolverContextExpressions { get; set; }
 
     public List<ParameterInfo> Parameters { get; set; } = new();
 }
