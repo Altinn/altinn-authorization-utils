@@ -44,6 +44,7 @@ public sealed class CliApplicationBuilder
             ContentRootPath = null,
         });
 
+        hostBuilder.Services.AddSingleton(TimeProvider.System);
         hostBuilder.Services.AddSingleton<IHelpBuilder, DefaultHelpBuilder>();
         hostBuilder.Services.AddSingleton<ExtendedHelpAction>();
         hostBuilder.Services.AddOptions<InvocationConfiguration>()
