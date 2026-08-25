@@ -82,6 +82,16 @@
           "xpath": "//Project/PropertyGroup/Version"
         }
       ]
+    },
+    "src/Altinn.Authorization.RepoCtl": {
+      "component": "Altinn.Authorization.RepoCtl",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
     }
   }
 }
