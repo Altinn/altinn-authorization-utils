@@ -40,7 +40,7 @@ internal sealed class NuGetService(AltinnRepositoryAccessor repositoryAccessor)
             foreach (var file in files)
             {
                 var cmd = Command.Create("dotnet", ["nuget", "push", "--skip-duplicate", file, .. args]);
-                console.Write(Markup.FromInterpolated($"Publishing [cyan]\"{file}\"[/]\n"));
+                console.Write(Markup.FromInterpolated($"Publishing [cyan]\"{Path.GetFileName(file)}\"[/]\n"));
 
                 await cmd.ToResult(echo: false).Retry(5).Execute(context, cancellationToken);
                 if (context.ReturnCode is not 0)
