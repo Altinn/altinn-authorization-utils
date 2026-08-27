@@ -88,6 +88,27 @@ public readonly record struct AltinnVerticalKind
         return result._value.Count == 1;
     }
 
+    /// <summary>
+    /// Tries to parse the specified directory name into an <see cref="AltinnVerticalKind"/>.
+    /// </summary>
+    /// <param name="s">The directory name to parse.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <param name="result">The parsed <see cref="AltinnVerticalKind"/> if successful; otherwise, <c>null</c>.</param>
+    /// <returns><c>true</c> if the parsing was successful; otherwise, <c>false</c>.</returns>
+    public static bool TryParseDirName([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out AltinnVerticalKind result)
+    {
+        result = s switch
+        {
+            "apps" => Application,
+            "libs" => Library,
+            "pkgs" => Package,
+            "tools" => Tool,
+            _ => default,
+        };
+
+        return result._value.Count == 1;
+    }
+
     internal readonly AltinnVerticalKindSet _value;
 
     internal AltinnVerticalKind(AltinnVerticalKindSet value)
