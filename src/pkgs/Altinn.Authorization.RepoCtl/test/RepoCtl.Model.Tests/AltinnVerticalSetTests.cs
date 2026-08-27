@@ -1,8 +1,7 @@
 using System.Collections.Immutable;
-using Altinn.Authorization.RepoCtl.Model;
 using Semver;
 
-namespace Altinn.Authorization.RepoCtl.Tests.Model;
+namespace Altinn.Authorization.RepoCtl.Model.Tests;
 
 public class AltinnVerticalSetTests
 {

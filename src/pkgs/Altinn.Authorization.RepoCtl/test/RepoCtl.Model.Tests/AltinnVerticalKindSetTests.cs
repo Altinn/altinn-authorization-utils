@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
-using Altinn.Authorization.RepoCtl.Model;
 
-namespace Altinn.Authorization.RepoCtl.Tests.Model;
+namespace Altinn.Authorization.RepoCtl.Model.Tests;
 
 public class AltinnVerticalKindSetTests
 {

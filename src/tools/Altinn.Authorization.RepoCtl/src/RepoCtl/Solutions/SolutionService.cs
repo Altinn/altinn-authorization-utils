@@ -152,7 +152,7 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
 
         if (includeDeps)
         {
-            foreach (var dep in vertical.AllDependencies)
+            foreach (var dep in vertical.AllBuildDependencies)
             {
                 deps ??= Solution.Folder.CreateBuilder("deps");
                 var depDir = Solution.Folder.CreateBuilder(dep.DisplayName);
