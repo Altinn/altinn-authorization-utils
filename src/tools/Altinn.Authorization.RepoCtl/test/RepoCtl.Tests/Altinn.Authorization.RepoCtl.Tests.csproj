@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
-    <ProjectReference Include="../../src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
   </ItemGroup>
 
 </Project>
