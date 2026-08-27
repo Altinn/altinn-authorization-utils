@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.RepoCtl-v1.0.0...Altinn.Authorization.RepoCtl-v1.0.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* vertical kind dir-names should be plural ([#679](https://github.com/Altinn/altinn-authorization-utils/issues/679)) ([798b574](https://github.com/Altinn/altinn-authorization-utils/commit/798b5744e0b66ed02ad9f75fe6b9e446190e1b15))
+
 ## 1.0.0 (2026-08-25)
 
 
