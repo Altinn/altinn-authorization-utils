@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Tests" />
+    <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Model.Tests" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,12 +1,5 @@
 <Solution>
   <Folder Name="/deps/" />
-  <Folder Name="/deps/CommandLine/">
-    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
-    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Azure/Altinn.Authorization.CommandLine.Azure.csproj" />
-    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Azure.KeyVault/Altinn.Authorization.CommandLine.Azure.KeyVault.csproj" />
-    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.GitHub.Actions/Altinn.Authorization.CommandLine.GitHub.Actions.csproj" />
-    <Project Path="../Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
-  </Folder>
   <Folder Name="/deps/ModelUtils/">
     <Project Path="../Altinn.Authorization.ModelUtils/src/ModelUtils/Altinn.Authorization.ModelUtils.csproj" />
     <Project Path="../Altinn.Authorization.ModelUtils/src/ModelUtils.AspNet/Altinn.Authorization.ModelUtils.AspNet.csproj" />
@@ -28,10 +21,9 @@
     <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
     <Project Path="src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
+    <Project Path="test/RepoCtl.Model.Tests/Altinn.Authorization.RepoCtl.Model.Tests.csproj" />
   </Folder>
 </Solution>

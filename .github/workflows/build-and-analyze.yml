@@ -20,15 +20,9 @@ jobs:
             9.0.x
             10.0.x
 
-      # TODO: this should be an install step, and not a build step once the tool is published
       - name: Install RepoCtl
         run: |
-          dotnet pack src/Altinn.Authorization.RepoCtl/src/RepoCtl \
-            -c Release \
-            -o "$RUNNER_TEMP/repoctl-packages"
-
-          dotnet tool install --global Altinn.Authorization.RepoCtl \
-            --add-source "$RUNNER_TEMP/repoctl-packages"
+          dotnet tool install --global Altinn.Authorization.RepoCtl
           
           repoctl --version
 

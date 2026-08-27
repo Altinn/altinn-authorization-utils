@@ -22,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../Altinn.Authorization.CommandLine/src/CommandLine.GitHub.Actions/Altinn.Authorization.CommandLine.GitHub.Actions.csproj" />
-    <ProjectReference Include="../../../Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
-    <ProjectReference Include="../../../Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
-    <ProjectReference Include="../RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <ProjectReference Include="../../../../pkgs/Altinn.Authorization.CommandLine/src/CommandLine.GitHub.Actions/Altinn.Authorization.CommandLine.GitHub.Actions.csproj" />
+    <ProjectReference Include="../../../../pkgs/Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
+    <ProjectReference Include="../../../../pkgs/Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
+    <ProjectReference Include="../../../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
   </ItemGroup>
 
 </Project>
