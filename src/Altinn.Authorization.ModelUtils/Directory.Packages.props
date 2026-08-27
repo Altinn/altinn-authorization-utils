@@ -20,7 +20,7 @@
     <PackageVersion Include="coverlet.mtp" Version="10.0.1" />
     <PackageVersion Include="Microsoft.Build.Artifacts" Version="6.1.63" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
-    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.16.1" />
+    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="5.0.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.2.3" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="10.2.3" />
