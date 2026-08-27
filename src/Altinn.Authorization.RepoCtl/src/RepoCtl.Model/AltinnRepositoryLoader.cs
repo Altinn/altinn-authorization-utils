@@ -69,7 +69,7 @@ public sealed partial class AltinnRepositoryLoader
         var srcDir = new DirectoryInfo(Path.Combine(rootDir, "src"));
         var rootDirs = srcDir.GetDirectories().Select(dir =>
         {
-            AltinnVerticalKind.TryParse(dir.Name, null, out var kind);
+            AltinnVerticalKind.TryParseDirName(dir.Name, null, out var kind);
 
             return new
             {
