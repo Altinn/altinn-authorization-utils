@@ -113,6 +113,7 @@ public readonly record struct AltinnVerticalId
             "k" => _kind.ToString(),
             "n" => _name,
             "s" => Slugify(ToString()),
+            "r" => $"{_kind}/{_name}",
             "" or null => ToString(),
             _ => ThrowHelper.ThrowFormatException<string>($"The format string '{format}' is not supported."),
         };
@@ -126,6 +127,7 @@ public readonly record struct AltinnVerticalId
             "k" => _kind.TryFormat(destination, out charsWritten, "", provider),
             "n" => _name.AsSpan().TryCopyTo(destination, out charsWritten),
             "s" => ToString("s", provider).AsSpan().TryCopyTo(destination, out charsWritten),
+            "r" => ToString("r", provider).AsSpan().TryCopyTo(destination, out charsWritten),
             "" => TryFormatInner(in this, destination, out charsWritten),
             _ => ThrowHelper.ThrowFormatException<bool>($"The format string '{format}' is not supported."),
         };
