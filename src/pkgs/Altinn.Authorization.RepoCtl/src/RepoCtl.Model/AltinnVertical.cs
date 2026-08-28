@@ -12,6 +12,7 @@ namespace Altinn.Authorization.RepoCtl.Model;
 /// </remarks>
 public sealed class AltinnVertical
 {
+    private readonly string _relPath;
     private readonly DirectoryInfo _directory;
     private readonly FileInfo _solutionFile;
     private readonly AltinnVerticalId _id;
@@ -36,6 +37,12 @@ public sealed class AltinnVertical
     /// </summary>
     public FileInfo SolutionFile
         => _solutionFile;
+
+    /// <summary>
+    /// Gets the relative path of the vertical within the repository.
+    /// </summary>
+    public string RelPath
+        => _relPath;
 
     /// <summary>
     /// Gets the identifier of the vertical.
@@ -86,12 +93,14 @@ public sealed class AltinnVertical
         => _projects;
 
     internal AltinnVertical(
+        string relPath,
         DirectoryInfo directory,
         AltinnVerticalId id,
         SemVersion version,
         ImmutableArray<AltinnProject> projects,
         AltinnVerticalConfiguration config)
     {
+        _relPath = relPath;
         _directory = directory;
         _id = id;
         _version = version;
@@ -157,9 +166,3 @@ public sealed class AltinnVertical
     /// </summary>
     internal bool IsResolved => _allDependencies is not null;
 }
-
-// public record AltinnVerticalConfiguration
-// {
-//     [JsonPropertyName("deps")]
-//     internal ImmutableArray<AltinnVerticalId> Dependencies { get; init; } = [];
-// }
