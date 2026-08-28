@@ -10,12 +10,6 @@
     <Project Path="../Altinn.Authorization.ProblemDetails/src/ProblemDetails.Abstractions/Altinn.Authorization.ProblemDetails.Abstractions.csproj" />
     <Project Path="../Altinn.Authorization.ProblemDetails/src/ProblemDetails.Validation/Altinn.Authorization.ProblemDetails.Validation.csproj" />
   </Folder>
-  <Folder Name="/deps/TestUtils/">
-    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
-    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
-    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
-    <Project Path="../Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
-  </Folder>
   <Folder Name="/deps/Swashbuckle/">
     <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
     <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
