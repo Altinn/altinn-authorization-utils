@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.0.1...tool/RepoCtl-v1.1.0) (2026-08-28)
+
+
+### Features
+
+* add dev-dependency support ([#682](https://github.com/Altinn/altinn-authorization-utils/issues/682)) ([8c2e17c](https://github.com/Altinn/altinn-authorization-utils/commit/8c2e17c65d5c168370ea08b27a5e4fd023e9799c))
+
 ## [1.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.RepoCtl-v1.0.0...Altinn.Authorization.RepoCtl-v1.0.1) (2026-08-27)
 
 
