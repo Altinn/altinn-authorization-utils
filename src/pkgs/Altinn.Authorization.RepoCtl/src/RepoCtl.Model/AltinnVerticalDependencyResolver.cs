@@ -155,7 +155,7 @@ internal static class AltinnVerticalDependencyResolver
 
                             foreach (var transitiveDep in dep.AllDependencies)
                             {
-                                if (!all.Contains(transitiveDep))
+                                if (!allBuild.Contains(transitiveDep))
                                 {
                                     allBuild.Add(transitiveDep);
                                 }
