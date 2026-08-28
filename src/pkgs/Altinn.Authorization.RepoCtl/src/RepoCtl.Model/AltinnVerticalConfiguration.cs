@@ -19,6 +19,7 @@ public sealed partial record AltinnVerticalConfiguration
     public static AltinnVerticalConfiguration Default { get; } = new AltinnVerticalConfiguration
     {
         Dependencies = [],
+        DevDependencies = [],
         DisplayName = null,
         Infrastructure = null,
     };
@@ -73,6 +74,11 @@ public sealed partial record AltinnVerticalConfiguration
     public required ImmutableValueSet<AltinnVerticalId> Dependencies { get; init; }
 
     /// <summary>
+    /// Gets the set of verticals that this vertical has as development dependencies.
+    /// </summary>
+    public required ImmutableValueSet<AltinnVerticalId> DevDependencies { get; init; }
+
+    /// <summary>
     /// Gets the (overridden) display name of the vertical.
     /// </summary>
     public required string? DisplayName { get; init; }
@@ -87,6 +93,9 @@ public sealed partial record AltinnVerticalConfiguration
     {
         [JsonPropertyName("deps")]
         public List<AltinnVerticalId>? Dependencies { get; init; }
+
+        [JsonPropertyName("devDeps")]
+        public List<AltinnVerticalId>? DevDependencies { get; init; }
 
         [JsonPropertyName("displayName")]
         public string? DisplayName { get; init; }
@@ -107,6 +116,10 @@ public sealed partial record AltinnVerticalConfiguration
                 ? [.. Dependencies]
                 : [];
 
+            ImmutableValueSet<AltinnVerticalId> devDependencies = DevDependencies is not null
+                ? [.. DevDependencies]
+                : [];
+
             AltinnVerticalInfrastructureConfiguration? infrastructure = null;
             if (Infrastructure is not null)
             {
@@ -122,6 +135,7 @@ public sealed partial record AltinnVerticalConfiguration
             validated = new AltinnVerticalConfiguration
             {
                 Dependencies = dependencies,
+                DevDependencies = devDependencies,
                 DisplayName = DisplayName,
                 Infrastructure = infrastructure,
             };

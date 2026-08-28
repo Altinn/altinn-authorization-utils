@@ -20,7 +20,9 @@ public sealed class AltinnVertical
     private readonly ImmutableArray<AltinnProject> _projects;
     private readonly string _displayName;
     private AltinnVerticalSet? _directDependencies;
+    private AltinnVerticalSet? _directDevDependencies;
     private AltinnVerticalSet? _allDependencies;
+    private AltinnVerticalSet? _allBuildDependencies;
     private AltinnVerticalSet? _dependents;
 
     /// <summary>
@@ -115,12 +117,30 @@ public sealed class AltinnVertical
     }
 
     /// <summary>
+    /// Gets the direct development dependencies of the vertical.
+    /// </summary>
+    public AltinnVerticalSet DirectDevDependencies
+    {
+        get => _directDevDependencies ?? ThrowHelper.ThrowInvalidOperationException<AltinnVerticalSet>("Dependency resolution has not run yet");
+        internal set => _directDevDependencies = value;
+    }
+
+    /// <summary>
     /// Gets all dependencies of the vertical, including transitive dependencies.
     /// </summary>
     public AltinnVerticalSet AllDependencies
     {
         get => _allDependencies ?? ThrowHelper.ThrowInvalidOperationException<AltinnVerticalSet>("Dependency resolution has not run yet");
         internal set => _allDependencies = value;
+    }
+
+    /// <summary>
+    /// Gets all dependencies required to build the vertical, including transitive dependencies and direct dev dependencies.
+    /// </summary>
+    public AltinnVerticalSet AllBuildDependencies
+    {
+        get => _allBuildDependencies ?? ThrowHelper.ThrowInvalidOperationException<AltinnVerticalSet>("Dependency resolution has not run yet");
+        internal set => _allBuildDependencies = value;
     }
 
     /// <summary>
