@@ -20,12 +20,6 @@
   <Folder Name="/deps/RepoCtl/">
     <Project Path="../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
   </Folder>
-  <Folder Name="/deps/TestUtils/">
-    <Project Path="../../pkgs/Altinn.Authorization.TestUtils/src/TestUtils/Altinn.Authorization.TestUtils.csproj" />
-    <Project Path="../../pkgs/Altinn.Authorization.TestUtils/src/TestUtils.AspNetCore/Altinn.Authorization.TestUtils.AspNetCore.csproj" />
-    <Project Path="../../pkgs/Altinn.Authorization.TestUtils/src/TestUtils.Http/Altinn.Authorization.TestUtils.Http.csproj" />
-    <Project Path="../../pkgs/Altinn.Authorization.TestUtils/src/TestUtils.Options/Altinn.Authorization.TestUtils.Options.csproj" />
-  </Folder>
   <Folder Name="/deps/Swashbuckle/">
     <Project Path="../../pkgs/Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
     <Project Path="../../pkgs/Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
