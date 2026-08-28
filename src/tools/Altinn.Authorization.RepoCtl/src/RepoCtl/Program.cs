@@ -10,6 +10,7 @@ using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
 using Altinn.Authorization.RepoCtl.NuGet;
 using Altinn.Authorization.RepoCtl.Options;
+using Altinn.Authorization.RepoCtl.ReleasePlease;
 using Altinn.Authorization.RepoCtl.Solutions;
 using Altinn.Authorization.RepoCtl.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ builder.Services.AddSingleton<IConfigureOption, ConfigureAltinnVerticalKindOptio
 builder.Services.AddSingleton<ICommandHandlerParameterBinderResolver, AltinnRepositoryBinderResolver>();
 builder.Services.AddSingleton<AltinnRepositoryLoader>();
 builder.Services.AddSingleton<SolutionService>();
+builder.Services.AddSingleton<ReleasePleaseConfigService>();
 builder.Services.AddSingleton<TestService>();
 builder.Services.AddSingleton<PackService>();
 builder.Services.AddSingleton<GitHubService>();
@@ -31,6 +33,7 @@ builder.Services.AddSingleton<AltinnRepositoryAccessor>();
 builder.Services.AddCommandResultHandlerResolver<CheckCommandResultHandlerResolver>();
 
 builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<SolutionService>());
+builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<ReleasePleaseConfigService>());
 builder.Services.AddSingleton<IRepositoryCheck, DotnetFormatCheck>();
 
 builder.Services.AddOutputFormatter<RichFormat, AltinnVerticalSetFormatter>();
@@ -65,6 +68,19 @@ cli.AddCommand("solutions", "Operate on solutions", (builder) =>
     builder.AddCommand("check", "Check the solutions in this repository", (Checker checker, AltinnRepository repository, SolutionService solutionService) =>
     {
         return CheckCommandResult.Partial(checker, repository, [solutionService]);
+    });
+});
+
+cli.AddCommand("release-please", "Operate on Release Please", (builder) =>
+{
+    builder.AddCommand("update", "Update the Release Please configuration", async (AltinnRepository repository, ReleasePleaseConfigService releasePleaseConfigService, CancellationToken cancellationToken) =>
+    {
+        await releasePleaseConfigService.UpdateReleasePleaseConfigFile(repository, cancellationToken);
+    });
+
+    builder.AddCommand("check", "Check the Release Please configuration", (Checker checker, AltinnRepository repository, ReleasePleaseConfigService releasePleaseConfigService) =>
+    {
+        return CheckCommandResult.Partial(checker, repository, [releasePleaseConfigService]);
     });
 });
 
