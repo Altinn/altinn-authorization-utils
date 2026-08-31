@@ -40,7 +40,7 @@ public sealed partial record ReleasePleaseConfig
         => JsonSerializer.DeserializeAsync(json, ReleasePleaseConfigJsonSerializerContext.Default.ReleasePleaseConfig, cancellationToken);
 
     /// <summary>
-    /// Serializes a release-please configuration to a UTF-8 JSON stream.
+    /// Serializes a release-please configuration to a UTF-8 JSON buffer writer.
     /// </summary>
     /// <param name="writer">The buffer writer to which the JSON will be written.</param>
     /// <param name="config">The release-please configuration to serialize.</param>
@@ -63,7 +63,7 @@ public sealed partial record ReleasePleaseConfig
     /// Serializes a release-please configuration to a string.
     /// </summary>
     /// <param name="config">The release-please configuration to serialize.</param>
-    /// <returns>The serialized UTF-8 JSON string representing the configuration.</returns>
+    /// <returns>The serialized string representing the configuration.</returns>
     public static string Serialize(ReleasePleaseConfig config)
     {
         var sequence = new ArrayBufferWriter<byte>();
