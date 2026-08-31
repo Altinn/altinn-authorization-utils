@@ -54,8 +54,12 @@ public readonly record struct AltinnVerticalId
         }
 
         var name = s[(separatorIndex + 1)..];
+        if (!IsValidName(name))
+        {
+            result = default;
+            return false;
+        }
 
-        // TODO: validate name?
         result = new AltinnVerticalId(kind, name.ToString());
         return true;
     }
@@ -82,6 +86,10 @@ public readonly record struct AltinnVerticalId
     {
         Guard.IsNotDefault(kind);
         Guard.IsNotNullOrEmpty(name);
+        if (!IsValidName(name))
+        {
+            ThrowHelper.ThrowArgumentException(nameof(name), "Vertical name cannot contain whitespace.");
+        }
 
         _kind = kind;
         _name = name;
@@ -110,9 +118,10 @@ public readonly record struct AltinnVerticalId
     public string ToString(string? format, IFormatProvider? formatProvider)
         => format switch
         {
-            "k" => _kind.ToString(),
-            "n" => _name,
-            "s" => Slugify(ToString()),
+            "k" or "kind" => _kind.ToString(),
+            "n" or "name" => _name,
+            "s" or "slug" => Slugify(ToString()),
+            "tag-prefix" => $"{_kind}/{_name}",
             "" or null => ToString(),
             _ => ThrowHelper.ThrowFormatException<string>($"The format string '{format}' is not supported."),
         };
@@ -123,14 +132,15 @@ public readonly record struct AltinnVerticalId
         charsWritten = 0;
         return format switch
         {
-            "k" => _kind.TryFormat(destination, out charsWritten, "", provider),
-            "n" => _name.AsSpan().TryCopyTo(destination, out charsWritten),
-            "s" => ToString("s", provider).AsSpan().TryCopyTo(destination, out charsWritten),
-            "" => TryFormatInner(in this, destination, out charsWritten),
+            "k" or "kind" => _kind.TryFormat(destination, out charsWritten, "", provider),
+            "n" or "name" => _name.AsSpan().TryCopyTo(destination, out charsWritten),
+            "s" or "slug" => ToString("s", provider).AsSpan().TryCopyTo(destination, out charsWritten),
+            "tag-prefix" => TryFormatInner(in this, destination, '/', out charsWritten),
+            "" => TryFormatInner(in this, destination, ':', out charsWritten),
             _ => ThrowHelper.ThrowFormatException<bool>($"The format string '{format}' is not supported."),
         };
 
-        static bool TryFormatInner(in AltinnVerticalId self, Span<char> destination, out int charsWritten)
+        static bool TryFormatInner(in AltinnVerticalId self, Span<char> destination, char separator, out int charsWritten)
         {
             if (!self._kind.TryFormat(destination, out charsWritten, "", provider: null))
             {
@@ -142,7 +152,7 @@ public readonly record struct AltinnVerticalId
                 return false;
             }
 
-            destination[charsWritten++] = ':';
+            destination[charsWritten++] = separator;
             destination = destination[charsWritten..];
 
             if (!self._name.TryCopyTo(destination, out var nameCharsWritten))
@@ -173,6 +183,24 @@ public readonly record struct AltinnVerticalId
         builder.Config.StringReplacements["."] = "-";
         builder.Config.StringReplacements[":"] = "-";
         return builder.GenerateSlug(value);
+    }
+
+    private static bool IsValidName(ReadOnlySpan<char> name)
+    {
+        if (name.IsEmpty)
+        {
+            return false;
+        }
+
+        foreach (var character in name)
+        {
+            if (char.IsWhiteSpace(character))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     internal sealed class JsonConverter
