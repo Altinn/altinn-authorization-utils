@@ -149,12 +149,13 @@ public sealed partial class AltinnRepositoryLoader
             return AltinnVerticalSet.Create(builder);
         }, cancellationToken);
 
+        var rootDirInfo = new DirectoryInfo(rootDir);
         var writer = channel.Writer;
         var producerTask = Task.Run(async () =>
         {
             try
             {
-                await Parallel.ForEachAsync(verticalDirs, cancellationToken, (tpl, ct) => LoadVertical(tpl.Kind, tpl.Dir, writer, ct));
+                await Parallel.ForEachAsync(verticalDirs, cancellationToken, (tpl, ct) => LoadVertical(rootDirInfo, tpl.Kind, tpl.Dir, writer, ct));
             }
             catch (Exception ex)
             {
@@ -182,10 +183,10 @@ public sealed partial class AltinnRepositoryLoader
             return dependencyProblem;
         }
 
-        return new AltinnRepository(new DirectoryInfo(rootDir), config, verticals);
+        return new AltinnRepository(rootDirInfo, config, verticals);
     }
 
-    private async ValueTask LoadVertical(AltinnVerticalKind kind, DirectoryInfo directory, ChannelWriter<Result<AltinnVertical>> writer, CancellationToken cancellationToken)
+    private async ValueTask LoadVertical(DirectoryInfo rootDirInfo, AltinnVerticalKind kind, DirectoryInfo directory, ChannelWriter<Result<AltinnVertical>> writer, CancellationToken cancellationToken)
     {
         await using var findConfigResult = Find(
             directory,
@@ -298,7 +299,13 @@ public sealed partial class AltinnRepositoryLoader
         }
 
         projects.SortBy(static project => (project.Type, project.Name));
-        var vertical = new AltinnVertical(directory, id, version, projects.DrainToImmutable(), config);
+        var vertical = new AltinnVertical(
+            GetRelativePath(rootDirInfo.FullName, directory.FullName),
+            directory,
+            id,
+            version,
+            projects.DrainToImmutable(),
+            config);
 
         await writer.WriteAsync(vertical, cancellationToken);
     }
@@ -471,6 +478,12 @@ public sealed partial class AltinnRepositoryLoader
         }
 
         return null;
+    }
+
+    private static string GetRelativePath(string rootPath, string fullPath)
+    {
+        var relativePath = Path.GetRelativePath(rootPath, fullPath);
+        return relativePath.Replace(Path.DirectorySeparatorChar, '/');
     }
 
     private enum AltinnProjectDirKind

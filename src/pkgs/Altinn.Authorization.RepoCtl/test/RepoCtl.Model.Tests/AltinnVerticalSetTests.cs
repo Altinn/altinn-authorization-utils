@@ -52,6 +52,7 @@ public class AltinnVerticalSetTests
 
     private static AltinnVertical CreateVertical(string id)
         => new(
+            ".",
             new DirectoryInfo("."),
             AltinnVerticalId.Parse(id, provider: null),
             new SemVersion(1, 0, 0),
