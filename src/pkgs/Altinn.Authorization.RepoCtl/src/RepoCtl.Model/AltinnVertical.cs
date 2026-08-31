@@ -41,6 +41,10 @@ public sealed class AltinnVertical
     /// <summary>
     /// Gets the relative path of the vertical within the repository.
     /// </summary>
+    /// <remarks>
+    /// The relative path is relative to the root of the repository,
+    /// and uses <c>/</c> as the directory separator.
+    /// </remarks>
     public string RelPath
         => _relPath;
 
