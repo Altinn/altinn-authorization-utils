@@ -42,8 +42,7 @@ public sealed partial class AltinnRepositoryLoader
     /// <returns>The loaded <see cref="AltinnRepository"/>.</returns>
     public async Task<Result<AltinnRepository>> Load(DirectoryInfo directory, CancellationToken cancellationToken = default)
     {
-        await using var findConfigResult = FindUp(
-            directory,
+        await using var findConfigResult = directory.FindUp(
             [".repo"],
             ["json", "jsonc"]);
 
@@ -54,7 +53,7 @@ public sealed partial class AltinnRepositoryLoader
 
         var rootDir = findConfigResult.FileInfo.DirectoryName!;
         Log.ConfigPath(_logger, findConfigResult.FileInfo.FullName);
-        var configResult = await AltinnRepositoryConfiguration.Read(findConfigResult.Stream, cancellationToken);
+        var configResult = await AltinnRepositoryConfiguration.Read(findConfigResult, cancellationToken);
         if (configResult.IsProblem)
         {
             return Problems.InvalidConfig.Create(
@@ -188,13 +187,11 @@ public sealed partial class AltinnRepositoryLoader
 
     private async ValueTask LoadVertical(DirectoryInfo rootDirInfo, AltinnVerticalKind kind, DirectoryInfo directory, ChannelWriter<Result<AltinnVertical>> writer, CancellationToken cancellationToken)
     {
-        await using var findConfigResult = Find(
-            directory,
+        await using var findConfigResult = directory.Find(
             [".vertical", "conf"],
             ["json", "jsonc"]);
 
-        await using var findVersionResult = Find(
-            directory,
+        await using var findVersionResult = directory.Find(
             ["version"],
             ["txt"]);
 
@@ -205,7 +202,7 @@ public sealed partial class AltinnRepositoryLoader
         }
         else
         {
-            var configResult = await AltinnVerticalConfiguration.Read(findConfigResult.Stream, cancellationToken);
+            var configResult = await AltinnVerticalConfiguration.Read(findConfigResult, cancellationToken);
             if (configResult.IsProblem)
             {
                 var configProblem = Problems.InvalidConfig.Create(
@@ -225,7 +222,7 @@ public sealed partial class AltinnRepositoryLoader
         }
         else
         {
-            var versionString = await new StreamReader(findVersionResult.Stream).ReadToEndAsync(cancellationToken);
+            var versionString = await new StreamReader(findVersionResult).ReadToEndAsync(cancellationToken);
             if (!SemVersion.TryParse(versionString.TrimEnd(), SemVersionStyles.Strict, out version))
             {
                 var versionProblem = Problems.InvalidVersion.Create(
@@ -444,42 +441,6 @@ public sealed partial class AltinnRepositoryLoader
             => kind == AltinnVerticalKind.Tool;
     }
 
-    private OpenedFile? FindUp(DirectoryInfo directory, ReadOnlySpan<string> names, ReadOnlySpan<string> extensions)
-    {
-        for (var current = directory; current is not null; current = current.Parent)
-        {
-            var result = Find(current, names, extensions);
-            if (result is not null)
-            {
-                return result;
-            }
-        }
-
-        return null;
-    }
-
-    private OpenedFile? Find(DirectoryInfo directory, ReadOnlySpan<string> names, ReadOnlySpan<string> extensions)
-    {
-        foreach (var name in names)
-        {
-            foreach (var extension in extensions)
-            {
-                var file = new FileInfo(Path.Combine(directory.FullName, $"{name}.{extension}"));
-                try
-                {
-                    var fs = file.OpenRead();
-                    return new(file, fs);
-                }
-                catch (FileNotFoundException)
-                {
-                    continue;
-                }
-            }
-        }
-
-        return null;
-    }
-
     private static string GetRelativePath(string rootPath, string fullPath)
     {
         var relativePath = Path.GetRelativePath(rootPath, fullPath);
@@ -491,19 +452,6 @@ public sealed partial class AltinnRepositoryLoader
         Source,
         Test,
         Sample,
-    }
-
-    private sealed class OpenedFile(FileInfo fileInfo, FileStream stream)
-        : IAsyncDisposable
-    {
-        public FileInfo FileInfo => fileInfo;
-
-        public Stream Stream => stream;
-
-        public async ValueTask DisposeAsync()
-        {
-            await stream.DisposeAsync();
-        }
     }
 
     private sealed class MsBuildLoggerAdapter(ILogger logger)
