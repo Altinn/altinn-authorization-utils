@@ -1,59 +1,9 @@
 {
-  "separate-pull-requests": true,
   "last-release-sha": "c70d6de5d6149da79b0f3d44486774c12c3586c8",
-  "pull-request-title-pattern": "release${scope}:${component} ${version}",
   "release-type": "simple",
+  "pull-request-title-pattern": "release${scope}:${component} ${version}",
+  "separate-pull-requests": true,
   "packages": {
-    "src/pkgs/Altinn.Urn": {
-      "component": "pkg/Urn",
-      "extra-files": [
-        {
-          "type": "xml",
-          "path": "Version.props",
-          "xpath": "//Project/PropertyGroup/Version"
-        }
-      ]
-    },
-    "src/pkgs/Altinn.Swashbuckle": {
-      "component": "pkg/Swashbuckle",
-      "extra-files": [
-        {
-          "type": "xml",
-          "path": "Version.props",
-          "xpath": "//Project/PropertyGroup/Version"
-        }
-      ]
-    },
-    "src/pkgs/Altinn.Authorization.ServiceDefaults": {
-      "component": "pkg/ServiceDefaults",
-      "extra-files": [
-        {
-          "type": "xml",
-          "path": "Version.props",
-          "xpath": "//Project/PropertyGroup/Version"
-        }
-      ]
-    },
-    "src/pkgs/Altinn.Authorization.ProblemDetails": {
-      "component": "pkg/ProblemDetails",
-      "extra-files": [
-        {
-          "type": "xml",
-          "path": "Version.props",
-          "xpath": "//Project/PropertyGroup/Version"
-        }
-      ]
-    },
-    "src/tools/Altinn.Cli": {
-      "component": "tool/Cli",
-      "extra-files": [
-        {
-          "type": "xml",
-          "path": "Version.props",
-          "xpath": "//Project/PropertyGroup/Version"
-        }
-      ]
-    },
     "src/pkgs/Altinn.Authorization.CommandLine": {
       "component": "pkg/CommandLine",
       "extra-files": [
@@ -74,8 +24,8 @@
         }
       ]
     },
-    "src/pkgs/Altinn.Authorization.TestUtils": {
-      "component": "pkg/TestUtils",
+    "src/pkgs/Altinn.Authorization.ProblemDetails": {
+      "component": "pkg/ProblemDetails",
       "extra-files": [
         {
           "type": "xml",
@@ -94,8 +44,58 @@
         }
       ]
     },
+    "src/pkgs/Altinn.Authorization.ServiceDefaults": {
+      "component": "pkg/ServiceDefaults",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
+    },
+    "src/pkgs/Altinn.Authorization.TestUtils": {
+      "component": "pkg/TestUtils",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
+    },
+    "src/pkgs/Altinn.Swashbuckle": {
+      "component": "pkg/Swashbuckle",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
+    },
+    "src/pkgs/Altinn.Urn": {
+      "component": "pkg/Urn",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
+    },
     "src/tools/Altinn.Authorization.RepoCtl": {
       "component": "tool/RepoCtl",
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "Version.props",
+          "xpath": "//Project/PropertyGroup/Version"
+        }
+      ]
+    },
+    "src/tools/Altinn.Cli": {
+      "component": "tool/Cli",
       "extra-files": [
         {
           "type": "xml",

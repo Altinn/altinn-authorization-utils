@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v1.1.0...pkg/RepoCtl-v1.2.0) (2026-08-31)
+
+
+### Features
+
+* add delegating stream helper ([#691](https://github.com/Altinn/altinn-authorization-utils/issues/691)) ([f1b1d46](https://github.com/Altinn/altinn-authorization-utils/commit/f1b1d46f15ad726117059c20704897e90b8ef810))
+* add find-file helpers ([#692](https://github.com/Altinn/altinn-authorization-utils/issues/692)) ([8f0eaa6](https://github.com/Altinn/altinn-authorization-utils/commit/8f0eaa6a0f5013bb288bb676e973519b48da8171))
+* add release-please config models ([#688](https://github.com/Altinn/altinn-authorization-utils/issues/688)) ([1afd613](https://github.com/Altinn/altinn-authorization-utils/commit/1afd6135bb3621c33499363a015423dc132425ad))
+* add release-please vertical-id format ([#689](https://github.com/Altinn/altinn-authorization-utils/issues/689)) ([04a4d97](https://github.com/Altinn/altinn-authorization-utils/commit/04a4d9728714ce6cc55e7ef23ba7ea9e062e1a0d))
+* add relpath to verticals ([#690](https://github.com/Altinn/altinn-authorization-utils/issues/690)) ([b1a9898](https://github.com/Altinn/altinn-authorization-utils/commit/b1a9898fdafab02fc2ff9eb1bdcf906a568de109))
+
 ## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v1.0.1...pkg/RepoCtl-v1.1.0) (2026-08-28)
 
 
