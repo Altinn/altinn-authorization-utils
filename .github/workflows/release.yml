@@ -5,6 +5,10 @@ on:
 
 name: release-please
 
+env:
+  # renovate: datasource=nuget depName=Altinn.Authorization.RepoCtl
+  repoctlVersion: "1.2.0"
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -62,7 +66,7 @@ jobs:
 
       - name: Install RepoCtl
         run: |
-          dotnet tool install --global Altinn.Authorization.RepoCtl
+          dotnet tool install --global Altinn.Authorization.RepoCtl --version "${{ env.repoctlVersion }}"
           
           repoctl --version
 
@@ -122,7 +126,7 @@ jobs:
 
       - name: Install RepoCtl
         run: |
-          dotnet tool install --global Altinn.Authorization.RepoCtl
+          dotnet tool install --global Altinn.Authorization.RepoCtl --version "${{ env.repoctlVersion }}"
           
           repoctl --version
 
@@ -172,7 +176,7 @@ jobs:
 
       - name: Install RepoCtl
         run: |
-          dotnet tool install --global Altinn.Authorization.RepoCtl
+          dotnet tool install --global Altinn.Authorization.RepoCtl --version "${{ env.repoctlVersion }}"
           
           repoctl --version
 
