@@ -8,6 +8,11 @@ namespace Altinn.Authorization.RepoCtl.Model.ReleasePlease;
 [JsonConverter(typeof(JsonStringEnumConverter<ReleasePleaseChangelogType>))]
 public enum ReleasePleaseChangelogType
 {
+    /// <summary>Indicates that the changelog type has not been set.</summary>
+    /// <remarks>In reality, this should never be set by JSON, but it's easier to model this way</remarks>
+    [JsonStringEnumMemberName("unset")]
+    Unset,
+
     /// <summary>Uses release-please's default changelog notes provider.</summary>
     [JsonStringEnumMemberName("default")]
     Default,

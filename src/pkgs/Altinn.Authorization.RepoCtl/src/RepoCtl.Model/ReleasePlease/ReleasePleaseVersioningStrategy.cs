@@ -8,6 +8,11 @@ namespace Altinn.Authorization.RepoCtl.Model.ReleasePlease;
 [JsonConverter(typeof(JsonStringEnumConverter<ReleasePleaseVersioningStrategy>))]
 public enum ReleasePleaseVersioningStrategy
 {
+    /// <summary>Indicates that the versioning strategy has not been set.</summary>
+    /// <remarks>In reality, this should never be set by JSON, but it's easier to model this way</remarks>
+    [JsonStringEnumMemberName("unset")]
+    Unset,
+
     /// <summary>Uses Conventional Commits to select a semantic-version bump.</summary>
     [JsonStringEnumMemberName("default")]
     Default,

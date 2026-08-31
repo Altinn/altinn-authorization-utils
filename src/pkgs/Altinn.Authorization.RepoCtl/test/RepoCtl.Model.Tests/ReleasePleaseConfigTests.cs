@@ -50,7 +50,7 @@ public class ReleasePleaseConfigTests
     {
         var config = new ReleasePleaseConfig
         {
-            Packages = new SortedDictionary<string, ReleasePleasePackage>
+            Packages =
             {
                 ["src/package"] = new()
                 {
@@ -60,7 +60,7 @@ public class ReleasePleaseConfigTests
             },
         };
 
-        using var document = JsonDocument.Parse(JsonSerializer.Serialize(config));
+        using var document = JsonDocument.Parse(ReleasePleaseConfig.Serialize(config));
         var package = document.RootElement.GetProperty("packages").GetProperty("src/package");
 
         package.GetProperty("include-component-in-tag").GetBoolean().ShouldBeFalse();

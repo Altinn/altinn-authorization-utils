@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -59,6 +60,18 @@ public sealed partial record ReleasePleaseConfig
     }
 
     /// <summary>
+    /// Serializes a release-please configuration to a string.
+    /// </summary>
+    /// <param name="config">The release-please configuration to serialize.</param>
+    /// <returns>The serialized UTF-8 JSON string representing the configuration.</returns>
+    public static string Serialize(ReleasePleaseConfig config)
+    {
+        var sequence = new ArrayBufferWriter<byte>();
+        Serialize(sequence, config);
+        return Encoding.UTF8.GetString(sequence.WrittenSpan);
+    }
+
+    /// <summary>
     /// Asynchronously serializes a release-please configuration to a UTF-8 JSON stream.
     /// </summary>
     /// <param name="stream">The UTF-8 JSON stream to which the configuration will be written.</param>
@@ -80,7 +93,9 @@ public sealed partial record ReleasePleaseConfig
     /// </summary>
     [JsonPropertyOrder((int)ReleasePleaseConfigPropertyOrder.Packages)]
     [JsonPropertyName("packages")]
-    public required SortedDictionary<string, ReleasePleasePackage> Packages { get; set; }
+    [JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
+    public SortedDictionary<string, ReleasePleasePackage> Packages { get; }
+        = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Gets the commit SHA from which release-please starts looking for commits when bootstrapping a manifest.

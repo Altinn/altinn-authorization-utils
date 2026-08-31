@@ -8,8 +8,10 @@ namespace Altinn.Authorization.RepoCtl.Model.ReleasePlease;
 [JsonConverter(typeof(JsonStringEnumConverter<ReleasePleaseReleaseType>))]
 public enum ReleasePleaseReleaseType
 {
-    /// <summary>No release strategy has been specified.</summary>
-    Unspecified,
+    /// <summary>Indicates that the changelog type has not been set.</summary>
+    /// <remarks>In reality, this should never be set by JSON, but it's easier to model this way</remarks>
+    [JsonStringEnumMemberName("unset")]
+    Unset,
 
     /// <summary>Updates a Bazel module's <c>MODULE.bazel</c> file.</summary>
     [JsonStringEnumMemberName("bazel")]
