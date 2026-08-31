@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.1.0...tool/RepoCtl-v1.2.0) (2026-08-31)
+
+
+### Features
+
+* add release-please config commands ([#693](https://github.com/Altinn/altinn-authorization-utils/issues/693)) ([89d3723](https://github.com/Altinn/altinn-authorization-utils/commit/89d3723e510dcab214e7050f3f788712a2928789))
+
 ## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.0.1...tool/RepoCtl-v1.1.0) (2026-08-28)
 
 
