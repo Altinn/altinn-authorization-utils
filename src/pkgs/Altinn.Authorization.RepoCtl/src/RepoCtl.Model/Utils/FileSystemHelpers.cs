@@ -57,6 +57,10 @@ public static class FileSystemHelpers
                         var fs = file.Open(FileMode.Open, fileAccess);
                         return new(file, fs);
                     }
+                    catch (DirectoryNotFoundException)
+                    {
+                        continue;
+                    }
                     catch (FileNotFoundException)
                     {
                         continue;
