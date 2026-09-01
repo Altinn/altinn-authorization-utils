@@ -17,10 +17,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = CliApplication.CreateBuilder("Altinn Authorization Repository Manager (repoctl)");
 builder.Services.AddGitHubActionsServices();
+builder.Services.AddRepoCtlServices();
 builder.Services.AddSingleton<AltinnRepositoryResolver>();
 builder.Services.AddSingleton<IConfigureOption, ConfigureAltinnVerticalKindOptions>();
 builder.Services.AddSingleton<ICommandHandlerParameterBinderResolver, AltinnRepositoryBinderResolver>();
-builder.Services.AddSingleton<AltinnRepositoryLoader>();
 builder.Services.AddSingleton<SolutionService>();
 builder.Services.AddSingleton<ReleasePleaseConfigService>();
 builder.Services.AddSingleton<TestService>();
