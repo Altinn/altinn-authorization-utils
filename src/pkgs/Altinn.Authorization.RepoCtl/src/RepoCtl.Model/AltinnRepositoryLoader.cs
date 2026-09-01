@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using Altinn.Authorization.ModelUtils;
 using Altinn.Authorization.ProblemDetails;
+using Altinn.Authorization.RepoCtl.Model.MsBuild;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
-using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
@@ -38,15 +38,17 @@ internal sealed partial class AltinnRepositoryLoader
     : IAltinnRepositoryLoader
 {
     private readonly ILogger<AltinnRepositoryLoader> _logger;
-    private readonly IEnumerable<Microsoft.Build.Framework.ILogger> _msbuildLoggers;
+    private readonly MsBuildContextFactory _contextFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AltinnRepositoryLoader"/> class.
     /// </summary>
-    public AltinnRepositoryLoader(ILogger<AltinnRepositoryLoader> logger, ILoggerFactory loggerFactory)
+    public AltinnRepositoryLoader(
+        ILogger<AltinnRepositoryLoader> logger,
+        MsBuildContextFactory contextFactory)
     {
         _logger = logger;
-        _msbuildLoggers = [new MsBuildLoggerAdapter(loggerFactory.CreateLogger<Microsoft.Build.Framework.ILogger>())];
+        _contextFactory = contextFactory;
     }
 
     /// <inheritdoc/>
@@ -117,6 +119,7 @@ internal sealed partial class AltinnRepositoryLoader
             }
         }
 
+
         var verticalDirs = new List<(AltinnVerticalKind Kind, DirectoryInfo Dir)>();
         foreach (var (kind, dir) in kindDirs)
         {
@@ -158,13 +161,20 @@ internal sealed partial class AltinnRepositoryLoader
             return AltinnVerticalSet.Create(builder);
         }, cancellationToken);
 
+        using var context = _contextFactory.CreateBuildContext(
+            new Dictionary<string, string>
+            {
+                ["CI"] = "true",
+                ["GITHUB_ACTIONS"] = "true",
+            });
+
         var rootDirInfo = new DirectoryInfo(rootDir);
         var writer = channel.Writer;
         var producerTask = Task.Run(async () =>
         {
             try
             {
-                await Parallel.ForEachAsync(verticalDirs, cancellationToken, (tpl, ct) => LoadVertical(rootDirInfo, tpl.Kind, tpl.Dir, writer, ct));
+                await Parallel.ForEachAsync(verticalDirs, cancellationToken, (tpl, ct) => LoadVertical(rootDirInfo, tpl.Kind, tpl.Dir, context, writer, ct));
             }
             catch (Exception ex)
             {
@@ -195,7 +205,13 @@ internal sealed partial class AltinnRepositoryLoader
         return new AltinnRepository(rootDirInfo, config, verticals);
     }
 
-    private async ValueTask LoadVertical(DirectoryInfo rootDirInfo, AltinnVerticalKind kind, DirectoryInfo directory, ChannelWriter<Result<AltinnVertical>> writer, CancellationToken cancellationToken)
+    private async ValueTask LoadVertical(
+        DirectoryInfo rootDirInfo,
+        AltinnVerticalKind kind,
+        DirectoryInfo directory,
+        MsBuildContext context,
+        ChannelWriter<Result<AltinnVertical>> writer,
+        CancellationToken cancellationToken)
     {
         await using var findConfigResult = directory.Find(
             [".vertical", "conf"],
@@ -258,16 +274,6 @@ internal sealed partial class AltinnRepositoryLoader
             return;
         }
 
-        var globalProperties = new Dictionary<string, string>
-        {
-            ["DesignTimeBuild"] = "true",
-        };
-
-        using var collection = new ProjectCollection(
-            globalProperties: globalProperties,
-            loggers: _msbuildLoggers,
-            toolsetDefinitionLocations: ToolsetDefinitionLocations.Default);
-
         var projects = result.Files.TryGetNonEnumeratedCount(out var count)
             ? ImmutableArray.CreateBuilder<AltinnProject>(count)
             : ImmutableArray.CreateBuilder<AltinnProject>();
@@ -283,7 +289,7 @@ internal sealed partial class AltinnRepositoryLoader
             };
 
             var projectFile = new FileInfo(Path.Combine(directory.FullName, projectFileMatch.Path));
-            var msbuildProject = collection.LoadProject(projectFile.FullName);
+            var msbuildProject = context.LoadProject(projectFile.FullName);
             var name = msbuildProject.GetPropertyValue("MSBuildProjectName");
             var versionString = msbuildProject.GetPropertyValue("Version");
 
@@ -300,6 +306,10 @@ internal sealed partial class AltinnRepositoryLoader
             }
 
             var type = GetProjectType(msbuildProject, dirKind, kind, name, projectVersion);
+            if (type.IsPackable)
+            {
+                await ValidatePackableProject(msbuildProject, name);
+            }
 
             var project = new AltinnProject(projectFile, type, name, projectVersion);
             projects.Add(project);
@@ -317,7 +327,7 @@ internal sealed partial class AltinnRepositoryLoader
         await writer.WriteAsync(vertical, cancellationToken);
     }
 
-    private AltinnProjectType GetProjectType(Project project, AltinnProjectDirKind dirKind, AltinnVerticalKind verticalKind, string name, SemVersion version)
+    private AltinnProjectType GetProjectType(IMsBuildProject project, AltinnProjectDirKind dirKind, AltinnVerticalKind verticalKind, string name, SemVersion version)
     {
         var isTestProject = project.GetPropertyValueAsBool("IsTestProject");
         var isSampleProject = project.GetPropertyValueAsBool("IsSampleProject");
@@ -449,6 +459,78 @@ internal sealed partial class AltinnRepositoryLoader
 
         static bool CanBeTool(AltinnVerticalKind kind)
             => kind == AltinnVerticalKind.Tool;
+    }
+
+    private async ValueTask ValidatePackableProject(IMsBuildProject project, string name)
+    {
+        const string targetName = "InitializeSourceControlInformation";
+
+        RequireTrue(_logger, project, name, "Deterministic");
+        RequireTrue(_logger, project, name, "ContinuousIntegrationBuild");
+        RequireSourceLinkTrue(_logger, project, name, "EnableSourceLink");
+        RequireSourceLinkTrue(_logger, project, name, "SourceControlInformationFeatureSupported");
+
+        RequireValue(_logger, project, name, "DebugType", "embedded");
+        RequireSourceLinkNotEmpty(_logger, project, name, "SourceLinkUrlInitializerTargets");
+
+        if (!project.ContainsTarget(targetName))
+        {
+            _logger.LogWarning("Project {ProjectName} at '{ProjectFile}' does not contain the target '{TargetName}'.", name, project.FullPath, targetName);
+            return;
+        }
+
+        IMsBuildProjectSnapshot buildResult;
+        try
+        {
+            buildResult = await project.Build(targetName);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Project {ProjectName} at '{ProjectFile}' failed to build the target '{TargetName}'.", name, project.FullPath, targetName);
+            return;
+        }
+
+        RequireSourceLinkNotEmpty(_logger, buildResult, name, "PrivateRepositoryUrl");
+
+        static void RequireValue(ILogger logger, IMsBuildProjectSnapshot project, string name, string propertyName, string expectedValue)
+        {
+            var value = project.GetPropertyValue(propertyName);
+
+            if (value != expectedValue)
+            {
+                Log.PackableProjectShouldBeReproducable(logger, name, project.FullPath, propertyName, value, expectedValue);
+            }
+        }
+
+        static void RequireTrue(ILogger logger, IMsBuildProjectSnapshot project, string name, string propertyName)
+        {
+            var value = project.GetPropertyValueAsBool(propertyName);
+
+            if (!value)
+            {
+                Log.PackableProjectShouldBeReproducable(logger, name, project.FullPath, propertyName, project.GetPropertyValue(propertyName), "true");
+            }
+        }
+
+        static void RequireSourceLinkTrue(ILogger logger, IMsBuildProjectSnapshot project, string name, string propertyName)
+        {
+            var value = project.GetPropertyValueAsBool(propertyName);
+
+            if (!value)
+            {
+                Log.PackableProjectSourceLinkConfigurationInvalid(logger, name, project.FullPath, propertyName, project.GetPropertyValue(propertyName), "true");
+            }
+        }
+
+        static void RequireSourceLinkNotEmpty(ILogger logger, IMsBuildProjectSnapshot project, string name, string propertyName)
+        {
+            var value = project.GetPropertyValue(propertyName);
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                Log.PackableProjectSourceLinkConfigurationInvalid(logger, name, project.FullPath, propertyName, value, "a non-empty value");
+            }
+        }
     }
 
     private static string GetRelativePath(string rootPath, string fullPath)
@@ -609,5 +691,11 @@ internal sealed partial class AltinnRepositoryLoader
 
         [LoggerMessage(17, LogLevel.Error, "Project '{ProjectName}' at '{ProjectFile}' has an invalid version '{VersionString}'")]
         public static partial void ProjectHasInvalidVersion(ILogger logger, string projectName, string projectFile, string versionString);
+
+        [LoggerMessage(18, LogLevel.Warning, "Packable project '{ProjectName}' at '{ProjectFile}' should be reproducable. Property '{PropertyName}' is set to '{PropertyValue}', but should be '{ExpectedValue}'.")]
+        public static partial void PackableProjectShouldBeReproducable(ILogger logger, string projectName, string projectFile, string propertyName, string propertyValue, string expectedValue);
+
+        [LoggerMessage(19, LogLevel.Warning, "Packable project '{ProjectName}' at '{ProjectFile}' has invalid SourceLink configuration. Property '{PropertyName}' is set to '{PropertyValue}', but should be '{ExpectedValue}'.")]
+        public static partial void PackableProjectSourceLinkConfigurationInvalid(ILogger logger, string projectName, string projectFile, string propertyName, string propertyValue, string expectedValue);
     }
 }

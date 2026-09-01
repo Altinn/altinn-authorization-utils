@@ -1,10 +1,8 @@
-using Microsoft.Build.Evaluation;
-
-namespace Altinn.Authorization.RepoCtl.Model.Utils;
+namespace Altinn.Authorization.RepoCtl.Model.MsBuild;
 
 internal static class MSBuildHelpers
 {
-    extension(Project project)
+    extension(IMsBuildProjectSnapshot project)
     {
         public bool GetPropertyValueAsBool(string propertyName)
         {

@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Build.Locator;
 
-namespace Altinn.Authorization.RepoCtl.Model;
+namespace Altinn.Authorization.RepoCtl.Model.MsBuild;
 
 internal static class MSBuildInitializer
 {
