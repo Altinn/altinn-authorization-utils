@@ -20,7 +20,22 @@ namespace Altinn.Authorization.RepoCtl.Model;
 /// <summary>
 /// A loader for <see cref="AltinnRepository"/>.
 /// </summary>
-public sealed partial class AltinnRepositoryLoader
+public interface IAltinnRepositoryLoader
+{
+    /// <summary>
+    /// Loads an <see cref="AltinnRepository"/> by starting from the specified directory and searching upwards for a git repository root.
+    /// </summary>
+    /// <param name="directory">The directory containing the Altinn repository.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The loaded <see cref="AltinnRepository"/>.</returns>
+    Task<Result<AltinnRepository>> Load(DirectoryInfo directory, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// A loader for <see cref="AltinnRepository"/>.
+/// </summary>
+internal sealed partial class AltinnRepositoryLoader
+    : IAltinnRepositoryLoader
 {
     private readonly ILogger<AltinnRepositoryLoader> _logger;
     private readonly IEnumerable<Microsoft.Build.Framework.ILogger> _msbuildLoggers;
@@ -34,12 +49,7 @@ public sealed partial class AltinnRepositoryLoader
         _msbuildLoggers = [new MsBuildLoggerAdapter(loggerFactory.CreateLogger<Microsoft.Build.Framework.ILogger>())];
     }
 
-    /// <summary>
-    /// Loads an <see cref="AltinnRepository"/> by starting from the specified directory and searching upwards for a git repository root.
-    /// </summary>
-    /// <param name="directory">The directory containing the Altinn repository.</param>
-    /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns>The loaded <see cref="AltinnRepository"/>.</returns>
+    /// <inheritdoc/>
     public async Task<Result<AltinnRepository>> Load(DirectoryInfo directory, CancellationToken cancellationToken = default)
     {
         await using var findConfigResult = directory.FindUp(
