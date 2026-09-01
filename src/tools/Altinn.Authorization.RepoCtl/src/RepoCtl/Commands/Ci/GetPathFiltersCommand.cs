@@ -35,7 +35,8 @@ internal sealed partial class GetPathFiltersCommand(IGitHubActionsService action
 
             foreach (var dep in vertical.AllDependencies)
             {
-                fullFilters.UnionWith(filters[dep.Id.ToString()]);
+                var relPath = RelPath(repository, dep.Directory);
+                fullFilters.Add($"{relPath}/**");
             }
 
             filters.Add($"{idString}:full", fullFilters);
