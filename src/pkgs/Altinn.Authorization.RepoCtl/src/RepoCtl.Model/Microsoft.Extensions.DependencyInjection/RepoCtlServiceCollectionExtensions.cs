@@ -1,4 +1,5 @@
 using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.MsBuild;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,7 @@ public static class RepoCtlServiceCollectionExtensions
         public IServiceCollection AddRepoCtlServices()
         {
             services.AddSingleton<IAltinnRepositoryLoader, AltinnRepositoryLoader>();
+            services.AddSingleton<MsBuildContextFactory>();
 
             return services;
         }
