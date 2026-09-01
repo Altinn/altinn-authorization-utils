@@ -55,6 +55,9 @@ jobs:
 
       - name: Test
         run: dotnet test -c Release --no-build -bl:binlog/test.binlog
+      
+      - name: Run build repoctl
+        run: ./src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl/bin/Release/net10.0/repoctl check
 
       - name: Pack
         run: dotnet pack -c Release --no-build -bl:binlog/pack.binlog
