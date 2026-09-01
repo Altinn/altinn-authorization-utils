@@ -94,7 +94,7 @@ internal sealed class ReleasePleaseConfigService
             {
                 package = new ReleasePleasePackage
                 {
-                    Component = vertical.Id.ToString("r", null),
+                    Component = vertical.Id.ToString("tag-prefix", null),
                 };
 
                 config.Packages.Add(vertical.RelPath, package);
