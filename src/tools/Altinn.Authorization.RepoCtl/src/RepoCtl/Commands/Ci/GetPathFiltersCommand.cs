@@ -39,6 +39,7 @@ internal sealed partial class GetPathFiltersCommand(IGitHubActionsService action
 
         filters["shared"] = [
             ".github/**",
+            "eng/**",
             "Directory.Build.props",
             "Directory.Build.targets",
             "Directory.Packages.props",
