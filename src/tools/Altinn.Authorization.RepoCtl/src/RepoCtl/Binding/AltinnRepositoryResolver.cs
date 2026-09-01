@@ -56,7 +56,7 @@ internal sealed class AltinnRepositoryResolver
 
     public Task<Result<AltinnRepository>> GetRepository(CommandInvocationContext invocationContext, CancellationToken cancellationToken)
     {
-        var loader = invocationContext.ApplicationServices.GetRequiredService<AltinnRepositoryLoader>();
+        var loader = invocationContext.ApplicationServices.GetRequiredService<IAltinnRepositoryLoader>();
         var cwd = GetWorkingDirectory(invocationContext);
 
         var state = invocationContext.Extensions.GetOrAdd((loader, cwd), static arg => new AltinnRepositoryLoaderState(arg.loader, arg.cwd));
@@ -76,7 +76,7 @@ internal sealed class AltinnRepositoryResolver
         }
     }
 
-    private sealed class AltinnRepositoryLoaderState(AltinnRepositoryLoader loader, DirectoryInfo cwd)
+    private sealed class AltinnRepositoryLoaderState(IAltinnRepositoryLoader loader, DirectoryInfo cwd)
     {
         public Task<Result<AltinnRepository>> RepositoryTask { get; }
             = loader.Load(cwd);
