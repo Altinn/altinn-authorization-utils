@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.2.0...tool/RepoCtl-v1.2.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* add eng dir to shared filters ([#705](https://github.com/Altinn/altinn-authorization-utils/issues/705)) ([a6f1fbc](https://github.com/Altinn/altinn-authorization-utils/commit/a6f1fbc5863439142a0bafb0a5043808816f044b))
+* get-path-filters on filtered sets ([#699](https://github.com/Altinn/altinn-authorization-utils/issues/699)) ([b73a2a0](https://github.com/Altinn/altinn-authorization-utils/commit/b73a2a0333235817435edf1da731f947fdc2692d))
+* release-please config validation ([#702](https://github.com/Altinn/altinn-authorization-utils/issues/702)) ([986378e](https://github.com/Altinn/altinn-authorization-utils/commit/986378ec60ccdc1050f0a1236f2b4708134b85e6))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.1.0...tool/RepoCtl-v1.2.0) (2026-08-31)
 
 
