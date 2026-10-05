@@ -13,4 +13,8 @@
     <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+  </ItemGroup>
+
 </Project>
