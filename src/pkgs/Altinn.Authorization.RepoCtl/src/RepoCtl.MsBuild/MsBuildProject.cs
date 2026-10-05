@@ -5,11 +5,13 @@ namespace Altinn.Authorization.RepoCtl.Model.MsBuild;
 internal sealed class MsBuildProject
     : IMsBuildProject
 {
-    public MsBuildProject(Project project)
+    public MsBuildProject(MsBuildContext msBuildContext, Project project)
     {
+        _msBuildContext = msBuildContext;
         _project = project;
     }
 
+    private readonly MsBuildContext _msBuildContext;
     private readonly Project _project;
 
     public string FullPath => _project.FullPath;
@@ -19,4 +21,7 @@ internal sealed class MsBuildProject
 
     public bool ContainsTarget(string targetName)
         => _project.Targets.ContainsKey(targetName);
+
+    public Task<IMsBuildProjectSnapshot> Build(string targetName, CancellationToken cancellationToken = default)
+        => _msBuildContext.Build(_project, targetName, cancellationToken);
 }

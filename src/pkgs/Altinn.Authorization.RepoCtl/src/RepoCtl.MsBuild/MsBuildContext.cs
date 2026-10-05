@@ -3,12 +3,13 @@ using System.IO.Hashing;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Execution;
 using Microsoft.Extensions.Logging;
 
 namespace Altinn.Authorization.RepoCtl.Model.MsBuild;
 
 /// <summary>
-/// Hosts an MSBuild evaluation session.
+/// Hosts an MSBuild evaluation and target-execution session.
 /// </summary>
 public interface IMsBuildContext
     : IDisposable
@@ -17,15 +18,21 @@ public interface IMsBuildContext
     /// Loads and evaluates an MSBuild project.
     /// </summary>
     /// <param name="projectFilePath">The path to the project file.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The evaluated project.</returns>
-    public IMsBuildProject LoadProject(string projectFilePath);
+    public Task<IMsBuildProject> LoadProject(string projectFilePath, CancellationToken cancellationToken = default);
 }
 
 internal sealed partial class MsBuildContext
     : IMsBuildContext
 {
+    private static readonly SemaphoreSlim _sharedSemaphore
+        = new(1, 1);
+
     private readonly Lock _lock = new();
     private readonly ProjectCollection _projectCollection;
+    private readonly BuildManager? _buildManager;
+    private readonly ILogger<MsBuildContext> _logger;
     private ushort _disposed;
 
     /// <summary>
@@ -33,16 +40,28 @@ internal sealed partial class MsBuildContext
     /// </summary>
     /// <param name="globalProperties">The global properties applied to every project loaded by the context.</param>
     /// <param name="logger">The logger used for build-session diagnostics.</param>
+    /// <param name="isDesignTime">Indicates whether the context is being created for design-time purposes.</param>
+    /// <remarks>Design-time contexts do not support building projects.</remarks>
     public MsBuildContext(
         IDictionary<string, string> globalProperties,
-        ILogger<MsBuildContext> logger)
+        ILogger<MsBuildContext> logger,
+        bool isDesignTime)
     {
+        if (!isDesignTime && !_sharedSemaphore.Wait(0))
+        {
+            ThrowHelper.ThrowInvalidOperationException("Only a single instance of MsBuild build-context can exist at a time.");
+        }
+
+        _logger = logger;
         _projectCollection = new ProjectCollection(
             globalProperties: globalProperties,
             loggers: [new MsBuildLoggerAdapter(logger)],
             remoteLoggers: [],
             toolsetDefinitionLocations: ToolsetDefinitionLocations.Default,
-            maxNodeCount: 0,
+            maxNodeCount: isDesignTime ? 0
+                : (Environment.GetEnvironmentVariable("REPOCTL_SINGLE_NODE", EnvironmentVariableTarget.Process)
+                    is "true" or "1"
+                    ? 1 : Environment.ProcessorCount),
             onlyLogCriticalEvents: false,
             loadProjectsReadOnly: true,
             useAsynchronousLogging: true,
@@ -51,12 +70,25 @@ internal sealed partial class MsBuildContext
         {
             IsBuildEnabled = false,
         };
+
+        if (!isDesignTime)
+        {
+            _buildManager = BuildManager.DefaultBuildManager;
+            _buildManager.BeginBuild(new BuildParameters(_projectCollection));
+        }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the context is only used for design-time purposes.
+    /// </summary>
+    public bool IsDesignTime
+        => _buildManager is null;
+
     /// <inheritdoc/>
-    public IMsBuildProject LoadProject(string projectFilePath)
+    public Task<IMsBuildProject> LoadProject(string projectFilePath, CancellationToken cancellationToken = default)
     {
         EnsureNotDisposed();
+        cancellationToken.ThrowIfCancellationRequested();
 
         Project project;
         lock (_lock)
@@ -64,7 +96,71 @@ internal sealed partial class MsBuildContext
             project = _projectCollection.LoadProject(projectFilePath);
         }
 
-        return new MsBuildProject(project);
+        return Task.FromResult<IMsBuildProject>(new MsBuildProject(this, project));
+    }
+
+    internal async Task<IMsBuildProjectSnapshot> Build(Project project, string targetName, CancellationToken cancellationToken)
+    {
+        EnsureNotDisposed();
+
+        if (_buildManager is null)
+        {
+            ThrowHelper.ThrowInvalidOperationException("Cannot build in a design-time context.");
+        }
+
+        BuildSubmission submission;
+        lock (_lock)
+        {
+            var instance = project.CreateProjectInstance(ProjectInstanceSettings.None);
+            var request = new BuildRequestData(instance, [targetName], hostServices: null, flags: BuildRequestDataFlags.ProvideProjectStateAfterBuild);
+            submission = _buildManager.PendBuildRequest(request);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        Log.BuildSubmitted(_logger, submission.SubmissionId);
+        var tcs = new TaskCompletionSource<BuildResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        lock (_lock)
+        {
+            submission.ExecuteAsync(completed =>
+            {
+                try
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        tcs.TrySetCanceled(cancellationToken);
+                        return;
+                    }
+
+                    Log.BuildCompleted(_logger, completed.SubmissionId, completed.BuildResult?.OverallResult);
+
+                    var buildResult = completed.BuildResult;
+                    if (buildResult is null)
+                    {
+                        ThrowHelper.ThrowInvalidOperationException("Build result is null.");
+                    }
+
+                    if (buildResult.OverallResult != BuildResultCode.Success)
+                    {
+                        throw new MsBuildFailedException(buildResult);
+                    }
+
+                    tcs.SetResult(buildResult);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            }, null);
+        }
+
+        var result = await tcs.Task.WaitAsync(cancellationToken);
+        if (result.ProjectStateAfterBuild is null)
+        {
+            ThrowHelper.ThrowInvalidOperationException("Project state after build is null.");
+        }
+
+        return new MsBuildProjectSnapshot(result.ProjectStateAfterBuild);
     }
 
     private void EnsureNotDisposed()
@@ -84,8 +180,16 @@ internal sealed partial class MsBuildContext
             return;
         }
 
+        // we do not dispose of the build manager, as it's a shared instance
+        _buildManager?.EndBuild();
+
         _projectCollection.UnloadAllProjects();
         _projectCollection.Dispose();
+
+        if (!IsDesignTime)
+        {
+            _sharedSemaphore.Release();
+        }
     }
 
     private sealed class MsBuildLoggerAdapter(ILogger logger)
@@ -191,5 +295,14 @@ internal sealed partial class MsBuildContext
 
         public static string Format(BuildEventState state, Exception? exception)
             => state.Format(exception);
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(1, LogLevel.Trace, "Build submitted: {SubmissionId}")]
+        public static partial void BuildSubmitted(ILogger logger, int submissionId);
+
+        [LoggerMessage(2, LogLevel.Trace, "Build completed: {SubmissionId} with result {Result}")]
+        public static partial void BuildCompleted(ILogger logger, int submissionId, BuildResultCode? result);
     }
 }

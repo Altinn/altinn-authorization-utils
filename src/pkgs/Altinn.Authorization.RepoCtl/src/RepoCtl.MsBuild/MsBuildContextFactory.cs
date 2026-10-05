@@ -17,6 +17,13 @@ public interface IMsBuildContextFactory
     /// <param name="globalProperties">The global properties applied to every project loaded by the context.</param>
     /// <returns>A configured MSBuild context.</returns>
     IMsBuildContext CreateDesignTimeContext(IDictionary<string, string> globalProperties);
+
+    /// <summary>
+    /// Creates an MSBuild context with the specified global properties.
+    /// </summary>
+    /// <param name="globalProperties">The global properties applied to every project loaded by the context.</param>
+    /// <returns>A configured MSBuild context.</returns>
+    IMsBuildContext CreateBuildContext(IDictionary<string, string> globalProperties);
 }
 
 internal sealed class MsBuildContextFactory(ILoggerFactory loggerFactory)
@@ -33,6 +40,18 @@ internal sealed class MsBuildContextFactory(ILoggerFactory loggerFactory)
         var properties = new Dictionary<string, string>(globalProperties);
         properties["DesignTimeBuild"] = "true";
 
-        return new MsBuildContext(properties, loggerFactory.CreateLogger<MsBuildContext>());
+        return new MsBuildContext(properties, loggerFactory.CreateLogger<MsBuildContext>(), isDesignTime: true);
+    }
+
+    /// <inheritdoc/>
+    public IMsBuildContext CreateBuildContext(IDictionary<string, string> globalProperties)
+    {
+        if (!MSBuildLocator.IsRegistered)
+        {
+            MSBuildLocator.RegisterDefaults();
+        }
+
+        var properties = new Dictionary<string, string>(globalProperties);
+        return new MsBuildContext(properties, loggerFactory.CreateLogger<MsBuildContext>(), isDesignTime: false);
     }
 }

@@ -280,7 +280,7 @@ internal sealed partial class AltinnRepositoryLoader
             };
 
             var projectFile = new FileInfo(Path.Combine(directory.FullName, projectFileMatch.Path));
-            var msbuildProject = context.LoadProject(projectFile.FullName);
+            var msbuildProject = await context.LoadProject(projectFile.FullName, cancellationToken);
             var name = msbuildProject.GetPropertyValue("MSBuildProjectName");
             var versionString = msbuildProject.GetPropertyValue("Version");
 
