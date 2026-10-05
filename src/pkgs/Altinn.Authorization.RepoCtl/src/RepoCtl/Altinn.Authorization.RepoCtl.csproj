@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Diagnostics" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Semver" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <ProjectReference Include="../RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
+  </ItemGroup>
+
+</Project>

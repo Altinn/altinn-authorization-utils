@@ -1,21 +1,18 @@
-using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.IO.Hashing;
-using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using Altinn.Authorization.ModelUtils;
 using Altinn.Authorization.ProblemDetails;
+using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.MsBuild;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
-using Microsoft.Build.Evaluation;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Semver;
 
-namespace Altinn.Authorization.RepoCtl.Model;
+namespace Altinn.Authorization.RepoCtl;
 
 /// <summary>
 /// A loader for <see cref="AltinnRepository"/>.
@@ -38,15 +35,17 @@ internal sealed partial class AltinnRepositoryLoader
     : IAltinnRepositoryLoader
 {
     private readonly ILogger<AltinnRepositoryLoader> _logger;
-    private readonly IEnumerable<Microsoft.Build.Framework.ILogger> _msbuildLoggers;
+    private readonly IMsBuildContextFactory _contextFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AltinnRepositoryLoader"/> class.
     /// </summary>
-    public AltinnRepositoryLoader(ILogger<AltinnRepositoryLoader> logger, ILoggerFactory loggerFactory)
+    public AltinnRepositoryLoader(
+        ILogger<AltinnRepositoryLoader> logger,
+        IMsBuildContextFactory contextFactory)
     {
         _logger = logger;
-        _msbuildLoggers = [new MsBuildLoggerAdapter(loggerFactory.CreateLogger<Microsoft.Build.Framework.ILogger>())];
+        _contextFactory = contextFactory;
     }
 
     /// <inheritdoc/>
@@ -116,6 +115,7 @@ internal sealed partial class AltinnRepositoryLoader
                 kindDirs[dir.Kind] = dir.Dir; // it should not be possible for this to overwrite
             }
         }
+
 
         var verticalDirs = new List<(AltinnVerticalKind Kind, DirectoryInfo Dir)>();
         foreach (var (kind, dir) in kindDirs)
@@ -195,7 +195,12 @@ internal sealed partial class AltinnRepositoryLoader
         return new AltinnRepository(rootDirInfo, config, verticals);
     }
 
-    private async ValueTask LoadVertical(DirectoryInfo rootDirInfo, AltinnVerticalKind kind, DirectoryInfo directory, ChannelWriter<Result<AltinnVertical>> writer, CancellationToken cancellationToken)
+    private async ValueTask LoadVertical(
+        DirectoryInfo rootDirInfo,
+        AltinnVerticalKind kind,
+        DirectoryInfo directory,
+        ChannelWriter<Result<AltinnVertical>> writer,
+        CancellationToken cancellationToken)
     {
         await using var findConfigResult = directory.Find(
             [".vertical", "conf"],
@@ -258,15 +263,7 @@ internal sealed partial class AltinnRepositoryLoader
             return;
         }
 
-        var globalProperties = new Dictionary<string, string>
-        {
-            ["DesignTimeBuild"] = "true",
-        };
-
-        using var collection = new ProjectCollection(
-            globalProperties: globalProperties,
-            loggers: _msbuildLoggers,
-            toolsetDefinitionLocations: ToolsetDefinitionLocations.Default);
+        using var context = _contextFactory.CreateDesignTimeContext(new Dictionary<string, string>());
 
         var projects = result.Files.TryGetNonEnumeratedCount(out var count)
             ? ImmutableArray.CreateBuilder<AltinnProject>(count)
@@ -283,7 +280,7 @@ internal sealed partial class AltinnRepositoryLoader
             };
 
             var projectFile = new FileInfo(Path.Combine(directory.FullName, projectFileMatch.Path));
-            var msbuildProject = collection.LoadProject(projectFile.FullName);
+            var msbuildProject = context.LoadProject(projectFile.FullName);
             var name = msbuildProject.GetPropertyValue("MSBuildProjectName");
             var versionString = msbuildProject.GetPropertyValue("Version");
 
@@ -317,7 +314,7 @@ internal sealed partial class AltinnRepositoryLoader
         await writer.WriteAsync(vertical, cancellationToken);
     }
 
-    private AltinnProjectType GetProjectType(Project project, AltinnProjectDirKind dirKind, AltinnVerticalKind verticalKind, string name, SemVersion version)
+    private AltinnProjectType GetProjectType(IMsBuildProject project, AltinnProjectDirKind dirKind, AltinnVerticalKind verticalKind, string name, SemVersion version)
     {
         var isTestProject = project.GetPropertyValueAsBool("IsTestProject");
         var isSampleProject = project.GetPropertyValueAsBool("IsSampleProject");
@@ -464,99 +461,6 @@ internal sealed partial class AltinnRepositoryLoader
         Sample,
     }
 
-    private sealed class MsBuildLoggerAdapter(ILogger logger)
-        : Microsoft.Build.Framework.ILogger
-    {
-        private readonly Func<BuildEventState, Exception?, string> _format = BuildEventState.Format;
-
-        // unused
-        public Microsoft.Build.Framework.LoggerVerbosity Verbosity { get; set; }
-
-        // unused
-        public string? Parameters
-        {
-            get => null;
-            set => throw new NotSupportedException();
-        }
-
-        public void Initialize(Microsoft.Build.Framework.IEventSource eventSource)
-        {
-            eventSource.MessageRaised += (_, e) =>
-            {
-                var level = ToLogLevel(e.Importance);
-                if (!logger.IsEnabled(level))
-                {
-                    return;
-                }
-
-                var id = XxHash32.HashToUInt32(MemoryMarshal.AsBytes(e.Code.AsSpan()));
-                var eventId = new EventId(unchecked((int)id), e.Code);
-                logger.Log(level, eventId, new BuildEventState(e), null, _format);
-            };
-
-            // eventSource.WarningRaised
-        }
-
-        public void Shutdown()
-        {
-        }
-
-        private static LogLevel ToLogLevel(Microsoft.Build.Framework.MessageImportance importance)
-            => importance switch
-            {
-                Microsoft.Build.Framework.MessageImportance.Low => LogLevel.Trace,
-                Microsoft.Build.Framework.MessageImportance.Normal => LogLevel.Debug,
-                Microsoft.Build.Framework.MessageImportance.High => LogLevel.Information,
-                _ => ThrowHelper.ThrowArgumentOutOfRangeException<LogLevel>(nameof(importance), importance, null),
-            };
-    }
-
-    private readonly struct BuildEventState(Microsoft.Build.Framework.BuildEventArgs e)
-        : IReadOnlyList<KeyValuePair<string, object?>>
-    {
-        public KeyValuePair<string, object?> this[int index]
-            => index switch
-            {
-                0 => new("OriginalFormat", "{Message}"),
-                1 => new("Message", e.Message),
-                _ => ThrowHelper.ThrowArgumentOutOfRangeException<KeyValuePair<string, object?>>(nameof(index)),
-            };
-
-        public int Count => 2;
-
-        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
-        {
-            for (var i = 0; i < Count; i++)
-            {
-                yield return this[i];
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private string Format(Exception? exception)
-        {
-            if (exception is null)
-            {
-                return e.Message ?? string.Empty;
-            }
-
-            var msg = e.Message;
-            if (string.IsNullOrEmpty(msg))
-            {
-                return exception.ToString();
-            }
-
-            return $"{msg}: {exception}";
-        }
-
-        public static string Format(BuildEventState state, Exception? exception)
-            => state.Format(exception);
-    }
-
     private static partial class Log
     {
         [LoggerMessage(1, LogLevel.Debug, "Loading solution file '{SolutionFile}'")]
@@ -609,5 +513,6 @@ internal sealed partial class AltinnRepositoryLoader
 
         [LoggerMessage(17, LogLevel.Error, "Project '{ProjectName}' at '{ProjectFile}' has an invalid version '{VersionString}'")]
         public static partial void ProjectHasInvalidVersion(ILogger logger, string projectName, string projectFile, string versionString);
+
     }
 }

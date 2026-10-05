@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <ProjectReference Include="../../src/RepoCtl.Cli/Altinn.Authorization.RepoCtl.Cli.csproj" />
   </ItemGroup>
 
 </Project>
