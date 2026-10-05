@@ -136,7 +136,7 @@ internal sealed partial class AltinnRepositoryLoader
         var consumerTask = Task.Run<Result<AltinnVerticalSet>>(async () =>
         {
             MultipleProblemBuilder problems = default;
-            var builder = ImmutableArray.CreateBuilder<AltinnVertical>();
+            var builder = AltinnVerticalSet.CreateBuilder();
             await foreach (var item in reader.ReadAllAsync(cancellationToken))
             {
                 if (item.IsProblem)
@@ -155,7 +155,7 @@ internal sealed partial class AltinnRepositoryLoader
                 return problem;
             }
 
-            return AltinnVerticalSet.Create(builder);
+            return builder.DrainToImmutable();
         }, cancellationToken);
 
         var rootDirInfo = new DirectoryInfo(rootDir);

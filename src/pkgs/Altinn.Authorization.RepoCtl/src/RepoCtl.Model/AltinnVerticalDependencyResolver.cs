@@ -33,8 +33,8 @@ internal static class AltinnVerticalDependencyResolver
         // 1. solve direct dependencies
         foreach (var vertical in verticals)
         {
-            var directDependencies = ImmutableArray.CreateBuilder<AltinnVertical>(vertical.Config.Dependencies.Count);
-            var directDevDependencies = ImmutableArray.CreateBuilder<AltinnVertical>(vertical.Config.DevDependencies.Count);
+            var directDependencies = AltinnVerticalSet.CreateBuilder(vertical.Config.Dependencies.Count);
+            var directDevDependencies = AltinnVerticalSet.CreateBuilder(vertical.Config.DevDependencies.Count);
 
             foreach (var dependencyCfg in vertical.Config.Dependencies
                 .Select(id => new { Id = id, IsDevDependency = false })
@@ -61,8 +61,8 @@ internal static class AltinnVerticalDependencyResolver
                 }
             }
 
-            vertical.DirectDependencies = AltinnVerticalSet.Create(directDependencies);
-            vertical.DirectDevDependencies = AltinnVerticalSet.Create(directDevDependencies);
+            vertical.DirectDependencies = directDependencies.DrainToImmutable();
+            vertical.DirectDevDependencies = directDevDependencies.DrainToImmutable();
         }
 
         // 2. solve full dependency graph
@@ -91,7 +91,7 @@ internal static class AltinnVerticalDependencyResolver
     {
         var builders = verticals.AsEnumerable().ToDictionary(
             static v => v.Id,
-            static _ => ImmutableArray.CreateBuilder<AltinnVertical>());
+            static _ => AltinnVerticalSet.CreateBuilder());
 
         foreach (var dependent in verticals)
         {
@@ -103,7 +103,7 @@ internal static class AltinnVerticalDependencyResolver
 
         foreach (var vertical in verticals)
         {
-            vertical.Dependents = AltinnVerticalSet.Create(builders[vertical.Id]);
+            vertical.Dependents = builders[vertical.Id].DrainToImmutable();
         }
     }
 
@@ -130,8 +130,8 @@ internal static class AltinnVerticalDependencyResolver
                     Debug.Assert(((IEnumerable<AltinnVertical>)frame.Vertical.DirectDevDependencies).All(d => d.IsResolved));
 
                     // All direct dependencies of the current vertical have been processed
-                    var all = ImmutableArray.CreateBuilder<AltinnVertical>(frame.Vertical.DirectDependencies.Count);
-                    var allBuild = ImmutableArray.CreateBuilder<AltinnVertical>(frame.Vertical.DirectDependencies.Count + frame.Vertical.DirectDevDependencies.Count);
+                    var all = AltinnVerticalSet.CreateBuilder(frame.Vertical.DirectDependencies.Count);
+                    var allBuild = AltinnVerticalSet.CreateBuilder(frame.Vertical.DirectDependencies.Count + frame.Vertical.DirectDevDependencies.Count);
                     foreach (var dep in frame.Vertical.DirectDependencies)
                     {
                         all.Add(dep);
@@ -163,8 +163,8 @@ internal static class AltinnVerticalDependencyResolver
                         }
                     }
 
-                    frame.Vertical.AllDependencies = AltinnVerticalSet.Create(all);
-                    frame.Vertical.AllBuildDependencies = AltinnVerticalSet.Create(allBuild);
+                    frame.Vertical.AllDependencies = all.DrainToImmutable();
+                    frame.Vertical.AllBuildDependencies = allBuild.DrainToImmutable();
                     Debug.Assert(active[^1] == frame.Vertical.Id);
                     active.RemoveAt(active.Count - 1);
                     stack.Pop();

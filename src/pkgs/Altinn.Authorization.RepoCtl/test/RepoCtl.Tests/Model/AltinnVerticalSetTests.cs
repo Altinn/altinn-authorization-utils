@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Semver;
 
 namespace Altinn.Authorization.RepoCtl.Model.Tests;
@@ -8,9 +7,9 @@ public class AltinnVerticalSetTests
     [Fact]
     public void Create_WithNoVerticals_ReturnsEmptySet()
     {
-        var verticals = ImmutableArray.CreateBuilder<AltinnVertical>();
+        var verticals = AltinnVerticalSet.CreateBuilder();
 
-        var set = AltinnVerticalSet.Create(verticals);
+        var set = verticals.DrainToImmutable();
 
         set.AsEnumerable().ShouldBeEmpty();
     }
@@ -19,10 +18,10 @@ public class AltinnVerticalSetTests
     public void Create_WithOneVertical_ReturnsThatVertical()
     {
         var vertical = CreateVertical("app:Alpha");
-        var verticals = ImmutableArray.CreateBuilder<AltinnVertical>();
+        var verticals = AltinnVerticalSet.CreateBuilder();
         verticals.Add(vertical);
 
-        var set = AltinnVerticalSet.Create(verticals);
+        var set = verticals.DrainToImmutable();
 
         set.AsEnumerable().ShouldHaveSingleItem().ShouldBeSameAs(vertical);
     }
@@ -30,7 +29,7 @@ public class AltinnVerticalSetTests
     [Fact]
     public void Create_WithDuplicateIds_ReturnsSortedDistinctVerticals()
     {
-        var verticals = ImmutableArray.CreateBuilder<AltinnVertical>();
+        var verticals = AltinnVerticalSet.CreateBuilder();
         AltinnVertical[] input = [
             CreateVertical("tool:Zulu"),
             CreateVertical("app:Beta"),
@@ -45,7 +44,7 @@ public class AltinnVerticalSetTests
         verticals.AddRange(input);
         var expected = input.Select(static vertical => vertical.Id).Distinct().Order().ToArray();
 
-        var set = AltinnVerticalSet.Create(verticals);
+        var set = verticals.DrainToImmutable();
 
         set.AsEnumerable().Select(static vertical => vertical.Id).ShouldBe(expected);
     }

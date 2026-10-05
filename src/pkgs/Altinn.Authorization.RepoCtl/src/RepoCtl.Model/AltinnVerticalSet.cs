@@ -9,40 +9,24 @@ namespace Altinn.Authorization.RepoCtl.Model;
 /// <summary>
 /// Represents a (potentially filtered) set of verticals in an Altinn repository.
 /// </summary>
-public sealed class AltinnVerticalSet
+public sealed partial class AltinnVerticalSet
     : IReadOnlySet<AltinnVertical>
     , IReadOnlyDictionary<AltinnVerticalId, AltinnVertical>
 {
-    internal static AltinnVerticalSet Create(ImmutableArray<AltinnVertical>.Builder verticals)
-    {
-        verticals.SortBy(static v => v.Id);
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Builder"/> class.
+    /// </summary>
+    /// <returns>A new builder.</returns>
+    public static Builder CreateBuilder()
+        => new Builder(ImmutableArray.CreateBuilder<AltinnVertical>(), knownValid: true);
 
-        RemoveDuplicates(verticals);
-        return new(verticals.DrainToImmutable());
-
-        static void RemoveDuplicates(ImmutableArray<AltinnVertical>.Builder verticals)
-        {
-            if (verticals.Count < 2)
-            {
-                return;
-            }
-
-            var write = 1;
-            for (var read = 1; read < verticals.Count; read++)
-            {
-                if (verticals[write - 1].Id != verticals[read].Id)
-                {
-                    verticals[write++] = verticals[read];
-                }
-            }
-
-            var removed = verticals.Count - write;
-            for (var i = 0; i < removed; i++)
-            {
-                verticals.RemoveAt(verticals.Count - 1);
-            }
-        }
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Builder"/> class.
+    /// </summary>
+    /// <param name="initialCapacity">The size of the initial array backing the builder.</param>
+    /// <returns>A new builder.</returns>
+    public static Builder CreateBuilder(int initialCapacity)
+        => new Builder(ImmutableArray.CreateBuilder<AltinnVertical>(initialCapacity), knownValid: true);
 
     private readonly ImmutableArray<AltinnVertical> _verticals;
 
@@ -78,8 +62,7 @@ public sealed class AltinnVerticalSet
 
     /// <inheritdoc/>
     public bool Contains(AltinnVertical item)
-        => TryGet(item.Id, out var vertical)
-        && EqualityComparer<AltinnVertical>.Default.Equals(vertical, item);
+        => TryGet(item.Id, out _);
 
     /// <inheritdoc/>
     bool IReadOnlyDictionary<AltinnVerticalId, AltinnVertical>.ContainsKey(AltinnVerticalId key)
@@ -89,7 +72,12 @@ public sealed class AltinnVerticalSet
     bool IReadOnlyDictionary<AltinnVerticalId, AltinnVertical>.TryGetValue(AltinnVerticalId key, [MaybeNullWhen(false)] out AltinnVertical value)
         => TryGet(key, out value);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Tries to get the vertical with the specified ID.
+    /// </summary>
+    /// <param name="key">The ID of the vertical to get.</param>
+    /// <param name="value">When this method returns, contains the vertical with the specified ID, if it exists; otherwise, the default value for <see cref="AltinnVertical"/>.</param>
+    /// <returns><see langword="true"/> if the vertical with the specified ID was found; otherwise, <see langword="false"/>.</returns>
     public bool TryGet(AltinnVerticalId key, [MaybeNullWhen(false)] out AltinnVertical value)
     {
         var index = _verticals.BinarySearchBy(static v => v.Id, key);
