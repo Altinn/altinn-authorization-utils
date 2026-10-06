@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 var builder = CliApplication.CreateBuilder("Altinn Authorization Repository Manager (repoctl)");
 builder.Services.AddGitHubActionsServices();
 builder.Services.AddRepoCtlServices();
+builder.Services.AddRepoCtlChecks();
 builder.Services.AddSingleton<AltinnRepositoryResolver>();
 builder.Services.AddSingleton<IConfigureOption, ConfigureAltinnVerticalKindOptions>();
 builder.Services.AddSingleton<ICommandHandlerParameterBinderResolver, AltinnRepositoryBinderResolver>();
@@ -34,7 +35,6 @@ builder.Services.AddCommandResultHandlerResolver<CheckCommandResultHandlerResolv
 
 builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<SolutionService>());
 builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<ReleasePleaseConfigService>());
-builder.Services.AddSingleton<IRepositoryCheck, DotnetFormatCheck>();
 
 builder.Services.AddOutputFormatter<RichFormat, AltinnVerticalSetFormatter>();
 builder.Services.AddOutputFormatter<JsonFormat, AltinnVerticalSetFormatter>();

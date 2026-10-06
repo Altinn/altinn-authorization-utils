@@ -1,14 +1,12 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using Altinn.Authorization.RepoCtl.Model.Checks;
 
 namespace Altinn.Authorization.RepoCtl.Checks;
 
 internal sealed class CheckResult
 {
-    public static CheckResult Success(IRepositoryCheck check)
-        => Create(check, []);
-
-    public static CheckResult Create(IRepositoryCheck check, ImmutableArray<CheckIssue> issues)
+    public static CheckResult Create(IRepositoryCheck check, ImmutableArray<Diagnostic> issues)
         => new(id: check.CheckId, name: check.CheckDisplayName, issues);
 
     [JsonPropertyName("id")]
@@ -17,17 +15,17 @@ internal sealed class CheckResult
     [JsonPropertyName("name")]
     public string Name { get; }
 
-    [JsonPropertyName("issues")]
-    public ImmutableArray<CheckIssue> Issues { get; }
+    [JsonPropertyName("diagnostics")]
+    public ImmutableArray<Diagnostic> Diagnostics { get; }
 
     [JsonPropertyName("success")]
-    public bool IsSuccess => Issues.IsEmpty;
+    public bool IsSuccess => !Diagnostics.Any(static d => d.Severity == DiagnosticSeverity.Error);
 
-    private CheckResult(string id, string name, ImmutableArray<CheckIssue> issues)
+    private CheckResult(string id, string name, ImmutableArray<Diagnostic> issues)
     {
         Name = name;
         Id = id;
 
-        Issues = issues;
+        Diagnostics = issues;
     }
 }

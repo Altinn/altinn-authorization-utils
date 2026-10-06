@@ -6,6 +6,7 @@ using System.Xml;
 using Altinn.Authorization.ModelUtils;
 using Altinn.Authorization.RepoCtl.Checks;
 using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.Checks;
 using Altinn.Authorization.RepoCtl.Utils;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -30,11 +31,11 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
     string IRepositoryCheck.CheckId => "slnx-files";
     string IRepositoryCheck.CheckDisplayName => "Solution files";
 
-    public async IAsyncEnumerable<CheckIssue> Check(AltinnRepository repository, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Check(AltinnRepository repository, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var (solutionFile, solution) in GetSolutions(repository))
         {
-            CheckIssue? issue = null;
+            Diagnostic? diagnostic = null;
             try
             {
                 await using var fs = solutionFile.OpenRead();
@@ -46,17 +47,17 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
 
                 if (!wanted.AsReadOnlySequence.SequenceEqual(actual.AsReadOnlySequence))
                 {
-                    issue = CheckIssue.CreateFile(GetRelativePath(repository.RootDirectory.FullName, solutionFile.FullName), "Solution file is out of date.");
+                    diagnostic = Diagnostics.FileOutOfDate(solutionFile.FullName);
                 }
             }
             catch (FileNotFoundException)
             {
-                issue = CheckIssue.CreateFile(GetRelativePath(repository.RootDirectory.FullName, solutionFile.FullName), "Solution file does not exist.");
+                diagnostic = Diagnostics.FileOutOfDate(solutionFile.FullName);
             }
 
-            if (issue is not null)
+            if (diagnostic is not null)
             {
-                yield return issue;
+                yield return diagnostic;
             }
         }
     }
