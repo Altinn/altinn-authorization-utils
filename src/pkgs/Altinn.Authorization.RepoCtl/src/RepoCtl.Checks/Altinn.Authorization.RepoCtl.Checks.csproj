@@ -14,4 +14,10 @@
     <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../../../Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
+    <ProjectReference Include="../RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <ProjectReference Include="../RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
+  </ItemGroup>
+
 </Project>

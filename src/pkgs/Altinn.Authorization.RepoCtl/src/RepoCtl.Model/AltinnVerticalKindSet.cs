@@ -64,6 +64,12 @@ public readonly record struct AltinnVerticalKindSet
         => new(Kinds.Application | Kinds.Library | Kinds.Package | Kinds.Tool);
 
     /// <summary>
+    /// Represents a set containing all packable vertical-kinds.
+    /// </summary>
+    public static AltinnVerticalKindSet Packable
+        => new(Kinds.Package | Kinds.Tool);
+
+    /// <summary>
     /// Creates a new <see cref="AltinnVerticalKindSet"/> from the specified kinds.
     /// </summary>
     /// <param name="kinds">The vertical kinds to add to the set.</param>
