@@ -302,10 +302,8 @@ internal sealed partial class SolutionService(ILogger<SolutionService> logger)
                 public Builder Add(Project project) { _projects.Add(project); return this; }
 
                 public Builder AddOpt(Folder? folder) { if (folder is not null) _folders.Add(folder); return this; }
-                public Builder AddOpt(Project? project) { if (project is not null) _projects.Add(project); return this; }
 
                 public Builder AddRange(IEnumerable<Folder> folders) { _folders.AddRange(folders); return this; }
-                public Builder AddRange(IEnumerable<Project> projects) { _projects.AddRange(projects); return this; }
 
                 public Folder Build() => new Folder(_name, _folders.DrainToImmutableValueArray(), _projects.DrainToImmutableValueArray());
             }
