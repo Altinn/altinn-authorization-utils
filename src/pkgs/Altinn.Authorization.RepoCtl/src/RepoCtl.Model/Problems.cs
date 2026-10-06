@@ -18,12 +18,6 @@ public static class Problems
         = _factory.Create(1, HttpStatusCode.NotFound, "Repository root not found. No '.repo.json/jsonc' file was found in the current directory or any of its parent directories.");
 
     /// <summary>
-    /// Gets a problem descriptor indicating that the repository configuration file could not be deserialized when attempting to load an Altinn repository.
-    /// </summary>
-    public static ProblemDescriptor RepositoryConfigSerializationFailed { get; }
-        = _factory.Create(2, HttpStatusCode.InternalServerError, "Failed to deserialize the repository configuration file.");
-
-    /// <summary>
     /// Gets a problem descriptor indicating that the repository is in 'root' mode but does not specify a 'root-kind' when attempting to load an Altinn repository.
     /// </summary>
     public static ProblemDescriptor RootModeWithoutKind { get; }

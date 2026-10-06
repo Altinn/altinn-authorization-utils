@@ -477,9 +477,6 @@ internal sealed partial class AltinnRepositoryLoader
 
     private static partial class Log
     {
-        [LoggerMessage(1, LogLevel.Debug, "Loading solution file '{SolutionFile}'")]
-        public static partial void SolutionFile(ILogger logger, string solutionFile);
-
         [LoggerMessage(2, LogLevel.Debug, "Loading repository configuration from '{ConfigPath}'")]
         public static partial void ConfigPath(ILogger logger, string configPath);
 
