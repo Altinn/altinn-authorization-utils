@@ -158,13 +158,20 @@ internal sealed partial class AltinnRepositoryLoader
             return builder.DrainToImmutable();
         }, cancellationToken);
 
+        using var context = _contextFactory.CreateDesignTimeContext(
+            new Dictionary<string, string>
+            {
+                ["CI"] = "true",
+                ["GITHUB_ACTIONS"] = "true",
+            });
+
         var rootDirInfo = new DirectoryInfo(rootDir);
         var writer = channel.Writer;
         var producerTask = Task.Run(async () =>
         {
             try
             {
-                await Parallel.ForEachAsync(verticalDirs, cancellationToken, (tpl, ct) => LoadVertical(rootDirInfo, tpl.Kind, tpl.Dir, writer, ct));
+                await Parallel.ForEachAsync(verticalDirs, cancellationToken, (tpl, ct) => LoadVertical(rootDirInfo, tpl.Kind, tpl.Dir, context, writer, ct));
             }
             catch (Exception ex)
             {
@@ -199,6 +206,7 @@ internal sealed partial class AltinnRepositoryLoader
         DirectoryInfo rootDirInfo,
         AltinnVerticalKind kind,
         DirectoryInfo directory,
+        IMsBuildContext context,
         ChannelWriter<Result<AltinnVertical>> writer,
         CancellationToken cancellationToken)
     {
@@ -262,8 +270,6 @@ internal sealed partial class AltinnRepositoryLoader
             Log.NoProjects(_logger, kind, directory.FullName);
             return;
         }
-
-        using var context = _contextFactory.CreateDesignTimeContext(new Dictionary<string, string>());
 
         var projects = result.Files.TryGetNonEnumeratedCount(out var count)
             ? ImmutableArray.CreateBuilder<AltinnProject>(count)
