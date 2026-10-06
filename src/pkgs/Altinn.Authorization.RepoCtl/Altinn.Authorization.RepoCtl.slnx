@@ -16,6 +16,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <Project Path="src/RepoCtl.Checks/Altinn.Authorization.RepoCtl.Checks.csproj" />
     <Project Path="src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
     <Project Path="src/RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
   </Folder>
