@@ -4,6 +4,7 @@ using System.Threading.Channels;
 using Altinn.Authorization.ModelUtils;
 using Altinn.Authorization.ProblemDetails;
 using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.Checks;
 using Altinn.Authorization.RepoCtl.Model.MsBuild;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
@@ -271,6 +272,7 @@ internal sealed partial class AltinnRepositoryLoader
             return;
         }
 
+        var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
         var projects = result.Files.TryGetNonEnumeratedCount(out var count)
             ? ImmutableArray.CreateBuilder<AltinnProject>(count)
             : ImmutableArray.CreateBuilder<AltinnProject>();
@@ -302,8 +304,7 @@ internal sealed partial class AltinnRepositoryLoader
                 projectVersion = new SemVersion(0, 0, 0);
             }
 
-            var type = GetProjectType(msbuildProject, dirKind, kind, name, projectVersion);
-
+            var type = GetProjectType(msbuildProject, dirKind, kind, name, projectVersion, diagnostics);
             var project = new AltinnProject(projectFile, type, name, projectVersion);
             projects.Add(project);
         }
@@ -315,12 +316,19 @@ internal sealed partial class AltinnRepositoryLoader
             id,
             version,
             projects.DrainToImmutable(),
-            config);
+            config,
+            diagnostics.DrainToImmutable());
 
         await writer.WriteAsync(vertical, cancellationToken);
     }
 
-    private AltinnProjectType GetProjectType(IMsBuildProject project, AltinnProjectDirKind dirKind, AltinnVerticalKind verticalKind, string name, SemVersion version)
+    private AltinnProjectType GetProjectType(
+        IMsBuildProject project,
+        AltinnProjectDirKind dirKind,
+        AltinnVerticalKind verticalKind,
+        string name,
+        SemVersion version,
+        ImmutableArray<Diagnostic>.Builder diagnostics)
     {
         var isTestProject = project.GetPropertyValueAsBool("IsTestProject");
         var isSampleProject = project.GetPropertyValueAsBool("IsSampleProject");
@@ -345,7 +353,7 @@ internal sealed partial class AltinnRepositoryLoader
 
                 if (!isExe)
                 {
-                    Log.ProjectShouldBeExecutable(_logger, name, project.FullPath);
+                    diagnostics.Add(Diagnostics.ToolProjectShouldBeExecutable(name, project.FullPath));
                 }
             }
             else
@@ -357,27 +365,27 @@ internal sealed partial class AltinnRepositoryLoader
 
             if (isExe && !CanBeExecutable(verticalKind))
             {
-                Log.ProjectShouldNotBeExecutable(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeExecutable(name, project.FullPath));
             }
 
             if (isPackable && !CanBePackable(verticalKind))
             {
-                Log.ProjectShouldNotBePackable(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBePackable(name, project.FullPath));
             }
 
             if (isTool && !CanBeTool(verticalKind))
             {
-                Log.ProjectShouldNotBeTool(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeTool(name, project.FullPath));
             }
 
             if (isTestProject)
             {
-                Log.ProjectShouldNotBeTestProject(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeTestProject(name, project.FullPath));
             }
 
             if (isSampleProject)
             {
-                Log.ProjectShouldNotBeSampleProject(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeSampleProject(name, project.FullPath));
             }
         }
         else if (dirKind == AltinnProjectDirKind.Test)
@@ -388,22 +396,22 @@ internal sealed partial class AltinnRepositoryLoader
 
             if (!isTestProject && !isTestLibrary)
             {
-                Log.ProjectShouldBeTestProjectOrLibrary(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldBeTestProjectOrLibrary(name, project.FullPath));
             }
 
             if (isPackable)
             {
-                Log.ProjectShouldNotBePackable(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBePackable(name, project.FullPath));
             }
 
             if (isSampleProject)
             {
-                Log.ProjectShouldNotBeSampleProject(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeSampleProject(name, project.FullPath));
             }
 
             if (isTool)
             {
-                Log.ProjectShouldNotBeTool(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeTool(name, project.FullPath));
             }
         }
         else if (dirKind == AltinnProjectDirKind.Sample)
@@ -414,27 +422,27 @@ internal sealed partial class AltinnRepositoryLoader
 
             if (!isSampleProject)
             {
-                Log.ProjectShouldBeSampleProject(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldBeSampleProject(name, project.FullPath));
             }
 
             if (isTestProject)
             {
-                Log.ProjectShouldNotBeTestProject(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeTestProject(name, project.FullPath));
             }
 
             if (isTestLibrary)
             {
-                Log.ProjectShouldNotBeTestLibrary(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeTestLibrary(name, project.FullPath));
             }
 
             if (isPackable)
             {
-                Log.ProjectShouldNotBePackable(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBePackable(name, project.FullPath));
             }
 
             if (isTool)
             {
-                Log.ProjectShouldNotBeTool(_logger, name, project.FullPath);
+                diagnostics.Add(Diagnostics.ProjectShouldNotBeTool(name, project.FullPath));
             }
         }
         else
@@ -486,33 +494,6 @@ internal sealed partial class AltinnRepositoryLoader
 
         [LoggerMessage(6, LogLevel.Debug, "Project '{ProjectFile}' info: Name={Name}, Version={Version}, IsTestProject={IsTestProject}, IsSampleProject={IsSampleProject}, IsTestLibrary={IsTestLibrary}, IsPackable={IsPackable}, OutputType={OutputType}, IsTool={IsTool}")]
         public static partial void ProjectInfo(ILogger logger, string projectFile, string name, SemVersion version, bool isTestProject, bool isSampleProject, bool isTestLibrary, bool isPackable, string outputType, bool isTool);
-
-        [LoggerMessage(7, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should not be executable")]
-        public static partial void ProjectShouldNotBeExecutable(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(8, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should not be packable")]
-        public static partial void ProjectShouldNotBePackable(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(9, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should not be a tool")]
-        public static partial void ProjectShouldNotBeTool(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(10, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should not be a test project")]
-        public static partial void ProjectShouldNotBeTestProject(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(11, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should not be a test library")]
-        public static partial void ProjectShouldNotBeTestLibrary(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(12, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should not be a sample project")]
-        public static partial void ProjectShouldNotBeSampleProject(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(13, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should be a test project or test library")]
-        public static partial void ProjectShouldBeTestProjectOrLibrary(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(14, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should be a sample project")]
-        public static partial void ProjectShouldBeSampleProject(ILogger logger, string projectName, string projectFile);
-
-        [LoggerMessage(15, LogLevel.Warning, "Project '{ProjectName}' at '{ProjectFile}' should be executable")]
-        public static partial void ProjectShouldBeExecutable(ILogger logger, string projectName, string projectFile);
 
         [LoggerMessage(16, LogLevel.Error, "Project '{ProjectName}' at '{ProjectFile}' has no version specified")]
         public static partial void ProjectHasNoVersion(ILogger logger, string projectName, string projectFile);
