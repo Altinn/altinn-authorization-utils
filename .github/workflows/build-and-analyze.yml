@@ -56,10 +56,18 @@ jobs:
       - name: Test
         run: dotnet test -c Release --no-build -bl:binlog/test.binlog
       
-      - name: Run build repoctl
+      - name: Run built repoctl
+        id: built-repoctl
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: ./src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl.Cli/bin/Release/net10.0/repoctl check
+        run: |
+          ./src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl.Cli/bin/Release/net10.0/repoctl check
+          ./src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl.Cli/bin/Release/net10.0/repoctl ci find-verticals --filter full
+
+      - name: Print find-verticals output
+        env:
+          MATRIX: ${{ steps.built-repoctl.outputs.matrix }}
+        run: printf '%s\n' "$MATRIX" | jq -C .
 
       - name: Pack
         run: dotnet pack -c Release --no-build -bl:binlog/pack.binlog
