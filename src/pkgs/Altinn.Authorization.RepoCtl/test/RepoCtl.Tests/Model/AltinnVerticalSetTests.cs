@@ -56,5 +56,6 @@ public class AltinnVerticalSetTests
             AltinnVerticalId.Parse(id, provider: null),
             new SemVersion(1, 0, 0),
             [],
-            AltinnVerticalConfiguration.Default);
+            AltinnVerticalConfiguration.Default,
+            loadDiagnostics: []);
 }

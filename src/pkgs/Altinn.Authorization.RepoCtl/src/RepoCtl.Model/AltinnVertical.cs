@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Altinn.Authorization.RepoCtl.Model.Checks;
 using CommunityToolkit.Diagnostics;
 using Semver;
 
@@ -19,6 +20,7 @@ public sealed class AltinnVertical
     private readonly SemVersion _version;
     private readonly AltinnVerticalConfiguration _config;
     private readonly ImmutableArray<AltinnProject> _projects;
+    private readonly ImmutableArray<Diagnostic> _loadDiagnostics;
     private readonly string _displayName;
     private AltinnVerticalSet? _directDependencies;
     private AltinnVerticalSet? _directDevDependencies;
@@ -96,13 +98,20 @@ public sealed class AltinnVertical
     public ImmutableArray<AltinnProject> Projects
         => _projects;
 
+    /// <summary>
+    /// Gets the diagnostics produced while loading the vertical.
+    /// </summary>
+    public ImmutableArray<Diagnostic> Diagnostics
+        => _loadDiagnostics;
+
     internal AltinnVertical(
         string relPath,
         DirectoryInfo directory,
         AltinnVerticalId id,
         SemVersion version,
         ImmutableArray<AltinnProject> projects,
-        AltinnVerticalConfiguration config)
+        AltinnVerticalConfiguration config,
+        ImmutableArray<Diagnostic> loadDiagnostics)
     {
         _relPath = relPath;
         _directory = directory;
@@ -110,6 +119,7 @@ public sealed class AltinnVertical
         _version = version;
         _projects = projects;
         _config = config;
+        _loadDiagnostics = loadDiagnostics;
 
         _displayName = config.DisplayName ?? id.Name[(id.Name.LastIndexOf('.') + 1)..];
         _solutionFile = new FileInfo(Path.Combine(directory.FullName, $"{id.Name}.slnx"));

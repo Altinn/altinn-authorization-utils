@@ -1,3 +1,5 @@
+using Altinn.Authorization.RepoCtl.Model.Checks;
+
 namespace Altinn.Authorization.RepoCtl.Model;
 
 /// <summary>
@@ -33,6 +35,12 @@ public sealed class AltinnRepository
     /// </summary>
     public string Name
         => _config.Name;
+
+    /// <summary>
+    /// Gets all diagnostics from the verticals in the repository.
+    /// </summary>
+    public IEnumerable<Diagnostic> Diagnostics
+        => _verticals.AsEnumerable().SelectMany(v => v.Diagnostics);
 
     internal AltinnRepository(
         DirectoryInfo rootDirectory,
