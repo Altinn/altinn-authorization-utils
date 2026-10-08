@@ -4,8 +4,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Altinn.Authorization.CommandLine.Factory;
+using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.CommandLine.Help;
-using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
@@ -37,7 +37,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
             return true;
         }
 
-        if (parameter.ParameterType == typeof(GitHubContext))
+        if (parameter.ParameterType == typeof(GitHubRepositoryContext))
         {
             parameterBinder = new GitHubContextBinder();
             return true;
@@ -244,7 +244,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 return Task.CompletedTask;
             }
 
-            context.SetParameterValue(new GitHubContext
+            context.SetParameterValue(new GitHubRepositoryContext
             {
                 RepositoryOwner = parts[0],
                 RepositoryName = parts[1],

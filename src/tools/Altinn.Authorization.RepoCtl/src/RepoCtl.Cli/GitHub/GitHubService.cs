@@ -1,19 +1,19 @@
 using System.Collections.Immutable;
 using Altinn.Authorization.CommandLine;
+using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.CommandLine.Results;
 using Altinn.Authorization.RepoCtl.Retry;
 using Altinn.Authorization.RepoCtl.Utils;
-using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Octokit;
 using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.GitHub;
 
-internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor)
+internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor, GitHubClient githubClient)
 {
     public async Task<ICommandResult> UploadArtifactsToRelease(
-        GitHubContext context,
+        GitHubRepositoryContext context,
         long releaseId,
         string glob)
     {
@@ -29,16 +29,7 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor)
             return new RenderResult(Markup.FromInterpolated($"No files found in [blue]{repository.RootDirectory.FullName}[/] that matched glob [cyan]\"{glob}\"[/].\n"));
         }
 
-        var githubClient = new GitHubClient(new ProductHeaderValue("repoctl"));
-        var tokenString = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
-        if (string.IsNullOrEmpty(tokenString))
-        {
-            ThrowHelper.ThrowInvalidOperationException("GITHUB_TOKEN environment variable is not set.");
-        }
-
-        githubClient.Credentials = new Credentials(tokenString);
         var release = await githubClient.Repository.Release.Get(context.RepositoryOwner, context.RepositoryName, releaseId);
-
         return new UploadPackagesToReleaseResult(githubClient, release, files);
     }
 
