@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>repoctl</AssemblyName>
     <PackAsTool>true</PackAsTool>
-    <PackageId>Altinn.Authorization.RepoCtl</PackageId>
+    <PackageId>Altinn.Authorization.RepoCtl.Cli</PackageId>
     <ToolCommandName>$(AssemblyName)</ToolCommandName>
   </PropertyGroup>
 
@@ -25,7 +25,7 @@
     <ProjectReference Include="../../../../pkgs/Altinn.Authorization.CommandLine/src/CommandLine.GitHub.Actions/Altinn.Authorization.CommandLine.GitHub.Actions.csproj" />
     <ProjectReference Include="../../../../pkgs/Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
     <ProjectReference Include="../../../../pkgs/Altinn.Authorization.CommandLine/src/CommandLine/Altinn.Authorization.CommandLine.csproj" />
-    <ProjectReference Include="../../../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <ProjectReference Include="../../../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
   </ItemGroup>
 
 </Project>

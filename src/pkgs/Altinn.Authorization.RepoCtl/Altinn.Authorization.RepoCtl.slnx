@@ -15,9 +15,11 @@
     <Project Path="../Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
     <Project Path="src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <Project Path="src/RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test/RepoCtl.Model.Tests/Altinn.Authorization.RepoCtl.Model.Tests.csproj" />
+    <Project Path="test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
   </Folder>
 </Solution>

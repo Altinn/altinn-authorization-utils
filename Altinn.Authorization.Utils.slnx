@@ -34,10 +34,12 @@
   </Folder>
   <Folder Name="/pkgs/Altinn.Authorization.RepoCtl/" />
   <Folder Name="/pkgs/Altinn.Authorization.RepoCtl/src/">
+    <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
     <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
   </Folder>
   <Folder Name="/pkgs/Altinn.Authorization.RepoCtl/test/">
-    <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/test/RepoCtl.Model.Tests/Altinn.Authorization.RepoCtl.Model.Tests.csproj" />
+    <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
   </Folder>
   <Folder Name="/pkgs/Altinn.Authorization.ServiceDefaults/" />
   <Folder Name="/pkgs/Altinn.Authorization.ServiceDefaults/sample/">
@@ -94,10 +96,10 @@
   <Folder Name="/tools/" />
   <Folder Name="/tools/Altinn.Authorization.RepoCtl/" />
   <Folder Name="/tools/Altinn.Authorization.RepoCtl/src/">
-    <Project Path="src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <Project Path="src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl.Cli/Altinn.Authorization.RepoCtl.Cli.csproj" />
   </Folder>
   <Folder Name="/tools/Altinn.Authorization.RepoCtl/test/">
-    <Project Path="src/tools/Altinn.Authorization.RepoCtl/test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
+    <Project Path="src/tools/Altinn.Authorization.RepoCtl/test/RepoCtl.Cli.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/Altinn.Cli/" />
   <Folder Name="/tools/Altinn.Cli/src/">

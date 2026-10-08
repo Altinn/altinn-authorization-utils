@@ -1,11 +1,12 @@
-using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.MsBuild;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extension methods for registering RepoCtl services.
 /// </summary>
-public static class RepoCtlServiceCollectionExtensions
+public static class RepoCtlMsBuildServiceCollectionExtensions
 {
     /// <param name="services">The service collection.</param>
     extension(IServiceCollection services)
@@ -14,9 +15,9 @@ public static class RepoCtlServiceCollectionExtensions
         /// Adds the RepoCtl services to the service collection.
         /// </summary>
         /// <returns>The service collection.</returns>
-        public IServiceCollection AddRepoCtlServices()
+        public IServiceCollection AddRepoCtlMsBuildServices()
         {
-            services.AddSingleton<IAltinnRepositoryLoader, AltinnRepositoryLoader>();
+            services.TryAddSingleton<IMsBuildContextFactory, MsBuildContextFactory>();
 
             return services;
         }

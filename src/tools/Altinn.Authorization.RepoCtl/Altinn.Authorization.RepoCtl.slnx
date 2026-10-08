@@ -18,16 +18,18 @@
     <Project Path="../../pkgs/Altinn.Authorization.ProblemDetails/src/ProblemDetails.Validation/Altinn.Authorization.ProblemDetails.Validation.csproj" />
   </Folder>
   <Folder Name="/deps/RepoCtl/">
+    <Project Path="../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
     <Project Path="../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <Project Path="../../pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
   </Folder>
   <Folder Name="/deps/Swashbuckle/">
     <Project Path="../../pkgs/Altinn.Swashbuckle/src/Altinn.Swashbuckle/Altinn.Swashbuckle.csproj" />
     <Project Path="../../pkgs/Altinn.Swashbuckle/src/Altinn.Swashbuckle.Abstractions/Altinn.Swashbuckle.Abstractions.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <Project Path="src/RepoCtl.Cli/Altinn.Authorization.RepoCtl.Cli.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test/RepoCtl.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
+    <Project Path="test/RepoCtl.Cli.Tests/Altinn.Authorization.RepoCtl.Tests.csproj" />
   </Folder>
 </Solution>
