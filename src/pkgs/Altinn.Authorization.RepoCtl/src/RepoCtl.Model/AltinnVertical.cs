@@ -121,7 +121,7 @@ public sealed class AltinnVertical
         _config = config;
         _loadDiagnostics = loadDiagnostics;
 
-        _displayName = config.DisplayName ?? id.Name[(id.Name.LastIndexOf('.') + 1)..];
+        _displayName = config.DisplayName ?? id.ToString("short-name", formatProvider: null);
         _solutionFile = new FileInfo(Path.Combine(directory.FullName, $"{id.Name}.slnx"));
 
         foreach (var project in projects)

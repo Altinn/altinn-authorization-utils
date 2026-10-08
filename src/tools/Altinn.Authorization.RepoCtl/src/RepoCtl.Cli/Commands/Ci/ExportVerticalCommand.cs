@@ -23,6 +23,8 @@ internal sealed partial class ExportVerticalCommand(IGitHubActionsService action
         await actions.SetEnvironmentVariable("VERTICAL_NAME", vertical.Id.Name, cancellationToken);
         await actions.SetEnvironmentVariable("VERTICAL_ID", vertical.Id.ToString(null, formatProvider: CultureInfo.InvariantCulture), cancellationToken);
         await actions.SetEnvironmentVariable("VERTICAL_DISPLAY_NAME", vertical.DisplayName, cancellationToken);
+        await actions.SetEnvironmentVariable("VERTICAL_SLUG", vertical.Id.ToString("slug", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
+        await actions.SetEnvironmentVariable("VERTICAL_SHORT_SLUG", vertical.Id.ToString("short-slug", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
         await actions.SetEnvironmentVariable("VERTICAL_VERSION", vertical.Version.ToString(), cancellationToken);
     }
 }
