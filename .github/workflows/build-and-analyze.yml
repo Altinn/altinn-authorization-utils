@@ -57,6 +57,8 @@ jobs:
         run: dotnet test -c Release --no-build -bl:binlog/test.binlog
       
       - name: Run build repoctl
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: ./src/tools/Altinn.Authorization.RepoCtl/src/RepoCtl.Cli/bin/Release/net10.0/repoctl check
 
       - name: Pack
