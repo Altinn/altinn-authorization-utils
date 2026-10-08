@@ -1,4 +1,3 @@
-using Altinn.Authorization.ServiceDefaults.OpenTelemetry;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
@@ -77,9 +76,9 @@ public sealed class AltinnTelemetryOptions
         internal Sampler ToSampler()
             => SamplingRatio switch
             {
-                0.0 => new AlwaysRecordSampler(),
+                0.0 => new AlwaysRecordSampler(new AlwaysOffSampler()),
                 1.0 => new AlwaysOnSampler(),
-                var v when v > 0.0 && v < 1.0 => new OrRecordSampler(new TraceIdRatioBasedSampler(v)),
+                var v when v > 0.0 && v < 1.0 => new AlwaysRecordSampler(new TraceIdRatioBasedSampler(v)),
                 _ => ThrowHelper.ThrowArgumentOutOfRangeException<Sampler>(nameof(SamplingRatio), $"{nameof(SamplingRatio)} must be between 0 and 1 (inclusive)"),
             };
     }
