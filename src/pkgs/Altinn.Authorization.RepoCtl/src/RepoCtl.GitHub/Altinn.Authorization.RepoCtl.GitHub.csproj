@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Diagnostics" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Octokit" />
+    <PackageReference Include="Octokit.Webhooks" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Altinn.Authorization.RepoCtl.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../Altinn.Authorization.CommandLine/src/CommandLine.GitHub.Actions/Altinn.Authorization.CommandLine.GitHub.Actions.csproj" />
+    <ProjectReference Include="../../../Altinn.Authorization.CommandLine/src/CommandLine.Shell/Altinn.Authorization.CommandLine.Shell.csproj" />
+    <ProjectReference Include="../RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+  </ItemGroup>
+
+</Project>
