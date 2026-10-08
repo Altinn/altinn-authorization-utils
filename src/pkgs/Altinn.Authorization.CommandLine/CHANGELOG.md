@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/CommandLine-v1.0.0...pkg/CommandLine-v1.1.0) (2026-10-08)
+
+
+### Features
+
+* capture process line output ([#727](https://github.com/Altinn/altinn-authorization-utils/issues/727)) ([8dd068c](https://github.com/Altinn/altinn-authorization-utils/commit/8dd068c3b7540fe605f4ae4f6446a685b64aca68))
+* expose github context ([#735](https://github.com/Altinn/altinn-authorization-utils/issues/735)) ([ca97935](https://github.com/Altinn/altinn-authorization-utils/commit/ca97935375eacd89e1ae5bf9d9e37d7bd5a4533a))
+
+
+### Bug Fixes
+
+* render plain json verbatim ([#728](https://github.com/Altinn/altinn-authorization-utils/issues/728)) ([9ca139a](https://github.com/Altinn/altinn-authorization-utils/commit/9ca139a765da7395279e33c08c24429f5eb5c75b))
+
 ## 1.0.0 (2026-08-21)
 
 
