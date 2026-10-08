@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
-using Slugify;
 
 namespace Altinn.Authorization.RepoCtl.Model;
 
@@ -120,8 +119,10 @@ public readonly record struct AltinnVerticalId
         {
             "k" or "kind" => _kind.ToString(),
             "n" or "name" => _name,
-            "s" or "slug" => Slugify(ToString()),
-            "tag-prefix" => $"{_kind}/{_name}",
+            "s" or "slug" => Slug.Slugify($"{_kind}:{GetShortName()}"),
+            "short-name" => new string(GetShortName()),
+            "short-slug" => Slug.Slugify(new string(GetShortName())),
+            "tag-prefix" => $"{_kind}/{GetShortName()}",
             "" or null => ToString(),
             _ => ThrowHelper.ThrowFormatException<string>($"The format string '{format}' is not supported."),
         };
@@ -134,8 +135,10 @@ public readonly record struct AltinnVerticalId
         {
             "k" or "kind" => _kind.TryFormat(destination, out charsWritten, "", provider),
             "n" or "name" => _name.AsSpan().TryCopyTo(destination, out charsWritten),
-            "s" or "slug" => ToString("s", provider).AsSpan().TryCopyTo(destination, out charsWritten),
-            "tag-prefix" => TryFormatInner(in this, destination, '/', out charsWritten),
+            "s" or "slug" => ToString("slug", provider).AsSpan().TryCopyTo(destination, out charsWritten),
+            "short-name" => GetShortName().TryCopyTo(destination, out charsWritten),
+            "short-slug" => ToString("short-slug", provider).TryCopyTo(destination, out charsWritten),
+            "tag-prefix" => ToString("tag-prefix", provider).TryCopyTo(destination, out charsWritten),
             "" => TryFormatInner(in this, destination, ':', out charsWritten),
             _ => ThrowHelper.ThrowFormatException<bool>($"The format string '{format}' is not supported."),
         };
@@ -177,12 +180,20 @@ public readonly record struct AltinnVerticalId
         return string.Compare(_name, other._name, StringComparison.Ordinal);
     }
 
-    private static string Slugify(string value)
+    private ReadOnlySpan<char> GetShortName()
     {
-        var builder = new SlugHelperForNonAsciiLanguages();
-        builder.Config.StringReplacements["."] = "-";
-        builder.Config.StringReplacements[":"] = "-";
-        return builder.GenerateSlug(value);
+        var name = _name.AsSpan();
+        const string AuthorizationPrefix = "Altinn.Authorization.";
+        const string AltinnPrefix = "Altinn.";
+
+        if (name.StartsWith(AuthorizationPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return name[AuthorizationPrefix.Length..];
+        }
+
+        return name.StartsWith(AltinnPrefix, StringComparison.OrdinalIgnoreCase)
+            ? name[AltinnPrefix.Length..]
+            : name;
     }
 
     private static bool IsValidName(ReadOnlySpan<char> name)

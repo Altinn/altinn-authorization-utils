@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Altinn.Authorization.CommandLine.Formatting;
 using Altinn.Authorization.CommandLine.Formatting.Pretty;
 using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.Utils;
 using CommunityToolkit.Diagnostics;
 using Spectre.Console;
 
@@ -65,6 +66,8 @@ internal sealed class AltinnVerticalSetFormatter
             id = v.Id,
             kind = v.Kind,
             name = v.FullName,
+            slug = v.Id.ToString("slug", formatProvider: null),
+            shortslug = Slug.Slugify(v.DisplayName),
             version = v.Version.ToString(),
             deps = ((IEnumerable<AltinnVertical>)v.AllDependencies).Select(static d => d.Id),
             projects = v.Projects.Select(static p => new

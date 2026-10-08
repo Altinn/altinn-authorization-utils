@@ -5,14 +5,53 @@ public class AltinnVerticalIdTests
     private static readonly AltinnVerticalId Id = new(AltinnVerticalKind.Application, "AuthorizationService");
 
     [Theory]
+    [InlineData("Altinn.Authorization.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model")]
+    [InlineData("aLtInN.aUtHoRiZaTiOn.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model")]
+    [InlineData("Altinn.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model")]
+    [InlineData("ALTINN.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model")]
+    [InlineData("Other.RepoCtl.Model", "Other.RepoCtl.Model", "other-repo-ctl-model")]
+    [InlineData("RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model")]
+    [InlineData("Altinn.Authorization", "Authorization", "authorization")]
+    [InlineData("Altinnish.RepoCtl.Model", "Altinnish.RepoCtl.Model", "altinnish-repo-ctl-model")]
+    [InlineData("Other.Altinn.RepoCtl", "Other.Altinn.RepoCtl", "other-altinn-repo-ctl")]
+    public void ShortFormats_RemoveOnlyKnownLeadingPrefixes(string name, string shortName, string shortSlug)
+    {
+        var id = new AltinnVerticalId(AltinnVerticalKind.Package, name);
+        id.Name.ShouldBe(name);
+        id.ToString().ShouldBe($"pkg:{name}");
+        id.ToString("name", null).ShouldBe(name);
+        id.ToString("tag-prefix", null).ShouldBe($"pkg/{shortName}");
+
+        foreach (var (format, expected) in new[]
+        {
+            ("short-name", shortName),
+            ("short-slug", shortSlug),
+            ("slug", $"pkg-{shortSlug}"),
+            ("s", $"pkg-{shortSlug}"),
+            ("tag-prefix", $"pkg/{shortName}"),
+        })
+        {
+            id.ToString(format, null).ShouldBe(expected);
+            var destination = new char[expected.Length];
+            id.TryFormat(destination, out var written, format, null).ShouldBeTrue();
+            written.ShouldBe(expected.Length);
+            new string(destination).ShouldBe(expected);
+            id.TryFormat(destination.AsSpan(1), out written, format, null).ShouldBeFalse();
+            written.ShouldBe(0);
+        }
+    }
+
+    [Theory]
     [InlineData(null, "app:AuthorizationService")]
     [InlineData("", "app:AuthorizationService")]
     [InlineData("k", "app")]
     [InlineData("kind", "app")]
     [InlineData("n", "AuthorizationService")]
     [InlineData("name", "AuthorizationService")]
-    [InlineData("s", "app-authorizationservice")]
-    [InlineData("slug", "app-authorizationservice")]
+    [InlineData("s", "app-authorization-service")]
+    [InlineData("slug", "app-authorization-service")]
+    [InlineData("short-name", "AuthorizationService")]
+    [InlineData("short-slug", "authorization-service")]
     [InlineData("tag-prefix", "app/AuthorizationService")]
     public void ToString_WithFormat_ReturnsExpectedValue(string? format, string expected)
     {
@@ -21,10 +60,79 @@ public class AltinnVerticalIdTests
         result.ShouldBe(expected);
     }
 
-    [Fact]
-    public void ToString_WithUnsupportedFormat_ThrowsFormatException()
+    public static IEnumerable<object?[]> FormattingCases()
     {
-        Should.Throw<FormatException>(() => Id.ToString("unsupported", formatProvider: null));
+        foreach (var kind in new[] { "app", "lib", "pkg", "tool" })
+        {
+            foreach (var (name, shortName, shortSlug) in new[]
+            {
+                ("AuthorizationService", "AuthorizationService", "authorization-service"),
+                ("Altinn.Authorization.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model"),
+                ("aLtInN.aUtHoRiZaTiOn.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model"),
+                ("Altinn.RepoCtl.Model", "RepoCtl.Model", "repo-ctl-model"),
+                ("Other.RepoCtl.Model", "Other.RepoCtl.Model", "other-repo-ctl-model"),
+                ("Altinn.Authorization", "Authorization", "authorization"),
+            })
+            {
+                foreach (var (format, expected) in new (string? Format, string Expected)[]
+                {
+                    (null, $"{kind}:{name}"),
+                    ("", $"{kind}:{name}"),
+                    ("k", kind),
+                    ("kind", kind),
+                    ("n", name),
+                    ("name", name),
+                    ("s", $"{kind}-{shortSlug}"),
+                    ("slug", $"{kind}-{shortSlug}"),
+                    ("short-name", shortName),
+                    ("short-slug", shortSlug),
+                    ("tag-prefix", $"{kind}/{shortName}"),
+                })
+                {
+                    yield return [kind, name, format, expected];
+                }
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(FormattingCases))]
+    public void Formatting_AllKindsAndNameVariants_ReturnExpectedValue(string kind, string name, string? format, string expected)
+    {
+        var id = new AltinnVerticalId(AltinnVerticalKind.Parse(kind, null), name);
+        id.ToString(format, null).ShouldBe(expected);
+        string.Format(System.Globalization.CultureInfo.InvariantCulture, $"{{0:{format}}}", id).ShouldBe(expected);
+        if (string.IsNullOrEmpty(format))
+        {
+            id.ToString().ShouldBe(expected);
+            $"{id}".ShouldBe(expected);
+        }
+
+        var exact = new char[expected.Length];
+        id.TryFormat(exact, out var written, format, null).ShouldBeTrue();
+        written.ShouldBe(expected.Length);
+        new string(exact).ShouldBe(expected);
+
+        var oversized = Enumerable.Repeat('#', expected.Length + 3).ToArray();
+        id.TryFormat(oversized, out written, format, null).ShouldBeTrue();
+        written.ShouldBe(expected.Length);
+        new string(oversized, 0, written).ShouldBe(expected);
+        new string(oversized, written, 3).ShouldBe("###");
+
+        for (var length = 0; length < expected.Length; length++)
+        {
+            id.TryFormat(exact.AsSpan(0, length), out _, format, null).ShouldBeFalse();
+        }
+    }
+
+    [Theory]
+    [InlineData("unsupported")]
+    [InlineData("SLUG")]
+    [InlineData("Short-Name")]
+    [InlineData("tag-prefix ")]
+    public void ToString_WithUnsupportedFormat_ThrowsFormatException(string format)
+    {
+        Should.Throw<FormatException>(() => Id.ToString(format, formatProvider: null));
     }
 
     [Theory]
@@ -33,8 +141,10 @@ public class AltinnVerticalIdTests
     [InlineData("kind", "app")]
     [InlineData("n", "AuthorizationService")]
     [InlineData("name", "AuthorizationService")]
-    [InlineData("s", "app-authorizationservice")]
-    [InlineData("slug", "app-authorizationservice")]
+    [InlineData("s", "app-authorization-service")]
+    [InlineData("slug", "app-authorization-service")]
+    [InlineData("short-name", "AuthorizationService")]
+    [InlineData("short-slug", "authorization-service")]
     [InlineData("tag-prefix", "app/AuthorizationService")]
     public void TryFormat_WithSupportedFormat_WritesExpectedValue(string format, string expected)
     {
@@ -57,13 +167,17 @@ public class AltinnVerticalIdTests
         success.ShouldBeFalse();
     }
 
-    [Fact]
-    public void TryFormat_WithUnsupportedFormat_ThrowsFormatException()
+    [Theory]
+    [InlineData("unsupported")]
+    [InlineData("SLUG")]
+    [InlineData("Short-Name")]
+    [InlineData("tag-prefix ")]
+    public void TryFormat_WithUnsupportedFormat_ThrowsFormatException(string format)
     {
-        Should.Throw<FormatException>(static () =>
+        Should.Throw<FormatException>(() =>
         {
             Span<char> destination = stackalloc char[32];
-            Id.TryFormat(destination, out _, "unsupported", provider: null);
+            Id.TryFormat(destination, out _, format, provider: null);
         });
     }
 
