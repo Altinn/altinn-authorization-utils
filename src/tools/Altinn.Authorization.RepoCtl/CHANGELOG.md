@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.2.0...tool/RepoCtl-v2.0.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* new naming/slug defaults ([#745](https://github.com/Altinn/altinn-authorization-utils/issues/745))
+
+### Features
+
+* add repository diagnostic model ([#725](https://github.com/Altinn/altinn-authorization-utils/issues/725)) ([581552c](https://github.com/Altinn/altinn-authorization-utils/commit/581552c861f533322b0e055d297181b9bc66d0ca))
+* add service for getting changed files on CI ([#737](https://github.com/Altinn/altinn-authorization-utils/issues/737)) ([8c520e5](https://github.com/Altinn/altinn-authorization-utils/commit/8c520e576b7c4b3bee775c1944bd2387ac36717b))
+* build vertical containers with repoctl ([#743](https://github.com/Altinn/altinn-authorization-utils/issues/743)) ([113b96a](https://github.com/Altinn/altinn-authorization-utils/commit/113b96a4505a15dae72e75a5f6cc4645e42af606))
+* detect changed verticals within repoctl ([#741](https://github.com/Altinn/altinn-authorization-utils/issues/741)) ([cbcfb82](https://github.com/Altinn/altinn-authorization-utils/commit/cbcfb8217a5c2388b7135e43046d43680beda6c6))
+* export vertical metadata for CI ([#742](https://github.com/Altinn/altinn-authorization-utils/issues/742)) ([36436da](https://github.com/Altinn/altinn-authorization-utils/commit/36436dafae59f3a9c9bb1fb02d694e63773e53cf))
+* new naming/slug defaults ([#745](https://github.com/Altinn/altinn-authorization-utils/issues/745)) ([3734b68](https://github.com/Altinn/altinn-authorization-utils/commit/3734b6814cd63f6e0cfcaa280403430ad5002350))
+
+
+### Bug Fixes
+
+* add eng dir to shared filters ([#705](https://github.com/Altinn/altinn-authorization-utils/issues/705)) ([a6f1fbc](https://github.com/Altinn/altinn-authorization-utils/commit/a6f1fbc5863439142a0bafb0a5043808816f044b))
+* get-path-filters on filtered sets ([#699](https://github.com/Altinn/altinn-authorization-utils/issues/699)) ([b73a2a0](https://github.com/Altinn/altinn-authorization-utils/commit/b73a2a0333235817435edf1da731f947fdc2692d))
+* release-please config validation ([#702](https://github.com/Altinn/altinn-authorization-utils/issues/702)) ([986378e](https://github.com/Altinn/altinn-authorization-utils/commit/986378ec60ccdc1050f0a1236f2b4708134b85e6))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.1.0...tool/RepoCtl-v1.2.0) (2026-08-31)
 
 
