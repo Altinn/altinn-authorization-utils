@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
+    <ProjectReference Include="../../src/RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
   </ItemGroup>
 
 </Project>
