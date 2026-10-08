@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Diagnostics" />
+    <PackageReference Include="Octokit.Webhooks" />
   </ItemGroup>
 
   <ItemGroup>
