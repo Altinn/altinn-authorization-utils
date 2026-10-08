@@ -41,11 +41,6 @@ public readonly record struct AltinnVerticalKind
     /// </summary>
     public static readonly AltinnVerticalKind Tool = new(AltinnVerticalKindSet.Tool);
 
-    /// <summary>
-    /// Gets the set of vertical kinds that can be packed into a package.
-    /// </summary>
-    private static readonly AltinnVerticalKindSet _packableKinds = [Package, Tool];
-
     /// <inheritdoc/>
     public static AltinnVerticalKind Parse(string s, IFormatProvider? provider)
         => TryParse(s, provider, out var result)
@@ -125,7 +120,7 @@ public readonly record struct AltinnVerticalKind
     /// <summary>
     /// Gets a value indicating whether this instance is packable (i.e., can be packed into a package).
     /// </summary>
-    public bool IsPackable => _packableKinds.Contains(this);
+    public bool IsPackable => AltinnVerticalKindSet.Packable.Contains(this);
 
     /// <inheritdoc/>
     public override int GetHashCode()
