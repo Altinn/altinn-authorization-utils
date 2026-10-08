@@ -113,6 +113,7 @@ cli.AddCommand("nuget", "NuGet operations", (builder) =>
 cli.AddCommand("ci", "CI Helpers", (builder) =>
 {
     builder.AddCommand<FindVerticalsCommand>("find-verticals", "Find verticals in the repository that should be ran CI for");
+    builder.AddCommand<ExportVerticalCommand>("export-vertical", "Export information of a vertical as environment variables");
 });
 
 return await cli.RunAsync(args);
