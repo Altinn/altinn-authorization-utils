@@ -4,6 +4,27 @@
     "local>Altinn/renovate-config",
     "local>Altinn/altinn-authorization-tmp:renovate"
   ],
+  "packageRules": [
+    {
+      "description": "Update xUnit framework and runner packages together",
+      "matchDatasources": ["nuget"],
+      "matchPackageNames": ["xunit", "xunit.*"],
+      "groupName": "xunit",
+      "groupSlug": "xunit",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "MSBuild 18.10 requires .NET 11; retain .NET 10-compatible versions",
+      "matchDatasources": ["nuget"],
+      "matchPackageNames": [
+        "Microsoft.Build",
+        "Microsoft.Build.Framework",
+        "Microsoft.Build.Tasks.Core",
+        "Microsoft.NET.StringTools"
+      ],
+      "allowedVersions": "<18.10"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
