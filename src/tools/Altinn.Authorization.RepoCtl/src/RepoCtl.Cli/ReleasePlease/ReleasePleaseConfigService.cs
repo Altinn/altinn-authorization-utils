@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using Altinn.Authorization.RepoCtl.Checks;
 using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Model.Checks;
 using Altinn.Authorization.RepoCtl.Model.ReleasePlease;
 using Altinn.Authorization.RepoCtl.Model.Utils;
 using Altinn.Authorization.RepoCtl.Utils;
@@ -40,7 +41,7 @@ internal sealed class ReleasePleaseConfigService
         await fs.WriteAsync(NewLine, cancellationToken);
     }
 
-    async IAsyncEnumerable<CheckIssue> IRepositoryCheck.Check(
+    async IAsyncEnumerable<Diagnostic> IRepositoryCheck.Check(
         AltinnRepository repository,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -67,7 +68,7 @@ internal sealed class ReleasePleaseConfigService
 
         if (!wanted.AsReadOnlySequence.SequenceEqual(actual.AsReadOnlySequence))
         {
-            yield return CheckIssue.CreateFile(GetRelativePath(repository.RootDirectory.FullName, fs.FileInfo.FullName), "Release Please configuration is out of date.");
+            yield return Diagnostics.FileOutOfDate(fs.FileInfo.FullName);
         }
     }
 
@@ -120,9 +121,4 @@ internal sealed class ReleasePleaseConfigService
         }
     }
 
-    private static string GetRelativePath(string rootPath, string fullPath)
-    {
-        var relativePath = Path.GetRelativePath(rootPath, fullPath);
-        return relativePath.Replace(Path.DirectorySeparatorChar, '/');
-    }
 }

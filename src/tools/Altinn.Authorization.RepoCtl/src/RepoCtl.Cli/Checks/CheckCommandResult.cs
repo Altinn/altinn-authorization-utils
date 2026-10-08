@@ -5,18 +5,22 @@ namespace Altinn.Authorization.RepoCtl.Checks;
 internal sealed class CheckCommandResult
 {
     public static CheckCommandResult Full(RepositoryChecker checker, AltinnRepository repository)
-        => new CheckCommandResult((reporter, cancellationToken) => checker.Check(repository, reporter, cancellationToken));
+        => new CheckCommandResult(repository, checker.Check);
 
     public static CheckCommandResult Partial(Checker checker, AltinnRepository repository, IReadOnlyList<IRepositoryCheck> checks)
-        => new CheckCommandResult((reporter, cancellationToken) => checker.Check(repository, checks, reporter, cancellationToken));
+        => new CheckCommandResult(repository, (repository, reporter, cancellationToken) => checker.Check(repository, checks, reporter, cancellationToken));
 
-    private readonly Func<ICheckReporter?, CancellationToken, Task> _run;
+    private readonly AltinnRepository _repository;
+    private readonly Func<AltinnRepository, ICheckReporter?, CancellationToken, Task> _run;
 
-    private CheckCommandResult(Func<ICheckReporter?, CancellationToken, Task> run)
+    private CheckCommandResult(AltinnRepository repository, Func<AltinnRepository, ICheckReporter?, CancellationToken, Task> run)
     {
+        _repository = repository;
         _run = run;
     }
 
+    public AltinnRepository Repository => _repository;
+
     public Task Execute(ICheckReporter? reporter, CancellationToken cancellationToken = default)
-        => _run(reporter, cancellationToken);
+        => _run(_repository, reporter, cancellationToken);
 }

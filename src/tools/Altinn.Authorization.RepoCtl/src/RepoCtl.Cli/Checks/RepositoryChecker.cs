@@ -14,9 +14,6 @@ internal sealed class RepositoryChecker
         _checker = checker;
     }
 
-    public Task Check(AltinnRepository repository, CancellationToken cancellationToken = default)
-        => _checker.Check(repository, _checks, cancellationToken);
-
     public Task Check(AltinnRepository repository, ICheckReporter? reporter, CancellationToken cancellationToken = default)
         => _checker.Check(repository, _checks, reporter, cancellationToken);
 }

@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Results;
+using Altinn.Authorization.RepoCtl.Model.Checks;
 using CommunityToolkit.Diagnostics;
 using Spectre.Console;
 
@@ -47,7 +48,7 @@ internal sealed class CheckCommandResultHandlerResolver
 
             CheckCommandResult checkResult = (CheckCommandResult)result;
 
-            var collector = CheckRunResult.CreateCollector();
+            var collector = CheckRunResult.CreateCollector(checkResult.Repository.RootDirectory);
             if (context.Console.StdErr.Profile.Capabilities.Interactive)
             {
                 await RunChecksWithStatus(checkResult, collector, context.Console.StdErr, cancellationToken);
@@ -58,7 +59,7 @@ internal sealed class CheckCommandResultHandlerResolver
             }
 
             var runResult = collector.Build();
-            context.ReturnCode = runResult.CheckResults.Sum(static r => r.Issues.Length);
+            context.ReturnCode = runResult.CheckResults.Count(static r => !r.IsSuccess);
             await formatHandler.HandleResult(runResult, context, cancellationToken);
         }
 
@@ -98,13 +99,13 @@ internal sealed class CheckCommandResultHandlerResolver
             return _inner.CheckStarted(check, cancellationToken);
         }
 
-        ValueTask ICheckReporter.IssueFound(IRepositoryCheck check, CheckIssue issue, CancellationToken cancellationToken)
-            => _inner.IssueFound(check, issue, cancellationToken);
+        ValueTask ICheckReporter.DiagnosticFound(IRepositoryCheck check, Diagnostic diag, CancellationToken cancellationToken)
+            => _inner.DiagnosticFound(check, diag, cancellationToken);
 
-        ValueTask ICheckReporter.CheckCompleted(IRepositoryCheck check, uint issues, CancellationToken cancellationToken)
-            => _inner.CheckCompleted(check, issues, cancellationToken);
+        ValueTask ICheckReporter.CheckCompleted(IRepositoryCheck check, CheckSummary summary, CancellationToken cancellationToken)
+            => _inner.CheckCompleted(check, summary, cancellationToken);
 
-        ValueTask ICheckReporter.RunCompleted(IReadOnlyList<IRepositoryCheck> checks, uint issues, CancellationToken cancellationToken)
-            => _inner.RunCompleted(checks, issues, cancellationToken);
+        ValueTask ICheckReporter.RunCompleted(IReadOnlyList<IRepositoryCheck> checks, CheckSummary summary, CancellationToken cancellationToken)
+            => _inner.RunCompleted(checks, summary, cancellationToken);
     }
 }
