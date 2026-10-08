@@ -112,7 +112,6 @@ cli.AddCommand("nuget", "NuGet operations", (builder) =>
 
 cli.AddCommand("ci", "CI Helpers", (builder) =>
 {
-    builder.AddCommand<GetPathFiltersCommand>("get-path-filters", "Get named path-filters for verticals in the repository");
     builder.AddCommand<FindVerticalsCommand>("find-verticals", "Find verticals in the repository that should be ran CI for");
 });
 
