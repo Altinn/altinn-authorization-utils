@@ -35,6 +35,7 @@
   <Folder Name="/pkgs/Altinn.Authorization.RepoCtl/" />
   <Folder Name="/pkgs/Altinn.Authorization.RepoCtl/src/">
     <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl/Altinn.Authorization.RepoCtl.csproj" />
+    <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Checks/Altinn.Authorization.RepoCtl.Checks.csproj" />
     <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.Model/Altinn.Authorization.RepoCtl.Model.csproj" />
     <Project Path="src/pkgs/Altinn.Authorization.RepoCtl/src/RepoCtl.MsBuild/Altinn.Authorization.RepoCtl.MsBuild.csproj" />
   </Folder>
