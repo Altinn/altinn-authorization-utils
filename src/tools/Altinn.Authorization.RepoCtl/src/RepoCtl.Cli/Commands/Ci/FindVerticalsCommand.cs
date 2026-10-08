@@ -6,12 +6,14 @@ using Altinn.Authorization.CommandLine.Arguments;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.CommandLine.Results;
+using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.Commands.Ci;
 
-internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions)
+internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions, IServiceProvider services)
 {
     public async Task<ICommandResult> Invoke(
         AltinnRepository repository,
@@ -20,7 +22,9 @@ internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions
         [Option("--filter", Description = "Filter based on changed paths.")] ChangedFilter filter = ChangedFilter.None,
         CancellationToken cancellationToken = default)
     {
-        ChangedPaths changedPaths = ChangedPaths.Read();
+        var changedPaths = filter == ChangedFilter.None
+            ? ChangedPaths.Empty
+            : await GetChangedPaths(repository, verticals, cancellationToken);
 
         var infos = verticals.AsEnumerable()
             .Select(v => new VerticalInfo(repository, v, changedPaths))
@@ -39,6 +43,79 @@ internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions
 
         return JsonResult.From(json);
     }
+
+    internal async Task<ChangedPaths> GetChangedPaths(
+        AltinnRepository repository,
+        AltinnVerticalSet verticals,
+        CancellationToken cancellationToken = default)
+    {
+        var filters = CreateFilters(repository, verticals);
+        var matched = new HashSet<string>(StringComparer.Ordinal);
+        var changedFiles = services.GetRequiredService<IChangedFilesService>();
+        await foreach (var path in changedFiles.GetChangedFiles(cancellationToken).WithCancellation(cancellationToken))
+        {
+            foreach (var (name, patterns) in filters)
+            {
+                if (!matched.Contains(name) && patterns.Any(pattern => Matches(pattern, path)))
+                {
+                    matched.Add(name);
+                }
+            }
+        }
+
+        return new ChangedPaths(matched);
+    }
+
+    private static SortedDictionary<string, SortedSet<string>> CreateFilters(AltinnRepository repository, AltinnVerticalSet verticals)
+    {
+        var filters = new SortedDictionary<string, SortedSet<string>>();
+        foreach (var vertical in verticals)
+        {
+            var idString = vertical.Id.ToString();
+            var relPath = RelPath(repository, vertical.Directory);
+            filters.Add(idString, [$"{relPath}/**"]);
+
+            if (vertical.Kind == AltinnVerticalKind.Application)
+            {
+                filters.Add($"{idString}:infra", [$"{relPath}/infra/**"]);
+            }
+
+            SortedSet<string> fullFilters = [$"{relPath}/**"];
+            foreach (var dependency in vertical.AllDependencies)
+            {
+                fullFilters.Add($"{RelPath(repository, dependency.Directory)}/**");
+            }
+
+            filters.Add($"{idString}:full", fullFilters);
+        }
+
+        filters["shared"] = [
+            ".github/**",
+            "eng/**",
+            "Directory.Build.props",
+            "Directory.Build.targets",
+            "Directory.Packages.props",
+            "Altinn.ruleset",
+            "Stylecop.json",
+            "src/Directory.Build.props",
+            "src/Directory.Build.targets",
+            "src/Directory.Packages.props",
+            "src/Altinn.ruleset",
+            "src/Stylecop.json",
+            "src/.gitignore",
+            ".editorconfig",
+            ".gitignore",
+            "global.json",
+        ];
+
+        return filters;
+    }
+
+    private static bool Matches(string pattern, string path)
+        // Generated filters contain only directory/** patterns and exact filenames.
+        => pattern.EndsWith("/**", StringComparison.Ordinal)
+            ? path.AsSpan().StartsWith(pattern.AsSpan(0, pattern.Length - 2), StringComparison.Ordinal)
+            : string.Equals(pattern, path, StringComparison.Ordinal);
 
     private static Func<VerticalInfo, bool> FilterChanged(ChangedFilter filter)
         => filter switch
@@ -154,63 +231,6 @@ internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions
         Full,
     }
 
-    private sealed record ChangedPaths
-    {
-        private static readonly ChangedPaths _empty = new([]);
-
-        public static ChangedPaths Read()
-        {
-            var envValue = Environment.GetEnvironmentVariable("PATHS_CHANGED");
-            if (string.IsNullOrEmpty(envValue))
-            {
-                return _empty;
-            }
-
-            var deserialized = JsonSerializer.Deserialize(envValue, FindVerticalsJsonContext.Default.Input);
-            if (deserialized is null)
-            {
-                return _empty;
-            }
-
-            return new ChangedPaths(deserialized);
-        }
-
-        private readonly bool _sharedChanged;
-        private readonly ImmutableArray<string> _filtersWithChanges;
-
-        public ChangedPaths(Dictionary<string, bool> input)
-        {
-            var builder = ImmutableArray.CreateBuilder<string>(input.Count);
-            foreach (var (filter, hasChanges) in input)
-            {
-                if (string.Equals(filter, "shared", StringComparison.Ordinal))
-                {
-                    _sharedChanged = hasChanges;
-                    continue;
-                }
-
-                if (hasChanges)
-                {
-                    builder.Add(filter);
-                }
-            }
-
-            builder.Sort(StringComparer.Ordinal);
-            _filtersWithChanges = builder.ToImmutable();
-        }
-
-        public bool HasChanges(string filter, bool includeShared = true)
-        {
-            if (includeShared && _sharedChanged)
-            {
-                return true;
-            }
-
-            return _filtersWithChanges.BinarySearch(filter, StringComparer.Ordinal) >= 0;
-        }
-    }
-
-    [JsonSerializable(typeof(Dictionary<string, bool>), TypeInfoPropertyName = "Input")]
     [JsonSerializable(typeof(ImmutableArray<VerticalInfo>), TypeInfoPropertyName = "Output")]
     [JsonSerializable(typeof(VerticalsMatrix), TypeInfoPropertyName = "Matrix")]
     [JsonSourceGenerationOptions(
@@ -218,46 +238,8 @@ internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions
         AllowTrailingCommas = true,
         PropertyNamingPolicy = JsonKnownNamingPolicy.KebabCaseLower,
         ReadCommentHandling = JsonCommentHandling.Skip,
-        UseStringEnumConverter = true,
-        Converters = [typeof(BooleanFromStringConverter)])]
+        UseStringEnumConverter = true)]
     private sealed partial class FindVerticalsJsonContext
         : JsonSerializerContext;
 
-    private sealed class BooleanFromStringConverter
-        : JsonConverter<bool>
-    {
-        public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType is JsonTokenType.True)
-            {
-                return true;
-            }
-
-            if (reader.TokenType is JsonTokenType.False)
-            {
-                return false;
-            }
-
-            if (reader.TokenType is JsonTokenType.String)
-            {
-                var value = reader.GetString();
-                if (string.Equals(value, "true", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                if (string.Equals(value, "false", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-            }
-
-            throw new JsonException($"Cannot convert {reader.TokenType} to boolean.");
-        }
-
-        public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
-        {
-            writer.WriteBooleanValue(value);
-        }
-    }
 }
