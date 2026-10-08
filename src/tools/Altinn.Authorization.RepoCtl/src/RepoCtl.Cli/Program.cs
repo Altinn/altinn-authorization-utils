@@ -28,6 +28,7 @@ builder.Services.AddSingleton<SolutionService>();
 builder.Services.AddSingleton<ReleasePleaseConfigService>();
 builder.Services.AddSingleton<TestService>();
 builder.Services.AddSingleton<PackService>();
+builder.Services.AddSingleton<ContainerService>();
 builder.Services.AddSingleton<GitHubService>();
 builder.Services.AddSingleton<NuGetService>();
 builder.Services.AddSingleton<Checker>();
@@ -58,6 +59,17 @@ cli.AddCommand("vertical", "Operate on a single vertical", (builder) =>
 
     builder.AddCommand("pack", "Pack the vertical into a package (if it is packable)", (AltinnVertical vertical, [RestArguments] string[] args, PackService packService)
         => packService.Pack(vertical, args));
+
+    builder.AddCommand("containers", "Operate on the containers for a vertical", (builder) =>
+    {
+        builder.AddCommand("build", "Build the containers for a vertical", (
+            AltinnRepository repository,
+            AltinnVertical vertical,
+            ContainerService containerService,
+            [Option("--push", "-p", Description = "Whether to push the built containers")] bool push,
+            [Option("--tag", "-t", Description = "The tag for the container images")] string? tag = null)
+            => containerService.BuildContainers(repository, vertical, push, tag));
+    });
 });
 
 cli.AddCommand("solutions", "Operate on solutions", (builder) =>
