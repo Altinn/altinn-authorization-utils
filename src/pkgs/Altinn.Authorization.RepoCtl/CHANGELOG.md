@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v1.2.0...pkg/RepoCtl-v2.0.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* new naming/slug defaults ([#745](https://github.com/Altinn/altinn-authorization-utils/issues/745))
+* make repository loader internal ([#707](https://github.com/Altinn/altinn-authorization-utils/issues/707))
+
+### Features
+
+* add diagnostic-producing repository checks ([#731](https://github.com/Altinn/altinn-authorization-utils/issues/731)) ([a574218](https://github.com/Altinn/altinn-authorization-utils/commit/a5742186e0670db10c153cb613c8f0eaa9b3f94c))
+* add MSBuild diagnostic parser with canonical error tests ([#724](https://github.com/Altinn/altinn-authorization-utils/issues/724)) ([d81aeb0](https://github.com/Altinn/altinn-authorization-utils/commit/d81aeb075d15f283fe572252d398a4c9c5d5ed4f))
+* add repository diagnostic model ([#725](https://github.com/Altinn/altinn-authorization-utils/issues/725)) ([581552c](https://github.com/Altinn/altinn-authorization-utils/commit/581552c861f533322b0e055d297181b9bc66d0ca))
+* add service for getting changed files on CI ([#737](https://github.com/Altinn/altinn-authorization-utils/issues/737)) ([8c520e5](https://github.com/Altinn/altinn-authorization-utils/commit/8c520e576b7c4b3bee775c1944bd2387ac36717b))
+* add vertical set builder ([#721](https://github.com/Altinn/altinn-authorization-utils/issues/721)) ([a1f8ab5](https://github.com/Altinn/altinn-authorization-utils/commit/a1f8ab51ecec037252535b2e18794ce3bb6e87e5))
+* make repository loader internal ([#707](https://github.com/Altinn/altinn-authorization-utils/issues/707)) ([4b7ef02](https://github.com/Altinn/altinn-authorization-utils/commit/4b7ef025d0c6fe86072ca9e93bb54d1c01fc4d42))
+* new naming/slug defaults ([#745](https://github.com/Altinn/altinn-authorization-utils/issues/745)) ([3734b68](https://github.com/Altinn/altinn-authorization-utils/commit/3734b6814cd63f6e0cfcaa280403430ad5002350))
+* register repoctl GitHub services ([#739](https://github.com/Altinn/altinn-authorization-utils/issues/739)) ([2a907f2](https://github.com/Altinn/altinn-authorization-utils/commit/2a907f2e50a231e75ae85e07e1a365460530ba10))
+* retain repository loader diagnostics ([#730](https://github.com/Altinn/altinn-authorization-utils/issues/730)) ([0fb188b](https://github.com/Altinn/altinn-authorization-utils/commit/0fb188b63f00de56637019c85b7682d72b791816))
+* support MSBuild target execution ([#723](https://github.com/Altinn/altinn-authorization-utils/issues/723)) ([44d6456](https://github.com/Altinn/altinn-authorization-utils/commit/44d6456d206c6ea6294978502ece8ec529b51e4c))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v1.1.0...pkg/RepoCtl-v1.2.0) (2026-08-31)
 
 
