@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using Altinn.Authorization.CommandLine.Utils;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
@@ -114,7 +115,7 @@ internal sealed class JsonWithCommentsText
             }
 
             var jsonText = Encoding.UTF8.GetString(bufferWriter.WrittenSpan);
-            return new Text(jsonText);
+            return new VerbatimText(jsonText);
         }
 
         return _node.ToNotation(encoder, checked((uint)indentationSize));
