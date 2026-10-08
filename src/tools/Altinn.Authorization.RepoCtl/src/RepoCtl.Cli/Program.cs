@@ -1,6 +1,7 @@
 using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Formatting;
+using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.RepoCtl;
 using Altinn.Authorization.RepoCtl.Binding;
 using Altinn.Authorization.RepoCtl.Checks;
@@ -19,6 +20,7 @@ var builder = CliApplication.CreateBuilder("Altinn Authorization Repository Mana
 builder.Services.AddGitHubActionsServices();
 builder.Services.AddRepoCtlServices();
 builder.Services.AddRepoCtlChecks();
+builder.Services.AddRepoCtlGitHubServices();
 builder.Services.AddSingleton<AltinnRepositoryResolver>();
 builder.Services.AddSingleton<IConfigureOption, ConfigureAltinnVerticalKindOptions>();
 builder.Services.AddSingleton<ICommandHandlerParameterBinderResolver, AltinnRepositoryBinderResolver>();
@@ -92,7 +94,7 @@ cli.AddCommand("check", "Pre-commit/pre-merge checks for the repository", (Repos
 cli.AddCommand("github", "GitHub operations", (builder) =>
 {
     builder.AddCommand("upload", "Upload artifacts to a GitHub release", (
-        GitHubContext context,
+        GitHubRepositoryContext context,
         [Argument(Description = "The release ID.")] long releaseId,
         [Argument(Description = "File glob to upload.")] string glob,
         GitHubService github)
