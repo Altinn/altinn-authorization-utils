@@ -30,6 +30,9 @@ jobs:
           
           repoctl --version
 
+      - name: Restore
+        run: dotnet restore
+
       - name: Check repository
         run: repoctl check
 
