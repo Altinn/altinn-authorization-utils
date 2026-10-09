@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.0.1...tool/RepoCtl-v2.0.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* include shortSlug in matrix ([#751](https://github.com/Altinn/altinn-authorization-utils/issues/751)) ([3f2f978](https://github.com/Altinn/altinn-authorization-utils/commit/3f2f97805e03fc7d07d22095d7118aa4894a534d))
+
 ## [2.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.0.0...tool/RepoCtl-v2.0.1) (2026-10-09)
 
 
