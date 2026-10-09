@@ -167,6 +167,10 @@ internal sealed partial class FindVerticalsCommand(IGitHubActionsService actions
         public string Slug
             => _vertical.Id.ToString("s", null);
 
+        [JsonPropertyName("shortSlug")]
+        public string ShortSlug
+            => _vertical.Id.ToString("short-slug", null);
+
         [JsonPropertyName("displayName")]
         public string DisplayName
             => _vertical.DisplayId;
