@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.0.0...tool/RepoCtl-v2.0.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* add readme to repoctl ([#749](https://github.com/Altinn/altinn-authorization-utils/issues/749)) ([c63457d](https://github.com/Altinn/altinn-authorization-utils/commit/c63457d001b2521dfcc54d36403124634f0817fa))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v1.2.0...tool/RepoCtl-v2.0.0) (2026-10-08)
 
 
