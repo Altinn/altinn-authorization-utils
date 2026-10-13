@@ -26,6 +26,12 @@ public sealed partial record ReleasePleaseConfig
     /// <returns>The deserialized configuration, or <see langword="null"/> when <paramref name="json"/> contains JSON <see langword="null"/>.</returns>
     public static ReleasePleaseConfig? Deserialize(ReadOnlySequence<byte> json)
     {
+        var sequenceReader = new SequenceReader<byte>(json);
+        if (sequenceReader.IsNext(Encoding.UTF8.Preamble, advancePast: true))
+        {
+            json = json.Slice(sequenceReader.Position);
+        }
+
         var reader = new Utf8JsonReader(json);
         return JsonSerializer.Deserialize(ref reader, ReleasePleaseConfigJsonSerializerContext.Default.ReleasePleaseConfig);
     }
