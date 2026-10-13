@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace Altinn.Authorization.CommandLine.GitHub.Actions;
 
-internal sealed class GitHubActionsProfileEnrichment(IGitHubActionsService githubActions)
+internal sealed class GitHubActionsProfileEnrichment
     : IProfileEnricher
 {
     private const int ACTIONS_CONSOLE_SIMULATED_WIDTH = 160;
@@ -10,7 +10,7 @@ internal sealed class GitHubActionsProfileEnrichment(IGitHubActionsService githu
     public string Name => "GitHub Actions";
 
     public bool Enabled(IDictionary<string, string> environmentVariables)
-        => githubActions.IsGitHubActions;
+        => environmentVariables.TryGetValue("GITHUB_ACTIONS", out var value) && value is "true";
 
     public void Enrich(Profile profile)
     {

@@ -1,9 +1,11 @@
 using System.Text.Json;
+using Altinn.Authorization.CommandLine.Console;
 using Octokit.Webhooks;
+using Spectre.Console;
 
 namespace Altinn.Authorization.CommandLine.GitHub.Actions;
 
-internal sealed class GitHubActionsService
+internal sealed class GitHubActionsService(IConsole console)
     : IGitHubActionsService
 {
     private static readonly bool _isGitHubActions
@@ -21,8 +23,15 @@ internal sealed class GitHubActionsService
     public Task SetOutput(string key, string value, CancellationToken cancellationToken = default)
         => WriteValue("GITHUB_OUTPUT", key, value, cancellationToken);
 
-    public Task SetEnvironmentVariable(string key, string value, CancellationToken cancellationToken = default)
-        => WriteValue("GITHUB_ENV", key, value, cancellationToken);
+    public Task SetEnvironmentVariable(string key, string value, bool print, CancellationToken cancellationToken = default)
+    {
+        if (print)
+        {
+            console.MarkupLineInterpolated($"[cyan]export[/] [blue]{key}[/]=[magenta]{value}[/]");
+        }
+
+        return WriteValue("GITHUB_ENV", key, value, cancellationToken);
+    }
 
     private static Task WriteValue(string fileEnvName, string key, string value, CancellationToken cancellationToken)
     {

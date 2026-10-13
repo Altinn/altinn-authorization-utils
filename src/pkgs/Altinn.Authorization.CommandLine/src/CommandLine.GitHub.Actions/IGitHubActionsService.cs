@@ -28,6 +28,16 @@ public interface IGitHubActionsService
     /// </summary>
     /// <param name="key">The environment variable key.</param>
     /// <param name="value">The environment variable value.</param>
+    /// <param name="print">Indicates whether the environment variable should be printed to the workflow log.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    public Task SetEnvironmentVariable(string key, string value, CancellationToken cancellationToken = default);
+    public Task SetEnvironmentVariable(string key, string value, bool print, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets an environment variable for the current GitHub Actions workflow.
+    /// </summary>
+    /// <param name="key">The environment variable key.</param>
+    /// <param name="value">The environment variable value.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    public Task SetEnvironmentVariable(string key, string value, CancellationToken cancellationToken = default)
+        => SetEnvironmentVariable(key, value, print: true, cancellationToken);
 }
