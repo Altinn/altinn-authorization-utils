@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Text;
 using System.Text.Json;
 using Altinn.Authorization.RepoCtl.Model.ReleasePlease;
 
@@ -5,6 +7,46 @@ namespace Altinn.Authorization.RepoCtl.Model.Tests;
 
 public class ReleasePleaseConfigTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Deserialize_ReadsUtf8BomWithoutChangingInput(bool segmented)
+    {
+        var bytes = Encoding.UTF8.GetBytes("\uFEFF{\"packages\":{\"src/package\":{\"component\":\"example\"}}}");
+        var first = new ByteSegment(bytes.AsMemory(0, 1));
+        var second = first.Append(bytes.AsMemory(1, 1));
+        var last = second.Append(bytes.AsMemory(2));
+        var json = segmented
+            ? new ReadOnlySequence<byte>(first, 0, last, last.Memory.Length)
+            : new ReadOnlySequence<byte>(bytes);
+        if (segmented)
+        {
+            json.IsSingleSegment.ShouldBeFalse();
+        }
+
+        var config = ReleasePleaseConfig.Deserialize(json);
+
+        config.ShouldNotBeNull();
+        config.Packages["src/package"].Component.ShouldBe("example");
+        json.ToArray().ShouldBe(bytes);
+        Encoding.UTF8.GetBytes(ReleasePleaseConfig.Serialize(config)).ShouldNotBe(bytes);
+    }
+
+    private sealed class ByteSegment : ReadOnlySequenceSegment<byte>
+    {
+        public ByteSegment(ReadOnlyMemory<byte> memory)
+        {
+            Memory = memory;
+        }
+
+        public ByteSegment Append(ReadOnlyMemory<byte> memory)
+        {
+            var next = new ByteSegment(memory) { RunningIndex = RunningIndex + Memory.Length };
+            Next = next;
+            return next;
+        }
+    }
+
     [Fact]
     public void Deserialize_ReadsPackageOptionsAndExtraFileVariants()
     {
