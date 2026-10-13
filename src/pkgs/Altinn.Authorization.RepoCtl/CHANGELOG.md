@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v2.0.0...pkg/RepoCtl-v2.1.0) (2026-10-13)
+
+
+### Features
+
+* detect bom ([#753](https://github.com/Altinn/altinn-authorization-utils/issues/753)) ([77900b3](https://github.com/Altinn/altinn-authorization-utils/commit/77900b3f880121b257e89a12414b2993025a54e3))
+
 ## [2.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v1.2.0...pkg/RepoCtl-v2.0.0) (2026-10-08)
 
 
