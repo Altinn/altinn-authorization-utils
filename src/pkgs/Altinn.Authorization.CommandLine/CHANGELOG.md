@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/CommandLine-v1.1.0...pkg/CommandLine-v1.2.0) (2026-10-13)
+
+
+### Features
+
+* print exported env vars ([#756](https://github.com/Altinn/altinn-authorization-utils/issues/756)) ([0908ef4](https://github.com/Altinn/altinn-authorization-utils/commit/0908ef4b2e4dc94146ea054677ed3eff5bf57e90))
+
 ## [1.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/CommandLine-v1.0.0...pkg/CommandLine-v1.1.0) (2026-10-08)
 
 
