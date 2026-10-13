@@ -171,7 +171,7 @@ public class ChangedPathsTests
             return Task.CompletedTask;
         }
 
-        public Task SetEnvironmentVariable(string key, string value, CancellationToken cancellationToken = default)
+        public Task SetEnvironmentVariable(string key, string value, bool print, CancellationToken cancellationToken = default)
             => throw new NotSupportedException();
     }
 }
