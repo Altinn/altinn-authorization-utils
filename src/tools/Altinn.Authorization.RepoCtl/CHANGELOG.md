@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.0.2...tool/RepoCtl-v2.1.0) (2026-10-13)
+
+
+### Features
+
+* export changelog paths ([#754](https://github.com/Altinn/altinn-authorization-utils/issues/754)) ([cc1615f](https://github.com/Altinn/altinn-authorization-utils/commit/cc1615f81012e6fd025eb68d5bdc66564f208c01))
+* print exported env vars ([#756](https://github.com/Altinn/altinn-authorization-utils/issues/756)) ([0908ef4](https://github.com/Altinn/altinn-authorization-utils/commit/0908ef4b2e4dc94146ea054677ed3eff5bf57e90))
+
 ## [2.0.2](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.0.1...tool/RepoCtl-v2.0.2) (2026-10-09)
 
 
