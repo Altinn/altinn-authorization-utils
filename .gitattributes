@@ -1,5 +1,8 @@
 *.sln linguist-generated
 
+# Match the C# line endings required by .editorconfig on every platform.
+*.cs text eol=lf
+
 # verify
 *.verified.txt text eol=lf working-tree-encoding=UTF-8
 *.verified.xml text eol=lf working-tree-encoding=UTF-8
