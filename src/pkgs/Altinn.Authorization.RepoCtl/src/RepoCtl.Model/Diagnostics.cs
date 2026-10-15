@@ -234,4 +234,19 @@ public static class Diagnostics
             category: "File",
             code: "REPOCTL015",
             projectContext: null);
+
+    /// <summary>
+    /// Gets a diagnostic indicating that a file starts with a UTF-8 byte order mark, which a tool that reads it cannot handle.
+    /// </summary>
+    /// <param name="fullPath">The full path to the file.</param>
+    /// <param name="reason">Why the file must not start with a byte order mark.</param>
+    /// <returns>The diagnostic.</returns>
+    public static Diagnostic FileStartsWithByteOrderMark(string fullPath, string reason)
+        => new Diagnostic(
+            severity: DiagnosticSeverity.Error,
+            text: $"File starts with a UTF-8 byte order mark: {reason}",
+            origin: new DiagnosticOrigin(fullPath, start: new LinePosition(1, 1), end: default),
+            category: "File",
+            code: "REPOCTL016",
+            projectContext: null);
 }

@@ -20,6 +20,7 @@ public static class RepoCtlChecksServiceCollectionExtensions
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IRepositoryCheck, LoaderCheck>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IRepositoryCheck, PackableProjectCheck>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IRepositoryCheck, DotnetFormatCheck>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IRepositoryCheck, ByteOrderMarkCheck>());
 
             return services;
         }
