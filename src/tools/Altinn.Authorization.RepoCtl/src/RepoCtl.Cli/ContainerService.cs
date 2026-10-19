@@ -7,6 +7,25 @@ namespace Altinn.Authorization.RepoCtl;
 
 internal class ContainerService
 {
+    // method is virtual for testing purposes
+    public virtual ICommandResult PromoteManifests(AltinnRepository repository, string image, string sourceTag, IReadOnlyList<string> environments)
+        => CreateManifestPromotionCommand(repository.RootDirectory.FullName, image, sourceTag, environments).ToResult();
+
+    internal static Command CreateManifestPromotionCommand(string workingDirectory, string image, string sourceTag, IReadOnlyList<string> environments)
+    {
+        List<string> args = ["buildx", "imagetools", "create"];
+        foreach (var environment in environments)
+        {
+            args.Add("-t");
+            args.Add($"{image}:{environment}");
+        }
+
+        args.Add($"{image}:{sourceTag}");
+
+        return Command.Create("docker", [.. args])
+            .WithWorkingDirectory(workingDirectory);
+    }
+
     public ICommandResult BuildContainers(AltinnRepository repository, AltinnVertical vertical, bool push, string? tag)
     {
         if (vertical.Kind != AltinnVerticalKind.Application)
