@@ -77,6 +77,8 @@ public sealed class CliApplicationBuilder
         hostBuilder.Services.AddConfigureArgument<ParsableConfigureArgument>();
         hostBuilder.Services.AddConfigureOption<ArgumentEnumConfigureArgument>();
         hostBuilder.Services.AddConfigureArgument<ArgumentEnumConfigureArgument>();
+        hostBuilder.Services.AddConfigureOption<StringValuesConfigureArgument>();
+        hostBuilder.Services.AddConfigureArgument<StringValuesConfigureArgument>();
 
         // argument preprocessing
         hostBuilder.Services.AddSingleton<ArgumentPreProcessor>();
