@@ -180,6 +180,43 @@ repoctl ci find-verticals --kind app --filter infra
 repoctl ci export-vertical pkg:Altinn.Urn
 ```
 
+Create an application draft release with one command:
+
+```sh
+repoctl ci draft-release app:MyApplication --version 2026.10.19 --sha "$COMMIT"
+```
+
+The version defaults to today's UTC date (`yyyy.MM.dd`). Overrides must have the
+shape `yyyy.MM.dd` with an optional fourth component from 100 to 999. The date
+must be a valid calendar date, including leap-year rules. `--sha` defaults to
+`GITHUB_SHA`, and `--repo` defaults to `GITHUB_REPOSITORY`.
+
+The command resolves the commit through GitHub, checks that the tag does not
+exist and that no draft already exists for this application, generates release
+notes using `git cliff`, and creates a draft with `make_latest: false`. Tags and
+titles use the vertical's tag prefix. Changelogs include the application's paths
+and its transitive library dependencies, using the repository's `cliff.toml`.
+
+Set `GITHUB_TOKEN` with contents write permission; both Octokit and git-cliff use
+this variable. Install git-cliff and check out the source commit with full Git
+history and tags before running the command. The command verifies that local
+HEAD matches the resolved release commit.
+
+In `release-app.yml`, after checkout and git-cliff installation, the five Bash
+steps can be replaced with:
+
+```yaml
+- name: Create draft release
+  env:
+    GITHUB_TOKEN: ${{ github.token }}
+    APP: ${{ inputs.app }}
+    VERSION_OVERRIDE: ${{ inputs.version }}
+  run: repoctl ci draft-release "app:${APP}" --version "$VERSION_OVERRIDE"
+```
+
+Update the workflow's installed RepoCtl version to a release containing this
+command before switching its invocation.
+
 ## Publish artifacts
 
 Publish matching packages using `dotnet nuget push`. Additional arguments are

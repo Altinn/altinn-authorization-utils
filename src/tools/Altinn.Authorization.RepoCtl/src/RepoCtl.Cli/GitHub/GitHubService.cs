@@ -12,6 +12,51 @@ namespace Altinn.Authorization.RepoCtl.GitHub;
 
 internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor, GitHubClient githubClient)
 {
+    public async Task<string> ResolveCommit(GitHubRepositoryContext context, string reference, CancellationToken cancellationToken = default)
+    {
+        var commit = await githubClient.Repository.Commit.Get(context.RepositoryOwner, context.RepositoryName, reference)
+            .WaitAsync(cancellationToken);
+
+        return commit.Sha;
+    }
+
+    public async Task<bool> TagExists(GitHubRepositoryContext context, string tag, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await githubClient.Git.Reference.Get(context.RepositoryOwner, context.RepositoryName, $"tags/{tag}")
+                .WaitAsync(cancellationToken);
+
+            return true;
+        }
+        catch (NotFoundException)
+        {
+            return false;
+        }
+    }
+
+    public async Task<IReadOnlyList<string>> GetDraftReleaseTags(GitHubRepositoryContext context, string prefix, CancellationToken cancellationToken = default)
+    {
+        var releases = await githubClient.Repository.Release
+            .GetAll(context.RepositoryOwner, context.RepositoryName, new ApiOptions { PageSize = 100 })
+            .WaitAsync(cancellationToken);
+
+        return releases.Where(release => release.Draft && release.TagName.StartsWith(prefix, StringComparison.Ordinal))
+            .Select(static release => release.TagName)
+            .ToList();
+    }
+
+    public Task<Release> CreateDraftRelease(GitHubRepositoryContext context, string tag, string sha, string title, string notes, CancellationToken cancellationToken = default)
+        => githubClient.Repository.Release.Create(context.RepositoryOwner, context.RepositoryName, new NewRelease(tag)
+        {
+            Draft = true,
+            TargetCommitish = sha,
+            Name = title,
+            Body = notes,
+            MakeLatest = MakeLatestQualifier.False,
+        })
+        .WaitAsync(cancellationToken);
+
     public ICommandResult CreateDeployment(GitHubRepositoryContext context, string sha, string shortSlug, string environment)
         => new CreateDeploymentResult(githubClient, context, sha, shortSlug, environment);
 
