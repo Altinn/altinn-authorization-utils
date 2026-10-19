@@ -98,6 +98,27 @@ Handler parameters are bound by the command handler factory:
 Parameters with default values are treated as optional. Nullable parameters are also optional according to the parameter
 nullability metadata.
 
+Use `Microsoft.Extensions.Primitives.StringValues` for whitespace-separated lists:
+
+```csharp
+cli.AddCommand("deploy", "Deploy to environments", (
+    [Option("--environments")] Microsoft.Extensions.Primitives.StringValues environments) =>
+{
+    foreach (var environment in environments)
+    {
+        Console.WriteLine(environment);
+    }
+});
+```
+
+`--environments "test prod"` and `--environments test --environments prod`
+both bind to two values. Each option occurrence consumes one token; an unquoted
+`prod` in `--environments test prod` remains a positional argument. Splitting handles
+spaces, tabs, and newlines, removes empty entries, and preserves order and
+duplicates. The same parsing applies to `[Argument] StringValues` parameters.
+Required lists reject empty or whitespace-only input; a parameter with
+`= default` is optional and binds to an empty list when omitted.
+
 ## Return Values
 
 Handlers can return:
