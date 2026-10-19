@@ -112,6 +112,40 @@ repoctl vertical containers build app:MyApplication --tag v1.2.3 --push
 `--tag` sets the bake variable `TAG`; `--push` pushes the built images to their
 configured registries.
 
+## Promote application manifests
+
+Promote already-built manifest images to one or more environment tags:
+
+```sh
+repoctl ci promote-app \
+  --verticals 'app:MyApplication app:OtherApplication' \
+  --environments 'test prod' \
+  --sha "$SOURCE_SHA" \
+  --repo Altinn/altinn-authorization
+```
+
+Both selection options accept quoted whitespace-separated lists or repeated
+options. Each option occurrence consumes one token. The CLI library binds these
+inputs as `StringValues`. Environment names may contain only lowercase ASCII
+letters and digits.
+RepoCtl resolves every application ID before starting and skips applications
+without a `manifests` directory. For each application it creates pending GitHub
+deployments named `<short-slug>/<environment>`, then runs
+`docker buildx imagetools create` to promote
+`ghcr.io/altinn/altinn-auth/<short-slug>-manifests:<sha>` to the selected environment
+tags. Use `--registry` to override that registry repository prefix.
+
+`--sha` defaults to `GITHUB_SHA`; `--repo` defaults to `GITHUB_REPOSITORY`.
+Set `GITHUB_TOKEN` with deployments write permission. Docker with Buildx must be
+installed and logged in to the registry with permission to push. In GitHub
+Actions, keep the Docker Buildx setup and registry login steps before invoking
+RepoCtl. GitHub requests use the same Octokit client as release uploads.
+
+Deployment creation disables auto-merge and required status contexts, and marks
+only `prod` as production. A failed request or promotion stops the command.
+Deployment records remain pending while promotion and Flux reconciliation take
+place; creating a record does not confirm a successful rollout.
+
 ## CI helpers
 
 `ci find-verticals` returns JSON describing the selected verticals. Within GitHub

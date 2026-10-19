@@ -12,6 +12,9 @@ namespace Altinn.Authorization.RepoCtl.GitHub;
 
 internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor, GitHubClient githubClient)
 {
+    public ICommandResult CreateDeployment(GitHubRepositoryContext context, string sha, string shortSlug, string environment)
+        => new CreateDeploymentResult(githubClient, context, sha, shortSlug, environment);
+
     public async Task<ICommandResult> UploadArtifactsToRelease(
         GitHubRepositoryContext context,
         long releaseId,
@@ -31,6 +34,40 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor,
 
         var release = await githubClient.Repository.Release.Get(context.RepositoryOwner, context.RepositoryName, releaseId);
         return new UploadPackagesToReleaseResult(githubClient, release, files);
+    }
+
+    private sealed class CreateDeploymentResult(
+        GitHubClient githubClient,
+        GitHubRepositoryContext repository,
+        string sha,
+        string shortSlug,
+        string environment)
+        : ICommandResult
+    {
+        public async Task Execute(CommandInvocationContext context, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var deploymentEnvironment = $"{shortSlug}/{environment}";
+            var request = new NewDeployment(sha)
+            {
+                Environment = deploymentEnvironment,
+                AutoMerge = false,
+                RequiredContexts = [],
+                ProductionEnvironment = environment == "prod",
+                Description = "OCI artifact promotion requested; awaiting promotion and Flux reconciliation",
+            };
+
+            try
+            {
+                var deployment = await githubClient.Repository.Deployment.Create(repository.RepositoryOwner, repository.RepositoryName, request);
+                context.Console.StdErr.Write(Markup.FromInterpolated($"Created pending deployment [green]{deployment.Id}[/] for [cyan]{deploymentEnvironment}[/].\n"));
+            }
+            catch (ApiException ex)
+            {
+                context.Console.StdErr.Write(Markup.FromInterpolated($"[red]Failed to create deployment for {deploymentEnvironment}: {ex.Message}[/]\n"));
+                context.ReturnCode = 1;
+            }
+        }
     }
 
     private sealed class UploadPackagesToReleaseResult(GitHubClient githubClient, Release release, ImmutableArray<string> files)
