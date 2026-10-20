@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.CommandLine.Results;
@@ -7,16 +6,14 @@ using Altinn.Authorization.CommandLine.Shell;
 using Altinn.Authorization.RepoCtl.Changelog;
 using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
+using Altinn.Authorization.RepoCtl.Utils;
 using Octokit;
 using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.Commands.Ci;
 
-internal sealed partial class DraftReleaseCommand(GitHubService github, IChangelogGenerator changelog, TimeProvider timeProvider)
+internal sealed class DraftReleaseCommand(GitHubService github, IChangelogGenerator changelog, TimeProvider timeProvider)
 {
-    [GeneratedRegex(@"^[0-9]{4}\.[0-9]{2}\.[0-9]{2}(\.[1-9][0-9]{2})?$", RegexOptions.CultureInvariant)]
-    private static partial Regex CalendarVersionPattern { get; }
-
     public ICommandResult Invoke(
         AltinnRepository repository,
         AltinnVertical vertical,
@@ -33,15 +30,9 @@ internal sealed partial class DraftReleaseCommand(GitHubService github, IChangel
             ? timeProvider.GetUtcNow().ToString("yyyy.MM.dd", CultureInfo.InvariantCulture)
             : version;
 
-        var versionMatch = CalendarVersionPattern.Match(version);
-        if (!versionMatch.Success || versionMatch.Length != version.Length)
+        if (!CalendarVersion.TryValidate(version, out var error))
         {
-            return Error($"Invalid calendar version: {version}");
-        }
-
-        if (!DateOnly.TryParseExact(version.AsSpan(0, 10), "yyyy.MM.dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
-        {
-            return Error($"Invalid calendar date in version: {version}");
+            return Error(error);
         }
 
         sha ??= Environment.GetEnvironmentVariable("GITHUB_SHA");
