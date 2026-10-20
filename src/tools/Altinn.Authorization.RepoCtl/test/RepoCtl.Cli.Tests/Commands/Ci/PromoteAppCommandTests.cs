@@ -28,14 +28,14 @@ public class PromoteAppCommandTests
         var containers = new RecordingContainerService(_events);
         var command = CreateCommand(http, containers);
 
-        var result = command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new(["test", "prod"]), "abc123");
+        var result = command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new(["test", "prod"]), "abc123", "registry.example/team");
 
         (await Run(result)).ShouldBe(0);
         _events.ShouldBe([
             "deployment:authorization/test", "deployment:authorization/prod",
             "deployment:other/test", "deployment:other/prod",
-            "promote:ghcr.io/altinn/altinn-auth/authorization-manifests",
-            "promote:ghcr.io/altinn/altinn-auth/other-manifests",
+            "promote:registry.example/team/authorization-manifests",
+            "promote:registry.example/team/other-manifests",
         ]);
 
         foreach (var request in _requests)
@@ -57,7 +57,7 @@ public class PromoteAppCommandTests
         using var http = CreateHttpClient();
         var command = CreateCommand(http, new RecordingContainerService(_events));
 
-        (await Run(command.Invoke(repository, RepositoryContext(), new("app:Altinn.Authorization"), new("test"), "abc123"))).ShouldBe(0);
+        (await Run(command.Invoke(repository, RepositoryContext(), new("app:Altinn.Authorization"), new("test"), "abc123", "registry.example/team"))).ShouldBe(0);
 
         _events.ShouldBeEmpty();
     }
@@ -82,7 +82,7 @@ public class PromoteAppCommandTests
         var command = CreateCommand(http, new RecordingContainerService(_events));
 
         string[] ids = string.IsNullOrWhiteSpace(id) ? [id] : ["app:Altinn.Authorization", id];
-        (await Run(command.Invoke(repository, RepositoryContext(), ids, new(environments), sha))).ShouldBe(1);
+        (await Run(command.Invoke(repository, RepositoryContext(), ids, new(environments), sha, "registry.example/team"))).ShouldBe(1);
 
         _events.ShouldBeEmpty();
     }
@@ -98,7 +98,7 @@ public class PromoteAppCommandTests
         using var http = CreateHttpClient(failAtRequest);
         var command = CreateCommand(http, new RecordingContainerService(_events));
 
-        (await Run(command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new(["test", "prod"]), "abc123"))).ShouldBe(1);
+        (await Run(command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new(["test", "prod"]), "abc123", "registry.example/team"))).ShouldBe(1);
 
         _events.ShouldBe([
             "deployment:authorization/test", "deployment:authorization/prod",
@@ -116,12 +116,12 @@ public class PromoteAppCommandTests
         using var http = CreateHttpClient();
         var command = CreateCommand(http, new RecordingContainerService(_events, firstExitCode, secondExitCode));
 
-        (await Run(command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new("test"), "abc123"))).ShouldBe(expectedExitCode);
+        (await Run(command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new("test"), "abc123", "registry.example/team"))).ShouldBe(expectedExitCode);
 
         _events.ShouldBe([
             "deployment:authorization/test", "deployment:other/test",
-            "promote:ghcr.io/altinn/altinn-auth/authorization-manifests",
-            "promote:ghcr.io/altinn/altinn-auth/other-manifests",
+            "promote:registry.example/team/authorization-manifests",
+            "promote:registry.example/team/other-manifests",
         ]);
     }
 
@@ -132,13 +132,13 @@ public class PromoteAppCommandTests
         using var http = CreateHttpClient();
         var command = CreateCommand(http, new RecordingContainerService(_events));
 
-        var result = command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Skipped", "app:Altinn.Other"]), new("test"), "abc123");
+        var result = command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Skipped", "app:Altinn.Other"]), new("test"), "abc123", "registry.example/team");
 
         (await Run(result)).ShouldBe(0);
         _events.ShouldBe([
             "deployment:authorization/test", "deployment:other/test",
-            "promote:ghcr.io/altinn/altinn-auth/authorization-manifests",
-            "promote:ghcr.io/altinn/altinn-auth/other-manifests",
+            "promote:registry.example/team/authorization-manifests",
+            "promote:registry.example/team/other-manifests",
         ]);
     }
 
@@ -166,6 +166,39 @@ public class PromoteAppCommandTests
             "-t", "registry.example/team/app-manifests:prod",
             "registry.example/team/app-manifests:abc123",
         ]);
+    }
+
+    [Theory]
+    [InlineData("registry.example/env/", null, "registry.example/env")]
+    [InlineData("registry.example/env", "registry.example/explicit", "registry.example/explicit")]
+    [InlineData(null, null, null)]
+    [InlineData("", null, null)]
+    [InlineData("invalid registry", null, null)]
+    public async Task Deploy_ResolvesRegistryFromOptionOrEnvironment(string? environmentRegistry, string? registry, string? expected)
+    {
+        var previous = Environment.GetEnvironmentVariable("REPOCTL_OCI_REGISTRY");
+        try
+        {
+            Environment.SetEnvironmentVariable("REPOCTL_OCI_REGISTRY", environmentRegistry);
+            var repository = CreateRepository(("Altinn.Authorization", true));
+            using var http = CreateHttpClient();
+            var command = CreateCommand(http, new RecordingContainerService(_events));
+
+            var result = command.Invoke(repository, RepositoryContext(), new("app:Altinn.Authorization"), new("test"), "abc123", registry);
+            (await Run(result)).ShouldBe(expected is null ? 1 : 0);
+            if (expected is null)
+            {
+                _events.ShouldBeEmpty();
+            }
+            else
+            {
+                _events.ShouldContain($"promote:{expected}/authorization-manifests");
+            }
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("REPOCTL_OCI_REGISTRY", previous);
+        }
     }
 
     public void Dispose() => _root.Delete(recursive: true);
