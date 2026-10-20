@@ -187,7 +187,7 @@ repoctl ci draft-release app:MyApplication --version 2026.10.19 --sha "$COMMIT"
 ```
 
 The version defaults to today's UTC date (`yyyy.MM.dd`). Overrides must have the
-shape `yyyy.MM.dd` with an optional fourth component from 100 to 999. The date
+shape `yyyy.MM.dd` with an optional three-digit fourth component (001 to 999). The date
 must be a valid calendar date, including leap-year rules. `--sha` defaults to
 `GITHUB_SHA`, and `--repo` defaults to `GITHUB_REPOSITORY`.
 
