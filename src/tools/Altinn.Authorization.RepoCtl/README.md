@@ -10,6 +10,22 @@ version, and configuration. Verticals can be applications (`app`), packages (`pk
 tools (`tool`), or libraries (`lib`). Commands that operate on one vertical accept
 an ID such as `pkg:Altinn.Urn` or `tool:Altinn.Authorization.RepoCtl`.
 
+For commands that operate on a single vertical, specify exactly one vertical
+selector: the positional ID or directory path, `--vertical-id` for strict ID
+lookup, or `--vertical-tag` for a release tag:
+
+```sh
+repoctl vertical test pkg:Altinn.Urn
+repoctl vertical test ./src/pkgs/Altinn.Urn
+repoctl vertical test --vertical-id pkg:Altinn.Urn
+repoctl vertical test --vertical-tag pkg/Urn-v1.2.3
+```
+
+Explicit ID and tag selectors never fall back to directory lookup. Tag matching
+uses each vertical's canonical tag prefix and a nonempty suffix after `-v`, and
+requires exactly one match. It does not validate release versions, resolve Git
+commits, or check deployment manifests.
+
 ## Install and run
 
 Install the .NET tool:
