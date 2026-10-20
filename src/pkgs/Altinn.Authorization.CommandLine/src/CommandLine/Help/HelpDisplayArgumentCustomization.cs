@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using Spectre.Console;
+using System.CommandLine;
 
 namespace Altinn.Authorization.CommandLine.Help;
 
@@ -17,13 +17,20 @@ public sealed class HelpDisplayArgumentCustomization
     /// Creates a new instance of <see cref="HelpDisplayArgumentCustomization"/> with the specified hidden state and custom display function.
     /// </summary>
     /// <param name="customDisplay">The custom display for the argument in the help text.</param>
+    /// <param name="arity">The arity to display instead of the parser arity.</param>
     /// <returns>A new instance of <see cref="HelpDisplayArgumentCustomization"/>.</returns>
-    public static HelpDisplayArgumentCustomization Create(IEnumerable<string> customDisplay)
+    public static HelpDisplayArgumentCustomization Create(IEnumerable<string> customDisplay, ArgumentArity? arity = null)
+    {
+        var values = customDisplay.ToImmutableArray();
+        return new(shouldDisplay: true, customDisplay: context => BuildDisplay(values, context)) { Arity = arity };
+    }
+
+    private static IEnumerable<TextSegment> BuildDisplay(ImmutableArray<string> values, HelpDisplayArgumentContext context)
     {
         var items = ImmutableArray.CreateBuilder<TextSegment>();
         items.Add("<");
         var first = true;
-        foreach (var item in customDisplay)
+        foreach (var item in values)
         {
             if (!first)
             {
@@ -31,18 +38,22 @@ public sealed class HelpDisplayArgumentCustomization
             }
 
             first = false;
-            items.Add(new(item, Color.Magenta));
+            items.Add(new(item, context.DefaultArgumentColor));
         }
         items.Add(">");
 
-        var immutable = items.ToImmutable();
-        return new(shouldDisplay: true, customDisplay: () => immutable);
+        return items.ToImmutable();
     }
 
-    private readonly bool _shouldDisplay;
-    private readonly Func<IEnumerable<TextSegment>>? _customDisplay;
+    /// <summary>
+    /// Gets the arity to display instead of the parser arity.
+    /// </summary>
+    public ArgumentArity? Arity { get; init; }
 
-    private HelpDisplayArgumentCustomization(bool shouldDisplay, Func<IEnumerable<TextSegment>>? customDisplay)
+    private readonly bool _shouldDisplay;
+    private readonly Func<HelpDisplayArgumentContext, IEnumerable<TextSegment>>? _customDisplay;
+
+    private HelpDisplayArgumentCustomization(bool shouldDisplay, Func<HelpDisplayArgumentContext, IEnumerable<TextSegment>>? customDisplay)
     {
         _shouldDisplay = shouldDisplay;
         _customDisplay = customDisplay;
@@ -57,6 +68,6 @@ public sealed class HelpDisplayArgumentCustomization
     /// <summary>
     /// Gets a function that returns a custom display for the argument in the help text.
     /// </summary>
-    public Func<IEnumerable<TextSegment>>? CustomDisplay
+    public Func<HelpDisplayArgumentContext, IEnumerable<TextSegment>>? CustomDisplay
         => _customDisplay;
 }

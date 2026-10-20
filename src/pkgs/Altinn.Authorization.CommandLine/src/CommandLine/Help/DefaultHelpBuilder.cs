@@ -243,19 +243,37 @@ public class DefaultHelpBuilder
         {
             foreach (var arg in arguments.Where(static arg => !arg.Hidden))
             {
+                arg.TryGetHelpCustomization(out var customization);
+                var display = customization?.Argument;
+                if (display?.ShouldDisplay is false)
+                {
+                    continue;
+                }
+
                 yield return (" ", null);
 
-                var isOptional = arg.Arity.MinimumNumberOfValues == 0;
+                var arity = display?.Arity ?? arg.Arity;
+                var isOptional = arity.MinimumNumberOfValues == 0;
                 if (isOptional)
                 {
                     yield return ("[", null);
                 }
 
-                yield return ("<", null);
-                yield return (arg.Name, Color.Cyan);
-                yield return (">", null);
+                if (display?.CustomDisplay is { } customDisplay)
+                {
+                    foreach (var segment in customDisplay(new(Color.Cyan)))
+                    {
+                        yield return (segment.Text, segment.Style);
+                    }
+                }
+                else
+                {
+                    yield return ("<", null);
+                    yield return (arg.Name, Color.Cyan);
+                    yield return (">", null);
+                }
 
-                if (arg.Arity.MaximumNumberOfValues > 1)
+                if (arity.MaximumNumberOfValues > 1)
                 {
                     yield return ("...", null);
                 }
@@ -545,7 +563,7 @@ public class DefaultHelpBuilder
             IEnumerator<TextSegment> argumentUsage;
             if (customization?.Argument?.CustomDisplay is { } customDisplay)
             {
-                argumentUsage = customDisplay().GetEnumerator();
+                argumentUsage = customDisplay(new(Color.Magenta)).GetEnumerator();
             }
             else
             {
