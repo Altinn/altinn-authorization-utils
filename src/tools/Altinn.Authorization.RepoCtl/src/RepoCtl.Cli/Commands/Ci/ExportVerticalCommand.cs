@@ -30,17 +30,23 @@ internal sealed partial class ExportVerticalCommand(IGitHubActionsService action
 
         var changelogPathsString = string.Join(" ", changelogPaths);
 
-        await actions.SetEnvironmentVariable("VERTICAL_DIR", vertical.Directory.FullName, cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_KIND", vertical.Kind.ToString(), cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_NAME", vertical.Id.Name, cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_ID", vertical.Id.ToString(null, formatProvider: CultureInfo.InvariantCulture), cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_DISPLAY_NAME", vertical.DisplayName, cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_SLUG", vertical.Id.ToString("slug", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_SHORT_SLUG", vertical.Id.ToString("short-slug", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_TAG_PREFIX", vertical.Id.ToString("tag-prefix", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
-        await actions.SetEnvironmentVariable("VERTICAL_VERSION", vertical.Version.ToString(), cancellationToken);
+        await Export("VERTICAL_DIR", "dir", vertical.Directory.FullName, cancellationToken);
+        await Export("VERTICAL_KIND", "kind", vertical.Kind.ToString(), cancellationToken);
+        await Export("VERTICAL_NAME", "name", vertical.Id.Name, cancellationToken);
+        await Export("VERTICAL_ID", "id", vertical.Id.ToString(null, formatProvider: CultureInfo.InvariantCulture), cancellationToken);
+        await Export("VERTICAL_DISPLAY_NAME", "displayName", vertical.DisplayName, cancellationToken);
+        await Export("VERTICAL_SLUG", "slug", vertical.Id.ToString("slug", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
+        await Export("VERTICAL_SHORT_SLUG", "shortSlug", vertical.Id.ToString("short-slug", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
+        await Export("VERTICAL_TAG_PREFIX", "tagPrefix", vertical.Id.ToString("tag-prefix", formatProvider: CultureInfo.InvariantCulture), cancellationToken);
+        await Export("VERTICAL_VERSION", "version", vertical.Version.ToString(), cancellationToken);
 
-        await actions.SetEnvironmentVariable("VERTICAL_CHANGELOG_PATHS", changelogPathsString, cancellationToken);
+        await Export("VERTICAL_CHANGELOG_PATHS", "changelogPaths", changelogPathsString, cancellationToken);
+
+        async Task Export(string environmentName, string outputName, string value, CancellationToken cancellationToken)
+        {
+            await actions.SetEnvironmentVariable(environmentName, value, cancellationToken);
+            await actions.SetOutput(outputName, value, cancellationToken);
+        }
 
         static string RelPath(AltinnRepository repository, AltinnVertical vertical)
             => Path.GetRelativePath(repository.RootDirectory.FullName, vertical.Directory.FullName);
