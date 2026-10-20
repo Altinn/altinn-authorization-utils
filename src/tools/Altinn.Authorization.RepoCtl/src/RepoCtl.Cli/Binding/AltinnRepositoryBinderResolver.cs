@@ -134,22 +134,94 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
             StrongBox<object?>? defaultValueBox,
             string? description)
         {
-            var factory = context.ApplicationServices.GetRequiredService<ArgumentFactory>();
-            var verticalArgument = factory.Create<string>(
+            var arguments = context.ApplicationServices.GetRequiredService<ArgumentFactory>();
+            var options = context.ApplicationServices.GetRequiredService<OptionFactory>();
+            var verticalArgument = arguments.Create<string?>(
                 name: "vertical",
-                description: "The vertical to operate on.",
-                defaultValueBox: null);
+                description: "Vertical selector: ID or directory path. Mutually exclusive with other vertical selectors; exactly one is required.",
+                defaultValueBox: new());
+            verticalArgument.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["vertical"], arity: ArgumentArity.ZeroOrOne);
+
+            var idOption = options.Create<string?>(
+                name: "--vertical-id",
+                aliases: [],
+                description: "Vertical selector: exact ID. Mutually exclusive with other vertical selectors; exactly one is required.",
+                isRequired: false,
+                defaultValueBox: new());
+            idOption.Arity = ArgumentArity.ExactlyOne;
+            idOption.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["id"]);
+
+            var tagOption = options.Create<string?>(
+                name: "--vertical-tag",
+                aliases: [],
+                description: "Vertical selector: release tag. Mutually exclusive with other vertical selectors; exactly one is required.",
+                isRequired: false,
+                defaultValueBox: new());
+            tagOption.Arity = ArgumentArity.ExactlyOne;
+            tagOption.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["tag"]);
+
+            IReadOnlyList<(VerticalLookup.LookupKind Kind, Option<string?> Option)> lookupOptions = [
+                (VerticalLookup.LookupKind.Id, idOption),
+                (VerticalLookup.LookupKind.Tag, tagOption),
+            ];
+
+            // Collect positionals first so OnlyTake can forward the remainder in order. This is a workaround for https://github.com/dotnet/command-line-api/issues/2734
+            verticalArgument.Arity = ArgumentArity.ZeroOrMore;
+            verticalArgument.CustomParser = result =>
+            {
+                // With an explicit selector, positionals belong to the forwarded arguments.
+                var parent = result.Parent;
+                if (parent is not null && lookupOptions.Any(tuple => parent.GetValue(tuple.Option) is not null))
+                {
+                    result.OnlyTake(0);
+                    return null;
+                }
+
+                var value = result.Tokens.Count == 0 ? null : result.Tokens[0].Value;
+                result.OnlyTake(value is null ? 0 : 1);
+                return value;
+            };
 
             context.Add(verticalArgument);
-            return new VerticalResolver(verticalArgument);
+            foreach (var (_, option) in lookupOptions)
+            {
+                context.Add(option);
+            }
+
+            return new VerticalResolver(verticalArgument, lookupOptions);
         }
     }
 
-    private sealed class VerticalResolver(Argument<string> verticalArgument)
+    private sealed class VerticalResolver(Argument<string?> verticalArgument, IReadOnlyList<(VerticalLookup.LookupKind Kind, Option<string?> Option)> lookupOptions)
         : ICommandHandlerParameterResolver
     {
         public async Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
         {
+            var kind = VerticalLookup.LookupKind.IdOrPath;
+            var value = context.ParseResult.GetValue(verticalArgument);
+
+            foreach (var (optionKind, option) in lookupOptions)
+            {
+                var optionValue = context.ParseResult.GetValue(option);
+                if (optionValue is not null && value is not null)
+                {
+                    Error(context);
+                    return;
+                }
+
+                if (optionValue is not null)
+                {
+                    kind = optionKind;
+                    value = optionValue;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                context.AddError("The vertical selector must not be empty or whitespace.");
+                return;
+            }
+
             var repoResolver = context.ApplicationServices.GetRequiredService<AltinnRepositoryResolver>();
             var repo = await repoResolver.GetRepository(context.InvocationContext, cancellationToken);
 
@@ -159,40 +231,26 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 return;
             }
 
-            var lookup = context.ParseResult.GetRequiredValue(verticalArgument);
-
-            // First, we try to interpret the argument as a vertical ID
-            if (AltinnVerticalId.TryParse(lookup, null, out var verticalId)
-                && repo.Value.Verticals.TryGet(verticalId, out var vertical))
+            if (!VerticalLookup.TryLookup(repo.Value.Verticals, kind, value, repoResolver.GetWorkingDirectory(context.InvocationContext), out var result, out var error))
             {
-                context.SetParameterValue(vertical);
+                context.AddError(error);
                 return;
             }
 
-            // if not, interpret it as a directory path
-            var dir = Path.GetFullPath(lookup, repoResolver.GetWorkingDirectory(context.InvocationContext).FullName);
-            var candidates = repo.Value.Verticals.InDirectory(new(dir));
+            context.SetParameterValue(result);
+        }
 
-            if (candidates.Count == 0)
+        private void Error(CommandHandlerParameterResolverContext context)
+        {
+            var builder = new StringBuilder("Specify exactly one of <vertical>");
+            foreach (var option in lookupOptions.SkipLast(1))
             {
-                context.AddError($"No vertical found in directory '{dir}'.");
-                return;
+                builder.Append(", ").Append(option.Option.HelpName ?? option.Option.Name);
             }
 
-            if (candidates.Count > 1)
-            {
-                var builder = new StringBuilder($"Multiple verticals found in directory '{dir}':");
-                foreach (var candidate in candidates)
-                {
-                    builder.AppendLine().Append("  - ").Append(candidate.Id);
-                }
-
-                context.AddError(builder.ToString());
-                return;
-            }
-
-            context.SetParameterValue(candidates.AsEnumerable().First());
-            return;
+            var lastOption = lookupOptions.Last();
+            builder.Append(", or ").Append(lastOption.Option.HelpName ?? lastOption.Option.Name).Append('.');
+            context.AddError(builder.ToString());
         }
     }
 
