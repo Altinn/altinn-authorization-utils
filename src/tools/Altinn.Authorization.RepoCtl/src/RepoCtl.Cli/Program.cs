@@ -5,6 +5,7 @@ using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.RepoCtl;
 using Altinn.Authorization.RepoCtl.Binding;
 using Altinn.Authorization.RepoCtl.Checks;
+using Altinn.Authorization.RepoCtl.Changelog;
 using Altinn.Authorization.RepoCtl.Commands.Ci;
 using Altinn.Authorization.RepoCtl.Formatting;
 using Altinn.Authorization.RepoCtl.GitHub;
@@ -30,6 +31,7 @@ builder.Services.AddSingleton<TestService>();
 builder.Services.AddSingleton<PackService>();
 builder.Services.AddSingleton<ContainerService>();
 builder.Services.AddSingleton<GitHubService>();
+builder.Services.AddSingleton<IChangelogGenerator, GitCliffChangelogGenerator>();
 builder.Services.AddSingleton<NuGetService>();
 builder.Services.AddSingleton<Checker>();
 builder.Services.AddSingleton<RepositoryChecker>();
@@ -124,6 +126,7 @@ cli.AddCommand("nuget", "NuGet operations", (builder) =>
 
 cli.AddCommand("ci", "CI Helpers", (builder) =>
 {
+    builder.AddCommand<DraftReleaseCommand>("draft-release", "Create an application draft release with a generated changelog");
     builder.AddCommand<PromoteAppCommand>("promote-app", "Record pending deployments and promote application manifests");
     builder.AddCommand<FindVerticalsCommand>("find-verticals", "Find verticals in the repository that should be ran CI for");
     builder.AddCommand<ExportVerticalCommand>("export-vertical", "Export information of a vertical as environment variables");
