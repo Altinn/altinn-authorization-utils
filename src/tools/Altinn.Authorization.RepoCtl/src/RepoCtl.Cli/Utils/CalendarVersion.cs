@@ -6,7 +6,7 @@ namespace Altinn.Authorization.RepoCtl.Utils;
 
 internal static partial class CalendarVersion
 {
-    [GeneratedRegex(@"^[0-9]{4}\.[0-9]{2}\.[0-9]{2}(\.[1-9][0-9]{2})?$", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"^[0-9]{4}\.[0-9]{2}\.[0-9]{2}(\.(?!000)[0-9]{3})?$", RegexOptions.CultureInvariant)]
     private static partial Regex CalendarVersionPattern { get; }
 
     public static bool TryValidate(string version, [NotNullWhen(false)] out string? error)
