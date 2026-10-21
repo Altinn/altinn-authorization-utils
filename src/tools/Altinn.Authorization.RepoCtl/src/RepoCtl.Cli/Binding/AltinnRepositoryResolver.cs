@@ -26,7 +26,7 @@ internal sealed class AltinnRepositoryResolver
             defaultValueBox: new(cwd));
 
         _workingDirectoryOption.Recursive = true;
-        _workingDirectoryOption.HelpCustomization.GetDefaultValue = () => [new("./", Color.Cyan)];
+        _workingDirectoryOption.HelpCustomization.GetDefaultValue = _ => [new("./", Color.Cyan)];
         _workingDirectoryOption.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["PATH"]);
 
         _workingDirectoryOption.Validators.Add(result =>
