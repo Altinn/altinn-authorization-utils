@@ -732,12 +732,12 @@ public class DefaultHelpBuilder
         IReadOnlyList<TextSegment>? displayedDefaultValue = null;
 
         if (parent.TryGetHelpCustomization(out var customization)
-            && customization.GetDefaultValue?.Invoke() is { } parentDefaultValue)
+            && customization.GetDefaultValue?.Invoke(new(Color.Cyan)) is { } parentDefaultValue)
         {
             displayedDefaultValue = parentDefaultValue.ToList();
         }
         else if (parameter.TryGetHelpCustomization(out customization)
-            && customization.GetDefaultValue?.Invoke() is { } ownDefaultValue)
+            && customization.GetDefaultValue?.Invoke(new(Color.Cyan)) is { } ownDefaultValue)
         {
             displayedDefaultValue = ownDefaultValue.ToList();
         }

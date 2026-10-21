@@ -172,7 +172,7 @@ internal sealed class FormatResultResolver
 
             option.ParserAndValueFactory = CreateParserAndValueFactory(formatters);
             option.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(formatters.Select(f => f.Name));
-            option.HelpCustomization.GetDefaultValue = () => [formatters[0].Name];
+            option.HelpCustomization.GetDefaultValue = context => [formatters[0].Name];
 
             return option;
         }

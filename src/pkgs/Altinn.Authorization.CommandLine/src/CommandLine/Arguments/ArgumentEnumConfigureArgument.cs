@@ -4,7 +4,6 @@ using System.CommandLine.Parsing;
 using System.Reflection;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.Help;
-using Spectre.Console;
 
 namespace Altinn.Authorization.CommandLine.Arguments;
 
@@ -39,7 +38,7 @@ internal sealed class ArgumentEnumConfigureArgument
             {
                 var defaultValue = (T)argument.GetDefaultValue()!;
                 var displayName = model.GetDisplayName(defaultValue);
-                argument.HelpCustomization.GetDefaultValue = () => [new(displayName, Color.Cyan)];
+                argument.HelpCustomization.GetDefaultValue = context => [new(displayName, context.DefaultArgumentColor)];
             }
             catch { }
         }
@@ -72,7 +71,7 @@ internal sealed class ArgumentEnumConfigureArgument
             {
                 var defaultValue = (T)option.GetDefaultValue()!;
                 var displayName = model.GetDisplayName(defaultValue);
-                option.HelpCustomization.GetDefaultValue = () => [new(displayName, Color.Cyan)];
+                option.HelpCustomization.GetDefaultValue = context => [new(displayName, context.DefaultArgumentColor)];
             }
             catch { }
         }

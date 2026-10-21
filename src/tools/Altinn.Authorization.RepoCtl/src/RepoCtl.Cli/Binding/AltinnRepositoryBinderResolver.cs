@@ -82,7 +82,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 isRequired: false,
                 defaultValueBox: new(AltinnVerticalKindSet.All));
 
-            kindOption.HelpCustomization.GetDefaultValue = () => [new("all", Color.Cyan)];
+            kindOption.HelpCustomization.GetDefaultValue = _ => [new("all", Color.Cyan)];
 
             var dirOption = factory.Create<string?>(
                 name: "--dir",
@@ -91,7 +91,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 isRequired: false,
                 defaultValueBox: new());
 
-            dirOption.HelpCustomization.GetDefaultValue = () => [new("./", Color.Cyan)];
+            dirOption.HelpCustomization.GetDefaultValue = _ => [new("./", Color.Cyan)];
 
             context.Add(kindOption);
             context.Add(dirOption);
@@ -271,7 +271,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 isRequired: false,
                 defaultValueBox: null);
 
-            repoOption.HelpCustomization.GetDefaultValue = () => ["From ", "$", new("GITHUB_REPOSITORY", Color.Cyan)];
+            repoOption.HelpCustomization.GetDefaultValue = _ => ["From ", "$", new("GITHUB_REPOSITORY", Color.Cyan)];
 
             context.Add(repoOption);
             return new GitHubContextResolver(repoOption);
