@@ -52,7 +52,7 @@ internal sealed class LogLevelService
                     "d[etailed]",
                     "diag[nostic]",
                 ]),
-                GetDefaultValue = context => ["normal"],
+                GetDefaultValue = context => [new("normal", context.DefaultArgumentColor)],
             },
         };
 
