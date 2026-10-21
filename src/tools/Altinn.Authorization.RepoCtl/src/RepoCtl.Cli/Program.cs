@@ -129,7 +129,7 @@ cli.AddCommand("ci", "CI Helpers", (builder) =>
     builder.AddCommand<DraftReleaseCommand>("draft-release", "Create an application draft release with a generated changelog");
     builder.AddCommand<PromoteAppCommand>("promote-app", "Record pending deployments and promote application manifests");
     builder.AddCommand<FindVerticalsCommand>("find-verticals", "Find verticals in the repository that should be ran CI for");
-    builder.AddCommand<ExportVerticalCommand>("export-vertical", "Export information of a vertical as environment variables");
+    builder.AddCommand<ExportVerticalCommand>("export-vertical", "Export information of a vertical as environment variables and GitHub Actions outputs");
 });
 
 return await cli.RunAsync(args);

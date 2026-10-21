@@ -190,10 +190,21 @@ repoctl ci find-verticals --kind app --filter infra
 
 `ci export-vertical` is intended for GitHub Actions. It exports `VERTICAL_DIR`,
 `VERTICAL_KIND`, `VERTICAL_NAME`, `VERTICAL_ID`, `VERTICAL_DISPLAY_NAME`,
-`VERTICAL_SLUG`, `VERTICAL_SHORT_SLUG`, and `VERTICAL_VERSION` for later steps:
+`VERTICAL_SLUG`, `VERTICAL_SHORT_SLUG`, `VERTICAL_TAG_PREFIX`, `VERTICAL_VERSION`,
+and `VERTICAL_CHANGELOG_PATHS` for later steps:
 
 ```sh
 repoctl ci export-vertical pkg:Altinn.Urn
+```
+
+It also writes step outputs named `dir`, `kind`, `name`, `id`, `displayName`,
+`slug`, `shortSlug`, `tagPrefix`, `version`, and `changelogPaths`, with the same
+values as the corresponding environment variables:
+
+```yaml
+- id: vertical
+  run: repoctl ci export-vertical pkg:Altinn.Urn
+- run: echo "${{ steps.vertical.outputs.dir }}"
 ```
 
 Create an application draft release with one command:
