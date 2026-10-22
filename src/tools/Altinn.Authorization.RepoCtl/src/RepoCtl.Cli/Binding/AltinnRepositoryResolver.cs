@@ -6,7 +6,6 @@ using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.ProblemDetails;
 using Altinn.Authorization.RepoCtl.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.Binding;
 
@@ -23,10 +22,10 @@ internal sealed class AltinnRepositoryResolver
             aliases: ["-w", "--cwd"],
             description: "The working directory of the Altinn repository.",
             isRequired: false,
-            defaultValueBox: new(cwd));
+            defaultValueProvider: DefaultValueProvider.FromValue(cwd));
 
         _workingDirectoryOption.Recursive = true;
-        _workingDirectoryOption.HelpCustomization.GetDefaultValue = _ => [new("./", Color.Cyan)];
+        _workingDirectoryOption.HelpCustomization.GetDefaultValue = context => [new("./", context.DefaultArgumentColor)];
         _workingDirectoryOption.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["PATH"]);
 
         _workingDirectoryOption.Validators.Add(result =>
