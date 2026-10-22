@@ -19,7 +19,7 @@ internal sealed class DraftReleaseCommand(GitHubService github, IChangelogGenera
         AltinnVertical vertical,
         GitHubRepositoryContext context,
         [Option("--version", Description = "Calendar version override; defaults to today's UTC date.")] string? version = null,
-        [Option("--sha", Description = "Commit or ref to release; defaults to GITHUB_SHA.")] string? sha = null)
+        [Option("--sha", DefaultFromEnvironment = "GITHUB_SHA", Description = "Commit or ref to release.")] string? sha = null)
     {
         if (vertical.Kind != AltinnVerticalKind.Application)
         {
@@ -35,7 +35,6 @@ internal sealed class DraftReleaseCommand(GitHubService github, IChangelogGenera
             return Error(error);
         }
 
-        sha ??= Environment.GetEnvironmentVariable("GITHUB_SHA");
         if (string.IsNullOrWhiteSpace(sha))
         {
             return Error("Specify the source commit with --sha or GITHUB_SHA.");
