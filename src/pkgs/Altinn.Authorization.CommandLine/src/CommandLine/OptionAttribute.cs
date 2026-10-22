@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Altinn.Authorization.CommandLine.Factory;
+using Altinn.Authorization.CommandLine.Help;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Altinn.Authorization.CommandLine;
@@ -48,6 +49,11 @@ public class OptionAttribute
     public string? Description { get; init; }
 
     /// <summary>
+    /// The environment variable to use when the option is omitted, before the parameter default.
+    /// </summary>
+    public string? DefaultFromEnvironment { get; init; }
+
+    /// <summary>
     /// Indicates whether the option is required. If not set, requiredness is inferred from the parameter.
     /// </summary>
     public bool IsRequired
@@ -61,7 +67,20 @@ public class OptionAttribute
     {
         var factory = serviceProvider.GetRequiredService<OptionFactory>();
 
+        if (DefaultFromEnvironment is { } envVarName
+            && EnvironmentValueDefaultValueProvider.TryCreate(serviceProvider, parameterType, envVarName, out var envProvider))
+        {
+            defaultValueProvider = envProvider;
+        }
+
         var required = _isRequired ?? (defaultValueProvider is null);
-        return factory.Create(parameterType, Name ?? $"--{parameterName}", Aliases ?? [], Description, required, defaultValueProvider);
+        var option = factory.Create(parameterType, Name ?? $"--{parameterName}", Aliases ?? [], Description, required, defaultValueProvider);
+
+        if (DefaultFromEnvironment is { } variableName)
+        {
+            option.HelpCustomization.GetDefaultValue = context => EnvironmentValueDefaultValueProvider.GetHelpText(variableName, context);
+        }
+
+        return option;
     }
 }
