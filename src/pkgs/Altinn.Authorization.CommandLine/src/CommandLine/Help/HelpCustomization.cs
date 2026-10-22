@@ -18,4 +18,9 @@ public sealed class HelpCustomization
     /// Gets or sets a function that returns the default value of the argument to be displayed in the help text.
     /// </summary>
     public Func<HelpDisplayArgumentContext, IEnumerable<TextSegment>?>? GetDefaultValue { get; set; }
+
+    /// <summary>
+    /// Gets or sets the provider used to display the default when no explicit help override is set.
+    /// </summary>
+    public DefaultValueProvider? DefaultValueProvider { get; set; }
 }

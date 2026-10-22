@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.CommandLine;
 
@@ -14,7 +13,7 @@ public interface IFromOptionMetadata
     /// <param name="serviceProvider">The service provider.</param>
     /// <param name="parameterType">The type of the parameter.</param>
     /// <param name="parameterName">The name of the parameter.</param>
-    /// <param name="defaultValueBox">The box containing the default value for the option, if any.</param>
+    /// <param name="defaultValueProvider">The default-value provider, or null when no default is configured.</param>
     /// <returns>The created option.</returns>
-    Option CreateOption(IServiceProvider serviceProvider, Type parameterType, string parameterName, StrongBox<object?>? defaultValueBox);
+    Option CreateOption(IServiceProvider serviceProvider, Type parameterType, string parameterName, DefaultValueProvider? defaultValueProvider);
 }

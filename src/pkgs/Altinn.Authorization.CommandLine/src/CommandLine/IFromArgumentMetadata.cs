@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.CommandLine;
 
@@ -14,7 +13,7 @@ public interface IFromArgumentMetadata
     /// <param name="serviceProvider">The service provider to use for creating the argument.</param>
     /// <param name="parameterType">The type of the argument to create.</param>
     /// <param name="parameterName">The name of the parameter to use if the argument name is not specified.</param>
-    /// <param name="defaultValueBox">A <see cref="StrongBox{T}"/> containing the default value for the argument, if any.</param>
+    /// <param name="defaultValueProvider">The default-value provider, or null when no default is configured.</param>
     /// <returns>An <see cref="Argument"/> instance for the specified argument type.</returns>
-    Argument CreateArgument(IServiceProvider serviceProvider, Type parameterType, string parameterName, StrongBox<object?>? defaultValueBox);
+    Argument CreateArgument(IServiceProvider serviceProvider, Type parameterType, string parameterName, DefaultValueProvider? defaultValueProvider);
 }

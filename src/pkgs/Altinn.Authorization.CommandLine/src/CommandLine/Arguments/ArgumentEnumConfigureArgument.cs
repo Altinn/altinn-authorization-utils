@@ -28,15 +28,9 @@ internal sealed class ArgumentEnumConfigureArgument
         var model = ArgumentEnumModel<T>.Instance;
         argument.HelpCustomization.Argument = model.HelpCustomization;
 
-        if (argument.HasDefaultValue)
+        if (argument.HasDefaultValue && argument.HelpCustomization.GetDefaultValue is null)
         {
-            try
-            {
-                var defaultValue = (T)argument.GetDefaultValue()!;
-                var displayName = model.GetDisplayName(defaultValue);
-                argument.HelpCustomization.GetDefaultValue = context => [new(displayName, context.DefaultArgumentColor)];
-            }
-            catch { }
+            argument.HelpCustomization.GetDefaultValue = context => GetDefaultValue<T>(context, argument.Name);
         }
     }
 
@@ -60,16 +54,25 @@ internal sealed class ArgumentEnumConfigureArgument
         var model = ArgumentEnumModel<T>.Instance;
         option.HelpCustomization.Argument = model.HelpCustomization;
 
-        if (option.HasDefaultValue)
+        if (option.HasDefaultValue && option.HelpCustomization.GetDefaultValue is null)
         {
-            try
-            {
-                var defaultValue = (T)option.GetDefaultValue()!;
-                var displayName = model.GetDisplayName(defaultValue);
-                option.HelpCustomization.GetDefaultValue = context => [new(displayName, context.DefaultArgumentColor)];
-            }
-            catch { }
+            option.HelpCustomization.GetDefaultValue = context => GetDefaultValue<T>(context, option.Name);
         }
+    }
+
+    private static IEnumerable<TextSegment> GetDefaultValue<T>(HelpDisplayArgumentContext context, string name)
+    {
+        if (context.DefaultValueProvider is not DefaultValueProvider<T> defaultValueProvider)
+        {
+            return [];
+        }
+
+        if (!defaultValueProvider.TryProvideValue(new(name), out var value, out _))
+        {
+            return [];
+        }
+
+        return [new(ArgumentEnumModel<T>.Instance.GetDisplayName(value), context.DefaultArgumentColor)];
     }
 
 }

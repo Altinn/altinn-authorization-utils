@@ -729,20 +729,31 @@ public class DefaultHelpBuilder
     /// <returns>The formatted default value string.</returns>
     protected virtual IReadOnlyList<TextSegment> GetArgumentDefaultValue(Symbol parent, Symbol parameter, bool displayArgumentName)
     {
+        if (!ShouldShowDefaultValue(parameter))
+        {
+            return [];
+        }
+
         IReadOnlyList<TextSegment>? displayedDefaultValue = null;
 
-        if (parent.TryGetHelpCustomization(out var customization)
-            && customization.GetDefaultValue?.Invoke(new(Color.Cyan)) is { } parentDefaultValue)
+        parent.TryGetHelpCustomization(out var parentCustomization);
+        parameter.TryGetHelpCustomization(out var parameterCustomization);
+        var provider = parentCustomization?.DefaultValueProvider ?? parameterCustomization?.DefaultValueProvider;
+        var context = new HelpDisplayArgumentContext(Color.Cyan, provider);
+
+        if (parentCustomization is not null
+            && parentCustomization.GetDefaultValue?.Invoke(context) is { } parentDefaultValue)
         {
-            displayedDefaultValue = parentDefaultValue.ToList();
+            displayedDefaultValue = [.. parentDefaultValue];
         }
-        else if (parameter.TryGetHelpCustomization(out customization)
-            && customization.GetDefaultValue?.Invoke(new(Color.Cyan)) is { } ownDefaultValue)
+        else if (parameterCustomization is not null
+            && parameterCustomization.GetDefaultValue?.Invoke(context) is { } ownDefaultValue)
         {
-            displayedDefaultValue = ownDefaultValue.ToList();
+            displayedDefaultValue = [.. ownDefaultValue];
         }
 
-        displayedDefaultValue ??= GetArgumentDefaultValue(parameter).ToList();
+        displayedDefaultValue ??= provider?.GetHelpText(context).ToList();
+        displayedDefaultValue ??= [.. GetArgumentDefaultValue(parameter)];
 
         if (displayedDefaultValue is null || displayedDefaultValue.All(static x => string.IsNullOrWhiteSpace(x.Text)))
         {
@@ -780,7 +791,7 @@ public class DefaultHelpBuilder
                 bool boolValue => boolValue ? ["true"] : ["false"],
                 null => [],
                 string str => [str],
-                IEnumerable enumerable => enumerable.Cast<object?>().Select(static v => v?.ToString()).NotNull().Select(static s => (TextSegment)s).Intersperse("|").ToList(),
+                IEnumerable enumerable => enumerable.Cast<object?>().Select(static v => v?.ToString()).NotNull().Select(static s => (TextSegment)s).Intersperse(",").ToList(),
                 _ => [value.ToString() ?? string.Empty]
             };
     }

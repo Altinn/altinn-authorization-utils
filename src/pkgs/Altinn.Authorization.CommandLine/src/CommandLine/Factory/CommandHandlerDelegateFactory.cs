@@ -3,7 +3,6 @@ using System.CommandLine;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine.Console;
 using Altinn.Authorization.CommandLine.Factory.Resolvers;
 using Altinn.Authorization.CommandLine.Results;
@@ -402,22 +401,30 @@ public static partial class CommandHandlerDelegateFactory
         return ThrowHelper.ThrowNotSupportedException<ICommandHandlerParameterResolver>($"The parameter '{TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)} {parameter.Name}' is not supported. Parameters must be bound from an argument, option, service, or be of a known type.");
     }
 
+    private static DefaultValueProvider? GetDefaultValueProvider(ParameterInfo parameter, bool isOptional)
+    {
+        if (!isOptional)
+        {
+            return null;
+        }
+
+        var value = parameter.HasDefaultValue ? parameter.DefaultValue : null;
+        // Reflection represents a struct parameter's default(T) as null.
+        if (parameter.HasDefaultValue && value is null && parameter.ParameterType.IsValueType)
+        {
+            value = Activator.CreateInstance(parameter.ParameterType);
+        }
+
+        return DefaultValueProvider.FromValue(value);
+    }
+
     private static ICommandHandlerParameterResolver BindParameter(
         ICommandHandlerParameterBinder parameterBinder,
         ParameterInfo parameter,
         CommandHandlerDelegateFactoryContext factoryContext,
         bool isOptional)
     {
-        StrongBox<object?>? defaultValueBox = null;
-        if (isOptional)
-        {
-            defaultValueBox = new();
-
-            if (parameter.HasDefaultValue)
-            {
-                defaultValueBox.Value = parameter.DefaultValue;
-            }
-        }
+        var defaultValueProvider = GetDefaultValueProvider(parameter, isOptional);
 
         string? argumentDescription = null;
 
@@ -427,7 +434,7 @@ public static partial class CommandHandlerDelegateFactory
         }
 
         var builder = new ParameterBinderBuilder(parameter, factoryContext);
-        return parameterBinder.Bind(builder, defaultValueBox, argumentDescription);
+        return parameterBinder.Bind(builder, defaultValueProvider, argumentDescription);
     }
 
     private static bool IsOptionalParameter(ParameterInfo parameter, CommandHandlerDelegateFactoryContext factoryContext)
@@ -454,22 +461,13 @@ public static partial class CommandHandlerDelegateFactory
             ThrowHelper.ThrowInvalidOperationException($"Encountered a parameter of type '{TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)}' without a name. Parameters must have a name.");
         }
 
-        StrongBox<object?>? defaultValueBox = null;
-        if (isOptional)
-        {
-            defaultValueBox = new();
-
-            if (parameter.HasDefaultValue)
-            {
-                defaultValueBox.Value = parameter.DefaultValue;
-            }
-        }
+        var defaultValueProvider = GetDefaultValueProvider(parameter, isOptional);
 
         var argument = argumentMetadata.CreateArgument(
             serviceProvider: factoryContext.ServiceProvider,
             parameterType: parameter.ParameterType,
             parameterName: parameter.Name,
-            defaultValueBox: defaultValueBox);
+            defaultValueProvider: defaultValueProvider);
 
         if (factoryContext.Arguments.Any(a => a.Name == argument.Name))
         {
@@ -496,22 +494,13 @@ public static partial class CommandHandlerDelegateFactory
             ThrowHelper.ThrowInvalidOperationException($"Encountered a parameter of type '{TypeNameHelper.GetTypeDisplayName(parameter.ParameterType, fullName: false)}' without a name. Parameters must have a name.");
         }
 
-        StrongBox<object?>? defaultValueBox = null;
-        if (isOptional)
-        {
-            defaultValueBox = new();
-
-            if (parameter.HasDefaultValue)
-            {
-                defaultValueBox.Value = parameter.DefaultValue;
-            }
-        }
+        var defaultValueProvider = GetDefaultValueProvider(parameter, isOptional);
 
         var option = optionMetadata.CreateOption(
             serviceProvider: factoryContext.ServiceProvider,
             parameterType: parameter.ParameterType,
             parameterName: parameter.Name,
-            defaultValueBox: defaultValueBox);
+            defaultValueProvider: defaultValueProvider);
 
         if (factoryContext.Options.Any(o => o.Name == option.Name))
         {
