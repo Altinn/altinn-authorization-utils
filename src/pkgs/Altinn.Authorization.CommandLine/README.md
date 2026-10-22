@@ -143,6 +143,29 @@ cli.Middleware.Add(async (context, next, cancellationToken) =>
 });
 ```
 
+## Value parsing
+
+Typed conversion uses `ValueParser` in `Altinn.Authorization.CommandLine.Parsing`.
+Arguments and options share this service, and it can also parse raw values without
+constructing a command. System.CommandLine handles tokenization, arity, and error
+presentation; conversion failures prevent handler invocation.
+
+Built-in conversion supports strings, `StringValues`, `IParsable<T>` types, plain
+and annotated enums, nullable value types, arrays and common list interfaces, and
+filesystem types. A parameter default does not disable explicit-value parsing.
+
+Configure `ParsingOptions.AdditionalParsers` to customize conversion. Each
+`IValueParser` exposes `CanParse(Type)` and a generic `TryParse<T>` method.
+Additional parsers run in list order before built-in conversion. A parser that
+claims a type reports invalid values through `false` and an error message;
+failures do not fall through to another parser.
+
+`ValueParsingContext` exposes input values and delegation through `TryParse<T>`.
+Delegating the same type continues with the next parser. Delegating an inner type
+starts from the first parser, so nullable values and collection elements use the
+same configured conversions. `ValueParser` reads `IOptionsMonitor<ParsingOptions>`
+at each entry point and keeps that options instance during delegated parsing.
+
 ## Contributing
 
 Contributions to `Altinn.Authorization.CommandLine` are welcome. Open an issue for bugs or feature requests, or submit a
