@@ -16,9 +16,8 @@ internal sealed class StringValuesConfigureArgument
             return;
         }
 
-        var required = !values.HasDefaultValue;
-        values.Arity = required ? ArgumentArity.OneOrMore : ArgumentArity.ZeroOrMore;
-        values.CustomParser = result => Parse(result, required);
+        values.Arity = values.HasDefaultValue ? ArgumentArity.ZeroOrMore : ArgumentArity.OneOrMore;
+        values.CustomParser = Parse;
     }
 
     public void Configure<T>(Option<T> option)
@@ -28,17 +27,17 @@ internal sealed class StringValuesConfigureArgument
             return;
         }
 
-        values.Arity = values.Required ? ArgumentArity.OneOrMore : ArgumentArity.ZeroOrMore;
-        values.CustomParser = result => Parse(result, values.Required);
+        values.Arity = ArgumentArity.OneOrMore;
+        values.CustomParser = Parse;
     }
 
-    private static StringValues Parse(ArgumentResult result, bool required)
+    private static StringValues Parse(ArgumentResult result)
     {
         return result.Tokens.Count switch
         {
-            0 => Empty(result, required),
-            1 => SingleToken(result, result.Tokens[0].Value, required),
-            _ => MultipleTokens(result, result.Tokens, required),
+            0 => Empty(result),
+            1 => SingleToken(result, result.Tokens[0].Value),
+            _ => MultipleTokens(result, result.Tokens),
         };
 
         static void AddValues(List<string> builder, string token)
@@ -46,30 +45,27 @@ internal sealed class StringValuesConfigureArgument
             builder.AddRange(token.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         }
 
-        static StringValues Empty(ArgumentResult result, bool required)
+        static StringValues Empty(ArgumentResult result)
         {
-            if (required)
-            {
-                result.AddError("At least one non-whitespace value is required.");
-            }
+            result.AddError("At least one non-whitespace value is required.");
 
             return StringValues.Empty;
         }
 
-        static StringValues SingleToken(ArgumentResult result, string value, bool required)
+        static StringValues SingleToken(ArgumentResult result, string value)
         {
             var builder = new List<string>();
             AddValues(builder, value);
 
             return builder.Count switch
             {
-                0 => Empty(result, required),
+                0 => Empty(result),
                 1 => new StringValues(builder[0]),
                 _ => new StringValues([.. builder]),
             };
         }
 
-        static StringValues MultipleTokens(ArgumentResult result, IReadOnlyList<Token> tokens, bool required)
+        static StringValues MultipleTokens(ArgumentResult result, IReadOnlyList<Token> tokens)
         {
             var builder = new List<string>();
             foreach (var token in tokens)
@@ -79,7 +75,7 @@ internal sealed class StringValuesConfigureArgument
 
             return builder.Count switch
             {
-                0 => Empty(result, required),
+                0 => Empty(result),
                 1 => new StringValues(builder[0]),
                 _ => new StringValues([.. builder]),
             };

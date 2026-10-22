@@ -13,6 +13,8 @@ public class StringValuesBindingTests
     [InlineData("--values", "one", "--values", "two")]
     [InlineData("--values", " \tone\r\ntwo  ")]
     [InlineData("--values", "one ", "--values", "\ttwo\n")]
+    [InlineData("--values", "one\n\ntwo\n")]
+    [InlineData("--values", "one", "--values", "\n\n", "--values", "two")]
     public async Task Option_SplitsValuesBeforeInvokingHandler(params string[] args)
     {
         StringValues? recorded = null;
@@ -53,20 +55,44 @@ public class StringValuesBindingTests
         invoked.ShouldBeFalse();
     }
 
-    [Theory]
-    [InlineData()]
-    [InlineData("--values")]
-    [InlineData("--values", " \t\n")]
-    public async Task OptionalOption_BindsEmptyValues(params string[] args)
+    [Fact]
+    public async Task OptionalOption_BindsEmptyValuesWhenOmitted()
     {
         StringValues? recorded = null;
         await using var application = CliApplication.CreateBuilder("StringValues tests").Build();
         application.AddCommand("run", "Run", ([Option("--values")] StringValues values = default) => { recorded = values; });
 
-        (await application.RunAsync(["run", .. args], TestContext.Current.CancellationToken)).ShouldBe(0);
+        (await application.RunAsync(["run"], TestContext.Current.CancellationToken)).ShouldBe(0);
 
         recorded.ShouldNotBeNull();
         recorded.Value.Count.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData("--values")]
+    [InlineData("--values", "")]
+    [InlineData("--values", " \t\n")]
+    public async Task OptionalOption_RejectsExplicitEmptyValues(params string[] args)
+    {
+        var invoked = false;
+        await using var application = CliApplication.CreateBuilder("StringValues tests").Build();
+        application.AddCommand("run", "Run", ([Option("--values")] StringValues values = default) => { invoked = true; });
+
+        (await application.RunAsync(["run", .. args], TestContext.Current.CancellationToken)).ShouldNotBe(0);
+        invoked.ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" \t\n")]
+    public async Task OptionalArgument_RejectsExplicitEmptyValues(string value)
+    {
+        var invoked = false;
+        await using var application = CliApplication.CreateBuilder("StringValues tests").Build();
+        application.AddCommand("run", "Run", ([Argument] StringValues values = default) => { invoked = true; });
+
+        (await application.RunAsync(["run", value], TestContext.Current.CancellationToken)).ShouldNotBe(0);
+        invoked.ShouldBeFalse();
     }
 
     [Theory]
