@@ -85,6 +85,13 @@ repoctl solutions check
 repoctl release-please check
 ```
 
+In a GitHub Actions pull request context, `repoctl check` also validates the PR
+title using Conventional Commits: `type(scope)!: description`. The lowercase type
+and nonempty description are required; the scope and breaking-change `!` are
+optional. For example, `feat: add login` and `fix(auth)!: reject expired tokens`
+are valid. Scopes must match `([a-z][a-z]*-)*[a-z]+`, for example
+`access-management`. This check is skipped outside pull request events.
+
 Regenerate the root and vertical `.slnx` files, including build dependencies in
 vertical solutions, and update the existing `release-please-config.json`:
 

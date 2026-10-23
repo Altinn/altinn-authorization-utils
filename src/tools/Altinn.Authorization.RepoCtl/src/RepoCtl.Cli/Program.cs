@@ -38,6 +38,7 @@ builder.Services.AddSingleton<RepositoryChecker>();
 builder.Services.AddSingleton<AltinnRepositoryAccessor>();
 builder.Services.AddCommandResultHandlerResolver<CheckCommandResultHandlerResolver>();
 
+builder.Services.AddSingleton<IRepositoryCheck, PullRequestTitleCheck>();
 builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<SolutionService>());
 builder.Services.AddSingleton<IRepositoryCheck>(s => s.GetRequiredService<ReleasePleaseConfigService>());
 
