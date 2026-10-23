@@ -32,9 +32,9 @@ internal sealed class GitHubChangedFilesService(IGitHubActionsService actions, G
         };
     }
 
-    private async IAsyncEnumerable<string> GetPullRequestChangedFiles(
+    private IAsyncEnumerable<string> GetPullRequestChangedFiles(
         GitHubContext context,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         var number = context.Event switch
         {
@@ -44,14 +44,23 @@ internal sealed class GitHubChangedFilesService(IGitHubActionsService actions, G
             _ => ThrowHelper.ThrowInvalidOperationException<long>("The GitHub event does not contain a pull request."),
         };
 
+        return GetPullRequestChangedFiles(context.Repository, checked((int)number), cancellationToken);
+    }
+
+    public async IAsyncEnumerable<string> GetPullRequestChangedFiles(
+        GitHubRepositoryContext repository,
+        int number,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        Guard.IsGreaterThan(number, 0);
         var seen = new HashSet<string>(StringComparer.Ordinal);
         for (var page = 1; ; page++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var files = await client.PullRequest.Files(
-                context.Repository.RepositoryOwner,
-                context.Repository.RepositoryName,
-                checked((int)number),
+                repository.RepositoryOwner,
+                repository.RepositoryName,
+                number,
                 new ApiOptions { PageSize = 100, PageCount = 1, StartPage = page }).WaitAsync(cancellationToken);
 
             foreach (var file in files)
