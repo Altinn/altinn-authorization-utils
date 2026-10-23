@@ -66,6 +66,9 @@ public sealed partial record AltinnRepositoryConfiguration
     /// </summary>
     public required AltinnVerticalKind RootKind { get; init; }
 
+    /// <summary>Gets the settings used when creating vertical labels.</summary>
+    public AltinnRepositoryLabels Labels { get; init; } = new();
+
     internal record InputModel
         : IInputModel<AltinnRepositoryConfiguration>
     {
@@ -80,6 +83,9 @@ public sealed partial record AltinnRepositoryConfiguration
         /// </summary>
         [JsonPropertyName("rootKind")]
         public AltinnVerticalKind RootKind { get; init; }
+
+        [JsonPropertyName("labels")]
+        public AltinnRepositoryLabels.InputModel? Labels { get; init; }
 
 
         public bool TryValidate(ref ValidationContext context, [NotNullWhen(true)] out AltinnRepositoryConfiguration? validated)
@@ -97,6 +103,8 @@ public sealed partial record AltinnRepositoryConfiguration
                 context.AddChildProblem(StdValidationErrors.InvalidValue, "/name", detail: "The name must not start with a dot.");
             }
 
+            context.TryValidateChild("/labels", Labels ?? new AltinnRepositoryLabels.InputModel(), out AltinnRepositoryLabels? labels);
+
             if (context.HasErrors)
             {
                 validated = null;
@@ -110,16 +118,21 @@ public sealed partial record AltinnRepositoryConfiguration
             }
 
             Debug.Assert(Name is not null);
+            Debug.Assert(labels is not null);
             validated = new AltinnRepositoryConfiguration
             {
                 Name = Name,
                 RootKind = rootKind,
+                Labels = labels,
             };
             return true;
         }
+
     }
 
     [JsonSerializable(typeof(InputModel))]
+    [JsonSerializable(typeof(AltinnRepositoryLabels.InputModel), TypeInfoPropertyName = "LabelsInputModel")]
+    [JsonSerializable(typeof(AltinnRepositoryLabel.InputModel), TypeInfoPropertyName = "LabelInputModel")]
     [JsonSourceGenerationOptions(
         JsonSerializerDefaults.Web,
         AllowTrailingCommas = true,

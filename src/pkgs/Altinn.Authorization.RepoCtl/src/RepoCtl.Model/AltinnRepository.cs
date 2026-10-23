@@ -36,6 +36,9 @@ public sealed class AltinnRepository
     public string Name
         => _config.Name;
 
+    /// <summary>Gets the repository configuration.</summary>
+    public AltinnRepositoryConfiguration Config => _config;
+
     /// <summary>
     /// Gets all diagnostics from the verticals in the repository.
     /// </summary>
