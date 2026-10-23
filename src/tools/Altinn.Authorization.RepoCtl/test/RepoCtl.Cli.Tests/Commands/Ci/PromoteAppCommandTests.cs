@@ -184,8 +184,12 @@ public class PromoteAppCommandTests
             using var http = CreateHttpClient();
             var command = CreateCommand(http, new RecordingContainerService(_events));
 
-            var result = command.Invoke(repository, RepositoryContext(), new("app:Altinn.Authorization"), new("test"), "abc123", registry);
-            (await Run(result)).ShouldBe(expected is null ? 1 : 0);
+            await using var application = CliApplication.CreateBuilder("Registry defaults").Build();
+            application.AddCommand("deploy", "Deploy",
+                ([Option("--registry", DefaultFromEnvironment = "REPOCTL_OCI_REGISTRY")] string? selectedRegistry = null)
+                    => command.Invoke(repository, RepositoryContext(), new("app:Altinn.Authorization"), new("test"), "abc123", selectedRegistry));
+            string[] args = registry is null ? ["deploy"] : ["deploy", "--registry", registry];
+            (await application.RunAsync(args, TestContext.Current.CancellationToken)).ShouldBe(expected is null ? 1 : 0);
             if (expected is null)
             {
                 _events.ShouldBeEmpty();

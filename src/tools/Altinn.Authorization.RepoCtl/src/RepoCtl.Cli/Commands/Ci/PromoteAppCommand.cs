@@ -17,8 +17,8 @@ internal sealed class PromoteAppCommand(GitHubService github, ContainerService c
         GitHubRepositoryContext context,
         [Option("--verticals", Description = "Application vertical IDs, separated by whitespace.")] StringValues verticals,
         [Option("--environments", Description = "Target environment names, separated by whitespace.")] StringValues environments,
-        [Option("--sha", Description = "Commit SHA of the built manifest artifacts; defaults to GITHUB_SHA.")] string? sha = null,
-        [Option("--registry", Description = "Registry repository prefix for manifest images; defaults to REPOCTL_OCI_REGISTRY.")] string? registry = null)
+        [Option("--sha", DefaultFromEnvironment = "GITHUB_SHA", Description = "Commit SHA of the built manifest artifacts.")] string? sha = null,
+        [Option("--registry", DefaultFromEnvironment = "REPOCTL_OCI_REGISTRY", Description = "Registry repository prefix for manifest images.")] string? registry = null)
     {
         var ids = verticals.Distinct(StringComparer.Ordinal).ToArray();
         var targets = environments.Select(value => value ?? string.Empty).Distinct(StringComparer.Ordinal).ToArray();
@@ -33,7 +33,6 @@ internal sealed class PromoteAppCommand(GitHubService github, ContainerService c
             return Error("Environments must use lowercase letters and digits.");
         }
 
-        sha ??= Environment.GetEnvironmentVariable("GITHUB_SHA");
         // The source is both a GitHub ref and a Docker tag. Reject option-like and malformed tags.
         if (string.IsNullOrWhiteSpace(sha) || sha.Length > 128 || sha[0] is '.' or '-'
             || StringHelpers.ContainsInvalidImageTagCharacters(sha))
@@ -41,7 +40,6 @@ internal sealed class PromoteAppCommand(GitHubService github, ContainerService c
             return Error("Specify a valid source image tag with --sha or GITHUB_SHA.");
         }
 
-        registry ??= Environment.GetEnvironmentVariable("REPOCTL_OCI_REGISTRY");
         registry = registry?.TrimEnd('/');
         if (string.IsNullOrWhiteSpace(registry) || registry.StartsWith('-') || registry.Any(char.IsWhiteSpace))
         {

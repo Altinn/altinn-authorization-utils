@@ -13,15 +13,14 @@ internal sealed class TagAppImagesCommand(ContainerService containers)
         AltinnRepository repository,
         AltinnVertical vertical,
         [Option("--version", Description = "Release version, without the v prefix.")] string version,
-        [Option("--sha", Description = "Source image tag; defaults to GITHUB_SHA.")] string? sha = null,
-        [Option("--registry", Description = "Registry repository prefix for manifest images; defaults to REPOCTL_OCI_REGISTRY.")] string? registry = null)
+        [Option("--sha", DefaultFromEnvironment = "GITHUB_SHA", Description = "Source image tag.")] string? sha = null,
+        [Option("--registry", DefaultFromEnvironment = "REPOCTL_OCI_REGISTRY", Description = "Registry repository prefix for manifest images.")] string? registry = null)
     {
         if (vertical.Kind != AltinnVerticalKind.Application)
         {
             return Error($"Vertical {vertical.Id} is not an application.");
         }
 
-        sha ??= Environment.GetEnvironmentVariable("GITHUB_SHA");
         if (string.IsNullOrWhiteSpace(sha) || sha.Length > 128 || sha[0] is '.' or '-'
             || StringHelpers.ContainsInvalidImageTagCharacters(sha))
         {
@@ -33,7 +32,6 @@ internal sealed class TagAppImagesCommand(ContainerService containers)
             return Error(error);
         }
 
-        registry ??= Environment.GetEnvironmentVariable("REPOCTL_OCI_REGISTRY");
         registry = registry?.TrimEnd('/');
         if (string.IsNullOrWhiteSpace(registry) || registry.StartsWith('-') || registry.Any(char.IsWhiteSpace))
         {
