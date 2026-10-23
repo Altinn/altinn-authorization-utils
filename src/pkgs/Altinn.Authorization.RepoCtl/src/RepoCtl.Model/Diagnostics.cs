@@ -234,4 +234,17 @@ public static class Diagnostics
             category: "File",
             code: "REPOCTL015",
             projectContext: null);
+
+    /// <summary>
+    /// Gets a diagnostic indicating that a pull request title does not follow Conventional Commits.
+    /// </summary>
+    /// <returns>The diagnostic.</returns>
+    public static Diagnostic InvalidPullRequestTitle()
+        => new Diagnostic(
+            severity: DiagnosticSeverity.Error,
+            text: "Pull request title must use Conventional Commits: type(scope)!: description (scope and ! are optional), for example 'fix(auth): handle expired tokens'",
+            origin: null,
+            category: "PullRequest",
+            code: "REPOCTL016",
+            projectContext: null);
 }
