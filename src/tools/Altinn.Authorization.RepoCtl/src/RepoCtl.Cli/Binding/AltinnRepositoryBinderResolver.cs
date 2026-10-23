@@ -1,14 +1,13 @@
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
+using Altinn.Authorization.CommandLine;
 using Altinn.Authorization.CommandLine.Factory;
 using Altinn.Authorization.CommandLine.GitHub.Actions;
 using Altinn.Authorization.CommandLine.Help;
 using Altinn.Authorization.RepoCtl.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.Binding;
 
@@ -59,7 +58,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
 
         public ICommandHandlerParameterResolver Bind(
             ICommandHandlerParameterBinderContext context,
-            StrongBox<object?>? defaultValueBox,
+            DefaultValueProvider? defaultValueProvider,
             string? description)
         {
             return _repositoryResolver;
@@ -71,7 +70,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
     {
         public ICommandHandlerParameterResolver Bind(
             ICommandHandlerParameterBinderContext context,
-            StrongBox<object?>? defaultValueBox,
+            DefaultValueProvider? defaultValueProvider,
             string? description)
         {
             var factory = context.ApplicationServices.GetRequiredService<OptionFactory>();
@@ -80,18 +79,18 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 aliases: [],
                 description: "Limit the verticals to those of the specified kinds.",
                 isRequired: false,
-                defaultValueBox: new(AltinnVerticalKindSet.All));
+                defaultValueProvider: DefaultValueProvider.FromValue(AltinnVerticalKindSet.All));
 
-            kindOption.HelpCustomization.GetDefaultValue = _ => [new("all", Color.Cyan)];
+            kindOption.HelpCustomization.GetDefaultValue = context => [new("all", context.DefaultArgumentColor)];
 
             var dirOption = factory.Create<string?>(
                 name: "--dir",
                 aliases: [],
                 description: "Sub-directory of the repository (either relative or absolute) to limit the verticals to.",
                 isRequired: false,
-                defaultValueBox: new());
+                defaultValueProvider: DefaultValueProvider.FromValue<string?>(null));
 
-            dirOption.HelpCustomization.GetDefaultValue = _ => [new("./", Color.Cyan)];
+            dirOption.HelpCustomization.GetDefaultValue = context => [new("./", context.DefaultArgumentColor)];
 
             context.Add(kindOption);
             context.Add(dirOption);
@@ -131,7 +130,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
     {
         public ICommandHandlerParameterResolver Bind(
             ICommandHandlerParameterBinderContext context,
-            StrongBox<object?>? defaultValueBox,
+            DefaultValueProvider? defaultValueProvider,
             string? description)
         {
             var arguments = context.ApplicationServices.GetRequiredService<ArgumentFactory>();
@@ -139,7 +138,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
             var verticalArgument = arguments.Create<string?>(
                 name: "vertical",
                 description: "Vertical selector: ID or directory path. Mutually exclusive with other vertical selectors; exactly one is required.",
-                defaultValueBox: new());
+                defaultValueProvider: DefaultValueProvider.FromValue<string?>(null));
             verticalArgument.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["vertical"], arity: ArgumentArity.ZeroOrOne);
 
             var idOption = options.Create<string?>(
@@ -147,7 +146,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 aliases: [],
                 description: "Vertical selector: exact ID. Mutually exclusive with other vertical selectors; exactly one is required.",
                 isRequired: false,
-                defaultValueBox: new());
+                defaultValueProvider: DefaultValueProvider.FromValue<string?>(null));
             idOption.Arity = ArgumentArity.ExactlyOne;
             idOption.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["id"]);
 
@@ -156,7 +155,7 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
                 aliases: [],
                 description: "Vertical selector: release tag. Mutually exclusive with other vertical selectors; exactly one is required.",
                 isRequired: false,
-                defaultValueBox: new());
+                defaultValueProvider: DefaultValueProvider.FromValue<string?>(null));
             tagOption.Arity = ArgumentArity.ExactlyOne;
             tagOption.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(["tag"]);
 
@@ -259,19 +258,15 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
     {
         public ICommandHandlerParameterResolver Bind(
             ICommandHandlerParameterBinderContext context,
-            StrongBox<object?>? defaultValueBox,
+            DefaultValueProvider? defaultValueProvider,
             string? description)
         {
-            var factory = context.ApplicationServices.GetRequiredService<OptionFactory>();
-
-            var repoOption = factory.Create<string?>(
-                name: "--repo",
-                aliases: [],
-                description: "The name of the GitHub repository.",
-                isRequired: false,
-                defaultValueBox: null);
-
-            repoOption.HelpCustomization.GetDefaultValue = _ => ["From ", "$", new("GITHUB_REPOSITORY", Color.Cyan)];
+            var repoOption = (Option<string?>)new OptionAttribute("--repo")
+            {
+                Description = "The name of the GitHub repository.",
+                IsRequired = false,
+                DefaultFromEnvironment = "GITHUB_REPOSITORY",
+            }.CreateOption(context.ApplicationServices, typeof(string), "repo", DefaultValueProvider.FromValue<string?>(null));
 
             context.Add(repoOption);
             return new GitHubContextResolver(repoOption);
@@ -284,10 +279,6 @@ internal sealed class AltinnRepositoryBinderResolver(AltinnRepositoryResolver re
         public Task ResolveParameterValue(CommandHandlerParameterResolverContext context, CancellationToken cancellationToken)
         {
             var value = context.ParseResult.GetValue(repoOption);
-            if (value is null)
-            {
-                value = Environment.GetEnvironmentVariable("GITHUB_REPOSITORY");
-            }
 
             if (string.IsNullOrEmpty(value))
             {
