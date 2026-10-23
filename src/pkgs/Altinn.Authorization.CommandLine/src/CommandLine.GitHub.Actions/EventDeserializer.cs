@@ -9,7 +9,7 @@ internal sealed class EventDeserializer
     {
         var headers = new WebhookHeaders
         {
-            Event = eventName,
+            Event = eventName == "pull_request_target" ? "pull_request" : eventName,
         };
 
         return Instance.DeserializeWebhookEvent(headers, payload);
