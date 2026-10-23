@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.1.0...tool/RepoCtl-v2.2.0) (2026-10-23)
+
+
+### Features
+
+* add `ci deploy-apps` command to promote DIS manifests ([#766](https://github.com/Altinn/altinn-authorization-utils/issues/766)) ([3bb3f12](https://github.com/Altinn/altinn-authorization-utils/commit/3bb3f12c3626b633ac603f4af0b0c502b16bb7c6))
+* add `ci draft-release` command ([#770](https://github.com/Altinn/altinn-authorization-utils/issues/770)) ([f42fad4](https://github.com/Altinn/altinn-authorization-utils/commit/f42fad452efa4f8dc8c059077ab731d0ac58c411))
+* add CI pull request autolabeling ([#796](https://github.com/Altinn/altinn-authorization-utils/issues/796)) ([021b87a](https://github.com/Altinn/altinn-authorization-utils/commit/021b87a9d31333d2e5342b54b24f9e4cb0e1bdb6))
+* add command for tagging app-images in ci ([#777](https://github.com/Altinn/altinn-authorization-utils/issues/777)) ([06f7a81](https://github.com/Altinn/altinn-authorization-utils/commit/06f7a817933001a469a66ab80d55a8930a0e2759))
+* add more ways to resolve verticals ([#772](https://github.com/Altinn/altinn-authorization-utils/issues/772)) ([c273720](https://github.com/Altinn/altinn-authorization-utils/commit/c27372002863150eb33c701984320ea20c523ee8))
+* allow nonzero calendar version suffixes with leading zeros ([#775](https://github.com/Altinn/altinn-authorization-utils/issues/775)) ([8261b32](https://github.com/Altinn/altinn-authorization-utils/commit/8261b32ee7d05752703e0c127b3a17b320fd39bf))
+* export vars also to github output ([#778](https://github.com/Altinn/altinn-authorization-utils/issues/778)) ([0f91f40](https://github.com/Altinn/altinn-authorization-utils/commit/0f91f40b407c532bc3d143f70f91102e72d9c7df))
+* pass display context to default value help callbacks ([#780](https://github.com/Altinn/altinn-authorization-utils/issues/780)) ([7f76b07](https://github.com/Altinn/altinn-authorization-utils/commit/7f76b07509a0f7c0862080b4310cbb17bf30f6a3))
+* validate pr title ([#800](https://github.com/Altinn/altinn-authorization-utils/issues/800)) ([6c4fd46](https://github.com/Altinn/altinn-authorization-utils/commit/6c4fd461ab33f4aed713952478b241507fb55afa))
+
+
+### Bug Fixes
+
+* retag manifest artifacts with Flux ([#792](https://github.com/Altinn/altinn-authorization-utils/issues/792)) ([747f174](https://github.com/Altinn/altinn-authorization-utils/commit/747f1747f519440a66e8d567a37d0bb2929a4631))
+
 ## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.0.2...tool/RepoCtl-v2.1.0) (2026-10-13)
 
 
