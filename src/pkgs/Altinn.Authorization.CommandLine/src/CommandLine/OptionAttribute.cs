@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine.Factory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -58,10 +57,11 @@ public class OptionAttribute
     }
 
     /// <inheritdoc/>
-    public virtual Option CreateOption(IServiceProvider serviceProvider, Type parameterType, string parameterName, StrongBox<object?>? defaultValueBox)
+    public virtual Option CreateOption(IServiceProvider serviceProvider, Type parameterType, string parameterName, DefaultValueProvider? defaultValueProvider)
     {
         var factory = serviceProvider.GetRequiredService<OptionFactory>();
 
-        return factory.Create(parameterType, Name ?? $"--{parameterName}", Aliases ?? [], Description, _isRequired ?? defaultValueBox is null, defaultValueBox);
+        var required = _isRequired ?? (defaultValueProvider is null);
+        return factory.Create(parameterType, Name ?? $"--{parameterName}", Aliases ?? [], Description, required, defaultValueProvider);
     }
 }

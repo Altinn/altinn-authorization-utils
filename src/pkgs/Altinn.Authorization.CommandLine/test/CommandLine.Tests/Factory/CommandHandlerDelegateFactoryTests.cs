@@ -1,7 +1,6 @@
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Xml.XPath;
 using Altinn.Authorization.CommandLine.Commands;
 using Altinn.Authorization.CommandLine.Console;
@@ -508,7 +507,7 @@ public class CommandHandlerDelegateFactoryTests
             IServiceProvider serviceProvider,
             Type parameterType,
             string parameterName,
-            StrongBox<object?>? defaultValueBox)
+            DefaultValueProvider? defaultValueProvider)
         {
             return new Argument<string>(parameterName)
             {
@@ -525,7 +524,7 @@ public class CommandHandlerDelegateFactoryTests
             IServiceProvider serviceProvider,
             Type parameterType,
             string parameterName,
-            StrongBox<object?>? defaultValueBox)
+            DefaultValueProvider? defaultValueProvider)
         {
             return new Option<string>($"--{parameterName}")
             {

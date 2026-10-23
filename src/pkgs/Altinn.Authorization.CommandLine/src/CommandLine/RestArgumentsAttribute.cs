@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine.Factory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +16,7 @@ public sealed class RestArgumentsAttribute
     , IFromArgumentMetadata
 {
     /// <inheritdoc/>
-    public Argument CreateArgument(IServiceProvider serviceProvider, Type parameterType, string parameterName, StrongBox<object?>? defaultValueBox)
+    public Argument CreateArgument(IServiceProvider serviceProvider, Type parameterType, string parameterName, DefaultValueProvider? defaultValueProvider)
     {
         if (parameterType != typeof(string[]))
         {
@@ -26,7 +25,7 @@ public sealed class RestArgumentsAttribute
 
         var factory = serviceProvider.GetRequiredService<ArgumentFactory>();
 
-        var arg = factory.Create(parameterType, "rest", "Rest arguments", new(Array.Empty<string>()));
+        var arg = factory.Create(parameterType, "rest", "Rest arguments", DefaultValueProvider.FromValue(Array.Empty<string>()));
         arg.Arity = ArgumentArity.ZeroOrMore;
 
         return arg;

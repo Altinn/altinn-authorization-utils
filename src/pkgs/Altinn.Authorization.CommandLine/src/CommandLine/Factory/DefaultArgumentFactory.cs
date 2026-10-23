@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.CommandLine.Factory;
 
@@ -14,18 +13,14 @@ internal sealed class DefaultArgumentFactory
         _configurators = configurators.ToImmutableArray();
     }
 
-    public override Argument<T> Create<T>(string name, string? description, StrongBox<T>? defaultValueBox)
+    public override Argument<T> Create<T>(string name, string? description, DefaultValueProvider<T>? defaultValueProvider)
     {
         var argument = new Argument<T>(name)
         {
             Description = description,
         };
 
-        if (defaultValueBox is not null)
-        {
-            var value = defaultValueBox.Value!;
-            argument.DefaultValueFactory = _ => value;
-        }
+        DefaultValueProviderBinding.Apply(argument, defaultValueProvider);
 
         foreach (var configurator in _configurators)
         {

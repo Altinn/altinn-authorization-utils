@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine.Factory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,10 +39,10 @@ public class ArgumentAttribute
     public string? Description { get; init; }
 
     /// <inheritdoc/>
-    public virtual Argument CreateArgument(IServiceProvider serviceProvider, Type parameterType, string parameterName, StrongBox<object?>? defaultValueBox)
+    public virtual Argument CreateArgument(IServiceProvider serviceProvider, Type parameterType, string parameterName, DefaultValueProvider? defaultValueProvider)
     {
         var factory = serviceProvider.GetRequiredService<ArgumentFactory>();
 
-        return factory.Create(parameterType, Name ?? parameterName, Description, defaultValueBox);
+        return factory.Create(parameterType, Name ?? parameterName, Description, defaultValueProvider);
     }
 }

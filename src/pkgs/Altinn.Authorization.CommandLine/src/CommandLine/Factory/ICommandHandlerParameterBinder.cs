@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.CommandLine.Factory;
 
@@ -11,8 +10,8 @@ public interface ICommandHandlerParameterBinder
     /// Binds the specified parameter to a value resolver.
     /// </summary>
     /// <param name="context">The binder context.</param>
-    /// <param name="defaultValueBox">The box containing the default value, if any.</param>
+    /// <param name="defaultValueProvider">The default-value provider, or null when no default is configured.</param>
     /// <param name="description">The parameter description.</param>
     /// <returns>The parameter resolver.</returns>
-    ICommandHandlerParameterResolver Bind(ICommandHandlerParameterBinderContext context, StrongBox<object?>? defaultValueBox, string? description);
+    ICommandHandlerParameterResolver Bind(ICommandHandlerParameterBinderContext context, DefaultValueProvider? defaultValueProvider, string? description);
 }

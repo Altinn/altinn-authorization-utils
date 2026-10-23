@@ -1,7 +1,5 @@
 using System.Collections.Concurrent;
 using System.CommandLine;
-using System.Runtime.CompilerServices;
-using CommunityToolkit.Diagnostics;
 
 namespace Altinn.Authorization.CommandLine.Factory;
 
@@ -18,9 +16,9 @@ public abstract class OptionFactory
     /// <param name="aliases">The option aliases.</param>
     /// <param name="description">The option description.</param>
     /// <param name="isRequired">Indicates whether the option is required.</param>
-    /// <param name="defaultValueBox">The box containing the default value for the option, if any.</param>
+    /// <param name="defaultValueProvider">The default-value provider, or null when no default is configured.</param>
     /// <returns>The created option.</returns>
-    public abstract Option<T> Create<T>(string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, StrongBox<T>? defaultValueBox);
+    public abstract Option<T> Create<T>(string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, DefaultValueProvider<T>? defaultValueProvider);
 
     /// <summary>
     /// Creates an option of the specified type with the given parameters.
@@ -30,10 +28,10 @@ public abstract class OptionFactory
     /// <param name="aliases">The option aliases.</param>
     /// <param name="description">The option description.</param>
     /// <param name="isRequired">Indicates whether the option is required.</param>
-    /// <param name="defaultValueBox">The box containing the default value for the option, if any.</param>
+    /// <param name="defaultValueProvider">The default-value provider, or null when no default is configured.</param>
     /// <returns>The created option.</returns>
-    public virtual Option Create(Type type, string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, StrongBox<object?>? defaultValueBox)
-        => TypedFactory.ForType(type).Create(this, name, aliases, description, isRequired, defaultValueBox);
+    public virtual Option Create(Type type, string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, DefaultValueProvider? defaultValueProvider)
+        => TypedFactory.ForType(type).Create(this, name, aliases, description, isRequired, defaultValueProvider);
 
     private abstract class TypedFactory
     {
@@ -47,34 +45,15 @@ public abstract class OptionFactory
         public static TypedFactory ForType(Type type)
             => _factories.GetOrAdd(type, t => (TypedFactory)Activator.CreateInstance(typeof(TypedFactory<>).MakeGenericType(t))!);
 
-        public abstract Option Create(OptionFactory factory, string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, StrongBox<object?>? defaultValueBox);
+        public abstract Option Create(OptionFactory factory, string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, DefaultValueProvider? defaultValueProvider);
     }
 
     private sealed class TypedFactory<T>
         : TypedFactory
     {
-        public override Option Create(OptionFactory factory, string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, StrongBox<object?>? defaultValueBox)
+        public override Option Create(OptionFactory factory, string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, DefaultValueProvider? defaultValueProvider)
         {
-            StrongBox<T>? typedDefaultValueBox = null;
-            if (defaultValueBox is not null)
-            {
-                typedDefaultValueBox = new();
-
-                if (defaultValueBox.Value is null)
-                {
-                    typedDefaultValueBox.Value = default(T)!;
-                }
-                else if (defaultValueBox.Value is T tValue)
-                {
-                    typedDefaultValueBox.Value = tValue;
-                }
-                else
-                {
-                    ThrowHelper.ThrowInvalidOperationException($"The default value of type '{TypeNameHelper.GetTypeDisplayName(defaultValueBox.Value.GetType(), fullName: false)}' cannot be assigned to an option of type '{TypeNameHelper.GetTypeDisplayName(typeof(T), fullName: false)}'.");
-                }
-            }
-
-            return factory.Create<T>(name, aliases, description, isRequired, typedDefaultValueBox);
+            return factory.Create<T>(name, aliases, description, isRequired, defaultValueProvider?.Bind<T>());
         }
     }
 }

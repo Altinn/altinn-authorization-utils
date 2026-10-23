@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 using Altinn.Authorization.CommandLine.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
@@ -191,8 +190,8 @@ public class StringValuesBindingTests
         await using var application = CliApplication.CreateBuilder("StringValues tests").Build();
         var optionFactory = application.ApplicationServices.GetRequiredService<OptionFactory>();
         var argumentFactory = application.ApplicationServices.GetRequiredService<ArgumentFactory>();
-        var option = optionFactory.Create<StringValues>("--values", [], null, false, new StrongBox<StringValues>(new("option-default")));
-        var argument = argumentFactory.Create<StringValues>("argument", null, new StrongBox<StringValues>(new("argument-default")));
+        var option = optionFactory.Create<StringValues>("--values", [], null, false, DefaultValueProvider.FromValue(new StringValues("option-default")));
+        var argument = argumentFactory.Create<StringValues>("argument", null, DefaultValueProvider.FromValue(new StringValues("argument-default")));
         var command = new RootCommand { option, argument };
 
         var omitted = command.Parse([]);

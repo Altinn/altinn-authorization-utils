@@ -168,7 +168,7 @@ internal sealed class FormatResultResolver
                 aliases: ["-o"],
                 description: "Specifies the output format.",
                 isRequired: false,
-                defaultValueBox: new(formatters[0]));
+                defaultValueProvider: DefaultValueProvider.FromValue(formatters[0]));
 
             option.ParserAndValueFactory = CreateParserAndValueFactory(formatters);
             option.HelpCustomization.Argument = HelpDisplayArgumentCustomization.Create(formatters.Select(f => f.Name));

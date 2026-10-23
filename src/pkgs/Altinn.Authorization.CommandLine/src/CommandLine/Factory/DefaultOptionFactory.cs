@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.CommandLine;
-using System.Runtime.CompilerServices;
 
 namespace Altinn.Authorization.CommandLine.Factory;
 
@@ -14,7 +13,7 @@ internal sealed class DefaultOptionFactory
         _configurators = configurators.ToImmutableArray();
     }
 
-    public override Option<T> Create<T>(string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, StrongBox<T>? defaultValueBox)
+    public override Option<T> Create<T>(string name, ReadOnlySpan<string> aliases, string? description, bool isRequired, DefaultValueProvider<T>? defaultValueProvider)
     {
         var option = new Option<T>(name, [.. aliases])
         {
@@ -22,11 +21,7 @@ internal sealed class DefaultOptionFactory
             Required = isRequired,
         };
 
-        if (defaultValueBox is not null)
-        {
-            var value = defaultValueBox.Value!;
-            option.DefaultValueFactory = _ => value;
-        }
+        DefaultValueProviderBinding.Apply(option, defaultValueProvider);
 
         foreach (var configurator in _configurators)
         {
