@@ -147,15 +147,15 @@ letters and digits.
 RepoCtl resolves every application ID before starting and skips applications
 without a `manifests` directory. For each application it creates pending GitHub
 deployments named `<short-slug>/<environment>`, then runs
-`docker buildx imagetools create` to promote
+`flux tag artifact` to promote
 `<registry>/<short-slug>-manifests:<sha>` to the selected environment
 tags. Supply the registry repository prefix with `--registry` or `REPOCTL_OCI_REGISTRY`.
 
 `--sha` defaults to `GITHUB_SHA`; `--repo` defaults to `GITHUB_REPOSITORY`.
-Set `GITHUB_TOKEN` with deployments write permission. Docker with Buildx must be
-installed and logged in to the registry with permission to push. In GitHub
-Actions, keep the Docker Buildx setup and registry login steps before invoking
-RepoCtl. GitHub requests use the same Octokit client as release uploads.
+Set `GITHUB_TOKEN` with deployments write permission. The Flux CLI must be
+installed, with registry credentials allowing pushes. Flux uses the Docker
+registry credentials, so keep the registry login step before invoking RepoCtl.
+GitHub requests use the same Octokit client as release uploads.
 
 Deployment creation disables auto-merge and required status contexts, and marks
 only `prod` as production. A failed request or promotion stops the command.
@@ -265,8 +265,8 @@ credentials. Quote globs so RepoCtl expands them relative to the repository root
 
 ## Tag application release images
 
-After checking out the source commit, setting up Docker Buildx, and logging in to
-GHCR, replace the image discovery and retagging script with:
+After checking out the source commit, setting up Docker Buildx and the Flux CLI,
+and logging in to GHCR, replace the image discovery and retagging script with:
 
 ```sh
 repoctl ci tag-app-images --vertical-id "$VERTICAL" --sha "$SOURCE_SHA" --version "$VERSION"
@@ -274,8 +274,9 @@ repoctl ci tag-app-images --vertical-id "$VERTICAL" --sha "$SOURCE_SHA" --versio
 
 The command resolves the default group from the application's `docker-bake.hcl`,
 including nested groups and matrix targets. Every selected target must have an
-image tagged with the source SHA. Those images and the application's manifests
-image are retagged as `v<version>` using `docker buildx imagetools create`.
+image tagged with the source SHA. Container images are retagged as `v<version>`
+using `docker buildx imagetools create`. The application's manifests artifact is
+retagged as `v<version>` separately using `flux tag artifact`, preserving its OCI manifest.
 Discovery completes before retagging begins; retagging stops on the first failure.
 Supply the manifests repository prefix with `--registry` or `REPOCTL_OCI_REGISTRY`. Image repositories from Bake are retained as given.
 The version follows the same calendar-version rules as `ci draft-release`, including date validation.

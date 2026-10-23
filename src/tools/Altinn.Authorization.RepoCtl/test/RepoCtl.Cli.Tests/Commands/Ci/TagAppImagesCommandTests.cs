@@ -6,6 +6,34 @@ namespace Altinn.Authorization.RepoCtl.Tests.Commands.Ci;
 public class TagAppImagesCommandTests
 {
     [Fact]
+    public void ReleaseTags_PreserveVersionPrefixUsingDockerForContainersAndFluxForManifests()
+    {
+        var commands = ContainerService.CreateReleaseTaggingCommands(
+            Path.GetTempPath(),
+            ["registry:5000/team/app:abc123", "registry/team/worker:abc123", "registry:5000/team/app:abc123"],
+            "registry:5000/team/app-manifests",
+            "abc123",
+            "2026.10.23").ToArray();
+
+        commands.Length.ShouldBe(3);
+        commands[0].Filename.ShouldBe("docker");
+        commands[0].Arguments.ShouldBe([
+            "buildx", "imagetools", "create", "-t",
+            "registry:5000/team/app:v2026.10.23", "registry:5000/team/app:abc123",
+        ]);
+        commands[1].Filename.ShouldBe("docker");
+        commands[1].Arguments.ShouldBe([
+            "buildx", "imagetools", "create", "-t",
+            "registry/team/worker:v2026.10.23", "registry/team/worker:abc123",
+        ]);
+        commands[2].Filename.ShouldBe("flux");
+        commands[2].Arguments.ShouldBe([
+            "tag", "artifact", "oci://registry:5000/team/app-manifests:abc123",
+            "--tag", "v2026.10.23",
+        ]);
+    }
+
+    [Fact]
     public void BakeOutput_DeserializesGroupsAndTargetsIgnoringUnneededBuildSettings()
     {
         var bake = BakeOutput.Deserialize("""
