@@ -148,8 +148,8 @@ RepoCtl resolves every application ID before starting and skips applications
 without a `manifests` directory. For each application it creates pending GitHub
 deployments named `<short-slug>/<environment>`, then runs
 `docker buildx imagetools create` to promote
-`ghcr.io/altinn/altinn-auth/<short-slug>-manifests:<sha>` to the selected environment
-tags. Use `--registry` to override that registry repository prefix.
+`<registry>/<short-slug>-manifests:<sha>` to the selected environment
+tags. Supply the registry repository prefix with `--registry` or `REPOCTL_OCI_REGISTRY`.
 
 `--sha` defaults to `GITHUB_SHA`; `--repo` defaults to `GITHUB_REPOSITORY`.
 Set `GITHUB_TOKEN` with deployments write permission. Docker with Buildx must be
@@ -262,3 +262,21 @@ repoctl github upload 123456 'artifacts/**/*.nupkg' --repo Altinn/altinn-authori
 
 These commands publish to external services and require the appropriate
 credentials. Quote globs so RepoCtl expands them relative to the repository root.
+
+## Tag application release images
+
+After checking out the source commit, setting up Docker Buildx, and logging in to
+GHCR, replace the image discovery and retagging script with:
+
+```sh
+repoctl ci tag-app-images --vertical-id "$VERTICAL" --sha "$SOURCE_SHA" --version "$VERSION"
+```
+
+The command resolves the default group from the application's `docker-bake.hcl`,
+including nested groups and matrix targets. Every selected target must have an
+image tagged with the source SHA. Those images and the application's manifests
+image are retagged as `v<version>` using `docker buildx imagetools create`.
+Discovery completes before retagging begins; retagging stops on the first failure.
+Supply the manifests repository prefix with `--registry` or `REPOCTL_OCI_REGISTRY`. Image repositories from Bake are retained as given.
+The version follows the same calendar-version rules as `ci draft-release`, including date validation.
+Update the workflow's installed RepoCtl version before switching its invocation.
