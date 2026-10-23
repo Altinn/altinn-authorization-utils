@@ -12,6 +12,54 @@ namespace Altinn.Authorization.RepoCtl.GitHub;
 
 internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor, GitHubClient githubClient)
 {
+    public async Task AddPullRequestLabels(
+        GitHubRepositoryContext repository,
+        int number,
+        IReadOnlyList<GitHubLabel> labels,
+        CancellationToken cancellationToken = default)
+    {
+        if (labels.Count == 0)
+        {
+            return;
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var repositoryLabels = await githubClient.Issue.Labels.GetAllForRepository(
+            repository.RepositoryOwner,
+            repository.RepositoryName,
+            new ApiOptions { PageSize = 100 }).WaitAsync(cancellationToken);
+        var existingLabels = repositoryLabels.Select(label => label.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var label in labels)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (existingLabels.Contains(label.Name))
+            {
+                continue;
+            }
+
+            try
+            {
+                await githubClient.Issue.Labels.Create(repository.RepositoryOwner, repository.RepositoryName, new NewLabel(label.Name, label.Color.TrimStart('#'))
+                {
+                    Description = label.Description,
+                }).WaitAsync(cancellationToken);
+            }
+            catch (ApiValidationException)
+            {
+                // Another run may have created the label after our lookup.
+                await githubClient.Issue.Labels.Get(repository.RepositoryOwner, repository.RepositoryName, label.Name)
+                    .WaitAsync(cancellationToken);
+            }
+
+            existingLabels.Add(label.Name);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        await githubClient.Issue.Labels.AddToIssue(repository.RepositoryOwner, repository.RepositoryName, number, labels.Select(label => label.Name).ToArray())
+            .WaitAsync(cancellationToken);
+    }
+
     public async Task<string> ResolveCommit(GitHubRepositoryContext context, string reference, CancellationToken cancellationToken = default)
     {
         var commit = await githubClient.Repository.Commit.Get(context.RepositoryOwner, context.RepositoryName, reference)

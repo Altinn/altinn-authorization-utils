@@ -143,6 +143,9 @@ public class ChangedPathsTests
 
     private sealed class ChangedFiles(params string[] paths) : IChangedFilesService
     {
+        public IAsyncEnumerable<string> GetPullRequestChangedFiles(GitHubRepositoryContext repository, int number, CancellationToken cancellationToken)
+            => GetChangedFiles(cancellationToken);
+
         public int CallCount { get; private set; }
 
         public async IAsyncEnumerable<string> GetChangedFiles([EnumeratorCancellation] CancellationToken cancellationToken)

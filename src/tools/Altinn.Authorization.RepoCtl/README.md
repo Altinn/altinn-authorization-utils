@@ -128,6 +128,49 @@ repoctl vertical containers build app:MyApplication --tag v1.2.3 --push
 `--tag` sets the bake variable `TAG`; `--push` pushes the built images to their
 configured registries.
 
+## Label pull requests
+
+Add labels for the verticals touched by a pull request:
+
+```sh
+repoctl ci pr-autolabel
+# For debugging outside a pull request workflow:
+repoctl ci pr-autolabel --pr 123 --repo Altinn/altinn-auth
+```
+
+Without `--pr`, the command requires a `PullRequestEvent` from a `pull_request`
+or `pull_request_target` workflow. It reads changed files through the GitHub API,
+including both paths of renamed files. Existing pull request labels are retained.
+Missing repository labels are created before adding the labels to the pull request;
+existing label colors and descriptions are preserved.
+
+| Changed vertical | Label | Default color | Description |
+| --- | --- | --- | --- |
+| Application | `area/<short-slug>` | `#0978AF` | `App: <display name>` |
+| Library | `lib/<short-slug>` | `#6c1a0d` | `Library: <display name>` |
+| Package | `pkg/<short-slug>` | `#4ad006` | `Package: <display name>` |
+| Tool | `tool/<short-slug>` | `#3f602d` | `Tool: <display name>` |
+
+Library changes also add the area labels of applications that depend on the library,
+including transitive dependencies. Changes outside vertical directories add no labels.
+
+Override label prefixes and creation colors in `.repo.json` or `.repo.jsonc`; omitted settings use the defaults:
+
+```json
+{
+  "name": "Altinn",
+  "labels": {
+    "app": { "prefix": "area/", "color": "#0978af" },
+    "lib": { "prefix": "lib/", "color": "#6c1a0d" },
+    "pkg": { "prefix": "pkg/", "color": "#4ad006" },
+    "tool": { "prefix": "tool/", "color": "#3f602d" }
+  }
+}
+```
+
+Set `GITHUB_TOKEN` with permission to read pull request files, create repository
+labels, and add issue labels (`pull-requests: read` and `issues: write` in GitHub Actions).
+
 ## Promote application manifests
 
 Promote already-built manifest images to one or more environment tags:

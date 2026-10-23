@@ -126,6 +126,7 @@ cli.AddCommand("nuget", "NuGet operations", (builder) =>
 
 cli.AddCommand("ci", "CI Helpers", (builder) =>
 {
+    builder.AddCommand<PrAutolabelCommand>("pr-autolabel", "Add labels for verticals changed by a pull request");
     builder.AddCommand<DraftReleaseCommand>("draft-release", "Create an application draft release with a generated changelog");
     builder.AddCommand<TagAppImagesCommand>("tag-app-images", "Tag application images and manifests for a release");
     builder.AddCommand<PromoteAppCommand>("promote-app", "Record pending deployments and promote application manifests");
