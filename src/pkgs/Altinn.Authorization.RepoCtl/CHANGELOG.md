@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v2.1.0...pkg/RepoCtl-v2.2.0) (2026-10-23)
+
+
+### Features
+
+* add pr title diagnostics ([#799](https://github.com/Altinn/altinn-authorization-utils/issues/799)) ([8d15cd5](https://github.com/Altinn/altinn-authorization-utils/commit/8d15cd55730723edbce78abafc44eb7505c90b86))
+* configure colors for repository vertical labels ([#795](https://github.com/Altinn/altinn-authorization-utils/issues/795)) ([9545385](https://github.com/Altinn/altinn-authorization-utils/commit/95453856bd425169386c41c170964e6561fc273b))
+* expose changed files for an explicit pull request ([#794](https://github.com/Altinn/altinn-authorization-utils/issues/794)) ([085438e](https://github.com/Altinn/altinn-authorization-utils/commit/085438e226646f8919a4d3225bf2d4789def375c))
+
 ## [2.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v2.0.0...pkg/RepoCtl-v2.1.0) (2026-10-13)
 
 

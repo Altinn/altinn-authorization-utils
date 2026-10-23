@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/CommandLine-v1.2.0...pkg/CommandLine-v1.3.0) (2026-10-23)
+
+
+### Features
+
+* add configurable value parsing pipeline ([#784](https://github.com/Altinn/altinn-authorization-utils/issues/784)) ([832cca1](https://github.com/Altinn/altinn-authorization-utils/commit/832cca1c7c8114cdd70887c3c31c75eefa9bfcd5))
+* add typed default value providers ([#787](https://github.com/Altinn/altinn-authorization-utils/issues/787)) ([7539abc](https://github.com/Altinn/altinn-authorization-utils/commit/7539abcd22d4ea2c6a004c5d3cca95d23a394cc1))
+* customize argument arity and contextual colors in help ([#771](https://github.com/Altinn/altinn-authorization-utils/issues/771)) ([0b61457](https://github.com/Altinn/altinn-authorization-utils/commit/0b61457a04076cfe84942f22a9de3ce914635796))
+* parse whitespace separated values as StringValues ([#765](https://github.com/Altinn/altinn-authorization-utils/issues/765)) ([65e7180](https://github.com/Altinn/altinn-authorization-utils/commit/65e71805bba963869d5694846b9084732d363ac7))
+* pass display context to default value help callbacks ([#780](https://github.com/Altinn/altinn-authorization-utils/issues/780)) ([7f76b07](https://github.com/Altinn/altinn-authorization-utils/commit/7f76b07509a0f7c0862080b4310cbb17bf30f6a3))
+* support environment variable option defaults ([#788](https://github.com/Altinn/altinn-authorization-utils/issues/788)) ([372f161](https://github.com/Altinn/altinn-authorization-utils/commit/372f1615f4f82774130e909b3d15cf706159290a))
+
+
+### Bug Fixes
+
+* deserialize pull_request_target as a pull request event ([#793](https://github.com/Altinn/altinn-authorization-utils/issues/793)) ([1d07e19](https://github.com/Altinn/altinn-authorization-utils/commit/1d07e195fb8f243b5431b238216232adb328958c))
+* reject explicit empty StringValues input ([#783](https://github.com/Altinn/altinn-authorization-utils/issues/783)) ([b5fcae2](https://github.com/Altinn/altinn-authorization-utils/commit/b5fcae2bb69e09c54456e483cc3c3a6fd8c07e34))
+
 ## [1.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/CommandLine-v1.1.0...pkg/CommandLine-v1.2.0) (2026-10-13)
 
 
