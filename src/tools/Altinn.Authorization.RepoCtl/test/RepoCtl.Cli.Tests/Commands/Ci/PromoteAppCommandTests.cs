@@ -159,12 +159,11 @@ public class PromoteAppCommandTests
     {
         var command = ContainerService.CreateManifestPromotionCommand(_root.FullName, "registry.example/team/app-manifests", "abc123", ["test", "prod"]);
 
-        command.Filename.ShouldBe("docker");
+        command.Filename.ShouldBe("flux");
         command.Arguments.ShouldBe([
-            "buildx", "imagetools", "create",
-            "-t", "registry.example/team/app-manifests:test",
-            "-t", "registry.example/team/app-manifests:prod",
-            "registry.example/team/app-manifests:abc123",
+            "tag", "artifact", "oci://registry.example/team/app-manifests:abc123",
+            "--tag", "test",
+            "--tag", "prod",
         ]);
     }
 

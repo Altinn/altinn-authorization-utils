@@ -19,37 +19,50 @@ internal class ContainerService
             .ExecuteCaptured(cancellationToken);
 
         var images = GetReleaseImages(BakeOutput.Deserialize(bake), sha);
-        images.Add($"{registry}/{vertical.Id.ToString("short-slug", CultureInfo.InvariantCulture)}-manifests:{sha}");
+        var manifestImage = $"{registry}/{vertical.Id.ToString("short-slug", CultureInfo.InvariantCulture)}-manifests";
 
+        foreach (var command in CreateReleaseTaggingCommands(repository.RootDirectory.FullName, images, manifestImage, sha, version))
+        {
+            console.StdErr.Write(Markup.FromInterpolated($"Running {command:display}\n"));
+            await command.Execute(cancellationToken);
+        }
+    }
+
+    internal static IEnumerable<Command> CreateReleaseTaggingCommands(
+        string workingDirectory,
+        IReadOnlyList<string> images,
+        string manifestImage,
+        string sha,
+        string version)
+    {
+        var releaseTag = $"v{version}";
         foreach (var image in images.Distinct(StringComparer.Ordinal))
         {
             // all images are guaranteed to end with `:{sha}` at this point
             Debug.Assert(image.EndsWith($":{sha}", StringComparison.Ordinal));
 
-            var releaseImage = $"{image.AsSpan(0, image.Length - sha.Length)}{version}";
-            console.StdErr.Write(Markup.FromInterpolated($"Tagging {image} as {releaseImage}\n"));
-            await Command.Create("docker", ["buildx", "imagetools", "create", "-t", releaseImage, image])
-                .WithWorkingDirectory(repository.RootDirectory.FullName)
-                .Execute(cancellationToken);
+            var releaseImage = $"{image.AsSpan(0, image.Length - sha.Length)}{releaseTag}";
+            yield return Command.Create("docker", ["buildx", "imagetools", "create", "-t", releaseImage, image])
+                .WithWorkingDirectory(workingDirectory);
         }
+
+        yield return CreateManifestPromotionCommand(workingDirectory, manifestImage, sha, [releaseTag]);
     }
 
     // method is virtual for testing purposes
     public virtual ICommandResult PromoteManifests(AltinnRepository repository, string image, string sourceTag, IReadOnlyList<string> environments)
         => CreateManifestPromotionCommand(repository.RootDirectory.FullName, image, sourceTag, environments).ToResult();
 
-    internal static Command CreateManifestPromotionCommand(string workingDirectory, string image, string sourceTag, IReadOnlyList<string> environments)
+    internal static Command CreateManifestPromotionCommand(string workingDirectory, string image, string sourceTag, IReadOnlyList<string> targetTags)
     {
-        List<string> args = ["buildx", "imagetools", "create"];
-        foreach (var environment in environments)
+        List<string> args = ["tag", "artifact", $"oci://{image}:{sourceTag}"];
+        foreach (var tag in targetTags)
         {
-            args.Add("-t");
-            args.Add($"{image}:{environment}");
+            args.Add("--tag");
+            args.Add(tag);
         }
 
-        args.Add($"{image}:{sourceTag}");
-
-        return Command.Create("docker", [.. args])
+        return Command.Create("flux", [.. args])
             .WithWorkingDirectory(workingDirectory);
     }
 
