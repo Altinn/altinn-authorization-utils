@@ -385,7 +385,7 @@ public class DefaultHelpBuilder
             return null;
         }
 
-        var anyHasDefault = options.Any(static arg => arg.HasDefaultValue);
+        var anyHasDefault = options.Any(ShouldShowDefaultValue);
 
         var grid = new Grid();
         grid.AddColumn(new GridColumn { Padding = new Padding(left: 0, right: 4, top: 0, bottom: 0), NoWrap = true }); // name column
@@ -815,7 +815,7 @@ public class DefaultHelpBuilder
     /// <param name="option">The option to check for a default value.</param>
     /// <returns>True if the default value should be shown; otherwise, false.</returns>
     protected virtual bool ShouldShowDefaultValue(Option option)
-        => option.HasDefaultValue;
+        => option.HasDefaultValue || option.HelpCustomization.GetDefaultValue is not null;
 
     /// <summary>
     /// Determines whether the default value for the specified argument should be displayed in the help text.

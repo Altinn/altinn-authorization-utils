@@ -166,6 +166,50 @@ starts from the first parser, so nullable values and collection elements use the
 same configured conversions. `ValueParser` reads `IOptionsMonitor<ParsingOptions>`
 at each entry point and keeps that options instance during delegated parsing.
 
+## Environment-variable defaults
+
+Options can fall back to an environment variable without handler code:
+
+```csharp
+void Run([Option("--registry", DefaultFromEnvironment = "MY_OCI_REGISTRY")] string? registry = null)
+{
+    // registry is bound from the command line or the environment.
+}
+```
+
+An explicit option wins over the environment variable; an unset, empty, or
+whitespace-only variable falls back to the parameter default.
+A required option without a parameter default requires either command-line input
+or an environment value. Environment values use the option's parser, including
+custom parsers such as `StringValues` whitespace splitting. Each variable supplies
+one token; ordinary string values retain spaces. Parse errors prevent invocation.
+
+Factories accept a nullable `DefaultValueProvider<T>` for options and arguments.
+Use `null` when no default is configured, or
+`DefaultValueProvider.FromValue(value)` for a constant (including explicit null).
+Environment providers capture nonblank text during option resolution and defer
+conversion until the default is requested. For programmatic construction, pass
+the captured text and the parser resolved from DI:
+
+```csharp
+var parser = services.GetRequiredService<ValueParser>();
+var defaults = new EnvironmentValueDefaultValueProvider<string>(
+    "MY_OCI_REGISTRY", registryText, parser);
+var option = optionFactory.Create<string>(
+    "--registry", [], "OCI registry", isRequired: true, defaults);
+```
+
+The non-generic `DefaultValueProvider` describes the provider's `ValueType` and
+color-aware help text. `Bind<T>()` validates compatibility during command
+construction and adapts compatible providers. Incompatible defaults fail before
+parsing. Only `DefaultValueProvider<T>` supplies values, through `TryProvideValue`;
+provision failures are command parse errors. An absent provider differs from a
+provider supplying an explicit null.
+
+Environment help always displays `[default: $NAME]` instead of the captured value,
+even when the variable is unset. Parameter fallback values are not displayed in
+help; they still apply when the variable is unset, empty, or whitespace-only.
+
 ## Contributing
 
 Contributions to `Altinn.Authorization.CommandLine` are welcome. Open an issue for bugs or feature requests, or submit a
