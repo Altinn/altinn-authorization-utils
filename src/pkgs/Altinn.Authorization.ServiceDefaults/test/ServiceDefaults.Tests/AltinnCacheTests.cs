@@ -1,3 +1,4 @@
+using Altinn.Authorization.ServiceDefaults.Cache;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
@@ -104,6 +105,28 @@ public class AltinnCacheTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public async Task EntryWrittenThroughOptions_LeavesLocalTierAfterLocalLifetime()
+    {
+        var localLifetime = TimeSpan.FromMilliseconds(200);
+        await using var instance = CreateInstance(localCacheExpiration: localLifetime);
+        var cache = instance.GetRequiredService<HybridCache>();
+        var distributedCache = instance.GetRequiredService<IDistributedCache>();
+
+        var options = instance.GetRequiredService<AltinnCacheEntryOptions>().For(TimeSpan.FromMinutes(5));
+        options.LocalCacheExpiration.ShouldBe(localLifetime);
+        await cache.SetAsync("key", "value", options, cancellationToken: TestContext.Current.CancellationToken);
+
+        await Task.Delay(localLifetime * 2, TestContext.Current.CancellationToken);
+
+        // Still in the distributed tier, so remove it there directly: a read must now miss both tiers.
+        (await distributedCache.GetAsync("key", TestContext.Current.CancellationToken)).ShouldNotBeNull();
+        await distributedCache.RemoveAsync("key", TestContext.Current.CancellationToken);
+        var value = await cache.GetOrCreateAsync("key", _ => ValueTask.FromResult("fresh"), cancellationToken: TestContext.Current.CancellationToken);
+
+        value.ShouldBe("fresh");
+    }
+
+    [Fact]
     public async Task RotatedPassword_IsUsedOnReconnect()
     {
         await using var instance = CreateInstance(passwordRefreshInterval: TimeSpan.FromMilliseconds(100));
@@ -171,7 +194,7 @@ public class AltinnCacheTests(ITestOutputHelper output)
         await File.WriteAllTextAsync(_passwordFile, password + Environment.NewLine, TestContext.Current.CancellationToken);
     }
 
-    private ServiceProvider CreateInstance(bool enabled = true, TimeSpan? passwordRefreshInterval = null)
+    private ServiceProvider CreateInstance(bool enabled = true, TimeSpan? passwordRefreshInterval = null, TimeSpan? localCacheExpiration = null)
     {
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -180,7 +203,8 @@ public class AltinnCacheTests(ITestOutputHelper output)
                 ["Altinn:Cache:Username"] = User,
                 ["Altinn:Cache:PasswordFile"] = _passwordFile,
                 ["Altinn:Cache:PasswordRefreshInterval"] = passwordRefreshInterval?.ToString(),
-            })
+                ["Altinn:Cache:LocalCacheExpiration"] = localCacheExpiration?.ToString(),
+            }.Where(setting => setting.Value is not null))
             .Build();
 
         var services = new ServiceCollection();

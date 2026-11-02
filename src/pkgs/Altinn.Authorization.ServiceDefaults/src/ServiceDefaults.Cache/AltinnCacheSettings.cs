@@ -30,4 +30,11 @@ public sealed class AltinnCacheSettings
     /// Gets or sets how often <see cref="PasswordFile"/> is re-read. Defaults to one minute.
     /// </summary>
     public TimeSpan PasswordRefreshInterval { get; set; } = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    /// Gets or sets how long a value lives in the local (in-memory) tier when the distributed tier is active. This
+    /// bounds how long an instance can serve a value that another instance has removed or replaced. Defaults to
+    /// 30 seconds.
+    /// </summary>
+    public TimeSpan LocalCacheExpiration { get; set; } = TimeSpan.FromSeconds(30);
 }

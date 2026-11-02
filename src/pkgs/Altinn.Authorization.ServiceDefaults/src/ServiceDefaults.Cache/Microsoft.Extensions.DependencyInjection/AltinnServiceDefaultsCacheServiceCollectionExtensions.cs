@@ -19,18 +19,13 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
     public const int MaximumPayloadBytes = 1024 * 1024;
 
     /// <summary>
-    /// How long a value lives in the local (in-memory) tier when the distributed tier is active. This bounds how long
-    /// an instance can serve a value that another instance has removed or replaced.
-    /// </summary>
-    public static readonly TimeSpan LocalCacheExpirationWithDistributedTier = TimeSpan.FromSeconds(30);
-
-    /// <summary>
     /// How long a value lives in the distributed tier.
     /// </summary>
     public static readonly TimeSpan DistributedCacheExpiration = TimeSpan.FromMinutes(5);
 
     /// <summary>
-    /// Registers <see cref="HybridCache"/> with the local (in-memory) tier only. Calling this more than once is safe.
+    /// Registers <see cref="HybridCache"/> with the local (in-memory) tier only, and <see cref="AltinnCacheEntryOptions"/>
+    /// for it. Calling this more than once is safe.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns><paramref name="services"/>.</returns>
@@ -42,6 +37,7 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
         {
             options.MaximumPayloadBytes = MaximumPayloadBytes;
         });
+        services.TryAddSingleton(new AltinnCacheEntryOptions(localCacheExpiration: null));
 
         return services;
     }
@@ -113,9 +109,10 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
                 options.DefaultEntryOptions = new HybridCacheEntryOptions
                 {
                     Expiration = DistributedCacheExpiration,
-                    LocalCacheExpiration = LocalCacheExpirationWithDistributedTier,
+                    LocalCacheExpiration = settings.LocalCacheExpiration,
                 };
             });
+            services.Replace(ServiceDescriptor.Singleton(new AltinnCacheEntryOptions(settings.LocalCacheExpiration)));
 
             mode = new($"local tier and distributed tier at {settings.Host} as user {settings.Username}, key prefix '{prefix}'");
         }
@@ -125,5 +122,4 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
 
         return services;
     }
-
 }
