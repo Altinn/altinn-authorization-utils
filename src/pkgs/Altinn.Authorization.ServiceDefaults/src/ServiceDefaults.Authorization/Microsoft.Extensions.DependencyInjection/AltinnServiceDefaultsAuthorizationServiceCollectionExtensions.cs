@@ -58,7 +58,7 @@ public static class AltinnServiceDefaultsAuthorizationServiceCollectionExtension
         services.TryAddSingleton<IPlatformAccessTokenSigningKeyProvider, DefaultPlatformAccessTokenSigningKeyProvider>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IAuthorizationHandler, DefaultPlatformAccessTokenHandler>());
 
-        services.AddHybridCache();
+        services.AddAltinnCache();
 
         services.AddOptions<PlatformAccessTokenKeyVaultSettings>().ValidateDataAnnotations().BindConfiguration("kvSetting");
         services.TryAddKeyedSingleton<TokenCredential>(
