@@ -22,6 +22,7 @@
     <Project Path="src/ServiceDefaults/Altinn.Authorization.ServiceDefaults.csproj" />
     <Project Path="src/ServiceDefaults.Abstractions/Altinn.Authorization.ServiceDefaults.Abstractions.csproj" />
     <Project Path="src/ServiceDefaults.Authorization/Altinn.Authorization.ServiceDefaults.Authorization.csproj" />
+    <Project Path="src/ServiceDefaults.Cache/Altinn.Authorization.ServiceDefaults.Cache.csproj" />
     <Project Path="src/ServiceDefaults.HttpClient/Altinn.Authorization.ServiceDefaults.HttpClient.csproj" />
     <Project Path="src/ServiceDefaults.HttpClient.MaskinPorten/Altinn.Authorization.ServiceDefaults.HttpClient.MaskinPorten.csproj" />
     <Project Path="src/ServiceDefaults.Npgsql/Altinn.Authorization.ServiceDefaults.Npgsql.csproj" />
