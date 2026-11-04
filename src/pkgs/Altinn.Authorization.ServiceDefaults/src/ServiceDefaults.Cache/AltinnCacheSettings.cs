@@ -21,6 +21,12 @@ public sealed class AltinnCacheSettings
     public string? Username { get; set; }
 
     /// <summary>
+    /// Gets or sets the password, for local development. When set, <see cref="PasswordFile"/> is not used. In
+    /// Kubernetes use <see cref="PasswordFile"/>, which is what makes rotation work without a restart.
+    /// </summary>
+    public string? Password { get; set; }
+
+    /// <summary>
     /// Gets or sets the path of a file containing the password. The file is read on connect and then every
     /// <see cref="PasswordRefreshInterval"/>, so a rotated password is used by the next reconnect without a restart.
     /// </summary>

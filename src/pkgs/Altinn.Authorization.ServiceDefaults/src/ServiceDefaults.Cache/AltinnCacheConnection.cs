@@ -32,14 +32,21 @@ internal static class AltinnCacheConnection
     }
 
     /// <summary>
-    /// Reads the password file and connects.
+    /// Fills in the password and connects.
     /// </summary>
     public static async Task<IConnectionMultiplexer> ConnectAsync(ConfigurationOptions options, AltinnCacheSettings settings)
     {
-        options.Password = ReadPassword(settings.PasswordFile!);
+        options.Password = GetPassword(settings);
 
         return await ConnectionMultiplexer.ConnectAsync(options);
     }
+
+    /// <summary>
+    /// Returns <see cref="AltinnCacheSettings.Password"/> when set, otherwise reads
+    /// <see cref="AltinnCacheSettings.PasswordFile"/>.
+    /// </summary>
+    public static string GetPassword(AltinnCacheSettings settings)
+        => string.IsNullOrWhiteSpace(settings.Password) ? ReadPassword(settings.PasswordFile!) : settings.Password;
 
     /// <summary>
     /// Reads the password from <paramref name="passwordFile"/>, ignoring surrounding whitespace and line breaks.

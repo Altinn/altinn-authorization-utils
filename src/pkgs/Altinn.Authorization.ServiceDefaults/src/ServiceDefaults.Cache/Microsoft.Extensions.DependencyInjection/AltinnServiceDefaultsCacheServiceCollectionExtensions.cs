@@ -45,8 +45,8 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
     /// <summary>
     /// Registers <see cref="HybridCache"/> with the local (in-memory) tier always on, and Valkey as the distributed tier
     /// when <paramref name="enabled"/> is <see langword="true"/> and <c>Altinn:Cache:Host</c>, <c>Altinn:Cache:Username</c>
-    /// and <c>Altinn:Cache:PasswordFile</c> are configured. Otherwise the cache is local only. The active mode is logged
-    /// once at startup.
+    /// and either <c>Altinn:Cache:Password</c> (local development) or <c>Altinn:Cache:PasswordFile</c> (Kubernetes) are
+    /// configured. Otherwise the cache is local only. The active mode is logged once at startup.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
@@ -79,11 +79,11 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
         }
         else if (string.IsNullOrWhiteSpace(settings.Host)
             || string.IsNullOrWhiteSpace(settings.Username)
-            || string.IsNullOrWhiteSpace(settings.PasswordFile))
+            || (string.IsNullOrWhiteSpace(settings.Password) && string.IsNullOrWhiteSpace(settings.PasswordFile)))
         {
-            mode = new($"local tier only ({AltinnCacheSettings.SectionName}:Host, Username or PasswordFile not configured)");
+            mode = new($"local tier only ({AltinnCacheSettings.SectionName}:Host, Username, and Password or PasswordFile not configured)");
         }
-        else if (!File.Exists(settings.PasswordFile))
+        else if (string.IsNullOrWhiteSpace(settings.Password) && !File.Exists(settings.PasswordFile))
         {
             mode = new($"local tier only (password file '{settings.PasswordFile}' not found)");
         }
@@ -97,12 +97,15 @@ public static class AltinnServiceDefaultsCacheServiceCollectionExtensions
                 options.ConnectionMultiplexerFactory = () => AltinnCacheConnection.ConnectAsync(connectionOptions, settings);
             });
 
-            // RedisCache keeps the multiplexer for the lifetime of the app, so a rotated password can only reach it
-            // through the live connection options, which the multiplexer reads on every handshake.
-            services.AddSingleton<IHostedService>(s => new AltinnCachePasswordRefresher(
-                connectionOptions,
-                settings,
-                s.GetRequiredService<ILogger<AltinnCachePasswordRefresher>>()));
+            if (string.IsNullOrWhiteSpace(settings.Password))
+            {
+                // RedisCache keeps the multiplexer for the lifetime of the app, so a rotated password can only reach
+                // it through the live connection options, which the multiplexer reads on every handshake.
+                services.AddSingleton<IHostedService>(s => new AltinnCachePasswordRefresher(
+                    connectionOptions,
+                    settings,
+                    s.GetRequiredService<ILogger<AltinnCachePasswordRefresher>>()));
+            }
 
             services.Configure<HybridCacheOptions>(options =>
             {

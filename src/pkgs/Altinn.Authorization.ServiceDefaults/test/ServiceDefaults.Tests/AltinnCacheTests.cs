@@ -66,6 +66,21 @@ public class AltinnCacheTests(ITestOutputHelper output)
     }
 
     [Fact]
+    public async Task PasswordFromConfiguration_NeedsNoFile()
+    {
+        await using var instance = CreateInstance(password: "password-1");
+
+        // Nothing to re-read, so the password refresher (internal to the Cache project) is not registered.
+        instance.GetServices<IHostedService>().ShouldNotContain(service => service.GetType().Name == "AltinnCachePasswordRefresher");
+
+        var distributedCache = instance.GetRequiredService<IDistributedCache>();
+        await distributedCache.SetStringAsync("key", "value", TestContext.Current.CancellationToken);
+        var value = await distributedCache.GetStringAsync("key", TestContext.Current.CancellationToken);
+
+        value.ShouldBe("value");
+    }
+
+    [Fact]
     public async Task ValueSetByOneInstance_IsReadByAnother()
     {
         await using var instanceA = CreateInstance();
@@ -194,14 +209,15 @@ public class AltinnCacheTests(ITestOutputHelper output)
         await File.WriteAllTextAsync(_passwordFile, password + Environment.NewLine, TestContext.Current.CancellationToken);
     }
 
-    private ServiceProvider CreateInstance(bool enabled = true, TimeSpan? passwordRefreshInterval = null, TimeSpan? localCacheExpiration = null)
+    private ServiceProvider CreateInstance(bool enabled = true, TimeSpan? passwordRefreshInterval = null, TimeSpan? localCacheExpiration = null, string? password = null)
     {
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Altinn:Cache:Host"] = _valkey.GetConnectionString(),
                 ["Altinn:Cache:Username"] = User,
-                ["Altinn:Cache:PasswordFile"] = _passwordFile,
+                ["Altinn:Cache:Password"] = password,
+                ["Altinn:Cache:PasswordFile"] = password is null ? _passwordFile : null,
                 ["Altinn:Cache:PasswordRefreshInterval"] = passwordRefreshInterval?.ToString(),
                 ["Altinn:Cache:LocalCacheExpiration"] = localCacheExpiration?.ToString(),
             }.Where(setting => setting.Value is not null))
