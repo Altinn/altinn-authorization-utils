@@ -8,11 +8,11 @@ namespace Altinn.Authorization.RepoCtl.Model.Utils;
 /// </summary>
 public static partial class Slug
 {
-    private static SlugHelperForNonAsciiLanguages _slugHelper = CreateSlugHelper();
+    private static SlugHelper _slugHelper = CreateSlugHelper();
 
-    private static SlugHelperForNonAsciiLanguages CreateSlugHelper()
+    private static SlugHelper CreateSlugHelper()
     {
-        var builder = new SlugHelperForNonAsciiLanguages();
+        var builder = new SlugHelper(new SlugHelperConfiguration { SupportNonAsciiLanguages = true });
         builder.Config.StringReplacements["."] = "-";
         builder.Config.StringReplacements[":"] = "-";
         return builder;
