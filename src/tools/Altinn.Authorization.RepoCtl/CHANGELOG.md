@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.2.0...tool/RepoCtl-v2.2.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* preserve caller environment in repoctl dotnet commands ([#808](https://github.com/Altinn/altinn-authorization-utils/issues/808)) ([8ae972e](https://github.com/Altinn/altinn-authorization-utils/commit/8ae972e8e588d4ead8dab20be7a6588f7642e34c)), closes [#805](https://github.com/Altinn/altinn-authorization-utils/issues/805)
+
 ## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.1.0...tool/RepoCtl-v2.2.0) (2026-10-23)
 
 
