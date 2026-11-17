@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v2.2.0...pkg/RepoCtl-v2.2.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* **msbuild:** restore environment after locator registration ([#806](https://github.com/Altinn/altinn-authorization-utils/issues/806)) ([8784829](https://github.com/Altinn/altinn-authorization-utils/commit/87848291273b73cafe4274aa44db43b373f1691d)), closes [#805](https://github.com/Altinn/altinn-authorization-utils/issues/805)
+
 ## [2.2.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/RepoCtl-v2.1.0...pkg/RepoCtl-v2.2.0) (2026-10-23)
 
 
