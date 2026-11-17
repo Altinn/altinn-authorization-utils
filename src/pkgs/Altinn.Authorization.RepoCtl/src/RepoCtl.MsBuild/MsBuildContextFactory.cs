@@ -29,13 +29,13 @@ public interface IMsBuildContextFactory
 internal sealed class MsBuildContextFactory(ILoggerFactory loggerFactory)
     : IMsBuildContextFactory
 {
+    private static bool _installed = false;
+    private static readonly Lock _installLock = new();
+
     /// <inheritdoc/>
     public IMsBuildContext CreateDesignTimeContext(IDictionary<string, string> globalProperties)
     {
-        if (!MSBuildLocator.IsRegistered)
-        {
-            MSBuildLocator.RegisterDefaults();
-        }
+        EnsureInstalled();
 
         var properties = new Dictionary<string, string>(globalProperties);
         properties["DesignTimeBuild"] = "true";
@@ -46,12 +46,45 @@ internal sealed class MsBuildContextFactory(ILoggerFactory loggerFactory)
     /// <inheritdoc/>
     public IMsBuildContext CreateBuildContext(IDictionary<string, string> globalProperties)
     {
-        if (!MSBuildLocator.IsRegistered)
-        {
-            MSBuildLocator.RegisterDefaults();
-        }
+        EnsureInstalled();
 
         var properties = new Dictionary<string, string>(globalProperties);
         return new MsBuildContext(properties, loggerFactory.CreateLogger<MsBuildContext>(), isDesignTime: false);
+    }
+
+    private static void EnsureInstalled()
+    {
+        lock (_installLock)
+        {
+            if (!_installed)
+            {
+                Install();
+                _installed = true;
+            }
+        }
+
+        static void Install()
+        {
+            if (!MSBuildLocator.IsRegistered)
+            {
+                ReadOnlySpan<string> names = ["MSBUILD_EXE_PATH", "MSBuildExtensionsPath", "MSBuildSDKsPath"];
+
+                // 1. Snapshot environment variables
+                var snapshot = new string?[names.Length];
+                for (int i = 0; i < names.Length; i++)
+                {
+                    snapshot[i] = Environment.GetEnvironmentVariable(names[i]);
+                }
+
+                // 2. Register MSBuild defaults
+                MSBuildLocator.RegisterDefaults();
+
+                // 3. Restore environment variables
+                for (int i = 0; i < names.Length; i++)
+                {
+                    Environment.SetEnvironmentVariable(names[i], snapshot[i]);
+                }
+            }
+        }
     }
 }
