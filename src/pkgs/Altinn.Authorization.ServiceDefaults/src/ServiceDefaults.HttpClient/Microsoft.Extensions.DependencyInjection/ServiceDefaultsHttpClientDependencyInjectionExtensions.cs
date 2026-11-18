@@ -2,7 +2,6 @@ using Altinn.Authorization.ServiceDefaults.HttpClient.PlatformAccessToken;
 using Altinn.Common.AccessTokenClient.Services;
 using CommunityToolkit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
