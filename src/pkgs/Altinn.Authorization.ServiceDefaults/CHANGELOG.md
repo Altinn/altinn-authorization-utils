@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.1](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/ServiceDefaults-v6.0.0...pkg/ServiceDefaults-v6.0.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* **httpclient-maskinporten:** reload Maskinporten client options when configuration changes ([#814](https://github.com/Altinn/altinn-authorization-utils/issues/814)) ([db6cf4b](https://github.com/Altinn/altinn-authorization-utils/commit/db6cf4b8cf482b7b5c6fe7e28a3770ddd1c03be8))
+
 ## [6.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.5.0...Altinn.Authorization.ServiceDefaults-v6.0.0) (2026-08-14)
 
 
