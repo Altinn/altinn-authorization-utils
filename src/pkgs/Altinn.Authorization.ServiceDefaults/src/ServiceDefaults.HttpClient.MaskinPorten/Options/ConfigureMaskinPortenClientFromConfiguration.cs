@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Altinn.Authorization.ServiceDefaults.HttpClient.MaskinPorten.Options;
@@ -11,13 +12,19 @@ namespace Altinn.Authorization.ServiceDefaults.HttpClient.MaskinPorten.Options;
 /// </summary>
 internal sealed class ConfigureMaskinPortenClientFromConfiguration
     : IConfigureNamedOptions<MaskinPortenClientOptions>
+    , IDisposable
 {
+    private readonly IDisposable _subscription;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigureMaskinPortenClientFromConfiguration"/> class.
     /// </summary>
-    public ConfigureMaskinPortenClientFromConfiguration(IConfiguration configuration)
+    public ConfigureMaskinPortenClientFromConfiguration(
+        IConfiguration configuration,
+        IOptionsMonitorCache<MaskinPortenClientOptions> cache)
     {
         _configuration = configuration;
+        _subscription = ChangeToken.OnChange(configuration.GetReloadToken, cache.Clear);
     }
 
     private readonly IConfiguration _configuration;
@@ -47,4 +54,8 @@ internal sealed class ConfigureMaskinPortenClientFromConfiguration
     public void Configure(MaskinPortenClientOptions options)
     {
     }
+
+    /// <inheritdoc/>
+    public void Dispose()
+        => _subscription.Dispose();
 }
