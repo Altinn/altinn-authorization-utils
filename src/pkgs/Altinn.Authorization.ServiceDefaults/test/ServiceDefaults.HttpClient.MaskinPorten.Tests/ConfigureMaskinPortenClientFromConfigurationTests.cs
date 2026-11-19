@@ -15,7 +15,7 @@ public class ConfigureMaskinPortenClientFromConfigurationTests
     public void EmptyConfig_DoesNothing()
     {
         var config = CreateConfiguration([]);
-        var sut = new ConfigureMaskinPortenClientFromConfiguration(config);
+        using var sut = new ConfigureMaskinPortenClientFromConfiguration(config, new OptionsCache<MaskinPortenClientOptions>());
         var options = new MaskinPortenClientOptions();
         sut.Configure("test-client", options);
 
@@ -36,7 +36,7 @@ public class ConfigureMaskinPortenClientFromConfigurationTests
         var config = CreateConfiguration([
             new("Altinn:MaskinPorten:Clients:other-client:Endpoint", "https://other-client.example.com/"),
         ]);
-        var sut = new ConfigureMaskinPortenClientFromConfiguration(config);
+        using var sut = new ConfigureMaskinPortenClientFromConfiguration(config, new OptionsCache<MaskinPortenClientOptions>());
         var options = new MaskinPortenClientOptions();
         sut.Configure("test-client", options);
 
@@ -73,7 +73,7 @@ public class ConfigureMaskinPortenClientFromConfigurationTests
             new("Altinn:MaskinPorten:Clients:test-client:Key", keyBase64),
         ]);
 
-        var sut = new ConfigureMaskinPortenClientFromConfiguration(config);
+        using var sut = new ConfigureMaskinPortenClientFromConfiguration(config, new OptionsCache<MaskinPortenClientOptions>());
         var options = new MaskinPortenClientOptions() { Scope = "old-scope" };
         sut.Configure("test-client", options);
 
@@ -94,7 +94,7 @@ public class ConfigureMaskinPortenClientFromConfigurationTests
         var config = CreateConfiguration([
             new("Altinn:MaskinPorten:Clients:test-client:Key", "not-base64"),
         ]);
-        var sut = new ConfigureMaskinPortenClientFromConfiguration(config);
+        using var sut = new ConfigureMaskinPortenClientFromConfiguration(config, new OptionsCache<MaskinPortenClientOptions>());
         var options = new MaskinPortenClientOptions();
 
         var exn = Should.Throw<FormatException>(() => sut.Configure("test-client", options));
@@ -155,7 +155,7 @@ public class ConfigureMaskinPortenClientFromConfigurationTests
 
 public class ConfigureMaskinPortenClientOptionsFromCommonOptionsTests
 {
-    private readonly IOptionsMonitor<MaskinPortenCommonOptions> _common = new TestOptionsMonitor();
+    private readonly TestOptionsMonitor _common = new();
 
     private MaskinPortenCommonOptions Common => _common.CurrentValue;
 
@@ -168,7 +168,7 @@ public class ConfigureMaskinPortenClientOptionsFromCommonOptionsTests
 
         var options = new MaskinPortenClientOptions();
 
-        var sut = new ConfigureMaskinPortenClientOptionsFromCommonOptions(_common);
+        using var sut = new ConfigureMaskinPortenClientOptionsFromCommonOptions(_common, new OptionsCache<MaskinPortenClientOptions>());
         sut.Configure("test-client", options);
 
         options.ShouldSatisfyAllConditions(
@@ -191,7 +191,7 @@ public class ConfigureMaskinPortenClientOptionsFromCommonOptionsTests
             TokenDuration = TimeSpan.FromMinutes(20),
         };
 
-        var sut = new ConfigureMaskinPortenClientOptionsFromCommonOptions(_common);
+        using var sut = new ConfigureMaskinPortenClientOptionsFromCommonOptions(_common, new OptionsCache<MaskinPortenClientOptions>());
         sut.Configure("test-client", options);
 
         options.ShouldSatisfyAllConditions(
@@ -200,10 +200,37 @@ public class ConfigureMaskinPortenClientOptionsFromCommonOptionsTests
             o => o.Audience.ShouldBe("https://audience.client-endpoint.example.com/"));
     }
 
+    [Fact]
+    public void CommonOptionsChange_InvalidatesAllNamedClientOptions()
+    {
+        var cache = new OptionsCache<MaskinPortenClientOptions>();
+        using var sut = new ConfigureMaskinPortenClientOptionsFromCommonOptions(_common, cache);
+        var first = cache.GetOrAdd("first", () => CreateOptions("first"));
+        var second = cache.GetOrAdd("second", () => CreateOptions("second"));
+
+        Common.Audience = "updated-audience";
+        _common.NotifyChanged();
+
+        cache.GetOrAdd("first", () => CreateOptions("first")).ShouldSatisfyAllConditions(
+            options => options.ShouldNotBeSameAs(first),
+            options => options.Audience.ShouldBe("updated-audience"));
+        cache.GetOrAdd("second", () => CreateOptions("second")).ShouldSatisfyAllConditions(
+            options => options.ShouldNotBeSameAs(second),
+            options => options.Audience.ShouldBe("updated-audience"));
+
+        MaskinPortenClientOptions CreateOptions(string name)
+        {
+            var options = new MaskinPortenClientOptions();
+            sut.Configure(name, options);
+            return options;
+        }
+    }
+
     private sealed class TestOptionsMonitor()
         : IOptionsMonitor<MaskinPortenCommonOptions>
     {
         private ConcurrentDictionary<string, MaskinPortenCommonOptions> _options = new();
+        private readonly CancellationTokenSource _changed = new();
 
         public MaskinPortenCommonOptions CurrentValue => Get(Microsoft.Extensions.Options.Options.DefaultName);
 
@@ -211,6 +238,9 @@ public class ConfigureMaskinPortenClientOptionsFromCommonOptionsTests
             => _options.GetOrAdd(name ?? Microsoft.Extensions.Options.Options.DefaultName, static _ => new());
 
         public IDisposable? OnChange(Action<MaskinPortenCommonOptions, string?> listener)
-            => null;
+            => _changed.Token.Register(() => listener(CurrentValue, Microsoft.Extensions.Options.Options.DefaultName));
+
+        public void NotifyChanged()
+            => _changed.Cancel();
     }
 }
