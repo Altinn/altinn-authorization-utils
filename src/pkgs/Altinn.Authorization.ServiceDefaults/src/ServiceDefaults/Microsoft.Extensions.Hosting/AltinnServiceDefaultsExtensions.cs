@@ -309,15 +309,9 @@ public static class AltinnServiceDefaultsExtensions
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="AltinnServiceDescriptor"/>.</returns>
-    public static AltinnServiceDescriptor GetAltinnServiceDescriptor(this IServiceCollection services)
-    {
-        if (services.TryFindAltinnServiceDescription(out var serviceDescription))
-        {
-            return serviceDescription;
-        }
-
-        return ThrowHelper.ThrowInvalidOperationException<AltinnServiceDescriptor>("Service of type AltinnServiceDescription not registered - did you forget to call AddAltinnServiceDefaults?");
-    }
+    [Obsolete("Moved to AltinnServiceDescriptorExtensions")]
+    public static AltinnServiceDescriptor GetAltinnServiceDescriptor(IServiceCollection services)
+        => AltinnServiceDescriptorExtensions.GetAltinnServiceDescriptor(services);
 
     /// <summary>
     /// Gets the configured <see cref="AltinnServiceDescriptor"/>.
@@ -358,30 +352,6 @@ public static class AltinnServiceDefaultsExtensions
     /// <returns><see langword="true"/> if currently running in local-dev mode, otherwise <see langword="false"/>.</returns>
     public static bool IsLocalDevelopment(this IHost builder)
         => builder.GetAltinnServiceDescriptor().IsLocalDev;
-
-    private static bool TryFindAltinnServiceDescription(this IServiceCollection services, [NotNullWhen(true)] out AltinnServiceDescriptor? serviceDescription)
-    {
-        var descriptor = services.SingleOrDefault(s => s.ServiceType == typeof(AltinnServiceDescriptor));
-        if (descriptor is null)
-        {
-            serviceDescription = null;
-            return false;
-        }
-
-        if (descriptor.Lifetime != ServiceLifetime.Singleton)
-        {
-            ThrowHelper.ThrowInvalidOperationException("Service of type AltinnServiceDescription registered as non-singleton");
-        }
-
-        if (descriptor.ImplementationInstance is AltinnServiceDescriptor instance)
-        {
-            serviceDescription = instance;
-            return true;
-        }
-
-        serviceDescription = null;
-        return ThrowHelper.ThrowInvalidOperationException<bool>("Service of type AltinnServiceDescription registered without an instance");
-    }
 
     private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder, AltinnServiceDefaultOptions options, AltinnPreStartLogger logger)
     {
