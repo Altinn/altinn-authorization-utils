@@ -24,6 +24,30 @@ public static class HttpClientMaskinPortenDependencyInjectionExtensions
         => AddMaskinPortenClientDependencies(services);
 
     /// <summary>
+    /// Validates that a named MaskinPorten client can retrieve an access token before hosted services start.
+    /// </summary>
+    /// <remarks>
+    /// Failure to retrieve a token prevents the host from starting. Repeated registrations for the same client
+    /// perform only one check.
+    ///
+    /// This method is not an extension method, and is typically only invoked as part of <see cref="AddMaskinPortenHandler(IHttpClientBuilder, string?, bool)"/>.
+    /// It's public in order to allow explicit registration when needed.
+    /// </remarks>
+    /// <param name="services">The service collection.</param>
+    /// <param name="clientName">The name (configuration key) of the client to validate.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddMaskinPortenClientValidationOnStart(IServiceCollection services, string clientName)
+    {
+        Guard.IsNotNull(services);
+        Guard.IsNotNullOrEmpty(clientName);
+
+        services.AddMaskinPortenClient();
+        services.Configure<MaskinPortenStartupValidator.Options>(options => options.ClientNames.Add(clientName));
+        services.AddHostedService<MaskinPortenStartupValidator>();
+        return services;
+    }
+
+    /// <summary>
     /// Adds the MaskinPorten authentication handlers to the HTTP client pipeline for the specified client.
     /// </summary>
     /// <remarks>This method registers the MaskinPorten authentication handlers, ensuring that outgoing HTTP
@@ -35,10 +59,14 @@ public static class HttpClientMaskinPortenDependencyInjectionExtensions
     /// The logical name of the HTTP client to associate with the MaskinPorten configuration.
     /// If <see langword="null"/>, only applies the handler to requests where a client-name is set.
     /// </param>
+    /// <param name="validateOnStart">
+    /// Indicates whether the MaskinPorten handler should validate its configuration on start. Only applicable if <paramref name="clientName"/> is set.
+    /// </param>
     /// <returns>The same instance of <see cref="IHttpClientBuilder"/> for chaining further configuration.</returns>
     public static IHttpClientBuilder AddMaskinPortenHandler(
         this IHttpClientBuilder builder,
-        string? clientName = null)
+        string? clientName = null,
+        bool validateOnStart = true)
     {
         builder.Services.AddMaskinPortenClient();
         builder.ConfigureAdditionalHttpMessageHandlers((handlers, services) =>
@@ -57,6 +85,11 @@ public static class HttpClientMaskinPortenDependencyInjectionExtensions
 
             handlers.Add(new MaskinPortenHandler(timeProvider, client));
         });
+
+        if (clientName is not null && validateOnStart)
+        {
+            AddMaskinPortenClientValidationOnStart(builder.Services, clientName);
+        }
 
         return builder;
     }
