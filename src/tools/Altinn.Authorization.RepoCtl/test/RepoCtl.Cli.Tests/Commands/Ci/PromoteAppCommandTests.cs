@@ -21,7 +21,7 @@ public class PromoteAppCommandTests
     private readonly List<JsonElement> _requests = [];
 
     [Fact]
-    public async Task Deploy_CreatesAllPendingDeploymentsBeforeAnyPromotion()
+    public async Task Deploy_CreatesAllDeploymentsBeforePromotionAndQueuesEachAppAfterPromotion()
     {
         var repository = CreateRepository(("Altinn.Authorization", true), ("Altinn.Other", true));
         using var http = CreateHttpClient();
@@ -35,7 +35,9 @@ public class PromoteAppCommandTests
             "deployment:authorization/test", "deployment:authorization/prod",
             "deployment:other/test", "deployment:other/prod",
             "promote:registry.example/team/authorization-manifests",
+            "status:authorization/test", "status:authorization/prod",
             "promote:registry.example/team/other-manifests",
+            "status:other/test", "status:other/prod",
         ]);
 
         foreach (var request in _requests)
@@ -107,6 +109,29 @@ public class PromoteAppCommandTests
     }
 
     [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    public async Task Deploy_FailedQueuedStatusFailsCommandAfterPromotion(int failAtStatus)
+    {
+        var repository = CreateRepository(("Altinn.Authorization", true), ("Altinn.Other", true));
+        using var http = CreateHttpClient(failAtStatus: failAtStatus);
+        var command = CreateCommand(http, new RecordingContainerService(_events));
+
+        (await Run(command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Other"]), new(["test", "prod"]), "abc123", "registry.example/team"))).ShouldBe(1);
+
+        _events.ShouldBe([
+            "deployment:authorization/test", "deployment:authorization/prod",
+            "deployment:other/test", "deployment:other/prod",
+            "promote:registry.example/team/authorization-manifests",
+            "status:authorization/test", "status:authorization/prod",
+            "promote:registry.example/team/other-manifests",
+            "status:other/test", "status:other/prod",
+        ]);
+    }
+
+    [Theory]
     [InlineData(17, 0, 17)]
     [InlineData(0, 23, 23)]
     [InlineData(17, 23, 23)]
@@ -121,7 +146,9 @@ public class PromoteAppCommandTests
         _events.ShouldBe([
             "deployment:authorization/test", "deployment:other/test",
             "promote:registry.example/team/authorization-manifests",
+            .. firstExitCode == 0 ? new[] { "status:authorization/test" } : Array.Empty<string>(),
             "promote:registry.example/team/other-manifests",
+            .. secondExitCode == 0 ? new[] { "status:other/test" } : Array.Empty<string>(),
         ]);
     }
 
@@ -137,8 +164,8 @@ public class PromoteAppCommandTests
         (await Run(result)).ShouldBe(0);
         _events.ShouldBe([
             "deployment:authorization/test", "deployment:other/test",
-            "promote:registry.example/team/authorization-manifests",
-            "promote:registry.example/team/other-manifests",
+            "promote:registry.example/team/authorization-manifests", "status:authorization/test",
+            "promote:registry.example/team/other-manifests", "status:other/test",
         ]);
     }
 
@@ -151,7 +178,7 @@ public class PromoteAppCommandTests
 
         (await Run(command.Invoke(repository, RepositoryContext(), new(["app:Altinn.Authorization", "app:Altinn.Authorization"]), new(["test", "test"]), "abc123", "registry.example/team/"))).ShouldBe(0);
 
-        _events.ShouldBe(["deployment:authorization/test", "promote:registry.example/team/authorization-manifests"]);
+        _events.ShouldBe(["deployment:authorization/test", "promote:registry.example/team/authorization-manifests", "status:authorization/test"]);
     }
 
     [Fact]
@@ -226,18 +253,76 @@ public class PromoteAppCommandTests
         return new AltinnRepository(_root, new AltinnRepositoryConfiguration { Name = "Test", RootKind = AltinnVerticalKind.Package }, verticals.ToImmutable());
     }
 
-    private HttpClientAdapter CreateHttpClient(int? failAtRequest = null)
+    [Theory]
+    [InlineData(139)]
+    [InlineData(140)]
+    [InlineData(141)]
+    [InlineData(200)]
+    public async Task Deploy_LimitsStatusDescriptionTo140Characters(int descriptionLength)
+    {
+        const string prefix = "Tagged authorization-manifests:abc123 as ";
+        var environment = new string('a', descriptionLength - prefix.Length);
+        var repository = CreateRepository(("Altinn.Authorization", true));
+        using var http = CreateHttpClient(assertDescription: description =>
+        {
+            if (descriptionLength > 140)
+            {
+                description.Length.ShouldBeLessThan(140);
+                description.ShouldEndWith("…");
+            }
+            else
+            {
+                description.ShouldBe(prefix + environment);
+            }
+        });
+        var command = CreateCommand(http, new RecordingContainerService(_events));
+
+        (await Run(command.Invoke(repository, RepositoryContext(), new("app:Altinn.Authorization"), new(environment), "abc123", "registry.example/team"))).ShouldBe(0);
+
+        _events.ShouldBe([
+            $"deployment:authorization/{environment}",
+            "promote:registry.example/team/authorization-manifests",
+            $"status:authorization/{environment}",
+        ]);
+    }
+
+    private HttpClientAdapter CreateHttpClient(int? failAtRequest = null, int? failAtStatus = null, Action<string>? assertDescription = null)
         => new(() => new DeploymentHandler(async (request, cancellationToken) =>
         {
             request.Method.ShouldBe(HttpMethod.Post);
-            request.RequestUri!.AbsolutePath.ShouldBe("/repos/owner/repo/deployments");
             using var body = JsonDocument.Parse(await request.Content!.ReadAsStringAsync(cancellationToken));
             var json = body.RootElement.Clone();
-            _requests.Add(json);
-            _events.Add($"deployment:{json.GetProperty("environment").GetString()}");
-            return new HttpResponseMessage(_requests.Count == failAtRequest ? HttpStatusCode.Forbidden : HttpStatusCode.Created)
+            bool failed;
+            if (request.RequestUri!.AbsolutePath == "/repos/owner/repo/deployments")
             {
-                Content = new StringContent(_requests.Count == failAtRequest ? "{\"message\":\"denied\"}" : "{\"id\":123}", Encoding.UTF8, "application/json"),
+                _requests.Add(json);
+                _events.Add($"deployment:{json.GetProperty("environment").GetString()}");
+                failed = _requests.Count == failAtRequest;
+            }
+            else
+            {
+                // Each response has a distinct ID, deliberately larger than Int32.MaxValue.
+                var deploymentIndex = checked((int)(long.Parse(request.RequestUri.Segments[^2].TrimEnd('/'), System.Globalization.CultureInfo.InvariantCulture) - 3000000000L)) - 1;
+                deploymentIndex.ShouldBeInRange(0, _requests.Count - 1);
+                request.RequestUri.AbsolutePath.ShouldBe($"/repos/owner/repo/deployments/{3000000001L + deploymentIndex}/statuses");
+                json.GetProperty("state").GetString().ShouldBe("queued");
+                var environment = _requests[deploymentIndex].GetProperty("environment").GetString()!.Split('/');
+                var description = json.GetProperty("description").GetString()!;
+                if (assertDescription is not null)
+                {
+                    assertDescription(description);
+                }
+                else
+                {
+                    description.ShouldBe($"Tagged {environment[0]}-manifests:abc123 as {environment[1]}");
+                }
+                _events.Add($"status:{_requests[deploymentIndex].GetProperty("environment").GetString()}");
+                failed = deploymentIndex + 1 == failAtStatus;
+            }
+
+            return new HttpResponseMessage(failed ? HttpStatusCode.Forbidden : HttpStatusCode.Created)
+            {
+                Content = new StringContent(failed ? "{\"message\":\"denied\"}" : $"{{\"id\":{3000000000L + _requests.Count}}}", Encoding.UTF8, "application/json"),
             };
         }));
 

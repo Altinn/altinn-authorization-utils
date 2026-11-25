@@ -195,11 +195,14 @@ options. Each option occurrence consumes one token. The CLI library binds these
 inputs as `StringValues`. Environment names may contain only lowercase ASCII
 letters and digits.
 RepoCtl resolves every application ID before starting and skips applications
-without a `manifests` directory. For each application it creates pending GitHub
-deployments named `<short-slug>/<environment>`, then runs
+without a `manifests` directory. For each application it creates GitHub
+deployments named `<short-slug>/<environment>`. All selected deployments must be
+created before RepoCtl runs
 `flux tag artifact` to promote
 `<registry>/<short-slug>-manifests:<sha>` to the selected environment
-tags. Supply the registry repository prefix with `--registry` or `REPOCTL_OCI_REGISTRY`.
+tags. After each application's manifests are successfully promoted, RepoCtl posts
+a `queued` status using each of that application's returned deployment IDs.
+Supply the registry repository prefix with `--registry` or `REPOCTL_OCI_REGISTRY`.
 
 `--sha` defaults to `GITHUB_SHA`; `--repo` defaults to `GITHUB_REPOSITORY`.
 Set `GITHUB_TOKEN` with deployments write permission. The Flux CLI must be
@@ -208,9 +211,15 @@ registry credentials, so keep the registry login step before invoking RepoCtl.
 GitHub requests use the same Octokit client as release uploads.
 
 Deployment creation disables auto-merge and required status contexts, and marks
-only `prod` as production. A failed request or promotion stops the command.
-Deployment records remain pending while promotion and Flux reconciliation take
-place; creating a record does not confirm a successful rollout.
+only `prod` as production. A failed deployment request prevents all manifest promotion.
+A failed promotion fails the command and skips queued statuses for that application;
+other applications are still processed. A failed queued status request also fails the
+command, but the manifests have already been promoted. Remaining requests continue.
+The queued status description identifies the promoted artifact and environment tag:
+`Tagged <short-slug>-manifests:<sha> as <environment>`.
+This command only reports the initial queued status; in-cluster progress
+and completion reporting are handled separately. A queued deployment does not confirm
+a successful rollout.
 
 ## CI helpers
 
