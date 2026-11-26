@@ -105,8 +105,11 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor,
         })
         .WaitAsync(cancellationToken);
 
-    public ICommandResult CreateDeployment(GitHubRepositoryContext context, string sha, string shortSlug, string environment)
+    public CreateDeploymentResult CreateDeployment(GitHubRepositoryContext context, string sha, string shortSlug, string environment)
         => new CreateDeploymentResult(githubClient, context, sha, shortSlug, environment);
+
+    public ICommandResult SetDeploymentStatus(GitHubRepositoryContext context, Deployment deployment, DeploymentState state, string description)
+        => new SetDeploymentStatusResult(githubClient, context, deployment, state, description);
 
     public async Task<ICommandResult> UploadArtifactsToRelease(
         GitHubRepositoryContext context,
@@ -129,7 +132,7 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor,
         return new UploadPackagesToReleaseResult(githubClient, release, files);
     }
 
-    private sealed class CreateDeploymentResult(
+    public sealed class CreateDeploymentResult(
         GitHubClient githubClient,
         GitHubRepositoryContext repository,
         string sha,
@@ -137,7 +140,10 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor,
         string environment)
         : ICommandResult
     {
-        public async Task Execute(CommandInvocationContext context, CancellationToken cancellationToken = default)
+        Task ICommandResult.Execute(CommandInvocationContext context, CancellationToken cancellationToken)
+            => Execute(context, cancellationToken);
+
+        public async Task<Deployment?> Execute(CommandInvocationContext context, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var deploymentEnvironment = $"{shortSlug}/{environment}";
@@ -153,11 +159,36 @@ internal sealed class GitHubService(AltinnRepositoryAccessor repositoryAccessor,
             try
             {
                 var deployment = await githubClient.Repository.Deployment.Create(repository.RepositoryOwner, repository.RepositoryName, request);
-                context.Console.StdErr.Write(Markup.FromInterpolated($"Created pending deployment [green]{deployment.Id}[/] for [cyan]{deploymentEnvironment}[/].\n"));
+                context.Console.StdErr.Write(Markup.FromInterpolated($"Created deployment [green]{deployment.Id}[/] for [cyan]{deploymentEnvironment}[/].\n"));
+                return deployment;
             }
             catch (ApiException ex)
             {
                 context.Console.StdErr.Write(Markup.FromInterpolated($"[red]Failed to create deployment for {deploymentEnvironment}: {ex.Message}[/]\n"));
+                context.ReturnCode = 1;
+            }
+
+            return null;
+        }
+    }
+
+    private sealed class SetDeploymentStatusResult(GitHubClient githubClient, GitHubRepositoryContext repository, Deployment deployment, DeploymentState state, string description)
+        : ICommandResult
+    {
+        public async Task Execute(CommandInvocationContext context, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                await githubClient.Repository.Deployment.Status.Create(repository.RepositoryOwner, repository.RepositoryName, deployment.Id, new NewDeploymentStatus(state)
+                {
+                    Description = description,
+                });
+                context.Console.StdErr.Write(Markup.FromInterpolated($"Set deployment [green]{deployment.Id}[/] status to [cyan]{state}[/].\n"));
+            }
+            catch (ApiException ex)
+            {
+                context.Console.StdErr.Write(Markup.FromInterpolated($"[red]Failed to set deployment {deployment.Id} status to {state}: {ex.Message}[/]\n"));
                 context.ReturnCode = 1;
             }
         }

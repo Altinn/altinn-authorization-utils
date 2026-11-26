@@ -6,6 +6,7 @@ using Altinn.Authorization.RepoCtl.GitHub;
 using Altinn.Authorization.RepoCtl.Model;
 using Altinn.Authorization.RepoCtl.Utils;
 using Microsoft.Extensions.Primitives;
+using Octokit;
 using Spectre.Console;
 
 namespace Altinn.Authorization.RepoCtl.Commands.Ci;
@@ -79,7 +80,7 @@ internal sealed class PromoteAppCommand(GitHubService github, ContainerService c
     {
         public async Task Execute(CommandInvocationContext context, CancellationToken cancellationToken = default)
         {
-            var toPromote = new List<string>();
+            var toPromote = new List<(string Manifest, List<(Deployment Deployment, string Description)> Deployments)>();
             foreach (var app in apps)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -90,26 +91,55 @@ internal sealed class PromoteAppCommand(GitHubService github, ContainerService c
                 }
 
                 var shortSlug = app.Id.ToString("short-slug", CultureInfo.InvariantCulture);
+                var deployments = new List<(Deployment Deployment, string Description)>();
                 foreach (var environment in environments)
                 {
-                    await github.CreateDeployment(githubContext, sha, shortSlug, environment).Execute(context, cancellationToken);
+                    var deployment = await github.CreateDeployment(githubContext, sha, shortSlug, environment).Execute(context, cancellationToken);
+                    if (deployment is not null)
+                    {
+                        var description = $"Tagged {shortSlug}-manifests:{sha} as {environment}";
+                        if (description.Length > 140)
+                        {
+                            description = description[..135] + "…";
+                        }
+
+                        deployments.Add((deployment, description));
+                    }
                 }
 
-                toPromote.Add($"{registry}/{shortSlug}-manifests");
+                toPromote.Add(($"{registry}/{shortSlug}-manifests", deployments));
             }
 
-            // if we failed to mark any for promotion, we stop here
+            // if we failed to create github deployment objects, we stop here
             if (context.ReturnCode != 0)
             {
                 return;
             }
 
-            foreach (var manifest in toPromote)
+            foreach (var (manifest, deployments) in toPromote)
             {
-                await containers.PromoteManifests(repository, manifest, sha, environments).Execute(context, cancellationToken);
-            }
+                // Note: There is a theoretical race condition here, where the deployment can be picked up by flux
+                // immediately after "PromoteManifests" is called before the deployment status is set to queued.
+                // This could result in Flux posting back that the deployment is done before it is actually marked as queued.
+                // Given that this is picked up by a separate github job, this race condition is unlikely to actually occur
+                // in practice, so we choose to accept this minor risk.
+                var child = context.CreateChildContext();
+                await containers.PromoteManifests(repository, manifest, sha, environments).Execute(child, cancellationToken);
 
-            // if any failed, returncode should be non-0 at this point, so returning will signify a failure to the caller
+                if (child.ReturnCode == 0)
+                {
+                    foreach (var (deployment, description) in deployments)
+                    {
+                        await github.SetDeploymentStatus(githubContext, deployment, DeploymentState.Queued, description)
+                            .Execute(child, cancellationToken);
+                    }
+                }
+
+                if (child.ReturnCode != 0)
+                {
+                    context.ReturnCode = child.ReturnCode;
+                }
+            }
         }
     }
 }
