@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.1.0](https://github.com/Altinn/altinn-authorization-utils/compare/pkg/ServiceDefaults-v6.0.0...pkg/ServiceDefaults-v6.1.0) (2026-11-26)
+
+
+### Features
+
+* move pre-start logger to abstractions ([#810](https://github.com/Altinn/altinn-authorization-utils/issues/810)) ([3db26ee](https://github.com/Altinn/altinn-authorization-utils/commit/3db26ee111208409bff55f7af7d61d525bdd62ec))
+* move service descriptor extensions to abstractions ([#812](https://github.com/Altinn/altinn-authorization-utils/issues/812)) ([8faa79a](https://github.com/Altinn/altinn-authorization-utils/commit/8faa79a01f1529252d214d2698afc5fe25a0f907))
+
+
+### Bug Fixes
+
+* **httpclient-maskinporten:** reload Maskinporten client options when configuration changes ([#814](https://github.com/Altinn/altinn-authorization-utils/issues/814)) ([db6cf4b](https://github.com/Altinn/altinn-authorization-utils/commit/db6cf4b8cf482b7b5c6fe7e28a3770ddd1c03be8))
+
 ## [6.0.0](https://github.com/Altinn/altinn-authorization-utils/compare/Altinn.Authorization.ServiceDefaults-v5.5.0...Altinn.Authorization.ServiceDefaults-v6.0.0) (2026-08-14)
 
 
