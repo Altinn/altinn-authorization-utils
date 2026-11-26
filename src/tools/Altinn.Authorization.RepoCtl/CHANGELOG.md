@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.2.1...tool/RepoCtl-v2.3.0) (2026-11-26)
+
+
+### Features
+
+* **repoctl:** queue deployments after manifest promotion ([#818](https://github.com/Altinn/altinn-authorization-utils/issues/818)) ([b7904ab](https://github.com/Altinn/altinn-authorization-utils/commit/b7904ab92a03afa459a9e896ad05717799d3efab))
+
 ## [2.2.1](https://github.com/Altinn/altinn-authorization-utils/compare/tool/RepoCtl-v2.2.0...tool/RepoCtl-v2.2.1) (2026-11-17)
 
 
