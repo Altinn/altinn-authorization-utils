@@ -86,12 +86,41 @@ public static class ServiceDefaultsHttpClientDependencyInjectionExtensions
     /// Use this extension to ensure that all requests sent by the configured HTTP client include the necessary
     /// platform access token for authentication.</remarks>
     /// <param name="builder">The <see cref="IHttpClientBuilder"/> to configure. Cannot be null.</param>
+    /// <param name="validateOnStart">Whether to retrieve a token before hosted services start. Defaults to true.</param>
     /// <returns><paramref name="builder"/>, so that configuration calls can be chained.</returns>
-    public static IHttpClientBuilder AddPlatformAccessTokenHandler(this IHttpClientBuilder builder)
+    public static IHttpClientBuilder AddPlatformAccessTokenHandler(this IHttpClientBuilder builder, bool validateOnStart = true)
     {
         builder.Services.TryAddTransient<PlatformAccessTokenHandler>();
 
+        if (validateOnStart)
+        {
+            AddPlatformAccessTokenValidationOnStart(builder.Services, builder.Name);
+        }
+
         return builder.AddHttpMessageHandler<PlatformAccessTokenHandler>();
+    }
+
+    /// <summary>
+    /// Validates that the platform access token provider can retrieve a token before hosted services start.
+    /// </summary>
+    /// <remarks>
+    /// Normally registered by <see cref="AddPlatformAccessTokenHandler(IHttpClientBuilder, bool)"/>.
+    /// Each HTTP client name is checked once, using a request with its configured base address.
+    /// The request is passed to the token provider without being sent to the destination API.
+    /// Token retrieval failures prevent startup.
+    /// </remarks>
+    /// <param name="services">The service collection.</param>
+    /// <param name="clientName">The HTTP client name. Use an empty string for the default client.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddPlatformAccessTokenValidationOnStart(IServiceCollection services, string clientName)
+    {
+        Guard.IsNotNull(services);
+        Guard.IsNotNull(clientName);
+
+        services.AddHttpClient(clientName);
+        services.Configure<PlatformAccessTokenStartupValidator.Options>(options => options.ClientNames.Add(clientName));
+        services.AddHostedService<PlatformAccessTokenStartupValidator>();
+        return services;
     }
 
     /// <summary>
